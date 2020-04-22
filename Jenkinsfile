@@ -5,6 +5,7 @@ hose {
     DEVTIMEOUT = 45
     RELEASETIMEOUT = 45
     NEW_VERSIONING = 'true'
+    BUILDTOOLVERSION = '3.6.2'
 
     DEV = { config ->
         doPackage(config)
