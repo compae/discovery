@@ -18,6 +18,10 @@ syntax: glob
 .idea
 *.iml
 
+# metals
+.metals
+.bloop
+
 # building
 target
 build
