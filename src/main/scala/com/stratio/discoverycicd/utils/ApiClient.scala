@@ -46,11 +46,22 @@ class ApiClient(metabaseUrl: String, user: String, password: String) {
 
   def getDashboard(dashboardId: BigInt) = request(s"dashboard/$dashboardId").as[Dashboard].body
 
-  def createDashboard(dashboard: Dashboard) = request("dashboard/save").postData(write(dashboard)).as[Id].body.id
+  def createDashboard(dashboard: Dashboard) = request("dashboard").postData(write(dashboard)).as[Id].body.id
 
-  def putDashboard(id: BigInt, dashboard: DashboardPut) =
+  def updateDashboard(id: BigInt, dashboard: Dashboard) =
     request(s"dashboard/$id")
       .put(write(dashboard)(formats.preservingEmptyValues))
+      .execute()
+
+  def addCardToDashboard(id: BigInt, card: CardPost) =
+    request(s"dashboard/$id/cards")
+      .postData(write(card))
+      .as[Id]
+      .body
+
+  def updateDashCardsInDashboard(id: BigInt, dashCards: List[DashCard]) =
+    request(s"dashboard/$id/cards")
+      .put(s""" { "cards": ${write(dashCards)} } """)
       .execute()
 
   def getCard(cardId: BigInt) = request(s"card/$cardId").as[Card].body

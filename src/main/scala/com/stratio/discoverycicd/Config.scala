@@ -72,8 +72,8 @@ object Config {
       opt[BigInt]("parent-id")
         .text("Id of the metabase collection where to put the imported collection into (not provided will put the imported collection in the root colelction)")
         .optional()
-        .validate(id => if (id > 0) Left("Collection Id must be positive") else Right())
-        .action((id, cfg) => cfg.copy(parentId = Option(id)))
+        .validate(id => if (id < 0) Left("Collection Id must be positive or zero") else Right())
+        .action((id, cfg) => cfg.copy(parentId = if (id == 0) None else Option(id)))
     )
 
   }

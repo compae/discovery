@@ -30,29 +30,31 @@ class Importer(api: ApiClient) {
 
   def createDashboards(dashboards: List[Dashboard], dbMaps: DbMaps, collMap: IdMap, cardMap: IdMap) = {
     val dashboardsToPost = dashboards
+      .map(d => d.copy(collection_id = d.collection_id.map(collMap)))
       .map(_.copy(creator_id = api.userId))
       .map(_.replaceDatabaseIds(dbMaps.db))
       .map(_.replaceTableIds(dbMaps.table))
       .map(_.replaceFieldIds(dbMaps.field))
       .map(_.replaceCardIds(cardMap))
 
-    dashboardsToPost foreach { dashboard =>
-      val savedDashboardId = api.createDashboard(dashboard)
-      ammendDashboardData(
-        savedDashboardId,
-        dashboard.copy(collection_id = dashboard.collection_id.map(collMap))
-      )
-    }
+    dashboardsToPost.foreach(createDashboard)
   }
 
-  def ammendDashboardData(savedDashboardId: BigInt, dashboard: Dashboard) = {
-    val putData = DashboardPut(
-      collection_id = dashboard.collection_id,
-      description = dashboard.description,
-      collection_position = dashboard.collection_position,
-      position = dashboard.position
-    )
-    api.putDashboard(savedDashboardId, putData)
+  def createDashboard(dashboard: Dashboard) = {
+      // create dashboard and get its id
+      val savedDashboardId = api.createDashboard(dashboard)
+
+      // add parameters that cannot be set in the creation post request
+      api.updateDashboard(savedDashboardId, dashboard)
+
+      // add the needed cards as dashcards, and update the dashcard list with the new ids
+      val dashCardsWithNewIds = dashboard.ordered_cards.map { dashCard =>
+        val dashCardId = api.addCardToDashboard(savedDashboardId, CardPost(dashCard.card_id)).id
+        dashCard.copy(id = dashCardId, dashboard_id = savedDashboardId)
+      }
+
+      // add the correct positions, settings etc to all dashcards
+      api.updateDashCardsInDashboard(savedDashboardId, dashCardsWithNewIds)
   }
 
   def createCards(cards: List[Card], dbMaps: DbMaps, collMap: IdMap): IdMap = {

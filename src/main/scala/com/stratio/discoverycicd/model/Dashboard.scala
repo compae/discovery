@@ -46,7 +46,8 @@ case class Dashboard(name: String,
 
 }
 
-case class DashCard(sizeX: BigInt,
+case class DashCard(id: BigInt,
+                    sizeX: BigInt,
                     sizeY: BigInt,
                     row: BigInt,
                     col: BigInt,
@@ -72,3 +73,7 @@ case class DashboardPut(collection_id: Option[BigInt],
                         description: Option[String],
                         collection_position: Option[BigInt],
                         position: Option[BigInt])
+
+// this is used to add cards to a dashboard, we should be careful that metabase is
+// looking to refactor this enpoint so the body should be card_id instead of cardId :S
+case class CardPost(cardId: BigInt)

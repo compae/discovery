@@ -15,7 +15,6 @@ object Runner {
 
     val initialConf = Config()
     val config = parser.parse(args, Config()).getOrElse{ System.exit(1); initialConf }
-    println(config)
     assert(config.isValid, "Provided parameters are not valid")
 
     val api = new ApiClient(config.metabaseUrl, config.user, config.password)
