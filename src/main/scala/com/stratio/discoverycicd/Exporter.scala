@@ -43,13 +43,21 @@ class Exporter(api: ApiClient) {
     val fieldIds = cards.map(_.getFieldIds).reduce(_ union _) union MBJson.getFieldIds(dashboardsJson)
     val fields = fieldIds.map(api.getField).map(_.toField(id2Table))
 
+    // Collect permissions data
+    val groupIdToName = api.getGroupIdToNameMap
+    val collectionGraph = api.getCollectionGraph
+    val permissionsPerGroup = collectionGraph.groups.map {
+      case (gId, map) => (groupIdToName(gId), map(collectionId.toString))
+    }
+
     ExportedCollection(
       cards = cards,
       dashboards = dashboards,
       fields = fields.toList,
       tables = tables.toList,
       databases = databases.toList,
-      collection = collection
+      collection = collection,
+      permissionsPerGroup = permissionsPerGroup
     )
   }
 

@@ -80,6 +80,18 @@ class ApiClient(metabaseUrl: String, user: String, password: String) {
 
   def getField(fieldId: BigInt) = request(s"field/$fieldId").as[FieldDto].body
 
+  def getCollectionGraph = request("collection/graph").as[CollectionGraph].body
+
+  def updateCollectionGraph(graph: CollectionGraph) = request("collection/graph").put(write(graph)).as[CollectionGraph].body
+
+  def getGroups = request("permissions/group").as[List[Group]].body
+
+  // The MetaBot group always have id 3. It is not included in this response, but it is included in the
+  // collectionGraph so we need it to be in this map
+  def getGroupIdToNameMap = getGroups.map(g => g.id -> g.name).toMap + ("3" -> "MetaBot")
+
+  def getGroupNameToIdMap = getGroupIdToNameMap.map(_.swap)
+
   def request(apiPath: String): HttpRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers)
 
   private def getAuthToken: String = Http(s"$metabaseUrl/api/session")

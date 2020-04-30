@@ -7,6 +7,7 @@
 package com.stratio.discoverycicd
 
 import com.stratio.discoverycicd.utils.ApiClient
+import com.stratio.discoverycicd.utils.TypeAliases._
 import com.stratio.discoverycicd.model._
 
 class Importer(api: ApiClient) {
@@ -25,8 +26,19 @@ class Importer(api: ApiClient) {
     val collMap = createCollection(exportedCollection.collection, parentCollId)
     val cardMap = createCards(exportedCollection.cards, dbMaps, collMap)
     createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap)
+
+    val targetCollId = collMap(exportedCollection.collection.id)
+    updatePermissionsInColl(targetCollId, exportedCollection.permissionsPerGroup)
   }
 
+  def updatePermissionsInColl(targetCollId: BigInt, sourcePermissionsPerGroup: Map[GroupName, Permission]) = {
+    val targetGroupNameToId = api.getGroupNameToIdMap
+    val targetPermissionsPerGroup = sourcePermissionsPerGroup collect {
+      case (gName, permission) if targetGroupNameToId contains gName => (targetGroupNameToId(gName), permission)
+    }
+    val collectionGraph = api.getCollectionGraph.updatePermissionInColl(targetCollId, targetPermissionsPerGroup)
+    api.updateCollectionGraph(collectionGraph)
+  }
 
   def createDashboards(dashboards: List[Dashboard], dbMaps: DbMaps, collMap: IdMap, cardMap: IdMap) = {
     val dashboardsToPost = dashboards
@@ -131,7 +143,6 @@ class Importer(api: ApiClient) {
 
 object Importer {
 
-  type IdMap = Map[BigInt, BigInt]
   case class DbMaps(db: IdMap, table: IdMap, field: IdMap)
 
 }

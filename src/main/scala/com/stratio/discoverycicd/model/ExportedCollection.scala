@@ -11,4 +11,5 @@ case class ExportedCollection(cards: List[Card],
                               fields: List[Field],
                               tables: List[Table],
                               databases: List[Database],
-                              collection: Collection)
+                              collection: Collection,
+                              permissionsPerGroup: Map[String, String])
