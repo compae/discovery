@@ -15,7 +15,7 @@ import scalaj.http._
 import scala.util.{Failure, Success, Try}
 
 
-class ApiClient(metabaseUrl: String, user: String, password: String) {
+class ApiClient(metabaseUrl: String, user: String, password: String, allowUnsafeSsl: Boolean = false) {
 
   implicit val formats = DefaultFormats
 
@@ -92,16 +92,20 @@ class ApiClient(metabaseUrl: String, user: String, password: String) {
 
   def getGroupNameToIdMap = getGroupIdToNameMap.map(_.swap)
 
-  def request(apiPath: String): HttpRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers)
+  def request(apiPath: String): HttpRequest = {
+    val safeRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers)
+    if (allowUnsafeSsl) safeRequest.option(HttpOptions.allowUnsafeSSL) else safeRequest
+  }
 
-  private def getAuthToken: String = Http(s"$metabaseUrl/api/session")
-    .header("content-type", "application/json")
-    .postData(s"""{"username": "$user", "password": "$password"}""")
-    .as[SessionId]
-    .body
-    .id
+  private def getAuthToken: String = {
+    val safeRequest = Http(s"$metabaseUrl/api/session")
+      .header("content-type", "application/json")
+      .postData(s"""{"username": "$user", "password": "$password"}""")
 
+    val request = if (allowUnsafeSsl) safeRequest.option(HttpOptions.allowUnsafeSSL) else safeRequest
 
+    request.as[SessionId].body.id
+ }
 
 
 }

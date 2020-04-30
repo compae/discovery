@@ -16,7 +16,8 @@ case class Config(action: Option[Action] = None,
                   filePath: String = "",
                   user: String = "",
                   password: String = "",
-                  metabaseUrl: String = "http://localhost:3000") {
+                  metabaseUrl: String = "http://localhost:3000",
+                  allowUnsafeSsl: Boolean = false) {
 
   def isValid: Boolean = {
     val validCollId = action match {
@@ -57,6 +58,10 @@ object Config {
       .text("URL of the metabase instance")
       .optional()
       .action((url, cfg) => cfg.copy(metabaseUrl = url))
+
+    opt[Unit]("allow-unsafe-ssl")
+      .text("Allow to make requests to Metabase wihtout verifying SSL certificates")
+      .action((_, cfg) => cfg.copy(allowUnsafeSsl = true))
 
     help('h', "help").text("Prints this message")
 
