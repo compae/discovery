@@ -78,8 +78,8 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <finalName>discoverycicd-${project.name}</finalName>
-                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <shadedClassifierName>uber</shadedClassifierName>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
