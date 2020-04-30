@@ -33,15 +33,19 @@ class Exporter(api: ApiClient) {
 
     // Collect needed DB data to be able to obtain in the target metabase all field, table and database IDs
     val databaseIds = cards.map(_.getDatabaseIds).reduce(_ union _) union MBJson.getDatabaseIds(dashboardsJson)
+    val fieldIds = cards.map(_.getFieldIds).reduce(_ union _) union MBJson.getFieldIds(dashboardsJson)
+    val fieldDtos = fieldIds.map(api.getField)
+    val tableIds = cards.map(_.getTableIds).reduce(_ union _)
+      .union(MBJson.getTableIds(dashboardsJson))
+      .union(fieldDtos.map(_.table_id).toSet)
+
     val databases = databaseIds map api.getDatabase
     val dbId2Name = databases map { db => db.id -> db.name } toMap
 
-    val tableIds = cards.map(_.getTableIds).reduce(_ union _) union MBJson.getTableIds(dashboardsJson)
     val tables = tableIds.map(api.getTable).map(_.toTable(dbId2Name))
     val id2Table = tables map { t => t.id -> t } toMap
 
-    val fieldIds = cards.map(_.getFieldIds).reduce(_ union _) union MBJson.getFieldIds(dashboardsJson)
-    val fields = fieldIds.map(api.getField).map(_.toField(id2Table))
+    val fields = fieldDtos.map(_.toField(id2Table))
 
     // Collect permissions data
     val groupIdToName = api.getGroupIdToNameMap
