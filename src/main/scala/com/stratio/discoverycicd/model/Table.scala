@@ -10,13 +10,13 @@ package com.stratio.discoverycicd.model
 // This is the model we use to "identify" a metabase Table
 // based on its name, schema and the name of the datbase it lives in
 // so we can match the tables in the source and target metabases
-case class Table(id: BigInt, name: String, dbName: String, schema: Option[String]) {
+case class Table(id: BigInt, name: String, dbName: String, schema: Option[String], display_name: String) {
     def isTheSameAs(that: Table) =
     (this.name == that.name) && (this.dbName == that.dbName) && (this.schema == that.schema)
 }
 
 // This is the model that metabase api responds with while getting a table
 // (actually the model has more fields but these are the ones we need)
-case class TableDto(id: BigInt, name: String, db_id: BigInt, schema: Option[String]) {
-    def toTable(dbIdToNameMap: Map[BigInt, String]) = Table(id, name, dbIdToNameMap(db_id), schema)
+case class TableDto(id: BigInt, name: String, db_id: BigInt, schema: Option[String], display_name: String) {
+    def toTable(dbIdToNameMap: Map[BigInt, String]) = Table(id, name, dbIdToNameMap(db_id), schema, display_name)
 }

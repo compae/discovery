@@ -10,7 +10,7 @@ import com.stratio.discoverycicd.utils.ApiClient
 import com.stratio.discoverycicd.utils.TypeAliases._
 import com.stratio.discoverycicd.model._
 
-class Importer(api: ApiClient) {
+class Importer(api: ApiClient, strictTableNames: Boolean = true) {
 
   import Importer._
 
@@ -116,10 +116,22 @@ class Importer(api: ApiClient) {
 
     val fields = for {
       db <- databases
-      fieldDto <- api.getFieldsInDb(db.id)
-      field = api.getField(fieldDto.id).toField(id2Table)
+      dbFieldDto <- if (strictTableNames) api.getFieldsInDb(db.id)
+                    // TODO: this below is not working as expected. Check it.
+                    // For now we do not optimize and always use stric table names
+                    else api.getFieldsInDb(db.id) filter {
+                      x => exportedCollection.fields exists (_.isSimilarTo(x, db.name))
+                    }
+      fieldDto = api.getField(dbFieldDto.id)
+      // we may not have the table in the map if the table happens to be inactive
+      actualTableMap = if (id2Table contains fieldDto.table_id) id2Table
+                       else Map(fieldDto.table_id -> api.getTable(fieldDto.table_id).toTable(dbId2Name))
+      field = fieldDto.toField(actualTableMap)
       if exportedCollection.fields exists (_ isTheSameAs field)
     } yield field
+
+    assert(exportedCollection.fields.size == fields.size,
+           s"Some of the needed fields to perform the import are not found in the target metabase. Needed: ${exportedCollection.fields}; found: $fields")
 
     // Maps with id correspondence between source and target metabases
     val dBsource2Target = exportedCollection.databases map { sourceDb =>

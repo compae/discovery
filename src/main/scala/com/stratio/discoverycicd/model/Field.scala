@@ -10,7 +10,14 @@ package com.stratio.discoverycicd.model
 // based on its name and the table it belongs to
 // so we can match the tables in the source and target metabases
 case class Field(id: BigInt, name: String, table: Table, display_name: String) {
-    def isTheSameAs(that: Field) = (this.name == that.name) && (this.table isTheSameAs that.table)
+  def isTheSameAs(that: Field) = (this.name == that.name) && (this.table isTheSameAs that.table)
+
+  // Be careful, in the DbFieldDto, table_name is actually the display name
+  def isSimilarTo(dbField: DbFieldDto, dbName: String) =
+    (name == dbField.name) &&
+      (table.display_name == dbField.table_name) &&
+      (table.schema == dbField.schema) &&
+      (table.dbName == dbName)
 }
 
 
@@ -18,8 +25,8 @@ case class Field(id: BigInt, name: String, table: Table, display_name: String) {
 // (it responds with different models depending on the enpoint, and we need both...)
 // (actually the models have more fields but these are the ones we need)
 case class FieldDto(id: BigInt, name: String, table_id: BigInt, display_name: String) {
-    def toField(tableIdToTableMap: Map[BigInt, Table]) =
-      Field(id, name, tableIdToTableMap(table_id), display_name)
+  def toField(tableIdToTableMap: Map[BigInt, Table]) =
+    Field(id, name, tableIdToTableMap(table_id), display_name)
 }
 
 case class DbFieldDto(id: BigInt, name: String, table_name: String, schema: Option[String])

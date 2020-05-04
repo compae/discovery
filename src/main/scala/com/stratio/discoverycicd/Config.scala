@@ -17,7 +17,8 @@ case class Config(action: Option[Action] = None,
                   user: String = "",
                   password: String = "",
                   metabaseUrl: String = "http://localhost:3000",
-                  allowUnsafeSsl: Boolean = false) {
+                  allowUnsafeSsl: Boolean = false,
+                  strictTableNames: Boolean = true) {
 
   def isValid: Boolean = {
     val validCollId = action match {
@@ -79,6 +80,10 @@ object Config {
         .optional()
         .validate(id => if (id < 0) Left("Collection Id must be positive or zero") else Right())
         .action((id, cfg) => cfg.copy(parentId = if (id == 0) None else Option(id)))
+      // opt[Unit]("strict-table-names")
+      //   .text("Whether to rely or not on display names to tell if a table is the same in source and target Metabase")
+      //   .optional()
+      //   .action((_, cfg) => cfg.copy(strictTableNames = true))
     )
 
   }
