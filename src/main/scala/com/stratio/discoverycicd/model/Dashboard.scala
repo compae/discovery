@@ -34,12 +34,7 @@ case class Dashboard(name: String,
   }
 
   def replaceCardIds(replacements: BigInt => BigInt): Dashboard = {
-    val replacedDashCards = ordered_cards map { dashCard =>
-      dashCard
-        .copy(card_id = replacements(dashCard.card_id), card = Id(replacements(dashCard.card.id)))
-        .copy(series = dashCard.series.map(cid => Id(replacements(cid.id))))
-    }
-    copy(ordered_cards = replacedDashCards)
+    copy(ordered_cards = ordered_cards.map(_.replaceCardIds(replacements)))
   }
 
 
@@ -67,6 +62,12 @@ case class DashCard(id: BigInt,
   def replaceDatabaseIds(replacements: BigInt => BigInt): DashCard =
     copy(parameter_mappings = MBJson.replaceDatabaseIds(parameter_mappings, replacements))
 
+  def replaceCardIds(replacements: BigInt => BigInt): DashCard = copy(
+    card_id = replacements(card_id),
+    card = Id(replacements(card.id)),
+    series = series.map(cid => Id(replacements(cid.id))),
+    parameter_mappings =  MBJson.replaceCardIds(parameter_mappings, replacements)
+  )
 }
 
 case class DashboardPut(collection_id: Option[BigInt],

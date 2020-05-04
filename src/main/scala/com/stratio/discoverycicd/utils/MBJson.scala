@@ -64,10 +64,21 @@ object MBJson {
     )
   }
 
+  def replaceCardIds(jval: JValue, replacements: BigInt => BigInt) = jval.transform {
+    case JObject(kvs) if kvs exists isCard => JObject(
+      kvs map {
+        case jField @ (k, JInt(id)) if (isCard(jField)) => (k, JInt(replacements(id)))
+        case other => other
+
+      }
+    )
+  }
 
   private def isTable(jsonField: JField) = Set("source-table", "table_id") contains jsonField._1
 
   private def isDatabase(jsonField: JField) = Set("database", "database_id") contains jsonField._1
+
+  private def isCard(jsonField: JField) = Set("card_id, cardId") contains jsonField._1
 
 
 
