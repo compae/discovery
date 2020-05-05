@@ -78,7 +78,7 @@ object MBJson {
 
   private def isDatabase(jsonField: JField) = Set("database", "database_id") contains jsonField._1
 
-  private def isCard(jsonField: JField) = Set("card_id, cardId") contains jsonField._1
+  private def isCard(jsonField: JField) = Set("card_id", "cardId") contains jsonField._1
 
 
 
