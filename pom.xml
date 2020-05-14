@@ -3,32 +3,35 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.stratio</groupId>
     <artifactId>discoverycicd</artifactId>
     <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <parent>
         <groupId>com.stratio</groupId>
         <artifactId>parent</artifactId>
         <version>0.11.0</version>
     </parent>
-
     <properties>
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.8</scala.version>
         <json4s.version>3.6.7</json4s.version>
         <scalaj.version>2.4.2</scalaj.version>
         <scopt.version>3.7.1</scopt.version>
+        <logback.version>1.2.3</logback.version>
+        <pureconfig.version>0.12.3</pureconfig.version>
+        <pureconfig.enumeratum.version>0.12.3</pureconfig.enumeratum.version>
+        <akka.version>2.6.5</akka.version>
+        <akka.http.version>10.1.11</akka.http.version>
+        <akka.http.json4s.version>1.32.0</akka.http.json4s.version>
+        <apache.http.core>4.4.13</apache.http.core>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.12.8</version>
+            <version>${scala.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json4s</groupId>
@@ -45,8 +48,47 @@
             <artifactId>scopt_${scala.binary.version}</artifactId>
             <version>${scopt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${apache.http.core}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pureconfig</groupId>
+            <artifactId>pureconfig_${scala.binary.version}</artifactId>
+            <version>${pureconfig.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pureconfig</groupId>
+            <artifactId>pureconfig-enumeratum_${scala.binary.version}</artifactId>
+            <version>${pureconfig.enumeratum.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http_${scala.binary.version}</artifactId>
+            <version>${akka.http.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.heikoseeberger</groupId>
+            <artifactId>akka-http-json4s_2.12</artifactId>
+            <version>${akka.http.json4s.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor-typed_${scala.binary.version}</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-stream_${scala.binary.version}</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
     </dependencies>
-
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
         <testSourceDirectory>src/test/scala</testSourceDirectory>

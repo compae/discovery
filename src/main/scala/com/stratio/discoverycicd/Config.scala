@@ -92,5 +92,6 @@ object Config {
     sealed trait Action
     final case object Import extends Action
     final case object Export extends Action
+    final case object Server extends Action
   }
 }
