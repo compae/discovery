@@ -40,9 +40,17 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
     request(s"collection/$collApiPath/items").as[List[CollectionItem]].body
   }
 
-  def deleteCollectionItem(item: CollectionItem) = request(s"${item.model}/${item.id}").method("DELETE").execute()
+  def archiveCollecton(collectionId: BigInt) =
+    request(s"collection/$collectionId").put("""{"archived":true}""").execute()
+
+  def deleteCollectionItem(item: CollectionItem) =
+    if (item.model == "collection") archiveCollecton(item.id)
+    else request(s"${item.model}/${item.id}").method("DELETE").execute()
 
   def createCollection(collection: Collection) = request("collection").postData(write(collection)).as[Collection].body
+
+  def renameCollection(id: BigInt, newName: String) =
+    request(s"collection/$id").put(s"""{"name": $newName}""").execute()
 
   def getDashboard(dashboardId: BigInt) = request(s"dashboard/$dashboardId").as[Dashboard].body
 
@@ -82,7 +90,8 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
 
   def getCollectionGraph = request("collection/graph").as[CollectionGraph].body
 
-  def updateCollectionGraph(graph: CollectionGraph) = request("collection/graph").put(write(graph)).as[CollectionGraph].body
+  def updateCollectionGraph(graph: CollectionGraph) =
+    request("collection/graph").put(write(graph)).as[CollectionGraph].body
 
   def getGroups = request("permissions/group").as[List[Group]].body
 

@@ -9,6 +9,7 @@ package com.stratio.discoverycicd
 import com.stratio.discoverycicd.utils.ApiClient
 import com.stratio.discoverycicd.utils.TypeAliases._
 import com.stratio.discoverycicd.model._
+import scala.annotation.tailrec
 
 class Importer(api: ApiClient, strictTableNames: Boolean = true) {
 
@@ -22,13 +23,21 @@ class Importer(api: ApiClient, strictTableNames: Boolean = true) {
 
   def importCollection(exportedCollection: ExportedCollection, parentCollId: Option[BigInt]) = {
 
+    val childColls = exportedCollection.children.map(_.collection)
+    val childNames = childColls filter { _.parent_id == Some(exportedCollection.collection.id) } map { _.name }
+
+    // create neccesary itesm while getting the mapping between source and target ids
+    val (sourceCollId, targetCollId) = createCollection(exportedCollection.collection, parentCollId, childNames)
+    val collMap = createSubCollections(childColls, Map(sourceCollId -> targetCollId))
     val dbMaps = getDbMap(exportedCollection)
-    val collMap = createCollection(exportedCollection.collection, parentCollId)
     val cardMap = createCards(exportedCollection.cards, dbMaps, collMap)
     createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap)
 
-    val targetCollId = collMap(exportedCollection.collection.id)
+    // update permissions in collection and its children
     updatePermissionsInColl(targetCollId, exportedCollection.permissionsPerGroup)
+    exportedCollection.children.foreach { case Child(coll, permissionMap) =>
+      updatePermissionsInColl(collMap(coll.id), permissionMap)
+    }
   }
 
   def updatePermissionsInColl(targetCollId: BigInt, sourcePermissionsPerGroup: Map[GroupName, Permission]) = {
@@ -81,29 +90,75 @@ class Importer(api: ApiClient, strictTableNames: Boolean = true) {
     }
   }
 
+  @tailrec
+  final def createSubCollections(toCreate: List[Collection], collMap: Map[BigInt, BigInt]): Map[BigInt, BigInt] = {
+    def parentIsCreated(child: Collection) =
+      collMap contains child.parent_id.getOrElse(
+        throw new Exception("Child existingCollections should always have a parent Id!")
+      )
+    toCreate match {
+      case Nil =>
+        collMap
+      case remaining =>
+        val (parentCreated, parentNotCreated) = remaining partition parentIsCreated
+        val updatedCollMap = parentCreated.foldLeft(collMap) { (acc, coll) =>
+          val childrenNames = parentNotCreated filter { _.parent_id == Some(coll.id) } map { _.name }
+          acc + createCollection(coll, coll.parent_id.map(collMap), childrenNames)
+        }
+        createSubCollections(parentNotCreated, updatedCollMap)
+    }
+  }
+
   // creates (or deletes all items if one exists with the same name) the collection to import
   // and returns a map mapping the source id with the target id
-  def createCollection(sourceColl: Collection, parentCollId: Option[BigInt]) = {
-    val existing = api.getItemsInCollecton(parentCollId)
-    .filter(_.model == "collection")
-    .filter(_.name == sourceColl.name)
+  def createCollection(sourceColl: Collection,
+                       parentCollId: Option[BigInt],
+                       childCollNames: List[String]) = {
+    val existsInTarget = api.getItemsInCollecton(parentCollId)
+      .filter(_.model == "collection")
+      .filter(_.name == sourceColl.name)
 
-    assert(existing.size <= 1)
+    assert(existsInTarget.size <= 1)
 
-    // delete all elements if exists, otherwise create collection and get its id
-    val targetCollId = existing.headOption.map(_.id) match {
+    // Create collection and get its id if it does not exits, otherwise delete all its elements
+    // the subcolections that are not included in this export are archived or if
+    // we see that we are going to create a new one and archive an old one we
+    // simply rename the old one to the new name
+    val targetCollId = existsInTarget.headOption.map(_.id) match {
       case Some(existingCollId) =>
-        api.getItemsInCollecton(existingCollId)
-          .filter { Set("card", "dashboard") contains _.model }
-          .foreach(api.deleteCollectionItem)
+        val (existingSubcollections, existingNonCollItems) = api.getItemsInCollecton(existingCollId)
+          .partition { _.model == "collection" }
+
+        // delete all non-collection items
+        existingNonCollItems.foreach(api.deleteCollectionItem)
+
+        // delete the collections that are currently present in target but not in the export
+        val collsToArchive = existingSubcollections filterNot { childCollNames contains _.name }
+        collsToArchive.map(_.id).foreach(api.archiveCollecton)
+
         existingCollId
 
       case None => api.createCollection(sourceColl.copy(parent_id = parentCollId)).id
     }
 
-    Map(sourceColl.id -> targetCollId)
+    (sourceColl.id -> targetCollId)
   }
 
+  def deleteCollection(id: BigInt): Unit = {
+    // get items in collection
+    val items = api.getItemsInCollecton(id)
+
+    // archive collection
+    api.archiveCollecton(id)
+
+    // now we delete the inner items
+    val (colls, notColls) = items.partition(_.model == "collection")
+    notColls.foreach(api.deleteCollectionItem)
+    colls match {
+      case Nil => ()
+      case nonEmpty => nonEmpty.map(_.id).foreach(deleteCollection)
+    }
+  }
 
   def getDbMap(exportedCollection: ExportedCollection) = {
     val databases = allDatabases filter { db => exportedCollection.databases exists (_ isTheSameAs db) }

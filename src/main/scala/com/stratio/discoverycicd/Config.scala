@@ -24,7 +24,7 @@ case class Config(action: Option[Action] = None,
     val validCollId = action match {
       case Some(Export) => collId >= 0
       case Some(Import) => true
-      case None =>
+      case _ =>
         println("Must provide an action")
         Config.parser.showUsage()
         System.exit(1)

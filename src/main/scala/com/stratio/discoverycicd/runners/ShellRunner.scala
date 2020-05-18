@@ -41,7 +41,7 @@ object ShellRunner {
         println("...done")
         System.exit(0)
 
-      case None =>
+      case _ =>
         println("Must provide an action")
         Config.parser.showUsage()
         System.exit(1)

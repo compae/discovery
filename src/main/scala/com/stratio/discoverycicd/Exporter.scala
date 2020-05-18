@@ -10,6 +10,7 @@ import com.stratio.discoverycicd.model._
 import com.stratio.discoverycicd.utils.{ ApiClient, MBJson }
 import org.json4s.{DefaultFormats, Extraction}
 import org.json4s.JsonAST.JValue
+import scala.annotation.tailrec
 
 class Exporter(api: ApiClient) {
 
@@ -21,14 +22,16 @@ class Exporter(api: ApiClient) {
     val collection = api.getCollection(collectionId)
 
     // get cards and dashboards in collection
-    val items = itemsInColl(collectionId)
+    val items = itemsInCollAndSubColls(collectionId)
     val cardIdsInColl = getCardIdsInColl(items)
     val dashboardIdsInColl = getDashboardIdsInColl(items)
+    val collsIdsInColl = getCollsInColl(items)
 
     val cards = getCards(cardIdsInColl)
     val dashboards = getDashboards(dashboardIdsInColl)
-    val dashboardsJson = Extraction.decompose(dashboards)
+    val subCollections = getCollections(collsIdsInColl)
 
+    val dashboardsJson = Extraction.decompose(dashboards)
     checkAllCardsAreInCollection(cardIdsInColl, dashboardsJson)
 
     // Collect needed DB data to be able to obtain in the target metabase all field, table and database IDs
@@ -50,8 +53,16 @@ class Exporter(api: ApiClient) {
     // Collect permissions data
     val groupIdToName = api.getGroupIdToNameMap
     val collectionGraph = api.getCollectionGraph
+    // of parent collection
     val permissionsPerGroup = collectionGraph.groups.map {
       case (gId, map) => (groupIdToName(gId), map(collectionId.toString))
+    }
+    // of children
+    val children = subCollections map { coll =>
+      val permissionsPerGroup = collectionGraph.groups.map {
+        case (gId, map) => (groupIdToName(gId), map(coll.id.toString))
+      }
+      Child(coll, permissionsPerGroup)
     }
 
     ExportedCollection(
@@ -61,8 +72,21 @@ class Exporter(api: ApiClient) {
       tables = tables.toList,
       databases = databases.toList,
       collection = collection,
+      children = children,
       permissionsPerGroup = permissionsPerGroup
     )
+  }
+
+  def itemsInCollAndSubColls(collectionId: BigInt): List[CollectionItem] = {
+    @tailrec
+    def loop(collectionIds: List[BigInt], itemsInParents: List[CollectionItem]): List[CollectionItem] = {
+      val items = collectionIds flatMap itemsInColl
+      getCollsInColl(items) match {
+        case Nil => itemsInParents ++ items
+        case childrenCollIds => loop(childrenCollIds, itemsInParents ++ items)
+      }
+    }
+    loop(List(collectionId), List.empty)
   }
 
 
@@ -82,8 +106,13 @@ class Exporter(api: ApiClient) {
   def getCardIdsInColl(items: List[CollectionItem]) =
     items collect { case CollectionItem(id, _, "card") => id }
 
+  def getCollsInColl(items: List[CollectionItem]) =
+    items collect { case CollectionItem(id, _, "collection") => id }
+
   def getDashboards(dashboardIds: List[BigInt]) = dashboardIds map api.getDashboard
 
   def getCards(cardIds: List[BigInt]) = cardIds map api.getCard
+
+  def getCollections(collIds: List[BigInt]) = collIds map api.getCollection
 
 }
