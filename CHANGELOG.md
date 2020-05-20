@@ -6,7 +6,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 * Pending changelog
 
-## 1.1.0-899ef52 (Built: May 20, 2020 | Pre-release)
+## 1.1.0-c05ce24 (Built: May 20, 2020 | Pre-release)
 
 * Application API
 * Migrate sub-collections
