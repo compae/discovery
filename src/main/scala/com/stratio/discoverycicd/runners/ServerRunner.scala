@@ -21,9 +21,6 @@ import scala.util.{Failure, Success}
 object ServerRunner {
 
   def run(args: Array[String]): Unit = {
-
-
-
     val rootBehavior = Behaviors.setup[Nothing] { context =>
       val routes = new ServerRoutes()(context.system)
       startHttpServer(routes.apiRoutes, context.system)
@@ -42,7 +39,6 @@ object ServerRunner {
     futureBinding.onComplete {
       case Success(binding) =>
         val address = binding.localAddress
-        system.log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete this line. Version 1")
         system.log.info("Server online at http://{}:{}/", address.getHostString, address.getPort)
       case Failure(ex) =>
         system.log.error("Failed to bind HTTP endpoint, terminating system", ex)

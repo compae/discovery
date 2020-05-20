@@ -18,7 +18,8 @@
         <json4s.version>3.6.7</json4s.version>
         <scalaj.version>2.4.2</scalaj.version>
         <scopt.version>3.7.1</scopt.version>
-        <logback.version>1.2.3</logback.version>
+        <slf4j.api.version>1.7.30</slf4j.api.version>
+        <slf4j.impl.version>2.13.0</slf4j.impl.version>
         <pureconfig.version>0.12.3</pureconfig.version>
         <pureconfig.enumeratum.version>0.12.3</pureconfig.enumeratum.version>
         <akka.version>2.6.5</akka.version>
@@ -49,9 +50,20 @@
             <version>${scopt.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.api.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${slf4j.impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
