@@ -6,7 +6,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 * Pending changelog
 
-## 1.0.0-38d0608 (Built: May 06, 2020 | Pre-release)
+## 1.0.0-38d0608 (Built: May 06, 2020 | Released: May 20, 2020)
 
 * First version
 
