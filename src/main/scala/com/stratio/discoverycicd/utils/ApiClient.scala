@@ -6,13 +6,11 @@
 
 package com.stratio.discoverycicd.utils
 
-import com.stratio.discoverycicd.utils.ImplicitExtensions.HttpRequestExtension
 import com.stratio.discoverycicd.model._
-import org.json4s.native.Serialization.{read, write}
+import com.stratio.discoverycicd.utils.ImplicitExtensions.HttpRequestExtension
 import org.json4s.DefaultFormats
+import org.json4s.native.Serialization.write
 import scalaj.http._
-
-import scala.util.{Failure, Success, Try}
 
 
 class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,String)], allowUnsafeSsl: Boolean = false) {
@@ -26,7 +24,8 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
     "X-Metabase-Session" -> sessionId
   )
 
-  val userId = request("user/current").as[Id].body.id
+  val user = request("user/current").as[User]
+  val userId = user.body.id
 
   def getCollection(collectionId: BigInt) =
     request(s"collection/$collectionId").as[Collection].body
