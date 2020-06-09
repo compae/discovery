@@ -4,7 +4,9 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 1.2.0 (upcoming)
 
-* Pending changelog
+* Fix visualization settings in dahscards (Fix from 1.1.1)
+* Fix text cards in exported dashboards (Fix from 1.1.1)
+* Add superuser check (Fix from 1.1.1)
 
 ## 1.1.0-c05ce24 (Built: May 20, 2020 | Released: May 20, 2020)
 
@@ -15,4 +17,3 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 1.0.0-38d0608 (Built: May 06, 2020 | Released: May 20, 2020)
 
 * First version
-

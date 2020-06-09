@@ -35,10 +35,10 @@ class Exporter(api: ApiClient) {
     checkAllCardsAreInCollection(cardIdsInColl, dashboardsJson)
 
     // Collect needed DB data to be able to obtain in the target metabase all field, table and database IDs
-    val databaseIds = cards.map(_.getDatabaseIds).reduce(_ union _) union MBJson.getDatabaseIds(dashboardsJson)
-    val fieldIds = cards.map(_.getFieldIds).reduce(_ union _) union MBJson.getFieldIds(dashboardsJson)
+    val databaseIds = cards.map(_.getDatabaseIds).fold(Set.empty)(_ union _) union MBJson.getDatabaseIds(dashboardsJson)
+    val fieldIds = cards.map(_.getFieldIds).fold(Set.empty)(_ union _) union MBJson.getFieldIds(dashboardsJson)
     val fieldDtos = fieldIds.map(api.getField)
-    val tableIds = cards.map(_.getTableIds).reduce(_ union _)
+    val tableIds = cards.map(_.getTableIds).fold(Set.empty)(_ union _)
       .union(MBJson.getTableIds(dashboardsJson))
       .union(fieldDtos.map(_.table_id).toSet)
 

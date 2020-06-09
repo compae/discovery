@@ -47,10 +47,10 @@ case class DashCard(id: BigInt,
                     row: BigInt,
                     col: BigInt,
                     dashboard_id: BigInt,
-                    card_id: BigInt,
-                    card: Id,
+                    card_id: Option[BigInt],
+                    card: MaybeId,
                     series: List[Id],
-                    visualizaion_settings: Option[JValue],
+                    visualization_settings: JValue,
                     parameter_mappings: JValue) {
 
   def replaceFieldIds(replacements: BigInt => BigInt): DashCard =
@@ -63,8 +63,8 @@ case class DashCard(id: BigInt,
     copy(parameter_mappings = MBJson.replaceDatabaseIds(parameter_mappings, replacements))
 
   def replaceCardIds(replacements: BigInt => BigInt): DashCard = copy(
-    card_id = replacements(card_id),
-    card = Id(replacements(card.id)),
+    card_id = card_id.map(replacements),
+    card = MaybeId(card_id.map(replacements)),
     series = series.map(cid => Id(replacements(cid.id))),
     parameter_mappings =  MBJson.replaceCardIds(parameter_mappings, replacements)
   )
@@ -77,4 +77,4 @@ case class DashboardPut(collection_id: Option[BigInt],
 
 // this is used to add cards to a dashboard, we should be careful that metabase is
 // looking to refactor this enpoint so the body should be card_id instead of cardId :S
-case class CardPost(cardId: BigInt)
+case class CardPost(cardId: Option[BigInt])
