@@ -6,12 +6,14 @@
 
 package com.stratio.discoverycicd.model
 
+import com.stratio.discoverycicd.utils.Jsonable
+
 case class Collection(id: BigInt,
                       name: String,
                       description: String,
                       color: String,
-                      parent_id: Option[BigInt])
+                      parent_id: Option[BigInt]) extends Jsonable
 
 case class CollectionItem(id: BigInt,
                           name: String,
-                          model: String)
+                          model: String) extends Jsonable

@@ -7,6 +7,8 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * Fix visualization settings in dahscards (Fix from 1.1.1)
 * Fix text cards in exported dashboards (Fix from 1.1.1)
 * Add superuser check (Fix from 1.1.1)
+* More informative errors (Fix from 1.1.2)
+* Log steps of import process (Fix from 1.1.2)
 
 ## 1.1.0-c05ce24 (Built: May 20, 2020 | Released: May 20, 2020)
 

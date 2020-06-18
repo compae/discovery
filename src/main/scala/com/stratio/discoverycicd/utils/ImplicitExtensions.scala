@@ -8,15 +8,40 @@ package com.stratio.discoverycicd.utils
 
 import org.json4s.Formats
 import org.json4s.native.Serialization.read
-import scalaj.http.{HttpRequest, HttpResponse}
+import scalaj.http.{HttpRequest, HttpResponse, StringBodyConnectFunc, ByteBodyConnectFunc, MultiPartConnectFunc}
+import scala.util.{Try, Success, Failure}
 
 
 object ImplicitExtensions {
 
-  implicit class HttpRequestExtension(request: HttpRequest) {
+  implicit class HttpRequestExtension(request: HttpRequest) extends Logging {
 
-    def as[T](implicit formats: Formats, mf: Manifest[T]): HttpResponse[T] =
-      request.execute(parser = inputStream => read[T](inputStream))
+    def as[T](implicit formats: Formats, mf: Manifest[T]): HttpResponse[T] = {
+      val response = request.asString
+      Try { read[T](response.body) } match {
+        case Success(body) =>
+          response.copy(body = body)
 
+        case Failure(e) =>
+          logError(response)
+          throw e
+      }
+    }
+
+    private def getRequestBody: Option[String] = request.connectFunc match {
+      case stringBody: StringBodyConnectFunc => Some(stringBody.data)
+      case _: ByteBodyConnectFunc => Some("<Byte array body>")
+      case _: MultiPartConnectFunc => Some("<Multi part request>")
+      case _ => None
+    }
+
+    private def logError(response: HttpResponse[String]) = {
+      val requestBody = getRequestBody
+      log.error(s"ERROR: Could not deserialize response from ${request.method} to ${request.url}")
+      log.error(s"Response Status code: ${response.code}")
+      log.error(s"Body received: ${response.body}")
+      requestBody.foreach(body => log.error(s"Body in request: $body"))
+      log.debug(s"Full HttpResponse object: $response")
+    }
   }
 }

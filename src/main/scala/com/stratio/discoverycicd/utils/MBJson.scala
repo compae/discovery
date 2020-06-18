@@ -8,7 +8,9 @@ package com.stratio.discoverycicd.utils
 
 import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
 
-object MBJson {
+object MBJson extends ReplacementUtils {
+
+  override val entityType: String = "Object"
 
   def getFieldIds(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
     case (acc, JArray(List(JString("field-id"), JInt(fieldId)))) => acc + fieldId
@@ -40,34 +42,35 @@ object MBJson {
   }
 
 
-  def replaceFieldIds(jval: JValue, replacements: BigInt => BigInt): JValue = jval.transform {
-    case JArray(List(JString("field-id"), JInt(fieldId))) => JArray(List(JString("field-id"), JInt(replacements(fieldId))))
+  def replaceFieldIds(jval: JValue, replacements: Map[BigInt, BigInt]): JValue = jval.transform {
+    case JArray(List(JString("field-id"), JInt(fieldId))) =>
+      JArray(List(JString("field-id"), JInt(replacements.getTargetField(fieldId))))
   }
 
 
-  def replaceTableIds(jval: JValue, replacements: BigInt => BigInt) = jval.transform {
+  def replaceTableIds(jval: JValue, replacements: Map[BigInt, BigInt]) = jval.transform {
     case JObject(kvs) if kvs exists isTable => JObject(
       kvs map {
-        case jField @ (k, JInt(id)) if (isTable(jField)) => (k, JInt(replacements(id)))
+        case jField @ (k, JInt(id)) if (isTable(jField)) => (k, JInt(replacements.getTargetTable(id)))
         case other => other
       }
     )
   }
 
 
-  def replaceDatabaseIds(jval: JValue, replacements: BigInt => BigInt) = jval.transform {
+  def replaceDatabaseIds(jval: JValue, replacements: Map[BigInt, BigInt]) = jval.transform {
     case JObject(kvs) if kvs exists isDatabase => JObject(
       kvs map {
-        case jField @ (k, JInt(id)) if (isDatabase(jField)) => (k, JInt(replacements(id)))
+        case jField @ (k, JInt(id)) if (isDatabase(jField)) => (k, JInt(replacements.getTargetDatabase(id)))
         case other => other
       }
     )
   }
 
-  def replaceCardIds(jval: JValue, replacements: BigInt => BigInt) = jval.transform {
+  def replaceCardIds(jval: JValue, replacements: Map[BigInt, BigInt]) = jval.transform {
     case JObject(kvs) if kvs exists isCard => JObject(
       kvs map {
-        case jField @ (k, JInt(id)) if (isCard(jField)) => (k, JInt(replacements(id)))
+        case jField @ (k, JInt(id)) if (isCard(jField)) => (k, JInt(replacements.getTargetCard(id)))
         case other => other
 
       }

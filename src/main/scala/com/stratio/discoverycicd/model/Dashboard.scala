@@ -6,8 +6,11 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.MBJson
+import com.stratio.discoverycicd.utils.{MBJson, ReplacementUtils}
 import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
+import scala.util.Try
+import com.stratio.discoverycicd.utils.ReplacementException
+import org.json4s.native.Serialization.write
 
 case class Dashboard(name: String,
                      description: Option[String],
@@ -19,22 +22,28 @@ case class Dashboard(name: String,
                      collection_id: Option[BigInt],
                      collection_position: Option[BigInt],
                      ordered_cards: List[DashCard],
-                     creator_id: BigInt) {
+                     creator_id: BigInt) extends ReplacementUtils {
 
-  def replaceFieldIds(replacements: BigInt => BigInt): Dashboard = {
+  override val entityType: String = "Dashboard"
+
+  def replaceFieldIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail("Field") {
     copy(ordered_cards = ordered_cards.map(_.replaceFieldIds(replacements)))
   }
 
-  def replaceTableIds(replacements: BigInt => BigInt): Dashboard = {
+  def replaceTableIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail("Table") {
     copy(ordered_cards = ordered_cards.map(_.replaceTableIds(replacements)))
   }
 
-  def replaceDatabaseIds(replacements: BigInt => BigInt): Dashboard = {
+  def replaceDatabaseIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail("Database") {
     copy(ordered_cards = ordered_cards.map(_.replaceDatabaseIds(replacements)))
   }
 
-  def replaceCardIds(replacements: BigInt => BigInt): Dashboard = {
+  def replaceCardIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail("Card") {
     copy(ordered_cards = ordered_cards.map(_.replaceCardIds(replacements)))
+  }
+
+  def replaceCollectionId(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail("Collection") {
+    copy(collection_id = collection_id.map(replacements.getTargetCollection))
   }
 
 
@@ -51,23 +60,30 @@ case class DashCard(id: BigInt,
                     card: MaybeId,
                     series: List[Id],
                     visualization_settings: JValue,
-                    parameter_mappings: JValue) {
+                    parameter_mappings: JValue) extends ReplacementUtils {
 
-  def replaceFieldIds(replacements: BigInt => BigInt): DashCard =
+  override val entityType: String = "DashCard"
+
+  def replaceFieldIds(replacements: Map[BigInt, BigInt]): DashCard = replacementMayFail("Field") {
     copy(parameter_mappings = MBJson.replaceFieldIds(parameter_mappings, replacements))
+  }
 
-  def replaceTableIds(replacements: BigInt => BigInt): DashCard =
+  def replaceTableIds(replacements: Map[BigInt, BigInt]): DashCard = replacementMayFail("Table") {
     copy(parameter_mappings = MBJson.replaceTableIds(parameter_mappings, replacements))
+  }
 
-  def replaceDatabaseIds(replacements: BigInt => BigInt): DashCard =
+  def replaceDatabaseIds(replacements: Map[BigInt, BigInt]): DashCard = replacementMayFail("Database") {
     copy(parameter_mappings = MBJson.replaceDatabaseIds(parameter_mappings, replacements))
+  }
 
-  def replaceCardIds(replacements: BigInt => BigInt): DashCard = copy(
-    card_id = card_id.map(replacements),
-    card = MaybeId(card_id.map(replacements)),
-    series = series.map(cid => Id(replacements(cid.id))),
-    parameter_mappings =  MBJson.replaceCardIds(parameter_mappings, replacements)
-  )
+  def replaceCardIds(replacements: Map[BigInt, BigInt]): DashCard = replacementMayFail("Card") {
+    copy(
+      card_id = card_id.map(replacements.getTargetCard),
+      card = MaybeId(card_id.map(replacements.getTargetCard)),
+      series = series.map(cid => Id(replacements.getTargetCard(cid.id))),
+      parameter_mappings =  MBJson.replaceCardIds(parameter_mappings, replacements)
+    )
+  }
 }
 
 case class DashboardPut(collection_id: Option[BigInt],

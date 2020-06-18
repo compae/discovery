@@ -6,7 +6,7 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.MBJson
+import com.stratio.discoverycicd.utils.{ MBJson, Logging, ReplacementUtils }
 import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
 
 // Card (question) data model. When making GET requests, metabase returns more fields, but these are the
@@ -18,7 +18,15 @@ case class Card(id: BigInt,
                 visualization_settings: JValue,
                 collection_id: Option[BigInt],
                 collection_position: Option[BigInt],
-                dataset_query: JValue) {
+                dataset_query: JValue) extends ReplacementUtils {
+
+  override val entityType = "Card"
+
+  private val isJObject = dataset_query match {
+    case JObject(_) => true
+    case _ => false
+  }
+  assert(isJObject, s"Received Card with invalid dataset_query: $dataset_query")
 
   def withoutId = CardWithoutId(
     name, description, display, visualization_settings,
@@ -31,17 +39,21 @@ case class Card(id: BigInt,
 
   def getDatabaseIds = MBJson.getDatabaseIds(dataset_query)
 
-  def replaceFieldIds(replacements:  BigInt => BigInt): Card =
+  def replaceFieldIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail("Field") {
     copy(dataset_query = MBJson.replaceFieldIds(dataset_query, replacements))
+  }
 
-  def replaceTableIds(replacements:  BigInt => BigInt): Card =
+  def replaceTableIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail("Table") {
     copy(dataset_query = MBJson.replaceTableIds(dataset_query, replacements))
+  }
 
-  def replaceDatabaseIds(replacements: BigInt => BigInt): Card =
+  def replaceDatabaseIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail("Database") {
     copy(dataset_query = MBJson.replaceDatabaseIds(dataset_query, replacements))
+  }
 
-  def replaceCollectionIds(replacements: BigInt => BigInt): Card =
-    copy(collection_id = Some(replacements(collection_id.get)))
+  def replaceCollectionIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail("Collection") {
+    copy(collection_id = Some(replacements.getTargetCollection(collection_id.get)))
+  }
 }
 
 
