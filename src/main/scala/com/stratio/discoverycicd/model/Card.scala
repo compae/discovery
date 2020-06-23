@@ -6,8 +6,10 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.{ MBJson, Logging, ReplacementUtils }
+import com.stratio.discoverycicd.utils.{ MBJson, Logging, ReplacementUtils, MetadataChecksum }
 import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
+import scala.util.Try
+
 
 // Card (question) data model. When making GET requests, metabase returns more fields, but these are the
 // ones we need to later make a POST to create the card in the target metabase
@@ -18,7 +20,8 @@ case class Card(id: BigInt,
                 visualization_settings: JValue,
                 collection_id: Option[BigInt],
                 collection_position: Option[BigInt],
-                dataset_query: JValue) extends ReplacementUtils {
+                dataset_query: JValue,
+                result_metadata: JValue) extends ReplacementUtils {
 
   override val entityType = "Card"
 
@@ -28,9 +31,9 @@ case class Card(id: BigInt,
   }
   assert(isJObject, s"Received Card with invalid dataset_query: $dataset_query")
 
-  def withoutId = CardWithoutId(
+  def toPostDto = CardToPost(
     name, description, display, visualization_settings,
-    collection_id, collection_position, dataset_query
+    collection_id, collection_position, dataset_query, result_metadata, metadata_checksum
   )
 
   def getFieldIds = MBJson.getFieldIds(dataset_query)
@@ -54,14 +57,18 @@ case class Card(id: BigInt,
   def replaceCollectionIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail("Collection") {
     copy(collection_id = Some(replacements.getTargetCollection(collection_id.get)))
   }
+
+  def metadata_checksum = Try(MetadataChecksum(result_metadata)).toOption
 }
 
 
-// To make the post requests we should not include the id
-case class CardWithoutId(name: String,
+// To make the post requests we should not include the id, we also include the metadata_checksum
+case class CardToPost(name: String,
                          description: Option[String],
                          display: String,
                          visualization_settings: JValue,
                          collection_id: Option[BigInt],
                          collection_position: Option[BigInt],
-                         dataset_query: JValue)
+                         dataset_query: JValue,
+                         result_metadata: JValue,
+                         metadata_checksum: Option[String])

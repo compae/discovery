@@ -73,7 +73,7 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
 
   def getCard(cardId: BigInt) = request(s"card/$cardId").as[Card].body
 
-  def createCard(card: CardWithoutId) = request("card").postData(write(card)).as[Card].body
+  def createCard(card: CardToPost) = request("card").postData(write(card)).as[Card].body
 
   def getDatabase(databaseId: BigInt) = request(s"database/$databaseId").as[Database].body
 

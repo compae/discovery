@@ -114,7 +114,7 @@ class Importer(api: ApiClient, strictTableNames: Boolean = true) extends Logging
         .replaceFieldIds(dbMaps.field)
 
       log.debug("Uploading card to Metabase")
-      map + (cardWithTargetIds.id -> api.createCard(cardWithTargetIds.withoutId).id)
+      map + (cardWithTargetIds.id -> api.createCard(cardWithTargetIds.toPostDto).id)
     }
   }
 
