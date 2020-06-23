@@ -15,6 +15,7 @@ case class ExportedCollection(cards: List[Card],
                               databases: List[Database],
                               collection: Collection,
                               children: List[Child],
-                              permissionsPerGroup: Map[GroupName, Permission])
+                              permissionsPerGroup: Map[GroupName, Permission],
+                              humanizationEnabled: Boolean = true)
 
 case class Child(collection: Collection, permissionsPerGroup: Map[GroupName, Permission])

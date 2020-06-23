@@ -9,6 +9,8 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * Add superuser check (Fix from 1.1.1)
 * More informative errors (Fix from 1.1.2)
 * Log steps of import process (Fix from 1.1.2)
+* Do not fetch all fields while importing if humanization of DB names is disabled
+* Create cards sending results_metadata and correct metadata_checksum
 
 ## 1.1.0-c05ce24 (Built: May 20, 2020 | Released: May 20, 2020)
 

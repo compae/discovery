@@ -26,6 +26,7 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
 
   val user = request("user/current").as[User]
   val userId = user.body.id
+  val humanizationEnabled = request("setting/humanization-strategy").asString.body != "none"
 
   def getCollection(collectionId: BigInt) =
     request(s"collection/$collectionId").as[Collection].body

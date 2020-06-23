@@ -31,12 +31,12 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
       }
     } ~
     (path(Segment / ImportSegment) & post) { _ =>
-      parameter(StrictTableNames.as[Boolean].?, ParentId.as[BigInt].?) { (strictTableNames, parentId) =>
+      parameter(ParentId.as[BigInt].?) { parentId =>
         headerValue(extractSessionId) { sessionId =>
           entity(as[ExportedCollection]) { collection =>
             val api = new ApiClient(apiClientConfig.metabaseUrl, Left(sessionId), apiClientConfig.allowUnsafeSsl)
             if(api.user.body.is_superuser) {
-              val importer = new Importer(api, strictTableNames.getOrElse(true))
+              val importer = new Importer(api)
               importer.importCollection(collection, parentId)
               complete(StatusCodes.OK)
             } else {
@@ -52,7 +52,6 @@ object ServerRoutes {
 
   val ExportSegment = "export"
   val ImportSegment = "import"
-  val StrictTableNames = "strictTableNames"
   val ParentId = "parentId"
   val SessionIdHeaderName = "x-metabase-session"
 

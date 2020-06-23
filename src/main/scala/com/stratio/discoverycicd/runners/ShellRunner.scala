@@ -36,7 +36,7 @@ object ShellRunner {
         println("Importing...")
         val source = scala.io.Source.fromFile(config.filePath)
         val collection = read[ExportedCollection](source.reader())
-        val importer = new Importer(api, config.strictTableNames)
+        val importer = new Importer(api)
         importer.importCollection(collection, config.parentId)
         println("...done")
         System.exit(0)

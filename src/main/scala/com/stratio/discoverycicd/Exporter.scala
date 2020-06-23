@@ -11,12 +11,16 @@ import com.stratio.discoverycicd.utils.{ ApiClient, MBJson }
 import org.json4s.{DefaultFormats, Extraction}
 import org.json4s.JsonAST.JValue
 import scala.annotation.tailrec
+import com.stratio.discoverycicd.utils.Logging
 
-class Exporter(api: ApiClient) {
+class Exporter(api: ApiClient) extends Logging {
 
 
   def exportCollection(collectionId: BigInt) = {
     implicit val formats = DefaultFormats
+
+    if (api.humanizationEnabled)
+      log.warn("Metabase seems to have table and field names humanization activated. This will make necessary to get all fields in the DB when importing")
 
     // get collection
     val collection = api.getCollection(collectionId)
@@ -73,7 +77,8 @@ class Exporter(api: ApiClient) {
       databases = databases.toList,
       collection = collection,
       children = children,
-      permissionsPerGroup = permissionsPerGroup
+      permissionsPerGroup = permissionsPerGroup,
+      humanizationEnabled = api.humanizationEnabled
     )
   }
 

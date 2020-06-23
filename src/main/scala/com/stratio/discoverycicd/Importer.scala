@@ -11,7 +11,7 @@ import com.stratio.discoverycicd.utils.TypeAliases._
 import com.stratio.discoverycicd.model._
 import scala.annotation.tailrec
 
-class Importer(api: ApiClient, strictTableNames: Boolean = true) extends Logging {
+class Importer(api: ApiClient) extends Logging {
 
   import Importer._
 
@@ -29,7 +29,7 @@ class Importer(api: ApiClient, strictTableNames: Boolean = true) extends Logging
     val childColls = exportedCollection.children.map(_.collection)
     val childNames = childColls filter { _.parent_id == Some(exportedCollection.collection.id) } map { _.name }
 
-    // create neccesary items while getting the mapping between source and target ids
+    // create necessary items while getting the mapping between source and target ids
     log.debug("Importing root collection from export data")
     val (sourceCollId, targetCollId) = createCollection(exportedCollection.collection, parentCollId, childNames)
 
@@ -200,6 +200,12 @@ class Importer(api: ApiClient, strictTableNames: Boolean = true) extends Logging
   }
 
   def getDbMap(exportedCollection: ExportedCollection) = {
+    if (api.humanizationEnabled)
+      log.warn("Metabase seems to have table and field names humanization activated. This will make necessary to get all fields in the DBs when importing")
+    if (exportedCollection.humanizationEnabled)
+      log.warn("Export data was taken in a Metabase with humanization for table and field names activated. This will make necessary to get all fields in the DBs when importing")
+    val needAllFields = api.humanizationEnabled || exportedCollection.humanizationEnabled
+
     val databases = allDatabases filter { db => exportedCollection.databases exists (_ isTheSameAs db) }
     assert(exportedCollection.databases.size == databases.size,
            "Some of the needed databases to perform the import are not found in the target metabase")
@@ -213,18 +219,16 @@ class Importer(api: ApiClient, strictTableNames: Boolean = true) extends Logging
     val fields =
       if (exportedCollection.fields.isEmpty) List.empty
       else for {
-        db <- databases
-        dbFieldDto <- if (strictTableNames) api.getFieldsInDb(db.id)
-        // TODO: this below is not working as expected. Check it.
-        // For now we do not optimize and always use stric table names
-        else api.getFieldsInDb(db.id) filter {
-          x => exportedCollection.fields exists (_.isSimilarTo(x, db.name))
-        }
-        fieldDto = api.getField(dbFieldDto.id)
+        db            <- databases
+        dbFieldDto    <- if (needAllFields) api.getFieldsInDb(db.id)
+                         else api.getFieldsInDb(db.id) filter {
+                           x => exportedCollection.fields exists (_.isTheSameAs(x, db.name))
+                         }
+        fieldDto       = api.getField(dbFieldDto.id)
         // we may not have the table in the map if the table happens to be inactive
         actualTableMap = if (id2Table contains fieldDto.table_id) id2Table
-        else Map(fieldDto.table_id -> api.getTable(fieldDto.table_id).toTable(dbId2Name))
-        field = fieldDto.toField(actualTableMap)
+                         else Map(fieldDto.table_id -> api.getTable(fieldDto.table_id).toTable(dbId2Name))
+        field          = fieldDto.toField(actualTableMap)
         if exportedCollection.fields exists (_ isTheSameAs field)
       } yield field
 
