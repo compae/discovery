@@ -2,7 +2,11 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 1.2.0 (upcoming)
+## 1.3.0 (upcoming)
+
+* Pending changelog
+
+## 1.2.0-e81eb29 (Built: June 23, 2020 | Pre-release)
 
 * Fix visualization settings in dahscards (Fix from 1.1.1)
 * Fix text cards in exported dashboards (Fix from 1.1.1)
