@@ -31,13 +31,14 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
       }
     } ~
     (path(Segment / ImportSegment) & post) { _ =>
-      parameter(ParentId.as[BigInt].?) { parentId =>
+      // It seems that unmarshalling directly to BigInt does not work
+      parameter(ParentId.as[Long].?) { parentId =>
         headerValue(extractSessionId) { sessionId =>
           entity(as[ExportedCollection]) { collection =>
             val api = new ApiClient(apiClientConfig.metabaseUrl, Left(sessionId), apiClientConfig.allowUnsafeSsl)
             if(api.user.body.is_superuser) {
               val importer = new Importer(api)
-              importer.importCollection(collection, parentId)
+              importer.importCollection(collection, parentId.map(BigInt.apply))
               complete(StatusCodes.OK)
             } else {
               complete(StatusCodes.Unauthorized, unauthorizedReason(sessionId))
