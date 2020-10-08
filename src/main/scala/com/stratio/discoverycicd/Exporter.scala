@@ -7,11 +7,14 @@
 package com.stratio.discoverycicd
 
 import com.stratio.discoverycicd.model._
-import com.stratio.discoverycicd.utils.{ ApiClient, MBJson }
+import com.stratio.discoverycicd.utils.{ApiClient, MBJson}
 import org.json4s.{DefaultFormats, Extraction}
 import org.json4s.JsonAST.JValue
+
 import scala.annotation.tailrec
 import com.stratio.discoverycicd.utils.Logging
+
+import scala.util.Try
 
 class Exporter(api: ApiClient) extends Logging {
 
@@ -23,7 +26,10 @@ class Exporter(api: ApiClient) extends Logging {
       log.warn("Metabase seems to have table and field names humanization activated. This will make necessary to get all fields in the DB when importing")
 
     // get collection
-    val collection = api.getCollection(collectionId)
+    val collection =
+      Try{
+        api.getCollection(collectionId)
+      }.getOrElse(throw new Exception(s"An error occurred getting the collection:$collectionId. Please, check logs."))
 
     // get cards and dashboards in collection
     val items = itemsInCollAndSubColls(collectionId)
@@ -58,9 +64,13 @@ class Exporter(api: ApiClient) extends Logging {
     val groupIdToName = api.getGroupIdToNameMap
     val collectionGraph = api.getCollectionGraph
     // of parent collection
-    val permissionsPerGroup = collectionGraph.groups.map {
-      case (gId, map) => (groupIdToName(gId), map(collectionId.toString))
-    }
+    val permissionsPerGroup =
+    Try {
+      collectionGraph.groups.map {
+        case (gId, map) => (groupIdToName(gId), map(collectionId.toString))
+      }
+    }.getOrElse(throw new Exception(s"An error occurred getting the permissions per group of collection:$collectionId. Please, check logs."))
+
     // of children
     val children = subCollections map { coll =>
       val permissionsPerGroup = collectionGraph.groups.map {

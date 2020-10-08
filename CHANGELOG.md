@@ -5,6 +5,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 1.3.0 (upcoming)
 
 * Fix: Cannot pass parentId query param to import endpoint
+* Fix: Handled exceptions via API
 
 ## 1.2.0-e81eb29 (Built: June 23, 2020 | Released: June 29, 2020)
 
