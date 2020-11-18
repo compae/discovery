@@ -1,7 +1,7 @@
 # Version History
 
 
-#### 1.3.0-cae6686 (Built: October 08, 2020 | Pre-release)
+#### 1.3.0-ad5b204 (Built: November 18, 2020 | Pre-release)
 
 #### 1.2.1-1570d16 (Built: July 23, 2020 | Released: July 23, 2020)
 
