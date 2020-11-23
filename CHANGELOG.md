@@ -6,7 +6,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 * Pending changelog
 
-## 1.3.0-5ad831f (Built: November 20, 2020 | Pre-release)
+## 1.3.0-5ad831f (Built: November 20, 2020 | Released: November 23, 2020)
 
 * Fix: Cannot pass parentId query param to import endpoint
 * Fix: Handled exceptions via API
