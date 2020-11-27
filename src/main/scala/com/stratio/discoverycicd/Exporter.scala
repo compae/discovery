@@ -126,7 +126,7 @@ class Exporter(api: ApiClient) extends Logging {
 
   def getDashboards(dashboardIds: List[BigInt]) = dashboardIds map api.getDashboard
 
-  def getCards(cardIds: List[BigInt]) = cardIds map api.getCard
+  def getCards(cardIds: List[BigInt]) = cardIds.map(api.getCard).map(_.cleanDescription)
 
   def getCollections(collIds: List[BigInt]) = collIds map api.getCollection
 

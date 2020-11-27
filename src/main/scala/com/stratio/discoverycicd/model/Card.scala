@@ -59,6 +59,11 @@ case class Card(id: BigInt,
   }
 
   def metadata_checksum = Try(MetadataChecksum(result_metadata)).toOption
+
+  def cleanDescription = description match {
+    case Some(description) if description.trim.isEmpty => copy(description = None)
+    case _ => this
+  }
 }
 
 
