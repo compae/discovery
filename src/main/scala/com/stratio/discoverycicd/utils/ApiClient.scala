@@ -7,13 +7,23 @@
 package com.stratio.discoverycicd.utils
 
 import com.stratio.discoverycicd.model._
+import com.stratio.discoverycicd.utils.ApiClient._
 import com.stratio.discoverycicd.utils.ImplicitExtensions.HttpRequestExtension
 import org.json4s.DefaultFormats
 import org.json4s.native.Serialization.write
 import scalaj.http._
 
+import scala.concurrent.duration.Duration
+import scala.util.Try
 
-class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,String)], allowUnsafeSsl: Boolean = false) {
+object ApiClient {
+  val DefaultTimeout = 10000
+}
+
+class ApiClient(metabaseUrl: String,
+                sessionIdParams: Either[String, (String,String)],
+                allowUnsafeSsl: Boolean = false,
+                timeout: String) {
 
   implicit val formats = DefaultFormats
 
@@ -23,6 +33,8 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
     "content-type" -> "application/json",
     "X-Metabase-Session" -> sessionId
   )
+
+  val connectionAndReadTimeout: Int = Try(Duration(timeout).toMillis.toInt).getOrElse(DefaultTimeout)
 
   val user = request("user/current").as[User]
   val userId = user.body.id
@@ -102,7 +114,7 @@ class ApiClient(metabaseUrl: String, sessionIdParams: Either[String, (String,Str
   def getGroupNameToIdMap = getGroupIdToNameMap.map(_.swap)
 
   def request(apiPath: String): HttpRequest = {
-    val safeRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers)
+    val safeRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers).timeout(connectionAndReadTimeout, connectionAndReadTimeout)
     if (allowUnsafeSsl) safeRequest.option(HttpOptions.allowUnsafeSSL) else safeRequest
   }
 

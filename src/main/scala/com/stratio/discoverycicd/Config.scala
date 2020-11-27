@@ -17,7 +17,8 @@ case class Config(action: Option[Action] = None,
                   user: String = "",
                   password: String = "",
                   metabaseUrl: String = "http://localhost:3000",
-                  allowUnsafeSsl: Boolean = false) {
+                  allowUnsafeSsl: Boolean = false,
+                  timeout: String = "10s") {
 
   def isValid: Boolean = {
     val validCollId = action match {
@@ -58,6 +59,11 @@ object Config {
       .text("URL of the metabase instance")
       .optional()
       .action((url, cfg) => cfg.copy(metabaseUrl = url))
+
+    opt[String]("timeout")
+      .text("Connection timeout of the metabase api")
+      .optional()
+      .action((timeout, cfg) => cfg.copy(timeout = timeout))
 
     opt[Unit]("allow-unsafe-ssl")
       .text("Allow to make requests to Metabase wihtout verifying SSL certificates")

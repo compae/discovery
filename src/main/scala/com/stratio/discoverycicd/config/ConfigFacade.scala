@@ -1,8 +1,8 @@
 package com.stratio.discoverycicd.config
 
+import com.stratio.discoverycicd.utils.ApiClient
 import com.typesafe.config.ConfigFactory
 import pureconfig.ConfigSource
-
 import enumeratum._
 import pureconfig.generic.auto._
 import pureconfig.module.enumeratum._
@@ -32,7 +32,8 @@ object ConfigFacade {
                           truststorePasswordEnv: String)
 
   case class ApiClientConfig(metabaseUrl: String,
-                             allowUnsafeSsl: Boolean)
+                             allowUnsafeSsl: Boolean,
+                             timeout: String)
 
   lazy val serverConfig = ConfigSource.fromConfig(config.getConfig(ServerPath)).loadOrThrow[ServerConfig]
   lazy val apiClientConfig = ConfigSource.fromConfig(config.getConfig(ApiClientPath)).loadOrThrow[ApiClientConfig]

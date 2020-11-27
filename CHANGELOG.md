@@ -10,7 +10,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 * Fix: Cannot pass parentId query param to import endpoint
 * Fix: Handled exceptions via API
-* Add configurable akka http server and metabase client timeout variables
+* Add configurable akka and metabase timeout variables
 * Fix: Clean empty-string descriptions in cards
 
 ## 1.2.0-e81eb29 (Built: June 23, 2020 | Released: June 29, 2020)

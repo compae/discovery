@@ -18,7 +18,13 @@ object ShellRunner {
     val config = parser.parse(args, Config()).getOrElse{ System.exit(1); initialConf }
     assert(config.isValid, "Provided parameters are not valid")
 
-    val api = new ApiClient(config.metabaseUrl, Right((config.user, config.password)), config.allowUnsafeSsl)
+    val api =
+      new ApiClient(
+        config.metabaseUrl,
+        Right((config.user, config.password)),
+        config.allowUnsafeSsl,
+        config.timeout
+      )
 
     config.action match {
       case Some(Action.Export) =>

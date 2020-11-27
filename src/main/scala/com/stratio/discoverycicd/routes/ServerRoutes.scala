@@ -23,7 +23,13 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
     handleExceptions(exceptionHandler) {
       (path(Segment / ExportSegment / Segment) & get) { (_, id) =>
         headerValue(extractSessionId) { sessionId =>
-          val api = new ApiClient(apiClientConfig.metabaseUrl, Left(sessionId), apiClientConfig.allowUnsafeSsl)
+          val api =
+            new ApiClient(
+              apiClientConfig.metabaseUrl,
+              Left(sessionId),
+              apiClientConfig.allowUnsafeSsl,
+              apiClientConfig.timeout
+            )
           if (api.user.body.is_superuser) {
             val exporter = new Exporter(api)
             complete(exporter.exportCollection(BigInt(id)))
@@ -37,7 +43,13 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
           parameter(ParentId.as[Long].?) { parentId =>
             headerValue(extractSessionId) { sessionId =>
               entity(as[ExportedCollection]) { collection =>
-                val api = new ApiClient(apiClientConfig.metabaseUrl, Left(sessionId), apiClientConfig.allowUnsafeSsl)
+                val api =
+                  new ApiClient(
+                    apiClientConfig.metabaseUrl,
+                    Left(sessionId),
+                    apiClientConfig.allowUnsafeSsl,
+                    apiClientConfig.timeout
+                  )
                 if (api.user.body.is_superuser) {
                   val importer = new Importer(api)
                   importer.importCollection(collection, parentId.map(BigInt.apply))
