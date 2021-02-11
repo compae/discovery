@@ -1,0 +1,4 @@
+{:paths ["src"]
+
+ :deps
+ {build-drivers/build-drivers {:local/root "../build-drivers"}}}
