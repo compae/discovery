@@ -8,6 +8,7 @@ hose {
     BUILDTOOLVERSION = '3.6.2'
     DEPLOYONPRS = true
     ANCHORE_TEST = false
+    FREESTYLE_BRANCHING = true
 
     DEV = { config ->
         doPackage(config)
