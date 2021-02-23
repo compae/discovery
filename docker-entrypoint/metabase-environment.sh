@@ -53,8 +53,7 @@ MB_JETTY_SSL_TRUSTSTORE_PASSWORD="$TRUSTSTORE_PASSWORD"
 # can access the server from outside the container
 MB_JETTY_HOST="127.0.0.1"
 
-# Authorization is metabase native or managed by the proxy?
-if [ "$USE_GOSEC_SSO_AUTH" == "true" ]; then
+if [ "$AUTHENTICATOR" = "gosec-sso" ]; then
     # we need to set the auth headers that the oauth-proxy will send us down
     # note that the header map in metabase is always lowercase
     MB_USER_HEADER="x-dcos-oauth-user"
@@ -91,8 +90,6 @@ fi
 
 DEBUG "Using these JAVA_OPTS: ${JAVA_OPTS}"
 
-MB_EMOJI_IN_LOGS="false"
-
 
 
 ###################################
@@ -107,5 +104,13 @@ echo "$MB_JETTY_SSL_TRUSTSTORE_PASSWORD" > /env_vars/MB_JETTY_SSL_TRUSTSTORE_PAS
 echo "$MB_JETTY_HOST"                    > /env_vars/MB_JETTY_HOST
 echo "$MB_USER_HEADER"                   > /env_vars/MB_USER_HEADER
 echo "$MB_GROUP_HEADER"                  > /env_vars/MB_GROUP_HEADER
-echo "$MB_EMOJI_IN_LOGS"                 > /env_vars/MB_EMOJI_IN_LOGS
 echo "$JAVA_OPTIONS"                     > /env_vars/JAVA_OPTIONS
+echo "$AUTHENTICATOR"                    > /env_vars/AUTHENTICATOR
+
+# some default metabase settings we want to set TODO: set site url from vhost and vpath
+echo "none"                              > /env_vars/MB_HUMANIZATION_STRATEGY
+echo "false"                             > /env_vars/MB_EMOJI_IN_LOGS
+echo "false"                             > /env_vars/MB_ANON_TRACKING_ENABLED
+if [ -n "$SERVICE_URL" ]; then
+    echo "$SERVICE_URL" > /env_vars/MB_SITE_URL
+fi
