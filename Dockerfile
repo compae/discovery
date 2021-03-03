@@ -82,9 +82,9 @@ RUN chmod a+rwx /plugins
 ################################
 ###  PROMETHEUS, LOGS, CICD  ###
 ################################
-# TODO prometheus integration
-# COPY --from=builder /app/source/bin/prometheus/config.yaml /app/target/uberjar/
-# COPY --from=builder /app/source/bin/prometheus/jmx_prometheus_javaagent-0.12.0.jar_temp /app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar
+# Download prometheus jar
+RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar \
+    http://sodio.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
 
 # TODO stratio logs integration
 # COPY --from=builder /app/source/resources/log4j2.xml /app/target/log/

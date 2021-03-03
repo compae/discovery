@@ -82,11 +82,10 @@ if [ "$JMX" ]; then
     JAVA_OPTS="$JAVA_OPTS $JMX"
 fi
 
-# TODO: prometheus
-# if [ "$PROMETHEUS_METRICS_ENABLE" = "true" ] ; then
-#     PROMETHEUS_METRICS_PORT="${PROMETHEUS_METRICS_PORT:-6080}"
-#     JAVA_OPTS="$JAVA_OPTS -javaagent:/app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar=$PROMETHEUS_METRICS_PORT:/app/target/uberjar/config.yaml"
-# fi
+if [ "$PROMETHEUS_METRICS_ENABLE" = "true" ] ; then
+    PROMETHEUS_METRICS_PORT="${PROMETHEUS_METRICS_PORT:-6080}"
+    JAVA_OPTS="$JAVA_OPTS -javaagent:/app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar=$PROMETHEUS_METRICS_PORT:/app/target/uberjar/config.yaml"
+fi
 
 DEBUG "Using these JAVA_OPTS: ${JAVA_OPTS}"
 
