@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+source /usr/local/lib/b-log.sh
+
+DOCKER_LOG_LEVEL=${DOCKER_LOG_LEVEL:-INFO}
+eval LOG_LEVEL_${DOCKER_LOG_LEVEL}
+B_LOG --stdout true # enable logging over stdout
+
 # Datio compatibility
 if [[ "$TENANT_NAME" != "" ]]; then
   export DISCOVERY_INSTANCE_NAME="$TENANT_NAME"

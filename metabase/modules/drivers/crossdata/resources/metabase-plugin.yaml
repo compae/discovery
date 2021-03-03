@@ -1,0 +1,40 @@
+info:
+  name: Metabase Crossdata Driver
+  version: 1.0.0-SNAPSHOT-7.0.0-jre8
+  description: Allows Metabase to connect to Crossdata databases.
+
+driver:
+  name: crossdata
+  display-name: Stratio Crossdata
+  lazy-load: true
+  parent: sql-jdbc
+  connection-properties:
+    - merge:
+      - host
+      - placeholder: localhost
+
+    - merge:
+        - port
+        - default: 8000
+
+    - user
+
+    - name: impersonate
+      display-name: Connect with Discovery login user?
+      default: false
+      type: boolean
+
+    - name: ssl-option
+      display-name: Use a secure connection (SSL)?
+      default: false
+      type: boolean
+
+    - merge:
+        - additional-options
+        - placeholder: "prepareThreshold = 0"
+
+init:
+  - step: load-namespace
+    namespace: metabase.driver.crossdata
+  - step: register-jdbc-driver
+    class: com.stratio.jdbc.core.jdbc4.StratioDriver

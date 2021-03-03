@@ -9,5 +9,5 @@ crossdata_conf_file=/etc/sds/crossdata/shell/driver-application.conf
     echo 'crossdata-driver.akka-http.ssl.keystore = "/etc/pki/discovery.jks"';
     echo "crossdata-driver.akka-http.ssl.keystore-password = ${KEYSTORE_PASSWORD}";
     echo 'crossdata-driver.akka-http.ssl.truststore = "/etc/pki/ca-bundle.jks"';
-    echo "crossdata-driver.akka-http.ssl.truststore = ${TRUSTSTORE_PASSWORD}";
+    echo "crossdata-driver.akka-http.ssl.truststore-password = ${TRUSTSTORE_PASSWORD}";
 } > $crossdata_conf_file

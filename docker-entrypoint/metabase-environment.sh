@@ -107,6 +107,7 @@ echo "$JAVA_OPTIONS"                     > /env_vars/JAVA_OPTIONS
 echo "$AUTHENTICATOR"                    > /env_vars/AUTHENTICATOR
 
 # some default metabase settings we want to set TODO: set site url from vhost and vpath
+echo "/plugins"                          > /env_vars/MB_PLUGINS_DIR
 echo "none"                              > /env_vars/MB_HUMANIZATION_STRATEGY
 echo "false"                             > /env_vars/MB_EMOJI_IN_LOGS
 echo "false"                             > /env_vars/MB_ANON_TRACKING_ENABLED

@@ -10,20 +10,19 @@ WORKDIR /app/source
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
 
-# TODO: uncomment to build drivers once we fix crossdata and stratiopostgres drivers
 # Add drivers source code and script to calculate correct metabase checksum
-# # (so the driver build proccess does not trigger a metabase rebuild)
-# ADD ./metabase/modules /app/source/modules
-# ADD ./metabase/bin     /app/source/bin
+# (so the driver build proccess does not trigger a metabase rebuild)
+ADD ./metabase/modules /app/source/modules
+ADD ./metabase/bin     /app/source/bin
 
-# # write checksum file so drivers build does not trigger metabase build
-# RUN bin/write-mb-checksum.sh
+# write checksum file so drivers build does not trigger metabase build
+RUN bin/write-mb-checksum.sh
 
-# # build the drivers
-# # Uncomment below to be able to resolve niquel.int.stratio.con in local builds (needed to build crossdata driver)
-# # RUN echo -e "search stratio.com\nnameserver 10.120.0.42\nnameserver 172.19.0.42\n" >> /etc/resolv.conf \
-# #   && bin/build-drivers.sh
-# RUN bin/build-drivers.sh
+# build the drivers
+# Uncomment below to be able to resolve niquel.int.stratio.con in local builds (needed to build crossdata driver)
+# RUN echo -e "search stratio.com\nnameserver 10.120.0.42\nnameserver 172.19.0.42\n" >> /etc/resolv.conf \
+#   && bin/build-drivers.sh
+RUN bin/build-drivers.sh
 
 
 
@@ -75,8 +74,7 @@ RUN mkdir -p /plugins
 RUN chmod a+rwx /plugins
 
 # add stratio drivers jars to plugins folder
-# TODO: uncomment once we have drivers
-# COPY --from=builder /app/source/resources/modules/* /plugins/
+COPY --from=builder /app/source/resources/modules/* /plugins/
 
 
 ################################
