@@ -67,9 +67,10 @@ fi
 JAVA_OPTS="$JAVA_OPTS -XX:+IgnoreUnrecognizedVMOptions" # Don't barf if we see an option we don't understand (e.g. Java 9 option on Java 7/8)
 JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"         # don't try to start AWT. Not sure this does anything but better safe than wasting memory
 JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"            # Use UTF-8
-# TODO: stratio logs
-# JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=target/log/log4j2.xml"
 JAVA_OPTS="$JAVA_OPTS --XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+
+# Stratio log format
+JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=/app/target/log4j2.xml"
 
 if [ -n "$MAX_HEAP" ]; then
     JAVA_OPTS="$JAVA_OPTS -Xmx$MAX_HEAP"
@@ -103,10 +104,10 @@ echo "$MB_JETTY_SSL_TRUSTSTORE_PASSWORD" > /env_vars/MB_JETTY_SSL_TRUSTSTORE_PAS
 echo "$MB_JETTY_HOST"                    > /env_vars/MB_JETTY_HOST
 echo "$MB_USER_HEADER"                   > /env_vars/MB_USER_HEADER
 echo "$MB_GROUP_HEADER"                  > /env_vars/MB_GROUP_HEADER
-echo "$JAVA_OPTIONS"                     > /env_vars/JAVA_OPTIONS
+echo "$JAVA_OPTS"                        > /env_vars/JAVA_OPTS
 echo "$AUTHENTICATOR"                    > /env_vars/AUTHENTICATOR
 
-# some default metabase settings we want to set TODO: set site url from vhost and vpath
+# some default metabase settings we want to set
 echo "/plugins"                          > /env_vars/MB_PLUGINS_DIR
 echo "none"                              > /env_vars/MB_HUMANIZATION_STRATEGY
 echo "false"                             > /env_vars/MB_EMOJI_IN_LOGS

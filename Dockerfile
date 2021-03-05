@@ -84,8 +84,7 @@ COPY --from=builder /app/source/resources/modules/* /plugins/
 RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar \
     http://sodio.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
 
-# TODO stratio logs integration
-# COPY --from=builder /app/source/resources/log4j2.xml /app/target/log/
+COPY log4j2.xml /app/target/log4j2.xml
 
 # add discovery-cicd jar
 # VERSION arg injected by jenkins (to build locally add --build-arg VERSION=$(cat VERSION))

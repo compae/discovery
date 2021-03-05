@@ -8,6 +8,7 @@ hose {
     BUILDTOOLVERSION = '3.6.2'
     DEPLOYONPRS = true
     ANCHORE_TEST = false
+    ANCHORE_POLICY = 'discovery'
     FREESTYLE_BRANCHING = true
 
     DEV = { config ->
