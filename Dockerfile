@@ -3,7 +3,7 @@
 # ###############################################################################################
 
 # TODO: change SNAPSHOT after metabase-builder release!
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.38.0-0.1.0-SNAPSHOT as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.38.1-0.1.0-SNAPSHOT as builder
 
 WORKDIR /app/source
 
