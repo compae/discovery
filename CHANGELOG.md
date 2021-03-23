@@ -2,9 +2,9 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 1.4.0 (upcoming)
+## 0.38.1-0.1 (upcoming)
 
-* Pending changelog
+* New arrangement of the modules: The discovery docker image is now built in this repository
 
 ## 1.3.0-5ad831f (Built: November 20, 2020 | Released: November 23, 2020)
 
