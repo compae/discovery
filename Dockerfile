@@ -3,7 +3,7 @@
 # ###############################################################################################
 
 # TODO: change SNAPSHOT after metabase-builder release!
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.38.1-0.1.0-SNAPSHOT as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.38.1-0.1.0-43ae714 as builder
 
 WORKDIR /app/source
 
@@ -67,8 +67,6 @@ COPY --from=builder /etc/ssl/certs/java/cacerts /usr/local/jdk1.8.0_131/jre/lib/
 RUN mkdir -p bin target/uberjar
 COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
 
-ARG VERSION
-
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins
 RUN chmod a+rwx /plugins
@@ -87,8 +85,7 @@ RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar
 COPY log4j2.xml /app/target/log4j2.xml
 
 # add discovery-cicd jar
-# VERSION arg injected by jenkins (to build locally add --build-arg VERSION=$(cat VERSION))
-COPY discovery-cicd/target/discoverycicd-$VERSION-uber.jar /app/target/uberjar/discovery-cicd.jar
+COPY discovery-cicd/target/discoverycicd-*-uber.jar /app/target/uberjar/discovery-cicd.jar
 
 
 ################################

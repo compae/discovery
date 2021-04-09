@@ -7,8 +7,9 @@ hose {
     NEW_VERSIONING = 'true'
     BUILDTOOLVERSION = '3.6.2'
     DEPLOYONPRS = true
-    ANCHORE_TEST = false
+    ANCHORE_TEST = true
     ANCHORE_POLICY = 'discovery'
+    UPSTREAM_VERSION = '0.38.1'
     FREESTYLE_BRANCHING = true
 
     DEV = { config ->
@@ -18,7 +19,7 @@ hose {
             conf : config,
             dockerImages :[
                 [
-                    image : "stratio-metabase",
+                    image : "discovery",
                     dockerfile : "Dockerfile",
                     conf : config
                 ]
