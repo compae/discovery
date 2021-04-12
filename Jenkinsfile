@@ -8,6 +8,7 @@ hose {
     BUILDTOOLVERSION = '3.6.2'
     DEPLOYONPRS = true
     ANCHORE_TEST = true
+    PKGMODULESNAMES = ['discovery']
     ANCHORE_POLICY = 'discovery'
     UPSTREAM_VERSION = '0.38.1'
     FREESTYLE_BRANCHING = true

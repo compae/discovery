@@ -10,11 +10,11 @@
       "tcp": [],
       "http": [
         {
-          "gracePeriodSeconds": 10,
+          "gracePeriodSeconds": 200,
           "ignoreHttp1xx": false,
           "intervalSeconds": 60,
           "maxConsecutiveFailures": 1,
-          "timeoutSeconds": 200,
+          "timeoutSeconds": 10,
           "delaySeconds": 15,
           "protocol": "HTTP",
           "path": "/api/health",
@@ -682,7 +682,7 @@
                     "readonly": false,
                     "application": false,
                     "level": 1,
-                    "internalname": "USE_GROUP_WHITELIST",
+                    "internalName": "USE_GROUP_WHITELIST",
                     "ui": {
                       "updatable": true
                     },
@@ -695,7 +695,7 @@
                     "readonly": false,
                     "application": false,
                     "level": 1,
-                    "internalname": "ALLOWED_GROUPS",
+                    "internalName": "ALLOWED_GROUPS",
                     "ui": {
                       "updatable": true,
                       "visible": {
