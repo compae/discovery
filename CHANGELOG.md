@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.38.1-0.1.0 (upcoming)
+## 0.38.1-0.1.0 (April 12, 2021)
 
 * New arrangement of the modules: The discovery docker image is now built in this repository
 
