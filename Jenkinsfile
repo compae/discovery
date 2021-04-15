@@ -18,10 +18,10 @@ hose {
     DEV = { config ->
         doPackage(config)
         doSsh(config, [onPr: true, regex: "deployment/CCT/descriptors/.*",
-                       remoteFolder: "rocketqa/CCT/discovery/${config.INTERNAL_VERSION}/descriptors",
+                       remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/descriptors",
                        remoteServer: "rocketqa.int.stratio.com", onPr: false, type: "push"], true)
         doSsh(config, [onPr: true, regex: "deployment/CCT/rules/.*",
-                       remoteFolder: "rocketqa/CCT/discovery/${config.INTERNAL_VERSION}/rules",
+                       remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/rules",
                        remoteServer: "rocketqa.int.stratio.com", onPr: false, type: "push"], true)
         doDeploy(config)
         doDockers(
