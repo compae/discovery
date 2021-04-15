@@ -1217,9 +1217,9 @@
             "required": false,
             "readOnly": false,
             "application": false,
-            "level": 2,
+            "level": 1,
             "internalName": "DISCOVERY_CICD_JAVA_OPTIONS",
-            "title": "CI/CD Java options.",
+            "title": "Java options for the Import/Export collections service.",
             "default": "-Xmx1024m"
           },
           "cicdApiMetabaseTimeout": {
