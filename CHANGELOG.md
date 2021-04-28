@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.38.1-0.1.1 (upcoming)
+
+* Update metabase-builder to 0.38.1-0.1.1 (fix uppercase names and delete old session cookies)
+
 ## 0.38.1-0.1.0 (April 12, 2021)
 
 * New arrangement of the modules: The discovery docker image is now built in this repository
