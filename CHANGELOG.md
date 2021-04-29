@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.38.1-0.1.1 (upcoming)
+## 0.38.1-0.1.1 (April 29, 2021)
 
 * Update metabase-builder to 0.38.1-0.1.1 (fix uppercase names and delete old session cookies)
 
