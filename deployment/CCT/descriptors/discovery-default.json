@@ -68,7 +68,7 @@
       "runners": [
         {
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.38.1-0.1.0",
+          "image": "${eos.dockerRegistry}/discovery:0.38.1-0.1.1",
           "forcePullImage": false,
           "privileged": false,
           "parameters": [
@@ -957,48 +957,6 @@
                 ],
                 "default": "DEBUG"
               },
-              "modelPermissionsLogLevel": {
-                "description": "Log level of the model permissions.",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "MODELPERMISSIONS_LOG_LEVEL",
-                "title": "Model permissions log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
-              "queryProcessorPermissionsLogLevel": {
-                "description": "Log level of query processor permissions .",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "QUERYPROCESSORPERMISIONS_LOG_LEVEL",
-                "title": "Query processor permissions log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
               "queryProcessorLogLevel": {
                 "description": "Log level of query processor.",
                 "type": "string",
@@ -1031,27 +989,6 @@
                 "level": 1,
                 "internalName": "SYNC_LOG_LEVEL",
                 "title": "Sync tasks log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
-              "fieldValuesLogLevel": {
-                "description": "Log level of the field values.",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "FIELDVALUES_LOG_LEVEL",
-                "title": "Field values log level",
                 "enum": [
                   "TRACE",
                   "DEBUG",
@@ -1104,27 +1041,6 @@
                 ],
                 "default": "DEBUG"
               },
-              "pluginsLogLevel": {
-                "description": "Log level of external plugins.",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "PLUGINS_LOG_LEVEL",
-                "title": "Plugins log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
               "stratioLogLevel": {
                 "description": "Log level of stratio namespaces.",
                 "type": "string",
@@ -1144,7 +1060,7 @@
                   "ERROR",
                   "FATAL"
                 ],
-                "default": "INFO"
+                "default": "DEBUG"
               },
               "mchangeLogLevel": {
                 "description": "Log level of mchange.",
@@ -1166,6 +1082,27 @@
                   "FATAL"
                 ],
                 "default": "ERROR"
+              },
+              "discoverycicdLogLevel": {
+                "description": "Log level of the import/export collections service",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERYCICD_LOG_LEVEL",
+                "title": "Discover CI/CD log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "INFO"
               }
             },
             "required": []

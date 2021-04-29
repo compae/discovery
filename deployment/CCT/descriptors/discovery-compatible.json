@@ -69,7 +69,7 @@
       "runners": [
         {
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.38.1-0.1.0",
+          "image": "${eos.dockerRegistry}/discovery:0.38.1-0.1.1",
           "forcePullImage": false,
           "privileged": false,
           "parameters": [
@@ -1005,48 +1005,6 @@
                 ],
                 "default": "DEBUG"
               },
-              "modelPermissionsLogLevel": {
-                "description": "Log level of the model permissions.",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "MODELPERMISSIONS_LOG_LEVEL",
-                "title": "Model permissions log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
-              "queryProcessorPermissionsLogLevel": {
-                "description": "Log level of query processor permissions .",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "QUERYPROCESSORPERMISIONS_LOG_LEVEL",
-                "title": "Query processor permissions log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
               "queryProcessorLogLevel": {
                 "description": "Log level of query processor.",
                 "type": "string",
@@ -1079,27 +1037,6 @@
                 "level": 1,
                 "internalName": "SYNC_LOG_LEVEL",
                 "title": "Sync tasks log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
-              "fieldValuesLogLevel": {
-                "description": "Log level of the field values.",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "FIELDVALUES_LOG_LEVEL",
-                "title": "Field values log level",
                 "enum": [
                   "TRACE",
                   "DEBUG",
@@ -1152,27 +1089,6 @@
                 ],
                 "default": "DEBUG"
               },
-              "pluginsLogLevel": {
-                "description": "Log level of external plugins.",
-                "type": "string",
-                "maxLength": 100,
-                "minLength": 3,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "PLUGINS_LOG_LEVEL",
-                "title": "Plugins log level",
-                "enum": [
-                  "TRACE",
-                  "DEBUG",
-                  "INFO",
-                  "WARN",
-                  "ERROR",
-                  "FATAL"
-                ],
-                "default": "INFO"
-              },
               "stratioLogLevel": {
                 "description": "Log level of stratio namespaces.",
                 "type": "string",
@@ -1192,7 +1108,7 @@
                   "ERROR",
                   "FATAL"
                 ],
-                "default": "INFO"
+                "default": "DEBUG"
               },
               "mchangeLogLevel": {
                 "description": "Log level of mchange.",
@@ -1214,48 +1130,30 @@
                   "FATAL"
                 ],
                 "default": "ERROR"
+              },
+              "discoverycicdLogLevel": {
+                "description": "Log level of the import/export collections service",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERYCICD_LOG_LEVEL",
+                "title": "Discover CI/CD log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "INFO"
               }
             },
             "required": []
-          }
-          "useGosecSsoAuth": {
-            "description": "Whether to enable or disable authentication via Gosec SSO",
-            "type": "boolean",
-            "readOnly": false,
-            "application": false,
-            "level": 1,
-            "internalName": "USE_GOSEC_SSO_AUTH",
-            "ui": {
-              "updatable": false
-            },
-            "title": "Enable Gosec SSO authentication",
-            "default": true
-          },
-          "serviceURL": {
-            "description": "Public facing url of the service",
-            "type": "string",
-            "readOnly": true,
-            "application": false,
-            "level": 2,
-            "internalName": "SERVICE_URL",
-            "ui": {
-              "updatable": false
-            },
-            "title": "SERVICE_URL",
-            "default": "https://${haproxyhost}${haproxypath}"
-          },
-          "ssoUri": {
-            "description": "Full url where the Gosec SSO server is running (including port or subpath, depending on configuration).",
-            "type": "string",
-            "readOnly": true,
-            "application": false,
-            "level": 2,
-            "globalParameter": "globals.sso.ssoUri",
-            "internalName": "SSO_URI",
-            "ui": {
-              "updatable": false
-            },
-            "title": "Server fullname"
           }
         },
         "required": []
@@ -1282,53 +1180,6 @@
             "internalName": "MB_JDBC_PARAMETERS",
             "title": "Additional JDBC configuration parameters",
             "default": "prepareThreshold=0"
-          },
-          "init": {
-            "type": "object",
-            "additionalProperties": false,
-            "ui": {
-              "component": "standard"
-            },
-            "name": "init",
-            "title": "Admin user",
-            "description": "When installing discovery for the first time, It will create an admin user with this parameters.",
-            "properties": {
-              "mb-init-admin-user": {
-                "description": "The name of the admin user created as admin when Discovery is deployed.",
-                "type": "string",
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "MB_INIT_ADMIN_USER",
-                "title": "Name",
-                "default": "Demo"
-              },
-              "mb-init-admin-password": {
-                "description": "The password of the admin user created as admin when Discovery is deployed.",
-                "type": "string",
-                "minimum": 1,
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "MB_INIT_ADMIN_PASSWORD",
-                "title": "Password",
-                "default": "123456"
-              },
-              "mb-init-admin-mail": {
-                "description": "The mail of the admin user created as admin when Discovery is deployed.",
-                "type": "string",
-                "required": false,
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "MB_INIT_ADMIN_MAIL",
-                "title": "Mail",
-                "default": "demo@stratio.com"
-              }
-            },
-            "required": []
           },
           "akkaRequestTimeout": {
             "description": "Akka request timeout for Discovery-cicd api.",

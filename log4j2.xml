@@ -117,6 +117,7 @@
     <Logger name="metabase.sync" level="${env:SYNC_LOG_LEVEL:-INFO}"/>
     <Logger name="metabase" level="${env:METABASE_LOG_LEVEL:-INFO}"/>
     <Logger name="metabase.api" level="${env:API_LOG_LEVEL:-INFO}"/>
+    <Logger name="metabase.stratio" level="${env:STRATIO_LOG_LEVEL:-DEBUG}"/>
     <Logger name="com.mchange" level="${env:MCHANGE_LOG_LEVEL:-ERROR}"/>
 
     <Logger name="com.stratio.discoverycicd" level="${env:DISCOVERYCICD_LOG_LEVEL:-INFO}"/>
