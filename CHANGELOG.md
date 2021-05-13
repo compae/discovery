@@ -4,7 +4,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 0.38.1-0.2.0 (upcoming)
 
-* Pending changelog
+* [ROCK-4533] Add impersonation via SET ROLE in stratiopostgres driver
 
 ## 0.38.1-0.1.1 (April 29, 2021)
 

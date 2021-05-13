@@ -112,6 +112,7 @@ echo "/plugins"                          > /env_vars/MB_PLUGINS_DIR
 echo "none"                              > /env_vars/MB_HUMANIZATION_STRATEGY
 echo "false"                             > /env_vars/MB_EMOJI_IN_LOGS
 echo "false"                             > /env_vars/MB_ANON_TRACKING_ENABLED
+echo "false"                             > /env_vars/MB_CHECK_FOR_UPDATES
 if [ -n "$SERVICE_URL" ]; then
     echo "$SERVICE_URL" > /env_vars/MB_SITE_URL
 fi

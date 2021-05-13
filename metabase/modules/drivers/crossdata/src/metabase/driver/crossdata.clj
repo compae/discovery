@@ -28,6 +28,7 @@
             [metabase.query-processor.store :as qp.store]
             [metabase.query-processor.timezone :as qp.timezone]
             [metabase.query-processor.util :as qputil]
+            [metabase.stratio.middleware :as st.mw]
             [metabase.sync.util :as sync-util]
             [metabase.util :as u]
             [metabase.util.date-2 :as u.date]
@@ -361,7 +362,8 @@
 
 ;; < STRATIO - We modify execute-reducibel-query to add impersonation and to not add automatic comments.
 (defn- impersonate? []
-  (get-in (qp.store/database) [:details :impersonate]))
+  (and (get-in (qp.store/database) [:details :impersonate])
+       (not st.mw/*is-sync-request?*)))
 
 (defn- current-user []
   (:first_name @api/*current-user*))

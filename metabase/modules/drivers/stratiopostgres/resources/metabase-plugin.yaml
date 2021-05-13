@@ -8,10 +8,15 @@ driver:
   lazy-load: true
   parent: postgres
   connection-properties:
+    - name: impersonate
+      display-name: Set ROLE in postgres with the current logged user?
+      default: false
+      type: boolean
+
     - name: add-user-var
       display-name: Set a variable containing the current logged user in all queries?
       type: boolean
-      default: true
+      default: false
 
     - name: user-var-name
       display-name: Name of the variable to be set with the current logged user (must contain a dot .)
@@ -25,7 +30,7 @@ driver:
 
     - merge:
       - additional-options
-      - placeholder: ssl=true&sslmode=verify-full&sslcert=/root/kms/discovery.pem&sslkey=/root/kms/discovery.pk8&sslrootcert=/root/kms/root.pem&prepareThreshold=0
+      - placeholder: ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem&prepareThreshold=0
 
   connection-properties-include-tunnel-config: true
 init:
