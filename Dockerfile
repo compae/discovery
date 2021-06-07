@@ -2,7 +2,6 @@
 # STAGE 1: stratio drivers builder
 # ###############################################################################################
 
-# TODO: change SNAPSHOT after metabase-builder release!
 FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.38.1-0.2.0 as builder
 
 WORKDIR /app/source

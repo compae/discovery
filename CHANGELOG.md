@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.38.1-0.2.1 (upcoming)
+
+* [ROCK-4561] Update Crossdata jdbc driver to 2.22.1-d9034f2 (Fix for closed session when synchronizing)
+
 ## 0.38.1-0.2.0 (May 14, 2021)
 
 * [ROCK-4533] Add impersonation via SET ROLE in stratiopostgres driver

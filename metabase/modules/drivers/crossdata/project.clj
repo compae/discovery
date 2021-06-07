@@ -2,7 +2,7 @@
   :min-lein-version "2.5.0"
 
   :dependencies
-  [[com.stratio.crossdata.driver/stratio-crossdata-jdbc4 "2.19.0-809dcaf"
+  [[com.stratio.crossdata.driver/stratio-crossdata-jdbc4 "2.22.1-d9034f2"
     :exclusions [com.fasterxml.jackson.core/jackson-core]]]
 
   :repositories [["stratio" "https://niquel.int.stratio.com:1443/repository/public"]]
