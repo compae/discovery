@@ -1,9 +1,9 @@
-worker_processes  1;
+worker_processes  $NGINX_WORKER_PROCESSES;
 
 error_log /dev/stderr $NGINX_ERROR_LOG_LEVEL;
 
 events {
-    worker_connections 1024;
+    worker_connections $NGINX_EVENT_CONNECTIONS;
 }
 
 http {
@@ -31,6 +31,7 @@ http {
         }
 
         location /discovery-cicd {
+            client_max_body_size ${NGINX_CLIENT_MAX_BODY_SIZE};
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:8087;
         }
