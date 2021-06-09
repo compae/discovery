@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.38.1-0.2.1 (upcoming)
+## 0.38.1-0.2.1 (June 09, 2021)
 
 * [ROCK-4561] Update Crossdata jdbc driver to 2.22.1-d9034f2 (Fix for closed session when synchronizing)
 * [ROCK-4708] Make nginx parameters configurable: worker_processes, worker_connections and client_max_body_size
