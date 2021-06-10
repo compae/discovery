@@ -69,7 +69,7 @@
       "runners": [
         {
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.38.1-0.2.0-SNAPSHOT",
+          "image": "${eos.dockerRegistry}/discovery:0.38.1-0.2.1",
           "forcePullImage": false,
           "privileged": false,
           "parameters": [
@@ -1131,6 +1131,29 @@
                 ],
                 "default": "ERROR"
               },
+              "nginxLogLevel": {
+                "description": "Log level of Nginx",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "NGINX_ERROR_LOG_LEVEL",
+                "title": "Nginx log level",
+                "enum": [
+                  "debug",
+                  "info",
+                  "notice",
+                  "warn",
+                  "error",
+                  "crit",
+                  "alert",
+                  "emerg"
+                ],
+                "default": "error"
+              },
               "discoverycicdLogLevel": {
                 "description": "Log level of the import/export collections service",
                 "type": "string",
@@ -1193,6 +1216,45 @@
             "internalName": "DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT",
             "title": "Akka request timeout.",
             "default": "40s"
+          },
+          "nginxEventConnections": {
+            "description": "Sets the maximum number of simultaneous connections that can be opened by a worker process for Nginx configuration (i.e: worker_connections into events section)",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "NGINX_EVENT_CONNECTIONS",
+            "title": "Event connections for Nginx",
+            "default": "1024"
+          },
+          "nginxWorkerProcesses": {
+            "description": "Sets the number of worker processes for Nginx configuration. The optimal value depends on many factors including (but not limited to) the number of CPU cores, the number of hard disk drives that store data, and load pattern. When one is in doubt, setting it to the number of available CPU cores would be a good start (the value “auto” will try to autodetect it).",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "NGINX_WORKER_PROCESSES",
+            "title": "Worker processes for Nginx",
+            "default": "1"
+          },
+          "nginxClientMaxBodySize": {
+            "description": "Sets the maximum size of the body that Nginx accepts for CI/CD endpoint (This value corresponds to Nginx parameter :client_max_body_size)",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "NGINX_CLIENT_MAX_BODY_SIZE",
+            "title": "Max Body Size for CI/CD endpoint",
+            "default": "2M"
           },
           "cicdJavaOptions": {
             "description": "Add custom options to java execution.",
