@@ -18,7 +18,7 @@ IFS=$IFS_OLD
 # the login in vault has done in the oauth-base rc.local
 
 # Download certs in jks format
-if getCert userland "$DISCOVERY_INSTANCE_NAME" "$DISCOVERY_INSTANCE_NAME" JKS /etc/pki/; then
+if getCert userland "$DISCOVERY_INSTANCE_NAME" "$DISCOVERY_INSTANCE_NAME" JKS /tmp/; then
     INFO "Discovery certificate downloaded successfully"
     PASS_ENV_VAR="${NORMALIZED_INSTANCE_NAME}_KEYSTORE_PASS"
     export KEYSTORE_PASSWORD=${!PASS_ENV_VAR}
@@ -27,7 +27,7 @@ else
     ERROR "Discovery certificate download failed"
     exit 1
 fi
-mv "/etc/pki/$DISCOVERY_INSTANCE_NAME.jks" /etc/pki/discovery.jks
+mv "/tmp/$DISCOVERY_INSTANCE_NAME.jks" /etc/pki/discovery.jks
 
 # Download cabundle in jks format to /etc/pki/ca-bundle.jks
 if getCAbundle /etc/pki JKS; then
