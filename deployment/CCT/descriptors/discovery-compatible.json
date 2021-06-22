@@ -564,6 +564,17 @@
                 "title": "Connection with SSL",
                 "default": true
               },
+              "dbConnectionTimeout": {
+                "description": "Timeout in milliseconds for connecting to databases.",
+                "type": "integer",
+                "required": false,
+                "readOnly": true,
+                "application": false,
+                "level": 2,
+                "internalName": "MB_DB_CONNECTION_TIMEOUT_MS",
+                "title": "Database Connection Timeout",
+                "default": 15000
+              },
               "dbType": {
                 "description": "Type of your options database.",
                 "type": "string",
