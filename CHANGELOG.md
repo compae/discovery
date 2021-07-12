@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.38.1-0.2.3 (upcoming)
+
+* [ROCK-NA] Update metabse to 0.38.1-0.2.2 (Fix: Do not try to auto-login in public api endpoints)
+
 ## 0.38.1-0.2.2 (June 16, 2021)
 
 * [ROCK-4767] Update metabase to 0.38.1-0.2.1 (emails allowed as user header and automatic session renewal)
