@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.38.1-0.2.3 (upcoming)
+## 0.38.1-0.2.3 (July 12, 2021)
 
 * [ROCK-NA] Update metabse to 0.38.1-0.2.2 (Fix: Do not try to auto-login in public api endpoints)
 
