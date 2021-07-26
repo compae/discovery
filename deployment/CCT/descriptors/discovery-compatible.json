@@ -1,20 +1,19 @@
 {
   "data": {
     "serviceName": "discovery",
-    "version": "0.4.31-SNAPSHOT",
     "model": "pegaso",
-    "description": "Access your data with security, using our multi-datastore discovery module",
+    "version": "0.8.0-SNAPSHOT",
+    "description": "Access your data with security, using our multi-datastore discovery module.",
     "framework": false,
     "highAvailability": false,
     "healthChecks": {
       "tcp": [],
       "http": [
         {
-          "gracePeriodSeconds": 10,
+          "gracePeriodSeconds": 200,
           "ignoreHttp1xx": false,
           "intervalSeconds": 60,
           "maxConsecutiveFailures": 2,
-          "portIndex": 1,
           "timeoutSeconds": 10,
           "delaySeconds": 15,
           "protocol": "HTTP",
@@ -33,7 +32,7 @@
           "vhost": "${haproxyhost}",
           "path": "${haproxypath}",
           "redirectHttpToHttps": true,
-          "backendServerOptions": "server {serverName} {host_ipv4}:{port}{cookieOptions}{healthCheckOptions}{otherOptions} crt /etc/ssl/cert.pem ssl verify none\n",
+          "backendServerOptions": "server {serverName} {host_ipv4}:{port}{cookieOptions}{healthCheckOptions}{otherOptions} crt /etc/ssl/cert.pem ssl verify none\ntimeout server ${proxyReadTimeout}s\n",
           "sticky": false,
           "frontEndHTTPSProxyPass": "${haproxypath}",
           "external": true
@@ -101,62 +100,66 @@
       },
       {
         "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteDiscovery",
-        "title": "Database connection (Modules dependencies)",
-        "description": "Postgres will be used to store the data of the configuration API, where the users environment and behaviour is defined. Please, check all the necessary properties that has been set in the the section General > Postgres.",
+        "title": "PostgreSQL (Modules dependencies)",
+        "description": "This datastore will be used to store all the Discovery configuration data. To do this, create a database with the property set in General > PostgreSQL > Database name [CREATE DATABASE 'database_name';] with a given user/tenant, which is set in General > PostgreSQL > Tenant name [CREATE USER 'user_name' LOGIN;].",
         "serviceName": "postgres",
-        "useInstanceName": false
+        "useInstanceName": false,
+        "usePathNotation": false
       },
       {
         "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteDiscovery",
-        "title": "Database connection (Modules dependencies)",
-        "description": "Postgres will be used to store the data of the configuration API, where the users environment and behaviour is defined. Please, check all the necessary properties that has been set in the the section General > Postgres.",
+        "title": "PostgreSQL (Modules dependencies)",
+        "description": "This datastore will be used to store all the Discovery configuration data. To do this, create a database with the property set in General > PostgreSQL > Database name [CREATE DATABASE 'database_name';] with a given user/tenant, which is set in General > PostgreSQL > Tenant name [CREATE USER 'user_name' LOGIN;].",
         "serviceName": "postgres",
-        "useInstanceName": true
+        "useInstanceName": true,
+        "usePathNotation": true
       },
       {
         "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteDiscovery",
         "title": "Pgbouncer (Modules dependencies)",
         "description": "Postgres connection pool service which provides access to Postgres database. It is preferred to connect through a connection pool",
         "serviceName": "pgbouncer",
-        "useInstanceName": false
+        "useInstanceName": false,
+        "usePathNotation": false
       },
       {
-        "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteManagement",
+        "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteRest",
         "title": "Create ACL User in Gosec",
-        "description": "Create user for ACLS for the service being deployed (if user already in LDAP this is not required). The service user will match with Discovery Instance Name.",
+        "description": "Create user for ACLS for the service being deployed (if user already in LDAP this is not required). The service user will match with tenant name.",
         "expect": [
           201,
           409
         ],
         "verb": "POST",
-        "path": "/api/user",
+        "path": "https://gosec-identities-daas.marathon.mesos:8443/identities/users",
         "body": {
-          "custom": true,
+          "gids": [],
+          "uid": "${discoveryInstanceName}",
+          "tids": [
+            "${tenantId}"
+          ],
           "name": "${discoveryInstanceName}",
-          "groups": [],
-          "id": "${discoveryInstanceName}",
           "email": "${discoveryInstanceName}@stratio.com"
         },
         "headers": null,
-        "enabled": "${executePrerequisites}",
-        "managementPath": "/service/gosecmanagement"
+        "enabled": true
       },
       {
         "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteRest",
         "title": "Discovery Postgres database",
-        "description": "Postgres database needed to store all Discovery related metadata.",
+        "description": "Create Discovery database. Postgres database needed to store all Discovery related metadata.",
         "expect": [
           200,
           304
         ],
         "verb": "POST",
-        "path": "http://${metadataDbInstanceName}.marathon.mesos:8080/v1/dbaas/create/database/${metadataDbName}",
+        "path": "https://${metadataDbInstanceName}.marathon.mesos:8080/v1/dbaas/create/database/${metadataDbName}",
         "body": {},
         "headers": null,
-        "enabled": "${executePrerequisites}"
+        "enabled": true
       },
       {
-        "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteManagement",
+        "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteRest",
         "title": "ACL creation request for a postgres service",
         "description": "ACL creation request with the permissions needed by Discovery to operate on a certain database",
         "expect": [
@@ -164,111 +167,92 @@
           409
         ],
         "verb": "POST",
-        "path": "/api/policy",
+        "path": "https://gosec-services-daas.marathon.mesos:8443/policies",
         "body": {
-          "name": "${discoveryInstanceName}dbacl",
-          "groups": [],
-          "id": "${discoveryInstanceName}dbacl",
+          "gids": [],
+          "uids": [
+            "${discoveryInstanceName}"
+          ],
+          "name": "${discoveryInstanceName}",
           "services": [
             {
-              "type": "communitypostgres",
-              "instancesAcl": [
+              "serviceType": "postgres",
+              "instances": [
                 {
-                  "instances": [
-                    {
-                      "name": "${metadataDbInstanceName}",
-                      "status": "READY"
-                    }
-                  ],
+                  "sid": "${postgresService}",
+                  "status": "READY",
                   "acls": [
                     {
                       "resourceType": "Domain",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Usage"
                       ],
-                      "allActions": [
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Tablespace",
                       "name": "${metadataDbName}",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Create"
                       ],
-                      "allActions": [
-                        "Create"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Sequence",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Select",
                         "Update",
                         "Usage"
                       ],
-                      "allActions": [
-                        "Select",
-                        "Update",
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Function",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Execute"
                       ],
-                      "allActions": [
-                        "Execute"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Foreign Data Wrapper",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Usage"
                       ],
-                      "allActions": [
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Large object",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Select",
                         "Update"
                       ],
-                      "allActions": [
-                        "Select",
-                        "Update"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Type",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Usage"
                       ],
-                      "allActions": [
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "View",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Select",
                         "Insert",
                         "Update",
@@ -277,49 +261,35 @@
                         "References",
                         "Trigger"
                       ],
-                      "allActions": [
-                        "Select",
-                        "Insert",
-                        "Update",
-                        "Delete",
-                        "Truncate",
-                        "References",
-                        "Trigger"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Schema",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Create",
                         "Usage"
                       ],
-                      "allActions": [
-                        "Create",
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Database",
                       "name": "${metadataDbName}",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Create",
-                        "Temporary",
                         "Connect"
                       ],
-                      "allActions": [
-                        "Create",
-                        "Temporary",
-                        "Connect"
+                      "actionsDeny": [
+                        "Temporary"
                       ]
                     },
                     {
                       "resourceType": "Table",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Select",
                         "Insert",
                         "Update",
@@ -328,50 +298,35 @@
                         "References",
                         "Trigger"
                       ],
-                      "allActions": [
-                        "Select",
-                        "Insert",
-                        "Update",
-                        "Delete",
-                        "Truncate",
-                        "References",
-                        "Trigger"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Foreign Server",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Usage"
                       ],
-                      "allActions": [
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     },
                     {
                       "resourceType": "Language",
                       "name": "${metadataDbName}.*",
                       "recursive": false,
-                      "actions": [
+                      "actionsAllow": [
                         "Usage"
                       ],
-                      "allActions": [
-                        "Usage"
-                      ]
+                      "actionsDeny": []
                     }
                   ]
                 }
               ]
             }
           ],
-          "users": [
-            "${discoveryInstanceName}"
-          ]
+          "tid": "${tenantId}"
         },
         "headers": null,
-        "enabled": "${executePrerequisites}",
-        "managementPath": "/service/gosecmanagement"
+        "enabled": true
       },
       {
         "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteInfo",
@@ -413,6 +368,11 @@
         "title": "Calico networks",
         "description": "Discovery can be set in a specific network. Please set the network name in General > 'Network name'."
       }
+    ],
+    "constraints": [
+      "${marathonConstraintName}",
+      "${marathonConstraintOperator}",
+      "${marathonConstraintValue}"
     ]
   },
   "parameters": {
@@ -442,16 +402,6 @@
             },
             "title": "Service ID",
             "default": "${dcosServicePath}/${discoveryInstanceName}"
-          },
-          "executePrerequisites": {
-            "description": "Whether to execute prerequisites (create database, create Gosec user and create Gosec policy)",
-            "type": "boolean",
-            "required": true,
-            "readOnly": false,
-            "application": true,
-            "internalName": "PREREQUISITES",
-            "title": "Execute prerequisites",
-            "default": true
           },
           "dcosServicePath": {
             "description": "Service path of the Discovery instance to be deployed.",
@@ -484,7 +434,7 @@
             "title": "Discovery service name"
           },
           "discoveryInstanceName": {
-            "description": "Identity used for secrets creation and storage in Vault. Matches the Discovery service name.",
+            "description": "Identity used for secrets creation and storage in Vault. It is the composition of the Discovery service name and the tenant where discovery is being deployed.",
             "type": "string",
             "readOnly": true,
             "application": false,
@@ -602,7 +552,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "globalParameter": "prerequisites.2",
+                "globalParameter": "prerequisites.1",
                 "internalName": "MB_DB_INSTANCES_NAME",
                 "ui": {
                   "updatable": false
@@ -610,12 +560,27 @@
                 "title": "Postgres service name",
                 "enum": []
               },
+              "postgresService": {
+                "description": "Path of Database service instance to use as Configuration API and JupyterHub database. Must be the same database as the used in Database Service",
+                "type": "string",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "DISCOVERY_POSTGRES_SERVICE_ID",
+                "globalParameter": "prerequisites.2",
+                "ui": {
+                  "updatable": false
+                },
+                "title": "Postgres Service Path",
+                "enum": []
+              },
               "metadataDbIUrl1": {
                 "description": "URL of the postgres database to connect in.",
                 "type": "string",
                 "required": false,
                 "readOnly": false,
-                "application": true,
+                "application": false,
                 "level": 1,
                 "globalParameter": "prerequisites.1",
                 "internalName": "MB_DB_URL",
@@ -633,7 +598,7 @@
                 "type": "string",
                 "required": false,
                 "readOnly": false,
-                "application": true,
+                "application": false,
                 "level": 1,
                 "globalParameter": "prerequisites.3",
                 "internalName": "MB_DB_URL",
@@ -1268,7 +1233,7 @@
             "default": "2M"
           },
           "cicdJavaOptions": {
-            "description": "Add custom options to java execution.",
+            "description": "Add custom Java options to CI/CD service.",
             "type": "string",
             "maxLength": 100,
             "minLength": 3,
@@ -1315,7 +1280,8 @@
             "level": 1,
             "globalParameter": "globals.vault.vaultHost",
             "internalName": "VAULT_HOST",
-            "title": "Vault host"
+            "title": "Vault host",
+            "default": "vault.service.eos.beta.hetzner.stratio.com"
           },
           "VAULT_PORT": {
             "description": "Port of your Vault repository.",
@@ -1329,6 +1295,69 @@
             "internalName": "VAULT_PORT",
             "title": "Vault port",
             "default": 8200
+          }
+        },
+        "required": []
+      },
+      "placement": {
+        "type": "object",
+        "additionalProperties": false,
+        "ui": null,
+        "name": "placement",
+        "title": "Placements",
+        "description": "In this tab, you can configure constraints to enforce the different artifacts to be placed in specific tagged nodes.",
+        "properties": {
+          "marathonConstraintSection": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "standard"
+            },
+            "name": "marathonConstraintSection",
+            "title": "Marathon Constraint",
+            "description": "Marathon constraint to apply.",
+            "properties": {
+              "marathonConstraintName": {
+                "description": "Set the name of the given constraint",
+                "type": "string",
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MARATHON_CONSTRAINT_NAME",
+                "examples": [
+                  "tenant"
+                ],
+                "title": "Constraint name",
+                "default": ""
+              },
+              "marathonConstraintOperator": {
+                "description": "Set operator to run the Marathon constraint",
+                "type": "string",
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MARATHON_CONSTRAINT_OPERATOR",
+                "examples": [
+                  "CLUSTER"
+                ],
+                "title": "Constraint operator",
+                "default": ""
+              },
+              "marathonConstraintValue": {
+                "description": "Set the value of the constraint",
+                "type": "string",
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MARATHON_CONSTRAINT_VALUE",
+                "examples": [
+                  "tenant1"
+                ],
+                "title": "Constraint value",
+                "default": ""
+              }
+            },
+            "required": []
           }
         },
         "required": []

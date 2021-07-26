@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.38.1-0.2.4 (upcoming)
+
+* [ROCK-4906] Discovery 0.38.1-0.2.3 descriptor compatible with EOS 0.25 and Gosec 1.x
+
 ## 0.38.1-0.2.3 (July 12, 2021)
 
 * [ROCK-NA] Update metabse to 0.38.1-0.2.2 (Fix: Do not try to auto-login in public api endpoints)
