@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stratio</groupId>
     <artifactId>discoverycicd-parent</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.4-${revision}</version>
     <packaging>pom</packaging>
 
     <parent>
