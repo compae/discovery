@@ -5,6 +5,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 0.38.1-0.2.4 (upcoming)
 
 * [ROCK-4906] Discovery 0.38.1-0.2.3 descriptor compatible with EOS 0.25 and Gosec 1.x
+* [ROCK-5011] Fix: escape points in jwt regex in nginx conf
 
 ## 0.38.1-0.2.3 (July 12, 2021)
 

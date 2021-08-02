@@ -129,7 +129,7 @@ http {
         }
 
         # Exceptionally, the body of responses in xlsx format will be hidden with the string "redacted binary data".
-        location ~ ^/api/embed/(dashboard|card)/([a-zA-Z0-9-_]+).([a-zA-Z0-9-_]+).([a-zA-Z0-9-_]+).*/xlsx$ {
+        location ~ ^/api/embed/(dashboard|card)/([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+).*/xlsx$ {
             # 1 -> dashboard or card; 2 -> header; 3 -> payload; 4 -> signature; 5 -> export format (excel)
             set $token_payload $3;
             body_filter_by_lua_block {
@@ -145,7 +145,7 @@ http {
         # the regex is to match the three parts of a jwt token (header.payload.signature)
         # These endpoints always are of the form /<dasbboard or card>/<jwt token>/<optionally more things>
         # We do not verify the token since if it is invalid metabase will not response with any data
-        location ~ ^/api/embed/(dashboard|card)/([a-zA-Z0-9-_]+).([a-zA-Z0-9-_]+).([a-zA-Z0-9-_]+) {
+        location ~ ^/api/embed/(dashboard|card)/([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+) {
             # 1 -> dashboard or card; 2 -> header; 3 -> payload; 4 -> signature
             set $token_payload $3;
             body_filter_by_lua_block {
