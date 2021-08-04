@@ -690,7 +690,7 @@
                   "useGroupWhitelist": {
                     "description": "whether to filter access to discovery based on a whitelist of user groups.",
                     "type": "boolean",
-                    "readonly": false,
+                    "readOnly": false,
                     "application": false,
                     "level": 1,
                     "internalName": "USE_GROUP_WHITELIST",
@@ -703,7 +703,7 @@
                   "groupWhitelist": {
                     "description": "comma separated list of groups that will be allowed to access Discovery",
                     "type": "string",
-                    "readonly": false,
+                    "readOnly": false,
                     "application": false,
                     "level": 1,
                     "internalName": "ALLOWED_GROUPS",
