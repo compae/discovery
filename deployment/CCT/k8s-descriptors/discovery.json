@@ -1,0 +1,1391 @@
+{
+  "data": {
+    "serviceName": "discovery",
+    "model": "default",
+    "version": "10.0.0-SNAPSHOT",
+    "description": "Access your data with security, using our multi-datastore discovery module",
+    "framework": false,
+    "highAvailability": false,
+    "container": {
+      "runners": [
+        {
+          "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
+          "image": "qa.int.stratio.com/stratio/discovery:0.38.1-0.2.5-SNAPSHOT",
+          "forcePullImage": true,
+          "privileged": false
+        }
+      ],
+      "volumes": [
+      ]
+    },
+    "networking": {
+      "expose": [
+        {
+          "portIndex": 1,
+          "vhost": "${haproxyhost}",
+          "path": "",
+          "redirectHttpToHttps": true,
+          "includePortName": false,
+          "sticky": false,
+          "external": true,
+          "schema": "https",
+          "nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+          "nginx.ingress.kubernetes.io/backend-protocol": "HTTPS",
+          "nginx.ingress.kubernetes.io/proxy-body-size": 0,
+          "nginx.ingress.kubernetes.io/proxy-connect-timeout": 300,
+          "nginx.ingress.kubernetes.io/proxy-send-timeout": 300,
+          "nginx.ingress.kubernetes.io/proxy-read-timeout": 300
+        }
+      ],
+      "network": {
+        "networkType": "user",
+        "ports": [
+          {
+            "servicePort": 0,
+            "protocol": "tcp",
+            "name": "default",
+            "labels": {},
+            "containerPort": 80
+          },
+          {
+            "servicePort": 0,
+            "protocol": "tcp",
+            "name": "nginxport",
+            "labels": {},
+            "containerPort": 443
+          },
+          {
+            "servicePort": 0,
+            "protocol": "tcp",
+            "name": "healthcheck",
+            "labels": {},
+            "containerPort": 3009
+          }
+        ],
+        "requirePorts": false
+      }
+    },
+    "healthChecks": {
+      "tcp": [],
+      "http": [
+        {
+          "gracePeriodSeconds": 200,
+          "intervalSeconds": 60,
+          "maxConsecutiveFailures": 2,
+          "port": 3009,
+          "path": "/api/health",
+          "secure": false,
+          "timeoutSeconds": 10,
+          "delaySeconds": 15
+        }],
+      "command": []
+    },
+    "secrets": {
+      "appRole": "role",
+      "secretRole": "${approlename}"
+    },
+    "dependencies": [
+      {
+        "id": "postgresConnectionDB",
+        "title": "PostgreSQL used for connection",
+        "query": "service: ((?i)(Postgres) OR (?i)(PgBouncer))",
+        "required": true,
+        "extended": true
+      },
+      {
+        "id": "postgresPolicies",
+        "title": "PostgreSQL used for policy creation. If connection is via PgBouncer, select the main PostgreSQL instance otherwise select the same instance as above",
+        "query": "service: ((?i)(Postgres))",
+        "required": true,
+        "extended": false
+      }
+    ],
+    "sso": {
+      "clientId": "${Application.id}-oauth-id",
+      "serviceId": "https://${haproxyhost}${haproxypath}/login",
+      "secretPath": "userland/passwords/${Application.id}/oauth"
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "general": {
+        "type": "object",
+        "additionalProperties": false,
+        "ui": {
+          "component": "standard"
+        },
+        "name": "general",
+        "title": "General",
+        "description": "Minimum configuration to run this service. Found more advanced properties in 'Customize deployment' section.",
+        "properties": {
+          "serviceId": {
+            "description": "Service name for your Discovery.",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "application": true,
+            "internalName": "SERVICE_ID",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Discovery service name",
+            "examples": [
+              "discovery"
+            ]
+          },
+          "discoveryInstanceName": {
+            "description": "Identity used for secrets creation and storage in Vault. It is the composition of the Discovery service name and the namespace where discovery is being deployed.",
+            "type": "string",
+            "required": true,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "DISCOVERY_INSTANCE_NAME",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Discovery instance name",
+            "default": "${Application.id}"
+          },
+          "stratioModule": {
+            "description": "Stratio module",
+            "type": "boolean",
+            "required": true,
+            "readOnly": true,
+            "application": true,
+            "level": 2,
+            "internalName": "STRATIO_MODULE",
+            "title": "Stratio Module",
+            "default": true
+          },
+          "namespace": {
+            "description": "Namespace",
+            "type": "string",
+            "minimum": 1,
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "KUBERNETES_NAMESPACE",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Namespace",
+            "default": "${k8sNamespace}"
+          },
+          "environment": {
+            "description": "Deployment environment",
+            "type": "string",
+            "minimum": 1,
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "DEPLOYMENT_ENVIRONMENT",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Deployment environment",
+            "default": "keos"
+          },
+          "networking": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "standard"
+            },
+            "name": "networking",
+            "title": "Networking",
+            "description": "Tab to configure the default deployment of Discovery.",
+            "properties": {
+              "haproxyhost": {
+                "description": "URL host to access to your Stratio Discovery service",
+                "type": "string",
+                "minimum": 1,
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "VIRTUAL_HOST",
+                "examples": [
+                  "discovery.labs.stratio.com"
+                ],
+                "ui": {
+                  "updatable": false
+                },
+                "default": "discovery.labs.stratio.com",
+                "title": "URI host"
+              },
+              "haproxypath": {
+                "description": "URL path to access your Discovery service. The default value is ${Application.id} which includes also the namespace (e.g. discovery.keos-rocket)",
+                "type": "string",
+                "required": true,
+                "readOnly": true,
+                "application": false,
+                "level": 1,
+                "internalName": "HIDDEN_HA",
+                "title": "URL path to access your Discovery service",
+                "default": "/${Application.id}"
+              },
+              "proxyReadTimeout": {
+                "description": "Proxy read timeout in seconds applied to marathon-lb & internal proxy",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "PROXY_READ_TIMEOUT",
+                "title": "Proxy read timeout (seconds)",
+                "default": 120,
+                "minimum": 30
+              }
+            },
+            "required": [
+              "haproxyhost"
+            ]
+          },
+          "datastore": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "standard"
+            },
+            "name": "datastore",
+            "title": "PostgreSQL",
+            "description": "Datastore where Discovery will place its configuration settings.",
+            "properties": {
+              "dbSslEnabled": {
+                "description": "TLS secured connection with PostgreSQL",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "MB_DB_SSL",
+                "title": "Connection with SSL",
+                "default": true
+              },
+              "executePrerequisites": {
+                "description": "Whether to execute prerequisites automatically for this Discovery instance.",
+                "type": "boolean",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "internalName": "PREREQUISITES",
+                "title": "Execute prerequisites (user and policy creation)",
+                "default": true
+              },
+              "metadataDbIUrl": {
+                "description": "URL of the postgres database to connect in.Filled from Service Discovery section",
+                "type": "string",
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MB_DB_URL",
+                "ui": {
+                  "updatable": false
+                },
+                "title": "Postgres connection URL (filled via Service Discovery section)",
+                "default": "${postgresConnectionDB.host}.${postgresConnectionDB.namespace}:${postgresConnectionDB.port}"
+              },
+              "metadataDbUser": {
+                "description": "The user name needed to connect to the database.",
+                "type": "string",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "MB_DB_USER",
+                "title": "Database user",
+                "default": "${Application.id}"
+              },
+              "dbConnectionTimeout": {
+                "description": "Timeout in milliseconds for connecting to databases.",
+                "type": "integer",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "MB_DB_CONNECTION_TIMEOUT_MS",
+                "title": "Database Connection Timeout",
+                "default": 15000
+              },
+              "dbType": {
+                "description": "Type of your options database.",
+                "type": "string",
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "MB_DB_TYPE",
+                "title": "Type of database",
+                "default": "postgres"
+              },
+              "postgresServiceId": {
+                "description": "Path of Database service instance to use during execution of prerequisites (creation of its own DB and related policies)",
+                "type": "string",
+                "required": false,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "DISCOVERY_POSTGRES_SERVICE_ID",
+                "ui": {
+                  "updatable": false
+                },
+                "title": "Postgres Service ID (filled via Service Discovery section)",
+                "example": "/keos-datastores/postgres-rocket",
+                "default": "/${postgresPolicies.namespace}/${postgresPolicies.host}"
+              },
+              "postgresDatabase": {
+                "description": "The database name which stores Discovery metadata",
+                "type": "string",
+                "minLength": 1,
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MB_DB_DBNAME",
+                "default": "${serviceId}",
+                "ui": {
+                  "updatable": false
+                },
+                "title": "Database name (default: Discovery service name)"
+              },
+              "postgresDbCreationClusterName": {
+                "description": "Postgres service name used to create the database.",
+                "type": "string",
+                "required": false,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "POSTGRES_DB_CREATION",
+                "title": "PostgresDB cluster name (filled via Service Discovery section)",
+                "default": "${postgresPolicies.host}"
+              },
+              "postgresNamespace": {
+                "description": "Postgres namespace used to create the database.",
+                "type": "string",
+                "required": false,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "POSTGRES_NAMESPACE_CREATION",
+                "title": "PostgresDB namespace (filled via Service Discovery section)",
+                "default": "${postgresPolicies.namespace}"
+              }
+            },
+            "required": []
+          },
+          "userAuthentication": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "standard"
+            },
+            "name": "userAuthentication",
+            "title": "User Authentication",
+            "description": "How to authenticate end users",
+            "properties": {
+              "enableOauth": {
+                "description": "Whether to activate oauth enable. Must be set to true if the authentication is via 'gosec-sso'",
+                "type": "boolean",
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "OAUTH_ENABLE",
+                "ui": {
+                  "updatable": true
+                },
+                "title": "Enable OAUTH",
+                "default": true
+              },
+              "authenticator": {
+                "description": "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)",
+                "type": "string",
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "AUTHENTICATOR",
+                "title": "Authentication method",
+                "enum": [
+                  "gosec-sso",
+                  "metabase-native",
+                  "headers",
+                  "jwt"
+                ],
+                "default": "gosec-sso"
+              },
+              "ssoOptions": {
+                "type": "object",
+                "additionalProperties": false,
+                "ui": {
+                  "visible": {
+                    "authenticator": "gosec-sso"
+                  }
+                },
+                "name": "ssoOptions",
+                "title": "Gosec SSO Authenticator Settings",
+                "description": "In this section you manage Gosec SSO Authenticator settings.",
+                "properties": {
+                  "adminGroup": {
+                    "description": "Gosec SSO group that will have Administrator privileges in Discovery.",
+                    "type": "string",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "ADMIN_GROUP",
+                    "ui": {
+                      "updatable": true
+                    },
+                    "title": "Admin group"
+                  },
+                  "createAndSyncGroups": {
+                    "description": "Whether to create in Metabase the received SSO groups of the user and sync them every login.",
+                    "type": "boolean",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "CREATE_AND_SYNC_GROUPS",
+                    "ui": {
+                      "updatable": true
+                    },
+                    "title": "Create and sync user groups in Metabase",
+                    "default": true
+                  },
+                  "useGroupWhitelist": {
+                    "description": "whether to filter access to discovery based on a whitelist of user groups.",
+                    "type": "boolean",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "USE_GROUP_WHITELIST",
+                    "ui": {
+                      "updatable": true
+                    },
+                    "title": "Use group whitelist",
+                    "default": false
+                  },
+                  "groupWhitelist": {
+                    "description": "comma separated list of groups that will be allowed to access Discovery",
+                    "type": "string",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "ALLOWED_GROUPS",
+                    "ui": {
+                      "updatable": true,
+                      "visible": {
+                        "useGroupWhitelist": true
+                      }
+                    },
+                    "title": "Allowed groups",
+                    "example": "group1,group2"
+                  },
+                  "serviceURL": {
+                    "description": "Public facing url of the service",
+                    "type": "string",
+                    "readOnly": true,
+                    "application": false,
+                    "level": 2,
+                    "internalName": "SERVICE_URL",
+                    "ui": {
+                      "updatable": false
+                    },
+                    "title": "SERVICE URL ",
+                    "default": "https://${haproxyhost}${haproxypath}"
+                  },
+                  "ssoUri": {
+                    "description": "Full external url where the Gosec SSO server is running (including port or subpath, depending on configuration).",
+                    "type": "string",
+                    "readOnly": true,
+                    "application": false,
+                    "level": 1,
+                    "default": "${globals.sso.ssoUri}",
+                    "internalName": "SSO_URI",
+                    "ui": {
+                      "updatable": false
+                    },
+                    "title": "SSO external URI"
+                  },
+                  "ssoUriInternal": {
+                    "description": "Full internal url where the Gosec SSO server is running (including port or subpath, depending on configuration).",
+                    "type": "string",
+                    "readOnly": true,
+                    "application": false,
+                    "level": 1,
+                    "default": "https://sis.keos-auth:9005/sso",
+                    "internalName": "SSO_URI_INTERNAL",
+                    "ui": {
+                      "updatable": false
+                    },
+                    "title": "SSO internal URI"
+                  }
+                }
+              }
+            },
+            "required": []
+          },
+          "resources": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "resources",
+            "title": "Resources",
+            "description": "Service's resources management.",
+            "properties": {
+              "INSTANCES": {
+                "description": "Instances for the service",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "INSTANCES",
+                "title": "Instances",
+                "default": 1
+              },
+              "CPUs": {
+                "description": "CPUs for the service",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "CPUs",
+                "title": "CPUs",
+                "default": 2
+              },
+              "MEM": {
+                "description": "Memory for the service",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "MEM",
+                "title": "Memory (MB)",
+                "default": 4096
+              },
+              "memory": {
+                "description": "Memory for the service",
+                "type": "string",
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "MEMORY",
+                "title": "Memory (MB)",
+                "default": "${MEM}"
+              },
+              "DISK": {
+                "description": "Disk for the service",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 2,
+                "internalName": "DISK",
+                "title": "Disk",
+                "default": 0
+              },
+              "percentageMaxHeap": {
+                "description": "Memory percentage to be the max heap for JVM",
+                "type": "integer",
+                "minimum": 40,
+                "maximum": 95,
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "PERCENTAGE_MAX_HEAP_JVM",
+                "title": "Memory percentage for JVM max heap",
+                "default": 70
+              }
+            },
+            "required": [
+              "INSTANCES",
+              "CPUs",
+              "MEM",
+              "DISK"
+            ]
+          },
+          "log": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "log",
+            "title": "Log levels",
+            "description": "",
+            "properties": {
+              "serviceLogLevel": {
+                "description": "Log level of the service.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "SERVICE_LOG_LEVEL",
+                "title": "Service log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "ERROR"
+              },
+              "driverLogLevel": {
+                "description": "Log level of drivers.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DRIVER_LOG_LEVEL",
+                "title": "Drivers log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "ERROR"
+              },
+              "middlewareLogLevel": {
+                "description": "Log level of the middleware.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MIDDLEWARE_LOG_LEVEL",
+                "title": "Middleware log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "DEBUG"
+              },
+              "queryProcessorLogLevel": {
+                "description": "Log level of query processor.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "QUERYPROCESSOR_LOG_LEVEL",
+                "title": "Query processor log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "DEBUG"
+              },
+              "syncTasksLogLevel": {
+                "description": "Log level of sync tasks.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "SYNC_LOG_LEVEL",
+                "title": "Sync tasks log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "INFO"
+              },
+              "metabaseLogLevel": {
+                "description": "Log level of metabase.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "METABASE_LOG_LEVEL",
+                "title": "Metabase log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "ERROR"
+              },
+              "apiLogLevel": {
+                "description": "Log level of api.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "API_LOG_LEVEL",
+                "title": "Api log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "DEBUG"
+              },
+              "stratioLogLevel": {
+                "description": "Log level of stratio namespaces.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "STRATIO_LOG_LEVEL",
+                "title": "Stratio log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "DEBUG"
+              },
+              "mchangeLogLevel": {
+                "description": "Log level of mchange.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MCHANGE_LOG_LEVEL",
+                "title": "Mchange log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "ERROR"
+              },
+              "nginxLogLevel": {
+                "description": "Log level of Nginx",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "NGINX_ERROR_LOG_LEVEL",
+                "title": "Nginx log level",
+                "enum": [
+                  "debug",
+                  "info",
+                  "notice",
+                  "warn",
+                  "error",
+                  "crit",
+                  "alert",
+                  "emerg"
+                ],
+                "default": "error"
+              },
+              "discoverycicdLogLevel": {
+                "description": "Log level of the import/export collections service",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERYCICD_LOG_LEVEL",
+                "title": "Discover CI/CD log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "INFO"
+              }
+            },
+            "required": []
+          }
+        },
+        "required": []
+      },
+      "settings": {
+        "type": "object",
+        "additionalProperties": false,
+        "ui": {
+          "component": "standard"
+        },
+        "name": "settings",
+        "title": "Settings",
+        "description": "Configuration of JDBC options, the default admin user, akka timeouts and other custom settings.",
+        "properties": {
+          "jdbcParameters": {
+            "description": "An optional variable to append to the connection string additional JDBC configuration parameters. The default option helps JDBC to correctly manage pool connections.",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "MB_JDBC_PARAMETERS",
+            "title": "Additional JDBC configuration parameters",
+            "default": "prepareThreshold=0"
+          },
+          "akkaRequestTimeout": {
+            "description": "Akka request timeout for Discovery-cicd api.",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT",
+            "title": "Akka request timeout.",
+            "default": "40s"
+          },
+          "nginxEventConnections": {
+            "description": "Sets the maximum number of simultaneous connections that can be opened by a worker process for Nginx configuration (i.e: worker_connections into events section)",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "NGINX_EVENT_CONNECTIONS",
+            "title": "Event connections for Nginx",
+            "default": "1024"
+          },
+          "nginxWorkerProcesses": {
+            "description": "Sets the number of worker processes for Nginx configuration. The optimal value depends on many factors including (but not limited to) the number of CPU cores, the number of hard disk drives that store data, and load pattern. When one is in doubt, setting it to the number of available CPU cores would be a good start (the value “auto” will try to autodetect it).",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "NGINX_WORKER_PROCESSES",
+            "title": "Worker processes for Nginx",
+            "default": "1"
+          },
+          "nginxClientMaxBodySize": {
+            "description": "Sets the maximum size of the body that Nginx accepts for CI/CD endpoint (This value corresponds to Nginx parameter :client_max_body_size)",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "NGINX_CLIENT_MAX_BODY_SIZE",
+            "title": "Max Body Size for CI/CD endpoint",
+            "default": "2M"
+          },
+          "cicdJavaOptions": {
+            "description": "Add custom Java options to CI/CD service.",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 2,
+            "internalName": "DISCOVERY_CICD_JAVA_OPTIONS",
+            "title": "Java options for the Import/Export collections service.",
+            "default": "-Xmx1024m"
+          },
+          "cicdApiMetabaseTimeout": {
+            "description": "Discovery cicd internal metabase api timeout",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
+            "title": "Discovery ci/cd Metabase api timeout",
+            "default": "10s"
+          }
+        },
+        "required": []
+      },
+      "environment": {
+        "type": "object",
+        "additionalProperties": false,
+        "ui": {
+          "component": "standard"
+        },
+        "name": "environment",
+        "title": "Environment",
+        "description": "",
+        "properties": {
+          "vaultEnable": {
+            "description": "Security of Vault enabled.",
+            "type": "boolean",
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "VAULT_ENABLE",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Vault",
+            "default": true
+          },
+          "vaultHosts": {
+            "description": "Host of your Vault repository.",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 1,
+            "internalName": "VAULT_HOST",
+            "ui": {
+              "updatable": false
+            },
+            "default": "${globals.vault.vaultHost}",
+            "title": "Vault host"
+          },
+          "vaultPort": {
+            "description": "Port of your Vault repository.",
+            "type": "integer",
+            "minimum": 1,
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 1,
+            "internalName": "VAULT_PORT",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Vault port",
+            "default": "${globals.vault.vaultPort}"
+          },
+          "approlename": {
+            "description": "Role of the app used for dynamic authentication.",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "VAULT_ROLE",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Secret Role",
+            "default": "default"
+          },
+          "useDynamicAuthentication": {
+            "description": "Enable dynamic authentication.",
+            "type": "boolean",
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "USE_DYNAMIC_AUTHENTICATION",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Dynamic authentication",
+            "default": true
+          },
+          "oauthEnable": {
+            "description": "Enable OAUTH",
+            "type": "boolean",
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "OAUTH_ENABLED",
+            "ui": {
+              "updatable": false
+            },
+            "title": "Enable OAUTH",
+            "default": true
+          },
+          "oauth2CookieName": {
+            "description": "Name of the cookie provided by SSO.",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "OAUTH2_COOKIE_NAME",
+            "title": "OAuth2 cookie name",
+            "default": "user"
+          },
+          "serviceAccountName": {
+            "description": "Service account used to deploy",
+            "type": "string",
+            "required": true,
+            "readOnly": true,
+            "level": 2,
+            "ui": {
+              "updatable": false
+            },
+            "application": false,
+            "internalName": "SERVICE_ACCOUNT_NAME",
+            "title": "Service account name",
+            "default": "fieldRef:spec.serviceAccountName:v1"
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  "lifecycles": {
+    "install": {
+      "start": [
+        {
+          "label": "Print install start log",
+          "type": "io/print",
+          "text": "Lifecycle: Install/start"
+        },
+        {
+          "label": "Init secrets creation log",
+          "type": "io/print",
+          "text": "------------- Instance secrets creation --------------"
+        },
+        {
+          "label": "=> Secrets Creation during install: Creating instance certificate for ${Application.id}",
+          "type": "secret/certificate",
+          "path": "/userland/certificates/${Application.id}",
+          "secretName": "${Application.id}",
+          "commonName": "${Application.id}",
+          "altNames": "${serviceId}-${k8sNamespace}, ${rocketServerHost}, ${serviceId}-${k8sNamespace}.${k8sNamespace}, *.${k8sNamespace}"
+        },
+        {
+          "label": "=> Secrets Creation during install: Creating keystore for ${Application.id}",
+          "type": "secret/password",
+          "path": "/userland/passwords/${Application.id}",
+          "secretName": "keystore",
+          "password": "${randomString(10)}"
+        },
+        {
+          "label": "=> Secrets Creation during install: Creating jwtsecret for ${Application.id}",
+          "type": "secret/password",
+          "path": "/userland/passwords/${Application.id}",
+          "secretName": "jwtsecret",
+          "password": "${randomString(10)}"
+        },
+        {
+          "label": "=> Secrets Creation during install: Password Oauth for ${Application.id}",
+          "type": "secret/password",
+          "path": "/userland/passwords/${Application.id}",
+          "secretName": "oauth",
+          "user": "${Application.id}-oauth-id",
+          "password": "${randomString(10)}"
+        },
+        {
+          "label": "Init secrets creation log",
+          "type": "io/print",
+          "text": "------------- Gosec users creation --------------"
+        },
+        {
+          "label": "=> Gosec: Creating user ${Application.id} in tenant ${tenantId}",
+          "type": "gosec/users/create",
+          "users": [
+            "GosecUser(id ${Application.id}, tenant ${tenantId}, name ${Application.id}, email ${Application.id}@stratio.com)"
+          ]
+        },
+        {
+          "label": "Database creation",
+          "type": "io/print",
+          "text": "------------- Database creation --------------"
+        },
+        {
+          "label": "=> Creating Database: ${postgresDatabase}, hostname: ${postgresDbCreationClusterName}, Namespace: ${postgresNamespace}",
+          "type": "postgres/database/create",
+          "databaseName": "${postgresDatabase}",
+          "databaseNamespace": "${postgresNamespace}",
+          "hostName": "${postgresDbCreationClusterName}",
+          "hostNamespace": "${postgresNamespace}",
+          "enabled": "${executePrerequisites}"
+        },
+        {
+          "label": "Policies creation",
+          "type": "io/print",
+          "text": "------------- Policies creation --------------"
+        },
+        {
+          "type": "gosec/policies/create",
+          "name": "${discoveryInstanceName}-service-policy",
+          "enabled": "${executePrerequisites}",
+          "groups": [],
+          "users": [
+            "${Application.id}"
+          ],
+          "tid": "${tenantId}",
+          "services": [
+            {
+              "serviceType": "postgres",
+              "instances": [
+                {
+                  "sid": "${postgresServiceId}",
+                  "acls": [
+                    "ACL(resourceType Domain, name ${postgresDatabase}.*, actionsAllow [Usage], actionsDeny [], recursive false)",
+                    "ACL(resourceType Tablespace, name ${postgresDatabase}, actionsAllow [Create], actionsDeny [], recursive false)",
+                    "ACL(resourceType Sequence, name ${postgresDatabase}.*, actionsAllow [Select, Update, Usage], actionsDeny [], recursive false)",
+                    "ACL(resourceType Function, name ${postgresDatabase}.*, actionsAllow [Execute], actionsDeny [], recursive false)",
+                    "ACL(resourceType Foreign Data Wrapper, name ${postgresDatabase}.*, actionsAllow [Usage], actionsDeny [], recursive false)",
+                    "ACL(resourceType Large object, name ${postgresDatabase}.*, actionsAllow [Select, Update], actionsDeny [], recursive false)",
+                    "ACL(resourceType Type, name ${postgresDatabase}.*, actionsAllow [Usage], actionsDeny [], recursive false)",
+                    "ACL(resourceType View, name ${postgresDatabase}.*, actionsAllow [Select, Insert, Update, Delete, Truncate, References, Trigger], actionsDeny [], recursive false)",
+                    "ACL(resourceType Schema, name ${postgresDatabase}.*, actionsAllow [Create, Usage], actionsDeny [], recursive false)",
+                    "ACL(resourceType Database, name ${postgresDatabase}, actionsAllow [Create, Connect], actionsDeny [Temporary], recursive false)",
+                    "ACL(resourceType Table, name ${postgresDatabase}.*, actionsAllow [Select, Insert, Update, Delete, Truncate, References, Trigger], actionsDeny [], recursive false)",
+                    "ACL(resourceType Foreign Server, name ${postgresDatabase}.*, actionsAllow [Usage], actionsDeny [], recursive false)",
+                    "ACL(resourceType Language, name ${postgresDatabase}.*, actionsAllow [Usage], actionsDeny [], recursive false)"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "time/sleep",
+          "millis": "10000"
+        }
+      ],
+      "install/pre": [
+        {
+          "label": "Print install pre task log",
+          "type": "io/print",
+          "text": "Printing install pre task log"
+        }
+      ],
+      "install/post": [
+        {
+          "label": "Print install post task log",
+          "type": "io/print",
+          "text": "Printing install post task log"
+        }
+      ],
+      "install/finalize": [
+        {
+          "label": "Print install finalize task log",
+          "type": "io/print",
+          "text": "Printing install finalize task log"
+        }
+      ],
+      "finish": [
+        {
+          "label": "Print install finish log",
+          "type": "io/print",
+          "text": "Printing install finish log"
+        }
+      ]
+    },
+    "update": {
+      "start": [
+        {
+          "label": "Print update start log",
+          "type": "io/print",
+          "text": "Printing update start log"
+        }
+      ],
+      "update/pre": [
+        {
+          "label": "Print update pre task log",
+          "type": "io/print",
+          "text": "Printing update pre task log"
+        }
+      ],
+      "update/post": [
+        {
+          "label": "Print update post task log",
+          "type": "io/print",
+          "text": "Printing update post task log"
+        }
+      ],
+      "update/finalize": [
+        {
+          "label": "Print update finalize task log",
+          "type": "io/print",
+          "text": "Printing update finalize task log"
+        }
+      ],
+      "finish": [
+        {
+          "label": "Print update finish log",
+          "type": "io/print",
+          "text": "Printing update finish log"
+        }
+      ]
+    },
+    "upgrade": {
+      "start": [
+        {
+          "label": "Print upgrade start log",
+          "type": "io/print",
+          "text": "Printing upgrade start log"
+        }
+      ],
+      "upgrade/pre": [
+        {
+          "label": "Print upgrade pre task log",
+          "type": "io/print",
+          "text": "Printing upgrade pre task log"
+        }
+      ],
+      "upgrade/post": [
+        {
+          "label": "Print upgrade post task log",
+          "type": "io/print",
+          "text": "Printing upgrade post task log"
+        }
+      ],
+      "upgrade/finalize": [
+        {
+          "label": "Print upgrade finalize task log",
+          "type": "io/print",
+          "text": "Printing upgrade finalize task log"
+        }
+      ],
+      "finish": [
+        {
+          "label": "Print upgrade finish log",
+          "type": "io/print",
+          "text": "Printing upgrade finish log"
+        }
+      ]
+    },
+    "restart": {
+      "start": [
+        {
+          "label": "Print restart start log",
+          "type": "io/print",
+          "text": "Printing restart start log"
+        }
+      ],
+      "restart/pre": [
+        {
+          "label": "Print restart pre task log",
+          "type": "io/print",
+          "text": "Printing restart pre task log"
+        }
+      ],
+      "restart/post": [
+        {
+          "label": "Print restart post task log",
+          "type": "io/print",
+          "text": "Printing restart post task log"
+        }
+      ],
+      "restart/finalize": [
+        {
+          "label": "Print restart finalize task log",
+          "type": "io/print",
+          "text": "Printing restart finalize task log"
+        }
+      ],
+      "finish": [
+        {
+          "label": "Print restart finish log",
+          "type": "io/print",
+          "text": "Printing restart finish log"
+        }
+      ]
+    },
+    "uninstall": {
+      "start": [
+        {
+          "label": "Print uninstall start log",
+          "type": "io/print",
+          "text": "Printing uninstall start log"
+        }
+      ],
+      "uninstall/pre": [
+        {
+          "label": "Print uninstall pre task log",
+          "type": "io/print",
+          "text": "Printing uninstall pre task log"
+        }
+      ],
+      "uninstall/post": [
+        {
+          "label": "Print uninstall post task log",
+          "type": "io/print",
+          "text": "Printing uninstall post task log"
+        }
+      ],
+      "uninstall/finalize": [
+        {
+          "label": "Print uninstall finalize task log",
+          "type": "io/print",
+          "text": "Printing uninstall finalize task log"
+        }
+      ],
+      "finish": [
+        {
+          "label": "Print uninstall finish log",
+          "type": "io/print",
+          "text": "Printing uninstall finish log"
+        }
+      ]
+    }
+  }
+}

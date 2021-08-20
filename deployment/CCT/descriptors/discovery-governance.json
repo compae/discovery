@@ -458,6 +458,19 @@
             "title": "User Authentication",
             "description": "How to authenticate end users",
             "properties": {
+              "enableOauth": {
+                "description": "Whether to activate oauth enable",
+                "type": "boolean",
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "OAUTH_ENABLE",
+                "ui": {
+                  "updatable": true
+                },
+                "title": "Enable OAUTH",
+                "default": false
+              },
               "authenticator": {
                 "description": "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)",
                 "type": "string",

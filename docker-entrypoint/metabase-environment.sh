@@ -74,8 +74,11 @@ JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=/app/target/log4j2.xml"
 
 if [ -n "$MAX_HEAP" ]; then
     JAVA_OPTS="$JAVA_OPTS -Xmx$MAX_HEAP"
-elif [ -n "$PERCENTAGE_MAX_HEAP_JVM" ]; then
+elif [ -n "$PERCENTAGE_MAX_HEAP_JVM" ] && [ -n "$MARATHON_APP_RESOURCE_MEM" ]; then # We're in Mesos
     HEAP_IN_MB=$(awk '{printf("%.0f\n", $1*$2/100)}' <<<"$PERCENTAGE_MAX_HEAP_JVM $MARATHON_APP_RESOURCE_MEM")
+    JAVA_OPTS="$JAVA_OPTS -Xmx${HEAP_IN_MB}m"
+elif [ -n "$PERCENTAGE_MAX_HEAP_JVM" ] && [ -n "$MEMORY" ]; then # We're in k8s
+    HEAP_IN_MB=$(awk '{printf("%.0f\n", $1*$2/100)}' <<<"$PERCENTAGE_MAX_HEAP_JVM $MEMORY")
     JAVA_OPTS="$JAVA_OPTS -Xmx${HEAP_IN_MB}m"
 fi
 

@@ -13,11 +13,12 @@ fi
 
 DOWNLOAD_SECRETS=${DOWNLOAD_SECRETS:-"true"}
 
-# set up env variable that oauth-base rc.local uses to download secrets
-CONV_MARATHON_APP_ID=$DISCOVERY_INSTANCE_NAME
+# set up env variables that oauth-base rc.local uses to download secrets
+# in previous versions SECRET_NAME was called CONV_MARATHON_APP_ID
+SECRET_NAME=$DISCOVERY_INSTANCE_NAME
 OAUTH_COOKIE_PREFIX=${DISCOVERY_INSTANCE_NAME:-$OAUTH_COOKIE_PREFIX}
-export CONV_MARATHON_APP_ID
 export OAUTH_COOKIE_PREFIX
+export SECRET_NAME
 
 # for retrocompatibility keep checking some environment variables
 if [ "$USE_GOSEC_SSO_AUTH" = "true" ]; then
