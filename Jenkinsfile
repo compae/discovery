@@ -10,7 +10,7 @@ hose {
     ANCHORE_TEST = false
     PKGMODULESNAMES = ['discovery']
     ANCHORE_POLICY = 'discovery'
-    UPSTREAM_VERSION = '0.38.1'
+    UPSTREAM_VERSION = '0.40.2'
     FREESTYLE_BRANCHING = true
     DOWNLOADS_USER = "rocketqa"
     SSH_CREDENTIALS_SERVER_ID = "SSH_ROCKETQA"
