@@ -289,7 +289,7 @@
                   "updatable": false
                 },
                 "title": "Postgres connection URL (filled via Service Discovery section)",
-                "default": "${postgresConnectionDB.host}.${postgresConnectionDB.namespace}:${postgresConnectionDB.port}"
+                "default": "${postgresConnectionDB.host}.${postgresConnectionDB.namespace}:5432"
               },
               "metadataDbUser": {
                 "description": "The user name needed to connect to the database.",
