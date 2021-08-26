@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.40.2-0.2.0 (upcoming)
+
+* Pending changelog
+
+## 0.40.2-0.1.0-a6fc8ad (Built: August 26, 2021 | Pre-release)
+
+* [ROCK-4939] Upgrade metabase to 0.40.2
+
 ## 0.38.1-0.3.0 (upcoming)
 
 * Pending changelog
