@@ -21,7 +21,7 @@ object ShellRunner {
     val api =
       new ApiClient(
         config.metabaseUrl,
-        Right((config.user, config.password)),
+        config.session,
         config.allowUnsafeSsl,
         config.timeout
       )

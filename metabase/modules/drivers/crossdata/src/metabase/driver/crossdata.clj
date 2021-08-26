@@ -50,11 +50,11 @@
 
 
 (defmethod sql-jdbc.conn/data-warehouse-connection-pool-properties :crossdata
-  [driver]
+  [driver database]
   ;; The Hive JDBC driver doesn't support `Connection.isValid()`, so we need to supply a test query for c3p0 to use to
   ;; validate connections upon checkout.
   (merge
-   ((get-method sql-jdbc.conn/data-warehouse-connection-pool-properties :sql-jdbc) driver)
+   ((get-method sql-jdbc.conn/data-warehouse-connection-pool-properties :sql-jdbc) driver database)
    {"preferredTestQuery" "SELECT 1"}))
 
 ;; < STRATIO - we implement this differently from hive-like
@@ -127,14 +127,14 @@
                                                               (hsql/raw "interval '1' day"))))))
 
 (defmethod sql.qp/date [:crossdata :week]
-  [_ _ expr]
+  [driver _ expr]
   (let [week-extract-fn (fn [expr]
                           (hsql/call :date_sub
                             (hx/+ (hx/->timestamp expr)
                                   (hsql/raw "interval '1' day"))
                             (date-format "u" (hx/+ (hx/->timestamp expr)
                                                    (hsql/raw "interval '1' day")))))]
-    (sql.qp/adjust-start-of-week :crossdata week-extract-fn expr)))
+    (sql.qp/adjust-start-of-week driver week-extract-fn expr)))
 
 (defmethod sql.qp/date [:crossdata :quarter]
   [_ _ expr]
@@ -324,43 +324,38 @@
 ;; < STRATIO - Crossdata jdbc does not handle comments well, until they do, we need to
 ;; override the default sql-jdbc execute-query-method so it does not add comments to the sql.
 ;; This is a copy/paste of the sql-jdbc execute-reducible-query method but removing the sql comments
-;; and qualifying some symbols in the sql-jdbc.execute namespace. Note that we also need to copy/paste
-;; the prepared-statement* helper function that is private to the sql-jdbc.execute namespace
-(defn- prepared-statement*
-  ^PreparedStatement [driver conn sql params canceled-chan]
-  ;; if canceled-chan gets a message, cancel the PreparedStatement
-  (let [^PreparedStatement stmt (sql-jdbc.execute/prepared-statement driver conn sql params)]
-    (a/go
-      (when (a/<! canceled-chan)
-        (log/debug (trs "Query canceled, calling PreparedStatement.cancel()"))
-        (u/ignore-exceptions
-         (.cancel stmt))))
-    stmt))
-
+;; and qualifying some symbols in the sql-jdbc.execute namespace. Note that we only need to copy/paste
+;; the arity implementation that we need to modify, the other one we leave as is
 (defn- execute-reducible-query
   "Default impl of `execute-reducible-query` for sql-jdbc drivers."
   {:added "0.35.0", :arglists '([driver query context respond] [driver sql params max-rows context respond])}
   ([driver {{sql :query, params :params} :native, :as outer-query} context respond]
    {:pre [(string? sql) (seq sql)]}
    (let [remark   (qputil/query->remark driver outer-query)
-         ;; < STATIO - do not add comments to the sql, crossdata does not handle them well
+         ;; < STATIO - do not add line with comment to the sql, crossdata does not handle newlines well
          ;; sql      (str "-- " remark "\n" sql)
          ;; STRATIO />
          max-rows (or (mbql.u/query->max-rows-limit outer-query)
                       qp.i/absolute-max-results)]
-     (execute-reducible-query driver sql params max-rows context respond)))
-
-  ([driver sql params max-rows context respond]
-   (with-open [conn (sql-jdbc.execute/connection-with-timezone driver (qp.store/database) (qp.timezone/report-timezone-id-if-supported))
-               stmt (doto (prepared-statement* driver conn sql params (context/canceled-chan context))
-                      (.setMaxRows max-rows))
-               rs   (sql-jdbc.execute/execute-query! driver stmt)]
-     (let [rsmeta           (.getMetaData rs)
-           results-metadata {:cols (sql-jdbc.execute/column-metadata driver rsmeta)}]
-       (respond results-metadata (sql-jdbc.execute/reducible-rows driver rs rsmeta (context/canceled-chan context)))))))
+     ;; we do not copy/paste the other arity implementation and just call the sql-jdbc.excute one directly
+     (sql-jdbc.execute/execute-reducible-query driver sql params max-rows context respond))))
 ;; STRATIO />
 
-;; < STRATIO - We modify execute-reducibel-query to add impersonation and to not add automatic comments.
+;; < STRATIO - We modify execute-reducible-query to add impersonation, and to join all lines in
+;; the sql query (removing comments) so we can have multiline queries with the crossdata driver.
+;; Ideally this should be handled by the crossdata jdbc, but as of now it interpret newlines
+;; as separate queries (and it only return the results of the first query/line ¯\_(ツ)_/¯)
+(defn- is-comment?
+  [line]
+  (str/starts-with? (str/trim line) "--"))
+
+(defn- join-lines-and-remove-comments
+  [sql]
+  (->> sql
+       str/split-lines
+       (remove is-comment?)
+       (str/join " ")))
+
 (defn- impersonate? []
   (and (get-in (qp.store/database) [:details :impersonate])
        (not st.mw/*is-sync-request?*)))
@@ -380,13 +375,14 @@
                                :max-rows (mbql.u/query->max-rows-limit outer-query))
                         ;; < STRATIO - impersonate logged user in Crossdata
                         (update :query (if (and (impersonate?) (current-user))
-                                         (partial format "EXECUTE AS %s %s" (current-user))
-                                         identity))
+                                         (comp (partial format "EXECUTE AS %s %s" (current-user))
+                                               join-lines-and-remove-comments)
+                                         join-lines-and-remove-comments))
                         ;; STRATIO />
                         (dissoc :params))
         query       (assoc outer-query :native inner-query)]
-    ;; < STRATIO - crossdata jdbc does not handle commentaries well, until they do, we need to
-    ;; override this method so we do not add a remark comment (see impl. above)
+    ;; < STRATIO - crossdata jdbc does not handle newlines well, until they do, we need to
+    ;; override this method so we do not add a remark comment in a newline (see impl. above)
     ;; we also add some debug logs
     ;; ((get-method driver/execute-reducible-query :sql-jdbc) driver query context respond)
     (log/debug "Executing crossdata query:" query)
@@ -400,7 +396,7 @@
 ;; 4.  SparkSQL doesn't support setting the default result set holdability
 (defmethod sql-jdbc.execute/connection-with-timezone :crossdata
   [driver database ^String timezone-id]
-  (let [conn (.getConnection (sql-jdbc.execute/datasource database))]
+  (let [conn (.getConnection (sql-jdbc.execute/datasource-with-diagnostic-info! driver database))]
     (try
       (.setTransactionIsolation conn Connection/TRANSACTION_READ_UNCOMMITTED)
       conn
@@ -421,6 +417,9 @@
       (catch Throwable e
         (.close stmt)
         (throw e)))))
+
+;; the current HiveConnection doesn't support .createStatement
+(defmethod sql-jdbc.execute/statement-supported? :sparksql [_] false)
 
 (doseq [feature [:basic-aggregations
                  :binning

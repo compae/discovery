@@ -13,7 +13,7 @@ object MBJson extends ReplacementUtils {
   override val entityType: String = "Object"
 
   def getFieldIds(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
-    case (acc, JArray(List(JString("field-id"), JInt(fieldId)))) => acc + fieldId
+    case (acc, JArray(List(JString("field"), JInt(fieldId), _))) => acc + fieldId
     case (acc, _) => acc
   }
 
@@ -43,8 +43,8 @@ object MBJson extends ReplacementUtils {
 
 
   def replaceFieldIds(jval: JValue, replacements: Map[BigInt, BigInt]): JValue = jval.transform {
-    case JArray(List(JString("field-id"), JInt(fieldId))) =>
-      JArray(List(JString("field-id"), JInt(replacements.getTargetField(fieldId))))
+    case JArray(List(JString("field"), JInt(fieldId), optionsMap)) =>
+      JArray(List(JString("field"), JInt(replacements.getTargetField(fieldId)), optionsMap))
   }
 
 

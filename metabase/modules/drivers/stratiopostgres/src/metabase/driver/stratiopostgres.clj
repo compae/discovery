@@ -91,15 +91,14 @@
 
   ([driver sql params max-rows context respond]
    (with-open [conn          (sql-jdbc.execute/connection-with-timezone driver (qp.store/database) (qp.timezone/report-timezone-id-if-supported))
-                             ;; the #' is a hack to be able to access the private sql-jdbc.execute/prepared-statement* var
-               stmt          (doto (#'sql-jdbc.execute/prepared-statement* driver conn sql params (context/canceled-chan context))
-                               (.setMaxRows max-rows))
+                             ;; the #' is a hack to be able to access the private sql-jdbc.execute/statement-or-prepared-statement var
+               stmt          (#'sql-jdbc.execute/statement-or-prepared-statement driver conn sql params (context/canceled-chan context))
                ^ResultSet rs (try
                                ;; < STRATIO - impersonate
                                (set-user-if-needed! conn)
                                (set-role-if-needed! conn)
                                ;;  STRATIO >
-                               (sql-jdbc.execute/execute-query! driver stmt)
+                               (#'sql-jdbc.execute/execute-statement-or-prepared-statement! driver stmt max-rows params sql)
                                (catch Throwable e
                                  (throw (ex-info (tru "Error executing query")
                                                  {:sql sql, :params params, :type qp.error-type/driver}

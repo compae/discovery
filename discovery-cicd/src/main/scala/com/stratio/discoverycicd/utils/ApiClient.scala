@@ -21,13 +21,11 @@ object ApiClient {
 }
 
 class ApiClient(metabaseUrl: String,
-                sessionIdParams: Either[String, (String,String)],
+                sessionId: String,
                 allowUnsafeSsl: Boolean = false,
                 timeout: String) {
 
   implicit val formats = DefaultFormats
-
-  private val sessionId: String = getAuthToken
 
   private val headers = Map(
     "content-type" -> "application/json",
@@ -38,18 +36,18 @@ class ApiClient(metabaseUrl: String,
 
   val user = request("user/current").as[User]
   val userId = user.body.id
-  val humanizationEnabled = request("setting/humanization-strategy").asString.body != "none"
+  val humanizationEnabled = request("session/properties").as[Properties].body.`humanization-strategy` != "none"
 
   def getCollection(collectionId: BigInt) =
     request(s"collection/$collectionId").as[Collection].body
 
   def getItemsInCollecton(collectionId: BigInt): List[CollectionItem] =
-    request(s"collection/$collectionId/items").as[List[CollectionItem]].body
+    request(s"collection/$collectionId/items").as[CollectionItemsResponse].body.data
 
   // if we want to get the root collection we pass a None collectionId
   def getItemsInCollecton(collectionId: Option[BigInt]): List[CollectionItem] ={
     val collApiPath = collectionId.map(_.toString).getOrElse("root")
-    request(s"collection/$collApiPath/items").as[List[CollectionItem]].body
+    request(s"collection/$collApiPath/items").as[CollectionItemsResponse].body.data
   }
 
   def archiveCollecton(collectionId: BigInt) =
@@ -90,7 +88,7 @@ class ApiClient(metabaseUrl: String,
 
   def getDatabase(databaseId: BigInt) = request(s"database/$databaseId").as[Database].body
 
-  def getAllDatabases = request("database").as[List[Database]].body
+  def getAllDatabases = request("database").as[ListDatabasesResponse].body.data
 
   def getFieldsInDb(dbId: BigInt) = request(s"database/$dbId/fields").as[List[DbFieldDto]].body
 
@@ -118,20 +116,4 @@ class ApiClient(metabaseUrl: String,
     if (allowUnsafeSsl) safeRequest.option(HttpOptions.allowUnsafeSSL) else safeRequest
   }
 
-  private def getAuthToken: String = {
-
-    sessionIdParams match {
-      case Left(sessionId) =>
-        sessionId
-      case Right((user,password)) =>
-        val safeRequest = Http(s"$metabaseUrl/api/session")
-          .header("content-type", "application/json")
-          .postData(s"""{"username": "$user", "password": "$password"}""")
-        val request = if (allowUnsafeSsl) safeRequest.option(HttpOptions.allowUnsafeSSL) else safeRequest
-        request.as[SessionId].body.id
-    }
- }
 }
-
-
-case class SessionId(id: String)

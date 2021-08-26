@@ -14,8 +14,7 @@ case class Config(action: Option[Action] = None,
                   collId: BigInt = -1,
                   parentId: Option[BigInt] = None,
                   filePath: String = "",
-                  user: String = "",
-                  password: String = "",
+                  session: String = "",
                   metabaseUrl: String = "http://localhost:3000",
                   allowUnsafeSsl: Boolean = false,
                   timeout: String = "10s") {
@@ -30,7 +29,7 @@ case class Config(action: Option[Action] = None,
         System.exit(1)
         false
     }
-    filePath.nonEmpty && validCollId && user.nonEmpty && password.nonEmpty && metabaseUrl.nonEmpty
+    filePath.nonEmpty && validCollId && session.nonEmpty && metabaseUrl.nonEmpty
   }
 }
 
@@ -45,15 +44,10 @@ object Config {
       .required()
       .action((path, cfg) => cfg.copy(filePath = path))
 
-    opt[String]("user")
-      .text("Email of the metabase admin user")
+    opt[String]("session")
+      .text("Id of a metabase session (cookie) for an admin user")
       .required()
-      .action((user, cfg) => cfg.copy(user = user))
-
-    opt[String]("pass")
-      .text("Password of the metabase admin user")
-      .required()
-      .action((pass, cfg) => cfg.copy(password = pass))
+      .action((session, cfg) => cfg.copy(session = session))
 
     opt[String]("metabase-url")
       .text("URL of the metabase instance")

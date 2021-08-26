@@ -26,7 +26,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
           val api =
             new ApiClient(
               apiClientConfig.metabaseUrl,
-              Left(sessionId),
+              sessionId,
               apiClientConfig.allowUnsafeSsl,
               apiClientConfig.timeout
             )
@@ -46,7 +46,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
                 val api =
                   new ApiClient(
                     apiClientConfig.metabaseUrl,
-                    Left(sessionId),
+                    sessionId,
                     apiClientConfig.allowUnsafeSsl,
                     apiClientConfig.timeout
                   )

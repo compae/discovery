@@ -17,3 +17,5 @@ case class Collection(id: BigInt,
 case class CollectionItem(id: BigInt,
                           name: String,
                           model: String) extends Jsonable
+
+case class CollectionItemsResponse(data: List[CollectionItem])
