@@ -2,7 +2,7 @@
 # STAGE 1: stratio drivers builder
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.40.2-0.1.0-a6fc8ad as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.40.2-0.1.0-8d297ef as builder
 
 WORKDIR /app/source
 
