@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.40.2-0.1.0 (upcoming)
+## 0.40.2-0.1.0 (August 27, 2021)
 
 * [ROCK-4531] Discovery in KEOS adaptations and descriptors
 * [ROCK-4939] Discovery CICD adaptations to metabase 0.40.2 (breaking changes!)
