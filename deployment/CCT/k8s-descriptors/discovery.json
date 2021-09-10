@@ -1171,6 +1171,7 @@
           "text": "------------- Policies creation --------------"
         },
         {
+          "label": "=> Creating Metadata policy: ${discoveryInstanceName}-service-policy, sid: ${postgresServiceId}, database: ${postgresDatabase}, user: ${Application.id}",
           "type": "gosec/policies/create",
           "name": "${discoveryInstanceName}-service-policy",
           "enabled": "${executePrerequisites}",
@@ -1206,6 +1207,7 @@
           ]
         },
         {
+          "label": "=> Wait 10s until everything is configured...",
           "type": "time/sleep",
           "millis": "10000"
         }
