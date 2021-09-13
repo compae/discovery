@@ -7,6 +7,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-4531] Discovery in KEOS adaptations and descriptors
 * [ROCK-4939] Discovery CICD adaptations to metabase 0.40.2 (breaking changes!)
 * [ROCK-NA] Allow to execute multiline native queries in crossdata driver
+* [ROCK-5174] Add missing db-start-of-the-week method to Stratio Crossdata driver  
 
 ## 0.38.1-0.2.4 (August 02, 2021)
 

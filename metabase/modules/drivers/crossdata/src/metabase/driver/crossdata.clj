@@ -48,6 +48,9 @@
 
 (driver/register! :crossdata :parent #{:sql-jdbc ::legacy/use-legacy-classes-for-read-and-set})
 
+(defmethod driver/db-start-of-week :crossdata
+           [_]
+           :sunday)
 
 (defmethod sql-jdbc.conn/data-warehouse-connection-pool-properties :crossdata
   [driver database]
