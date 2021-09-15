@@ -93,21 +93,26 @@
    (with-open [conn          (sql-jdbc.execute/connection-with-timezone driver (qp.store/database) (qp.timezone/report-timezone-id-if-supported))
                              ;; the #' is a hack to be able to access the private sql-jdbc.execute/statement-or-prepared-statement var
                stmt          (#'sql-jdbc.execute/statement-or-prepared-statement driver conn sql params (context/canceled-chan context))
-               ^ResultSet rs (try
-                               ;; < STRATIO - impersonate
-                               (set-user-if-needed! conn)
-                               (set-role-if-needed! conn)
-                               ;;  STRATIO >
-                               (#'sql-jdbc.execute/execute-statement-or-prepared-statement! driver stmt max-rows params sql)
-                               (catch Throwable e
-                                 (throw (ex-info (tru "Error executing query")
-                                                 {:sql sql, :params params, :type qp.error-type/driver}
-                                                 e))))]
+               ^ResultSet rs (let [auto-commit (.getAutoCommit conn)]
+                               (try
+                                 ;; < STRATIO - impersonate
+                                 (.setAutoCommit conn false)
+                                 (set-user-if-needed! conn)
+                                 (set-role-if-needed! conn)
+                                 ;;  STRATIO >
+                                 (#'sql-jdbc.execute/execute-statement-or-prepared-statement! driver stmt max-rows params sql)
+                                 (catch Throwable e
+                                   (throw (ex-info (tru "Error executing query")
+                                                   {:sql sql, :params params, :type qp.error-type/driver}
+                                                   e)))
+                                 ;; < STRATIO - impersonate
+                                 (finally
+                                   (reset-role! conn)
+                                   (.rollback conn)
+                                   (.setAutoCommit conn auto-commit))))]
+                                 ;;  STRATIO >
      (let [rsmeta           (.getMetaData rs)
            results-metadata {:cols (sql-jdbc.execute/column-metadata driver rsmeta)}]
-       ;; < STRATIO - impersonate
-       (reset-role! conn)
-       ;; STRATIO >
        (respond results-metadata (sql-jdbc.execute/reducible-rows driver rs rsmeta (context/canceled-chan context)))))))
 
 (defmethod driver/execute-reducible-query :stratiopostgres
