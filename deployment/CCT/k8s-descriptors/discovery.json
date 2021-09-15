@@ -80,6 +80,14 @@
         }],
       "command": []
     },
+    "autoscaling": {
+      "minInstances": 1,
+      "maxInstances": 1,
+      "minCpuTime": 60,
+      "maxCpuTime": 90,
+      "minMemPercent": 60,
+      "maxMemPercent": 90
+    },
     "secrets": {
       "appRole": "role",
       "secretRole": "${approlename}"
