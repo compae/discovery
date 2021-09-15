@@ -34,9 +34,9 @@ class ApiClient(metabaseUrl: String,
 
   val connectionAndReadTimeout: Int = Try(Duration(timeout).toMillis.toInt).getOrElse(DefaultTimeout)
 
-  val user = request("user/current").as[User]
-  val userId = user.body.id
-  val humanizationEnabled = request("session/properties").as[Properties].body.`humanization-strategy` != "none"
+  lazy val user = request("user/current").as[User]
+  lazy val userId = user.body.id
+  lazy val humanizationEnabled = request("session/properties").as[Properties].body.`humanization-strategy` != "none"
 
   def getCollection(collectionId: BigInt) =
     request(s"collection/$collectionId").as[Collection].body
