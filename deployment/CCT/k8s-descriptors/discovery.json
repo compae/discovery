@@ -2,7 +2,7 @@
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "10.0.0-SNAPSHOT",
+    "version": "11.0.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module",
     "framework": false,
     "highAvailability": false,
@@ -10,7 +10,7 @@
       "runners": [
         {
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "qa.int.stratio.com/stratio/discovery:0.38.1-0.2.5-SNAPSHOT",
+          "image": "${eos.dockerRegistry}/discovery:0.40.2-0.1.0",
           "forcePullImage": true,
           "privileged": false
         }
@@ -209,7 +209,7 @@
             "description": "Tab to configure the default deployment of Discovery.",
             "properties": {
               "haproxyhost": {
-                "description": "URL host to access to your Stratio Discovery service",
+                "description": "URL host to access to your Stratio Discovery service. Usually in Stratio laboratories the value is any subdomain of xxx.labs.stratio.com, i.e. discovery.k8s.xxx.labs.stratio.com.",
                 "type": "string",
                 "minimum": 1,
                 "required": true,
@@ -218,13 +218,13 @@
                 "level": 1,
                 "internalName": "VIRTUAL_HOST",
                 "examples": [
-                  "discovery.labs.stratio.com"
+                  "public.kubernetes.stratio.com",
+                  "discovery.k8s.xxx.labs.stratio.com"
                 ],
                 "ui": {
                   "updatable": false
                 },
-                "default": "discovery.labs.stratio.com",
-                "title": "URI host"
+                "title": "URI host (in Stratio labs is any subdomain of xxx.labs.stratio.com i.e. discovery.k8s.xxx.labs.stratio.com)"
               },
               "haproxypath": {
                 "description": "URL path to access your Discovery service. The default value is ${Application.id} which includes also the namespace (e.g. discovery.keos-rocket)",
@@ -232,7 +232,7 @@
                 "required": true,
                 "readOnly": true,
                 "application": false,
-                "level": 1,
+                "level": 2,
                 "internalName": "HIDDEN_HA",
                 "title": "URL path to access your Discovery service",
                 "default": "/${Application.id}"
@@ -243,7 +243,7 @@
                 "required": true,
                 "readOnly": false,
                 "application": false,
-                "level": 1,
+                "level": 2,
                 "internalName": "PROXY_READ_TIMEOUT",
                 "title": "Proxy read timeout (seconds)",
                 "default": 120,
@@ -258,7 +258,7 @@
             "type": "object",
             "additionalProperties": false,
             "ui": {
-              "component": "standard"
+              "component": "accordion"
             },
             "name": "datastore",
             "title": "PostgreSQL",
@@ -275,23 +275,13 @@
                 "title": "Connection with SSL",
                 "default": true
               },
-              "executePrerequisites": {
-                "description": "Whether to execute prerequisites automatically for this Discovery instance.",
-                "type": "boolean",
-                "required": true,
-                "readOnly": false,
-                "application": true,
-                "internalName": "PREREQUISITES",
-                "title": "Execute prerequisites (user and policy creation)",
-                "default": true
-              },
               "metadataDbIUrl": {
                 "description": "URL of the postgres database to connect in.Filled from Service Discovery section",
                 "type": "string",
                 "required": true,
                 "readOnly": false,
                 "application": false,
-                "level": 1,
+                "level": 2,
                 "internalName": "MB_DB_URL",
                 "ui": {
                   "updatable": false
@@ -337,7 +327,7 @@
                 "required": false,
                 "readOnly": false,
                 "application": true,
-                "level": 1,
+                "level": 2,
                 "internalName": "DISCOVERY_POSTGRES_SERVICE_ID",
                 "ui": {
                   "updatable": false
@@ -345,6 +335,19 @@
                 "title": "Postgres Service ID (filled via Service Discovery section)",
                 "example": "/keos-datastores/postgres-rocket",
                 "default": "/${postgresPolicies.namespace}/${postgresPolicies.host}"
+              },
+              "jdbcParameters": {
+                "description": "An optional variable to append to the connection string additional JDBC configuration parameters. The default option helps JDBC to correctly manage pool connections.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MB_JDBC_PARAMETERS",
+                "title": "Additional JDBC configuration parameters",
+                "default": "prepareThreshold=0"
               },
               "postgresDatabase": {
                 "description": "The database name which stores Discovery metadata",
@@ -361,13 +364,24 @@
                 },
                 "title": "Database name (default: Discovery service name)"
               },
+              "postgresDatabaseCreation": {
+                "description": "Boolean flag to indicate if Postgres database must be created as a pre-deployment task",
+                "type": "boolean",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "POSTGRES_DATABASE_CREATION_TASK",
+                "title": "Create Postgres database as a pre-deployment task",
+                "default": true
+              },
               "postgresDbCreationClusterName": {
                 "description": "Postgres service name used to create the database.",
                 "type": "string",
                 "required": false,
                 "readOnly": false,
                 "application": true,
-                "level": 1,
+                "level": 2,
                 "internalName": "POSTGRES_DB_CREATION",
                 "title": "PostgresDB cluster name (filled via Service Discovery section)",
                 "default": "${postgresPolicies.host}"
@@ -378,7 +392,7 @@
                 "required": false,
                 "readOnly": false,
                 "application": true,
-                "level": 1,
+                "level": 2,
                 "internalName": "POSTGRES_NAMESPACE_CREATION",
                 "title": "PostgresDB namespace (filled via Service Discovery section)",
                 "default": "${postgresPolicies.namespace}"
@@ -390,7 +404,7 @@
             "type": "object",
             "additionalProperties": false,
             "ui": {
-              "component": "standard"
+              "component": "accordion"
             },
             "name": "userAuthentication",
             "title": "User Authentication",
@@ -432,7 +446,8 @@
                 "ui": {
                   "visible": {
                     "authenticator": "gosec-sso"
-                  }
+                  },
+                  "component": "accordion"
                 },
                 "name": "ssoOptions",
                 "title": "Gosec SSO Authenticator Settings",
@@ -510,7 +525,7 @@
                     "type": "string",
                     "readOnly": true,
                     "application": false,
-                    "level": 1,
+                    "level": 2,
                     "default": "${globals.sso.ssoUri}",
                     "internalName": "SSO_URI",
                     "ui": {
@@ -523,7 +538,7 @@
                     "type": "string",
                     "readOnly": true,
                     "application": false,
-                    "level": 1,
+                    "level": 2,
                     "default": "https://sis.keos-auth:9005/sso",
                     "internalName": "SSO_URI_INTERNAL",
                     "ui": {
@@ -854,7 +869,7 @@
                 "application": false,
                 "level": 1,
                 "internalName": "DISCOVERYCICD_LOG_LEVEL",
-                "title": "Discover CI/CD log level",
+                "title": "Discover import/export log level",
                 "enum": [
                   "TRACE",
                   "DEBUG",
@@ -881,96 +896,109 @@
         "title": "Settings",
         "description": "Configuration of JDBC options, the default admin user, akka timeouts and other custom settings.",
         "properties": {
-          "jdbcParameters": {
-            "description": "An optional variable to append to the connection string additional JDBC configuration parameters. The default option helps JDBC to correctly manage pool connections.",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 3,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 1,
-            "internalName": "MB_JDBC_PARAMETERS",
-            "title": "Additional JDBC configuration parameters",
-            "default": "prepareThreshold=0"
+          "import-export": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "import-export",
+            "title": "Import/Export service",
+            "description": "Configure import/export service. This feature can be used for promote collections, dashboards, questions ... over environments.",
+            "properties": {
+              "akkaRequestTimeout": {
+                "description": "Akka request timeout for import/export API.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT",
+                "title": "Akka request timeout.",
+                "default": "40s"
+              },
+              "cicdJavaOptions": {
+                "description": "Add custom Java options to import/export service.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_JAVA_OPTIONS",
+                "title": "Java options for the Import/Export collections service.",
+                "default": "-Xmx1024m"
+              },
+              "cicdApiMetabaseTimeout": {
+                "description": "Akka http client timeout used in Metabase API requests",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
+                "title": "Akka http client timeout used in Metabase API requests",
+                "default": "10s"
+              }
+            },
+            "required": []
           },
-          "akkaRequestTimeout": {
-            "description": "Akka request timeout for Discovery-cicd api.",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 2,
-            "internalName": "DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT",
-            "title": "Akka request timeout.",
-            "default": "40s"
-          },
-          "nginxEventConnections": {
-            "description": "Sets the maximum number of simultaneous connections that can be opened by a worker process for Nginx configuration (i.e: worker_connections into events section)",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 2,
-            "internalName": "NGINX_EVENT_CONNECTIONS",
-            "title": "Event connections for Nginx",
-            "default": "1024"
-          },
-          "nginxWorkerProcesses": {
-            "description": "Sets the number of worker processes for Nginx configuration. The optimal value depends on many factors including (but not limited to) the number of CPU cores, the number of hard disk drives that store data, and load pattern. When one is in doubt, setting it to the number of available CPU cores would be a good start (the value “auto” will try to autodetect it).",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 1,
-            "internalName": "NGINX_WORKER_PROCESSES",
-            "title": "Worker processes for Nginx",
-            "default": "1"
-          },
-          "nginxClientMaxBodySize": {
-            "description": "Sets the maximum size of the body that Nginx accepts for CI/CD endpoint (This value corresponds to Nginx parameter :client_max_body_size)",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 2,
-            "internalName": "NGINX_CLIENT_MAX_BODY_SIZE",
-            "title": "Max Body Size for CI/CD endpoint",
-            "default": "2M"
-          },
-          "cicdJavaOptions": {
-            "description": "Add custom Java options to CI/CD service.",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 3,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 2,
-            "internalName": "DISCOVERY_CICD_JAVA_OPTIONS",
-            "title": "Java options for the Import/Export collections service.",
-            "default": "-Xmx1024m"
-          },
-          "cicdApiMetabaseTimeout": {
-            "description": "Discovery cicd internal metabase api timeout",
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 3,
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 1,
-            "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
-            "title": "Discovery ci/cd Metabase api timeout",
-            "default": "10s"
+          "nginx": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "nginx",
+            "title": "Nginx",
+            "description": "Configure internal Nginx options in order to improve Nginx performance.",
+            "properties": {
+              "nginxEventConnections": {
+                "description": "Sets the maximum number of simultaneous connections that can be opened by a worker process for Nginx configuration (i.e: worker_connections into events section)",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "NGINX_EVENT_CONNECTIONS",
+                "title": "Event connections for Nginx",
+                "default": "1024"
+              },
+              "nginxWorkerProcesses": {
+                "description": "Sets the number of worker processes for Nginx configuration. The optimal value depends on many factors including (but not limited to) the number of CPU cores, the number of hard disk drives that store data, and load pattern. When one is in doubt, setting it to the number of available CPU cores would be a good start (the value “auto” will try to autodetect it).",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "NGINX_WORKER_PROCESSES",
+                "title": "Worker processes for Nginx",
+                "default": "1"
+              },
+              "nginxClientMaxBodySize": {
+                "description": "Sets the maximum size of the body that Nginx accepts for CI/CD endpoint (This value corresponds to Nginx parameter :client_max_body_size)",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "NGINX_CLIENT_MAX_BODY_SIZE",
+                "title": "Max Body Size for CI/CD endpoint",
+                "default": "2M"
+              }
+            },
+            "required": []
           }
         },
         "required": []
@@ -1007,7 +1035,7 @@
             "required": false,
             "readOnly": true,
             "application": false,
-            "level": 1,
+            "level": 2,
             "internalName": "VAULT_HOST",
             "ui": {
               "updatable": false
@@ -1022,7 +1050,7 @@
             "required": false,
             "readOnly": true,
             "application": false,
-            "level": 1,
+            "level": 2,
             "internalName": "VAULT_PORT",
             "ui": {
               "updatable": false
@@ -1171,7 +1199,7 @@
           "databaseNamespace": "${postgresNamespace}",
           "hostName": "${postgresDbCreationClusterName}",
           "hostNamespace": "${postgresNamespace}",
-          "enabled": "${executePrerequisites}"
+          "enabled": "${postgresDatabaseCreation}"
         },
         {
           "label": "Policies creation",
@@ -1182,7 +1210,7 @@
           "label": "=> Creating Metadata policy: ${discoveryInstanceName}-service-policy, sid: ${postgresServiceId}, database: ${postgresDatabase}, user: ${Application.id}",
           "type": "gosec/policies/create",
           "name": "${discoveryInstanceName}-service-policy",
-          "enabled": "${executePrerequisites}",
+          "enabled": "${postgresDatabaseCreation}",
           "groups": [],
           "users": [
             "${Application.id}"
