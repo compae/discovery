@@ -1,9 +1,9 @@
 {
   "data": {
     "serviceName": "discovery",
-    "version": "0.4.31-SNAPSHOT",
     "model": "governance",
-    "description": "Access your data with security, using our multi-datastore discovery module",
+    "version": "0.8.0-SNAPSHOT",
+    "description": "Access your data with security, using our multi-datastore discovery module. This flavour deploys Stratio Discovery integrated with Stratio Data Governance.",
     "framework": false,
     "highAvailability": false,
     "healthChecks": {
@@ -13,7 +13,7 @@
           "gracePeriodSeconds": 200,
           "ignoreHttp1xx": false,
           "intervalSeconds": 60,
-          "maxConsecutiveFailures": 1,
+          "maxConsecutiveFailures": 2,
           "portIndex": 1,
           "timeoutSeconds": 10,
           "delaySeconds": 15,
@@ -148,35 +148,31 @@
         "description": "Discovery can be set in a specific network. Please set the network name in General > 'Network name'."
       },
       {
-        "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteManagement",
-        "title": "Create policy in Gosec",
-        "description": "Create admin-router policy",
+        "typeClass": "com.stratio.tais.persistence.model.service.prerequisites.PrerequisiteRest",
+        "title": "Discovery governance user policy",
+        "description": "Policy for Governance users who want to use Discovery dashboards.",
         "expect": [
           201,
           409
         ],
         "verb": "POST",
-        "path": "/api/policy",
+        "path": "https://gosec-services-daas.marathon.mesos:8443/policies",
         "body": {
+          "gids": [],
+          "uids": [],
           "name": "discovery-governance-user",
-          "groups": [],
-          "id": "discovery-governance-user",
           "services": [
             {
-              "type": "Admin-Router",
-              "instancesAcl": [
+              "instances": [
                 {
-                  "instances": [
-                    {
-                      "name": "Admin-Router"
-                    }
-                  ],
+                  "sid": "Admin-Router",
+                  "status": "READY",
                   "acls": [
                     {
                       "resourceType": "url",
                       "name": "/service/discovery-governance/public/dashboard/*",
                       "recursive": true,
-                      "actions": [
+                      "actionsAllow": [
                         "GET",
                         "HTTPDELETE",
                         "HEAD",
@@ -185,26 +181,18 @@
                         "PATCH",
                         "OPTIONS"
                       ],
-                      "allActions": [
-                        "GET",
-                        "HTTPDELETE",
-                        "HEAD",
-                        "POST",
-                        "PUT",
-                        "PATCH",
-                        "OPTIONS"
-                      ]
+                      "actionsDeny": []
                     }
                   ]
                 }
-              ]
+              ],
+              "serviceType": "Admin-Router"
             }
           ],
-          "users": []
+          "tid": "${tenantId}"
         },
         "headers": null,
-        "enabled": "${executePrerequisites}",
-        "managementPath": "/service/gosecmanagement"
+        "enabled": "${executePrerequisites}"
       }
     ],
     "constraints": [
@@ -391,7 +379,7 @@
                 "type": "string",
                 "required": false,
                 "readOnly": false,
-                "application": true,
+                "application": false,
                 "level": 1,
                 "globalParameter": "prerequisites.0",
                 "internalName": "MB_DB_URL",
@@ -409,7 +397,7 @@
                 "type": "string",
                 "required": false,
                 "readOnly": false,
-                "application": true,
+                "application": false,
                 "level": 1,
                 "globalParameter": "prerequisites.2",
                 "internalName": "MB_DB_URL",
@@ -730,15 +718,15 @@
               "percentageMaxHeap": {
                 "description": "Memory percentage to be the max heap for JVM",
                 "type": "integer",
-                "minimum": 1,
-                "maximum": 90,
+                "minimum": 40,
+                "maximum": 95,
                 "required": true,
                 "readOnly": false,
                 "application": false,
                 "level": 1,
                 "internalName": "PERCENTAGE_MAX_HEAP_JVM",
                 "title": "Memory percentage for JVM max heap",
-                "default": 40
+                "default": 70
               }
             },
             "required": []
@@ -1000,7 +988,7 @@
         },
         "name": "settings",
         "title": "Settings",
-        "description": "Configuration of JDBC options and the default admin user.",
+        "description": "Configuration of JDBC options, the default admin user, akka timeouts and other custom settings.",
         "properties": {
           "jdbcParameters": {
             "description": "An optional variable to append to the connection string additional JDBC configuration parameters. The default option helps JDBC to correctly manage pool connections.",
