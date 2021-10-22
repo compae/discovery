@@ -416,7 +416,7 @@
                 "readOnly": false,
                 "application": false,
                 "level": 2,
-                "internalName": "OAUTH_ENABLE",
+                "internalName": "OAUTH_ENABLED",
                 "ui": {
                   "updatable": true
                 },
@@ -1084,20 +1084,6 @@
               "updatable": false
             },
             "title": "Dynamic authentication",
-            "default": true
-          },
-          "oauthEnable": {
-            "description": "Enable OAUTH",
-            "type": "boolean",
-            "required": false,
-            "readOnly": true,
-            "application": false,
-            "level": 2,
-            "internalName": "OAUTH_ENABLED",
-            "ui": {
-              "updatable": false
-            },
-            "title": "Enable OAUTH",
             "default": true
           },
           "oauth2CookieName": {

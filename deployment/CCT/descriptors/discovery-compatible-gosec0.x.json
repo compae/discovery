@@ -689,7 +689,7 @@
                 "readOnly": false,
                 "application": false,
                 "level": 2,
-                "internalName": "OAUTH_ENABLE",
+                "internalName": "OAUTH_ENABLED",
                 "ui": {
                   "updatable": true
                 },
