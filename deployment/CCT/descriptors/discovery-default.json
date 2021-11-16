@@ -2,7 +2,7 @@
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "10.0.0-SNAPSHOT",
+    "version": "10.1.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module.",
     "framework": false,
     "highAvailability": false,
@@ -1257,6 +1257,33 @@
             "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
             "title": "Discovery cidc Metabase api timeout",
             "default": "10s"
+          },
+          "enableMarathonlbCertificate": {
+            "application": false,
+            "default": true,
+            "description": "Use certificate to access service through MarathonLB",
+            "internalName": "ENABLE_MARATHONLB_CERT",
+            "level": 1,
+            "readOnly": false,
+            "required": false,
+            "title": "Enable MarathonLB certificate",
+            "type": "boolean"
+          },
+          "marathonlbCertificate": {
+            "application": false,
+            "default": "${discoveryInstanceName}/${discoveryInstanceName}",
+            "description": "MarathonLB certificate path and name configuration",
+            "internalName": "MARATHONLB_CERT",
+            "level": 1,
+            "readOnly": false,
+            "required": false,
+            "title": "MarathonLB certificate path and name (/userland/certificates/ will be used as prefix)",
+            "type": "string",
+            "ui": {
+              "visible": {
+                "enableMarathonlbCertificate": true
+              }
+            }
           }
         },
         "required": []
