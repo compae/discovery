@@ -2,7 +2,7 @@
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "11.0.0-SNAPSHOT",
+    "version": "0.1.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module",
     "framework": false,
     "highAvailability": false,
@@ -131,6 +131,7 @@
           "serviceId": {
             "description": "Service name for your Discovery.",
             "type": "string",
+            "default": "discovery",
             "required": true,
             "readOnly": false,
             "application": true,
@@ -212,6 +213,7 @@
                 "description": "URL host to access to your Stratio Discovery service. Usually in Stratio laboratories the value is any subdomain of xxx.labs.stratio.com, i.e. discovery.k8s.xxx.labs.stratio.com.",
                 "type": "string",
                 "minimum": 1,
+                "default": "${serviceId}.${eos.internalDomain}",
                 "required": true,
                 "readOnly": false,
                 "application": false,
@@ -333,8 +335,8 @@
                   "updatable": false
                 },
                 "title": "Postgres Service ID (filled via Service Discovery section)",
-                "example": "/keos-datastores/postgres-rocket",
-                "default": "/${postgresPolicies.namespace}/${postgresPolicies.host}"
+                "example": "postgres-rocket.keos-datastores",
+                "default": "${postgresPolicies.host}.${postgresPolicies.namespace}"
               },
               "jdbcParameters": {
                 "description": "An optional variable to append to the connection string additional JDBC configuration parameters. The default option helps JDBC to correctly manage pool connections.",
@@ -459,6 +461,7 @@
                     "readOnly": false,
                     "application": false,
                     "level": 1,
+                    "default": "admin",
                     "internalName": "ADMIN_GROUP",
                     "ui": {
                       "updatable": true
