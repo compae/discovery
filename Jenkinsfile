@@ -1,28 +1,23 @@
-@Library('libpipelines@master') _
+@Library('libpipelines') _
 
 hose {
     EMAIL = 'rocket'
     DEVTIMEOUT = 45
     RELEASETIMEOUT = 45
-    NEW_VERSIONING = 'true'
-    BUILDTOOLVERSION = '3.6.2'
     DEPLOYONPRS = true
-    ANCHORE_TEST = false
-    PKGMODULESNAMES = ['discovery']
-    ANCHORE_POLICY = 'discovery'
     UPSTREAM_VERSION = '0.40.2'
     FREESTYLE_BRANCHING = true
-    DOWNLOADS_USER = "rocketqa"
-    SSH_CREDENTIALS_SERVER_ID = "SSH_ROCKETQA"
 
     DEV = { config ->
         doPackage(config)
-        doSsh(config, [regex: "deployment/CCT/descriptors/.*",
+        doSsh(conf: config, sshConf: [files: "deployment/CCT/descriptors/*",
+                       credentials: "CREDENTIALS_ROCKET_SSH",
                        remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/descriptors",
-                       remoteServer: "rocketqa.int.stratio.com", onPr: false, type: "push"], true)
-        doSsh(config, [regex: "deployment/CCT/rules/.*",
+                       remoteServer: "rocketqa.int.stratio.com", activeDelete: true], onPr: false)
+        doSsh(conf: config, sshConf: [files: "deployment/CCT/rules/*",
+                       credentials: "CREDENTIALS_ROCKET_SSH",
                        remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/rules",
-                       remoteServer: "rocketqa.int.stratio.com", onPr: false, type: "push"], true)
+                       remoteServer: "rocketqa.int.stratio.com", activeDelete: true], onPr: false)
         doDeploy(config)
         doDockers(
             conf : config,
