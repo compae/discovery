@@ -237,7 +237,7 @@
                 "level": 2,
                 "internalName": "HIDDEN_HA",
                 "title": "URL path to access your Discovery service",
-                "default": "/${Application.id}"
+                "default": "/${Application.name}"
               },
               "proxyReadTimeout": {
                 "description": "Proxy read timeout in seconds applied to marathon-lb & internal proxy",
