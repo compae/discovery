@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.40.5-0.1.0 (upcoming)
+
+* [ROCK-5548] Update to metabase 0.40.5 (builder image 0.40.5-0.1.0)
+
 ## 0.40.2-0.1.0 (September 16, 2021)
 
 * [ROCK-4531] Discovery in KEOS adaptations and descriptors
