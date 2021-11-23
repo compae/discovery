@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.40.5-0.1.0 (upcoming)
+## 0.40.5-0.1.0 (November 23, 2021)
 
 * [ROCK-5548] Update to metabase 0.40.5 (builder image 0.40.5-0.1.0)
 
