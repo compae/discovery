@@ -46,17 +46,17 @@ RUN apt-get update \
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/*
 
-# install JAVA - 1.8.0
-RUN wget http://tools.stratio.com/jdk/jdk-8u131-linux-x64.tar.gz \
-  && tar zfx jdk-8u131-linux-x64.tar.gz -C /usr/local/ \
+# install JAVA 11
+ENV JAVA_HOME=/usr/local/jdk-11.0.2
+RUN wget http://tools.stratio.com/jdk/openjdk-11.0.2_linux-x64_bin.tar.gz \
+  && tar zfx openjdk-11.0.2_linux-x64_bin.tar.gz -C /usr/local/ \
   && rm -rf $JAVA_HOME/man \
-  && rm jdk-8u131-linux-x64.tar.gz
-ENV JAVA_HOME=/usr/local/jdk1.8.0_131
+  && rm openjdk-11.0.2_linux-x64_bin.tar.gz
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # add fixed cacerts
 # COPY --from=builder /etc/ssl/certs/java/cacerts /usr/lib/jvm/default-jvm/jre/lib/security/cacerts
-COPY --from=builder /etc/ssl/certs/java/cacerts /usr/local/jdk1.8.0_131/jre/lib/security/cacerts
+COPY --from=builder /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
 
 
 ################################
@@ -78,8 +78,8 @@ COPY --from=builder /app/source/resources/modules/* /plugins/
 ###  PROMETHEUS, LOGS, CICD  ###
 ################################
 # Download prometheus jar
-RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent-0.12.0.jar \
-    http://sodio.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
+RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent-0.14.0.jar \
+    http://sodio.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 
 COPY log4j2.xml /app/target/log4j2.xml
 
