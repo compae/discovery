@@ -14,6 +14,7 @@ object MBJson extends ReplacementUtils {
 
   def getFieldIds(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
     case (acc, JArray(List(JString("field"), JInt(fieldId), _))) => acc + fieldId
+    case (acc, JObject(kvs)) => acc ++ kvs.collect { case ("source-field", JInt(id)) => id }
     case (acc, _) => acc
   }
 
@@ -45,6 +46,13 @@ object MBJson extends ReplacementUtils {
   def replaceFieldIds(jval: JValue, replacements: Map[BigInt, BigInt]): JValue = jval.transform {
     case JArray(List(JString("field"), JInt(fieldId), optionsMap)) =>
       JArray(List(JString("field"), JInt(replacements.getTargetField(fieldId)), optionsMap))
+
+    case JObject(kvs) if kvs exists isField => JObject(
+      kvs map {
+        case jField @ (k, JInt(id)) if isField(jField) => (k, JInt(replacements.getTargetField(id)))
+        case other => other
+      }
+    )
   }
 
 
@@ -82,6 +90,8 @@ object MBJson extends ReplacementUtils {
   private def isDatabase(jsonField: JField) = Set("database", "database_id") contains jsonField._1
 
   private def isCard(jsonField: JField) = Set("card_id", "cardId") contains jsonField._1
+
+  private def isField(jsonField: JField) = Set("source-field") contains jsonField._1
 
 
 
