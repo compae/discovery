@@ -6,13 +6,12 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.Jsonable
+import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 
 // This is the model we use to "identify" a metabase Field
 // based on its name and the table it belongs to
 // so we can match the tables in the source and target metabases
-case class Field(id: BigInt, name: String, table: Table, display_name: String) extends Jsonable {
-  def isTheSameAs(that: Field): Boolean = (this.name == that.name) && (this.table isTheSameAs that.table)
+case class Field(id: BigInt, name: String, table: Table, display_name: String) {
 
   // Be careful, in the DbFieldDto, table_name is actually the display name
   // this method only works well if humazation of names in Metabase is disbled
@@ -27,12 +26,12 @@ case class Field(id: BigInt, name: String, table: Table, display_name: String) e
 // These are the models that metabase api responds with while getting a field
 // (it responds with different models depending on the enpoint, and we need both...)
 // (actually the models have more fields but these are the ones we need)
-case class FieldDto(id: BigInt, name: String, table_id: BigInt, display_name: String) extends Jsonable {
+case class FieldDto(id: BigInt, name: String, table_id: BigInt, display_name: String) {
   def toField(tableIdToTableMap: Map[BigInt, Table]) =
     Field(id, name, tableIdToTableMap.getOrElse(table_id, throw mappingError(table_id)), display_name)
 
   def mappingError(table_id: BigInt) = new Exception(
-    s"Field obtained from api: ${toJson} claims to be in table with id $table_id but this table was not found in metabase"
+    s"Field obtained from api: ${this.toJson} claims to be in table with id $table_id but this table was not found in metabase"
   )
 }
 

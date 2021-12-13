@@ -6,14 +6,16 @@
 
 package com.stratio.discoverycicd
 
+import com.stratio.discoverycicd.exceptions.DuplicatedEntityException
+import com.stratio.discoverycicd.model.Collection.Models
 import com.stratio.discoverycicd.model._
-import com.stratio.discoverycicd.utils.{ApiClient, MBJson}
-import org.json4s.{DefaultFormats, Extraction}
+import com.stratio.discoverycicd.utils.{ ApiClient, Identificable, Logging, MBJson }
+import com.stratio.discoverycicd.utils.Identificable.IdentificableOps
+import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
+import org.json4s.{ DefaultFormats, Extraction }
 import org.json4s.JsonAST.JValue
 
 import scala.annotation.tailrec
-import com.stratio.discoverycicd.utils.Logging
-
 import scala.util.Try
 
 class Exporter(api: ApiClient) extends Logging {
@@ -31,7 +33,7 @@ class Exporter(api: ApiClient) extends Logging {
         api.getCollection(collectionId)
       }.getOrElse(throw new Exception(s"An error occurred getting the collection:$collectionId. Please, check logs."))
 
-    // get cards and dashboards in collection
+    // get cards, dashboards and subcollections in collection
     val items = itemsInCollAndSubColls(collectionId)
     val cardIdsInColl = getCardIdsInColl(items)
     val dashboardIdsInColl = getDashboardIdsInColl(items)
@@ -40,6 +42,11 @@ class Exporter(api: ApiClient) extends Logging {
     val cards = getCards(cardIdsInColl)
     val dashboards = getDashboards(dashboardIdsInColl)
     val subCollections = getCollections(collsIdsInColl)
+
+    // we do not allow to export two entities with the same identifier across metabase instances
+    checkDuplicates(cards)
+    checkDuplicates(dashboards)
+    checkDuplicates(collection :: subCollections)
 
     val dashboardsJson = Extraction.decompose(dashboards)
     checkAllCardsAreInCollection(cardIdsInColl, dashboardsJson)
@@ -116,18 +123,37 @@ class Exporter(api: ApiClient) extends Logging {
   def itemsInColl(collectionId: BigInt) = api.getItemsInCollecton(collectionId)
 
   def getDashboardIdsInColl(items: List[CollectionItem]) =
-    items collect { case CollectionItem(id, _, "dashboard") => id }
+    items collect { case CollectionItem(id, _, Models.DASHBOARD) => id }
 
   def getCardIdsInColl(items: List[CollectionItem]) =
-    items collect { case CollectionItem(id, _, "card") => id }
+    items collect { case CollectionItem(id, _, Models.CARD) => id }
 
   def getCollsInColl(items: List[CollectionItem]) =
-    items collect { case CollectionItem(id, _, "collection") => id }
+    items collect { case CollectionItem(id, _, Models.COLLECTION) => id }
 
   def getDashboards(dashboardIds: List[BigInt]) = dashboardIds map api.getDashboard
 
   def getCards(cardIds: List[BigInt]) = cardIds.map(api.getCard).map(_.cleanDescription)
 
   def getCollections(collIds: List[BigInt]) = collIds map api.getCollection
+
+  def checkDuplicates[A: Identificable](items: List[A]): Unit = {
+    val duplicatedItems = items
+      .groupBy(_.identifier)
+      .collect {
+        case (identifier, duplicates) if duplicates.length > 1 =>
+          Map("identifier" -> identifier.toString, "duplicatedItems" -> duplicates)
+      }
+
+    if (duplicatedItems.nonEmpty) {
+      val itemType = items.head.getClass.getName.split("\\.").last
+      val errorMsg =
+        "Cannot export. Exporting items with the same identifier across instances (usually name) is not supported. " +
+          s"Found the following duplicated items of type $itemType: ${duplicatedItems.toJson}"
+
+      log.error(errorMsg)
+      throw new DuplicatedEntityException(errorMsg)
+    }
+  }
 
 }

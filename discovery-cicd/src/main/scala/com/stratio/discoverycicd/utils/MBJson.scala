@@ -6,11 +6,10 @@
 
 package com.stratio.discoverycicd.utils
 
+import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
 import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
 
-object MBJson extends ReplacementUtils {
-
-  override val entityType: String = "Object"
+object MBJson extends {
 
   def getFieldIds(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
     case (acc, JArray(List(JString("field"), JInt(fieldId), _))) => acc + fieldId

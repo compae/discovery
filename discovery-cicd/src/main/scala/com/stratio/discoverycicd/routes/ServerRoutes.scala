@@ -7,10 +7,12 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ExceptionHandler, Route}
 import com.stratio.discoverycicd.config.ConfigFacade._
 import com.stratio.discoverycicd.model.ExportedCollection
-import com.stratio.discoverycicd.utils.{ApiClient, ReplacementException}
+import com.stratio.discoverycicd.utils.ApiClient
 import com.stratio.discoverycicd.{Exporter, Importer}
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport
 import org.json4s.DefaultFormats
+import com.stratio.discoverycicd.utils.Logging
+import com.stratio.discoverycicd.exceptions.CustomException
 
 class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport {
 
@@ -22,7 +24,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
   val apiRoutes: Route =
     handleExceptions(exceptionHandler) {
       (path(Segment / ExportSegment / Segment) & get) { (_, id) =>
-        headerValue(extractSessionId) { sessionId =>
+        headerValueByName(SessionIdHeaderName) { sessionId =>
           val api =
             new ApiClient(
               apiClientConfig.metabaseUrl,
@@ -41,7 +43,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
         (path(Segment / ImportSegment) & post) { _ =>
           // It seems that unmarshalling directly to BigInt does not work
           parameter(ParentId.as[Long].?) { parentId =>
-            headerValue(extractSessionId) { sessionId =>
+            headerValueByName(SessionIdHeaderName) { sessionId =>
               entity(as[ExportedCollection]) { collection =>
                 val api =
                   new ApiClient(
@@ -64,7 +66,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
     }
 }
 
-object ServerRoutes {
+object ServerRoutes extends Logging {
 
   val ExportSegment = "export"
   val ImportSegment = "import"
@@ -73,14 +75,12 @@ object ServerRoutes {
 
   def unauthorizedReason(sessionId: String): String = s"The user associated with the sessionId: $sessionId is not a superuser"
 
-  def extractSessionId: HttpHeader => Option[String] = {
-    case h if h.name == SessionIdHeaderName => Some(h.value())
-    case _         => None
-  }
-
   def exceptionHandler: ExceptionHandler =
     ExceptionHandler {
-      case ReplacementException(msg) => complete(HttpResponse(InternalServerError, entity = msg))
-      case error @ (_:Throwable) => complete(HttpResponse(InternalServerError, entity = error.getMessage))
+      case error: CustomException => complete(HttpResponse(error.statusCode, entity = error.msg))
+      case error =>
+        val msg = s"Unexpected exception handling export/import request: $error"
+        log.error(msg, error)
+        complete(HttpResponse(InternalServerError, entity = msg))
     }
 }

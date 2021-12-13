@@ -6,6 +6,7 @@
 
 package com.stratio.discoverycicd.utils
 
+import com.stratio.discoverycicd.exceptions.{ResponseDeserializationExepction, ReplacementException}
 import org.json4s.Formats
 import org.json4s.native.Serialization.read
 import scalaj.http.{HttpRequest, HttpResponse, StringBodyConnectFunc, ByteBodyConnectFunc, MultiPartConnectFunc}
@@ -23,8 +24,11 @@ object ImplicitExtensions {
           response.copy(body = body)
 
         case Failure(e) =>
+          val msg = s"Error reading metabase response from ${request.method} to ${request.url}. " +
+                    s"Status: ${response.code}. Response body: ${response.body}. " +
+                    s"Original exception: $e"
           logError(response)
-          throw e
+          throw ResponseDeserializationExepction(msg)
       }
     }
 
@@ -43,5 +47,25 @@ object ImplicitExtensions {
       requestBody.foreach(body => log.error(s"Body in request: $body"))
       log.debug(s"Full HttpResponse object: $response")
     }
+  }
+
+
+  implicit class MapExtension(replacements: Map[BigInt, BigInt]) extends Logging {
+
+    val getTargetField = getOrFail("Field")
+    val getTargetTable = getOrFail("Table")
+    val getTargetDatabase = getOrFail("Database")
+    val getTargetCollection = getOrFail("Collection")
+    val getTargetCard = getOrFail("Card")
+
+    private def getOrFail(replacedThing: String) = (id: BigInt) => {
+      replacements.getOrElse(id, throwReplacementError(replacedThing, id))
+    }
+
+    private def throwReplacementError(replacedThing: String, id: BigInt) = {
+      log.error(s"ERROR: It seems that an exported object references a $replacedThing that has id '$id' in the source Metabase, but was not found in the target Metabase")
+      throw new ReplacementException(s"Could not replace $replacedThing id $id with the found ${replacedThing}s in target Metabase")
+    }
+
   }
 }

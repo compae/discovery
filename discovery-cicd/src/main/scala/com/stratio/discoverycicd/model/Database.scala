@@ -7,8 +7,6 @@
 package com.stratio.discoverycicd.model
 
 
-case class Database(id: BigInt, name: String) {
-    def isTheSameAs(that: Database) = this.name == that.name
-}
+case class Database(id: BigInt, name: String)
 
 case class ListDatabasesResponse(data: List[Database])

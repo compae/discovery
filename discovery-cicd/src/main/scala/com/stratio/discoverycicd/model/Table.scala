@@ -6,7 +6,7 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.Jsonable
+import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 
 // This is the model we use to "identify" a metabase Table
 // based on its name, schema and the name of the datbase it lives in
@@ -14,10 +14,7 @@ import com.stratio.discoverycicd.utils.Jsonable
 case class Table(id: BigInt, name: String,
                  dbName: String,
                  schema: Option[String],
-                 display_name: String) extends Jsonable {
-    def isTheSameAs(that: Table) =
-    (this.name == that.name) && (this.dbName == that.dbName) && (this.schema == that.schema)
-}
+                 display_name: String)
 
 // This is the model that metabase api responds with while getting a table
 // (actually the model has more fields but these are the ones we need)
@@ -25,10 +22,10 @@ case class TableDto(id: BigInt,
                     name: String,
                     db_id: BigInt,
                     schema: Option[String],
-                    display_name: String) extends Jsonable {
+                    display_name: String) {
 
   def mappingError(db_id: BigInt) = new Exception(
-    s"Table obtained from api: ${toJson} claims to be in db with id $db_id, but this db was not found in metabase"
+    s"Table obtained from api: ${this.toJson} claims to be in db with id $db_id, but this db was not found in metabase"
   )
 
   def toTable(dbIdToNameMap: Map[BigInt, String]) = Table(

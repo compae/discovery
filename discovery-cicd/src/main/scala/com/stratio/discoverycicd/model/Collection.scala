@@ -6,16 +6,23 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.Jsonable
-
 case class Collection(id: BigInt,
                       name: String,
                       description: String,
                       color: String,
-                      parent_id: Option[BigInt]) extends Jsonable
+                      parent_id: Option[BigInt])
 
 case class CollectionItem(id: BigInt,
                           name: String,
-                          model: String) extends Jsonable
+                          model: String)
 
 case class CollectionItemsResponse(data: List[CollectionItem])
+
+object Collection {
+
+  object Models {
+    val COLLECTION = "collection"
+    val DASHBOARD = "dashboard"
+    val CARD = "card"
+  }
+}

@@ -6,41 +6,25 @@
 
 package com.stratio.discoverycicd.utils
 
+import com.stratio.discoverycicd.exceptions.ReplacementException
+import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 import scala.util.Try
 import scala.util.{Try, Success, Failure}
 
-trait ReplacementUtils extends Logging with Jsonable {
-  val entityType: String
+object ReplacementUtils extends Logging {
+  def entityType[A](entity: A): String = entity.getClass.getName.split("\\.").last
 
-  def replacementMayFail[T](replacedThing: String)(block: => T) =
-    Try(block) match {
+  def replacementMayFail[A, T](entity: A, replacedThingName: String)(replacingFun: A => T) =
+    Try(replacingFun(entity)) match {
       case Success(result) => result
 
       case Failure(e: ReplacementException) =>
-        log.error(s"Error replacing $replacedThing ID in $entityType: $toJson")
+        log.error(s"Error replacing $replacedThingName ID in ${entityType(entity)}: ${entity.toJson}")
         throw e
 
       case Failure(e) =>
-        log.error(s"Unexpected error while replacing $replacedThing ID in $entityType: $toJson")
+        log.error(s"Unexpected error while replacing $replacedThingName ID in ${entityType(entity)}: ${entity.toJson}")
         throw e
     }
 
-  implicit class MapExtension(replacements: Map[BigInt, BigInt]) {
-
-    val getTargetField = getOrFail("Field")
-    val getTargetTable = getOrFail("Table")
-    val getTargetDatabase = getOrFail("Database")
-    val getTargetCollection = getOrFail("Collection")
-    val getTargetCard = getOrFail("Card")
-
-    private def getOrFail(replacedThing: String) = (id: BigInt) => {
-      replacements.getOrElse(id, throwReplacementError(replacedThing, id))
-    }
-
-    private def throwReplacementError(replacedThing: String, id: BigInt) = {
-      log.error(s"ERROR: It seems that an exported $entityType references a $replacedThing that has id '$id' in the source Metabase, but was not found in the target Metabase")
-      throw new ReplacementException(s"Could not replace $replacedThing id $id with the found ${replacedThing}s in target Metabase")
-    }
-
-  }
 }

@@ -9,6 +9,8 @@ package com.stratio.discoverycicd.utils
 object TypeAliases {
 
   type IdMap = Map[BigInt, BigInt]
+  type CollId = BigInt
+  type DashboardId = BigInt
 
   // We add this aliases to be able to see what the String -> String maps
   // in the permissions parts are about. We have tried to put the Ids as

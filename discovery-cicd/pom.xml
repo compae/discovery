@@ -13,7 +13,7 @@
     </parent>
     <properties>
         <scala.binary.version>2.12</scala.binary.version>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.12.15</scala.version>
         <json4s.version>3.6.7</json4s.version>
         <scalaj.version>2.4.2</scalaj.version>
         <scopt.version>3.7.1</scopt.version>

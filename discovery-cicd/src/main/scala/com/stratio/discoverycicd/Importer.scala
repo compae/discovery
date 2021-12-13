@@ -9,6 +9,9 @@ package com.stratio.discoverycicd
 import com.stratio.discoverycicd.utils.{ApiClient, Logging}
 import com.stratio.discoverycicd.utils.TypeAliases._
 import com.stratio.discoverycicd.model._
+import com.stratio.discoverycicd.model.Collection.Models
+import com.stratio.discoverycicd.utils.Identificable.IdentificableOps
+import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 import scala.annotation.tailrec
 
 class Importer(api: ApiClient) extends Logging {
@@ -21,7 +24,7 @@ class Importer(api: ApiClient) extends Logging {
   lazy val allTables = api.getAllTables map { _.toTable(dbId2Name) }
   lazy val id2Table = allTables map { t => t.id -> t } toMap
 
-  def importCollection(exportedCollection: ExportedCollection, parentCollId: Option[BigInt]) = {
+  def importCollection(exportedCollection: ExportedCollection, parentCollId: Option[BigInt]): Unit = {
 
     log.debug("Getting all needed source => target mappings between ids of dbs, tables and fields ")
     val dbMaps = getDbMap(exportedCollection)
@@ -31,16 +34,23 @@ class Importer(api: ApiClient) extends Logging {
 
     // create necessary items while getting the mapping between source and target ids
     log.debug("Importing root collection from export data")
-    val (sourceCollId, targetCollId) = createCollection(exportedCollection.collection, parentCollId, childNames)
+    val ((sourceCollId, targetCollId), dashboardsInTargetColl, cardsInTargetColl) =
+      createCollection(exportedCollection.collection, parentCollId, childNames)
 
     if (childColls.nonEmpty) log.debug("Importing subcollections of root collection from export data")
-    val collMap = createSubCollections(childColls, Map(sourceCollId -> targetCollId))
+    val (collMap, dashboardsByCollection, cardsByCollection) =
+      createSubCollections(
+        childColls,
+        Map(sourceCollId -> targetCollId),
+        Map(targetCollId -> dashboardsInTargetColl),
+        Map(targetCollId -> cardsInTargetColl)
+    )
 
     log.debug("Importing cards from export data")
-    val cardMap = createCards(exportedCollection.cards, dbMaps, collMap)
+    val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, cardsByCollection)
 
     log.debug("Importing dashboards from export data")
-    createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap)
+    createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
 
     // update permissions in collection and its children
     log.debug(s"Importing Permissions of collection $targetCollId (id in target)")
@@ -51,7 +61,7 @@ class Importer(api: ApiClient) extends Logging {
     }
   }
 
-  def updatePermissionsInColl(targetCollId: BigInt, sourcePermissionsPerGroup: Map[GroupName, Permission]) = {
+  def updatePermissionsInColl(targetCollId: CollId, sourcePermissionsPerGroup: Map[GroupName, Permission]) = {
     val targetGroupNameToId = api.getGroupNameToIdMap
     val targetPermissionsPerGroup = sourcePermissionsPerGroup flatMap {
       case (gName, permission) if targetGroupNameToId contains gName =>
@@ -65,86 +75,161 @@ class Importer(api: ApiClient) extends Logging {
     api.updateCollectionGraph(collectionGraph)
   }
 
-  def createDashboards(dashboards: List[Dashboard], dbMaps: DbMaps, collMap: IdMap, cardMap: IdMap) =
-    dashboards.foreach { dashboard =>
-      log.debug(s"Creating dashboard from exported data: ${dashboard.toJson}")
+  def createDashboards(dashboards: List[Dashboard],
+                       dbMaps: DbMaps,
+                       collMap: IdMap,
+                       cardMap: IdMap,
+                       existingDashboards: Map[CollId, List[CollectionItem]]): Unit = {
+    val finalDashboardIds = dashboards.map { dashboard =>
+      log.debug(s"Creating/updating dashboard from exported data: ${dashboard.toJson}")
       log.debug(s"Replacing collection, database, table and field Ids in dashboard")
-      val dashboardToPost = dashboard
-        .copy(creator_id = api.userId)
-        .replaceCollectionId(collMap)
-        .replaceDatabaseIds(dbMaps.db)
-        .replaceTableIds(dbMaps.table)
-        .replaceFieldIds(dbMaps.field)
-        .replaceCardIds(cardMap)
-
-      createDashboard(dashboardToPost)
-    }
-
-
-  def createDashboard(dashboard: Dashboard) = {
-      // create dashboard and get its id
-      log.debug("create (POST) dashboard in Metabase")
-      val savedDashboardId = api.createDashboard(dashboard)
+      val dashboardToCreateOrUpdate =
+        dashboard
+          .copy(creator_id = api.userId)
+          .replaceCollectionId(collMap)
+          .replaceDatabaseIds(dbMaps.db)
+          .replaceTableIds(dbMaps.table)
+          .replaceFieldIds(dbMaps.field)
+          .replaceCardIds(cardMap)
+      
+      val createdOrUpdatedDashboardId = dashboardToCreateOrUpdate
+        .collection_id
+        .flatMap {
+          collId =>
+            existingDashboards(collId).filter(_.name == dashboard.name) match {
+              case Nil => None
+              case head :: Nil => Some(head)
+              case head :: tail =>
+                log.warn(s"Found ${tail.length + 1} dashboards in the target collection with the same name as the imported one: '${dashboard.name}'. Will update the one with id ${head.id} and delete the rest (ids: ${tail.map(_.id)}).")
+                tail.foreach(api.deleteCollectionItem)
+                Some(head)
+            }
+        }
+        .map {
+          existingDashboard =>
+            log.debug(s"dashboard with name ${existingDashboard.name} already present in collection. Remove all its dashcards")
+            api.deleteAllDashcardsFromDashboard(existingDashboard.id)
+            existingDashboard.id
+        }
+        .getOrElse {
+          log.debug("create (POST) dashboard in Metabase")
+          api.createDashboard(dashboardToCreateOrUpdate)
+        }
 
       // add parameters that cannot be set in the creation post request
       log.debug("update (PUT) dashboard with extra parameters")
-      api.updateDashboard(savedDashboardId, dashboard)
+      api.updateDashboard(createdOrUpdatedDashboardId, dashboardToCreateOrUpdate)
 
       // add the needed cards as dashcards, and update the dashcard list with the new ids
       log.debug("Adding dashcards to dashboard")
-      val dashCardsWithNewIds = dashboard.ordered_cards.map { dashCard =>
+      val dashCardsWithNewIds = dashboardToCreateOrUpdate.ordered_cards.map { dashCard =>
         log.debug(s"Adding dashcard ${dashCard.toJson} to dashboard")
-        val dashCardId = api.addCardToDashboard(savedDashboardId, CardPost(dashCard.card_id)).id
-        dashCard.copy(id = dashCardId, dashboard_id = savedDashboardId)
+        val dashCardId = api.addCardToDashboard(createdOrUpdatedDashboardId, CardPost(dashCard.card_id)).id
+        dashCard.copy(id = dashCardId, dashboard_id = createdOrUpdatedDashboardId)
       }
 
       // add the correct positions, settings etc to all dashcards
       log.debug("Updating dashcards in dashboard with correct positions, settings, etc...")
-      api.updateDashCardsInDashboard(savedDashboardId, dashCardsWithNewIds)
+      api.updateDashCardsInDashboard(createdOrUpdatedDashboardId, dashCardsWithNewIds)
+
+      createdOrUpdatedDashboardId
+    }
+
+    // Delete dashboards that have not been created or updated (not present in export data)
+    val dashboardsToDelete = existingDashboards.values.flatten.filterNot(finalDashboardIds contains _.id)
+    log.debug(s"Deleting dashboards not present in export data ${dashboardsToDelete}")
+    dashboardsToDelete.foreach(api.deleteCollectionItem)
   }
 
-  def createCards(cards: List[Card], dbMaps: DbMaps, collMap: IdMap): IdMap = {
-    cards.foldLeft(Map.empty[BigInt, BigInt]) { (map, card) =>
+
+  def createCards(cards: List[Card],
+                  dbMaps: DbMaps,
+                  collMap: IdMap,
+                  existingCards: Map[CollId, List[CollectionItem]]): IdMap = {
+    val cardIdSourceToTarget = cards.foldLeft(Map.empty[BigInt, BigInt]) { (map, card) =>
       log.debug(s"Creating card from export data: ${card.toJson}")
       log.debug(s"Replacing collection, database, table and field Ids in card")
-      val cardWithTargetIds = card
+      val cardToCreateOrUpdate = card
         .replaceCollectionIds(collMap)
         .replaceDatabaseIds(dbMaps.db)
         .replaceTableIds(dbMaps.table)
         .replaceFieldIds(dbMaps.field)
 
-      log.debug("Uploading card to Metabase")
-      map + (cardWithTargetIds.id -> api.createCard(cardWithTargetIds.toPostDto).id)
+      val createdOrUpdatedCard = cardToCreateOrUpdate
+        .collection_id
+        .flatMap {
+          collId =>
+            existingCards(collId).filter(_.name == card.name) match {
+              case Nil => None
+              case head :: Nil => Some(head)
+              case head :: tail =>
+                log.warn(s"Found ${tail.length + 1} cards in the target collection with the same name as the imported one: '${card.name}'. Will update the one with id ${head.id} and delete the rest (ids: ${tail.map(_.id)}).")
+                tail.foreach(api.deleteCollectionItem)
+                Some(head)
+            }
+        }
+        .map {
+          existingCard =>
+            log.debug("Updating existing card in Metabase")
+            api.updateCard(cardToCreateOrUpdate.copy(id = existingCard.id))
+        }
+        .getOrElse {
+          log.debug("Creating card to Metabase")
+          api.createCard(cardToCreateOrUpdate.toPostDto)
+        }
+
+      map + (cardToCreateOrUpdate.id -> createdOrUpdatedCard.id)
     }
+
+    val cardsToDelete = existingCards.values.flatten.filterNot(cardIdSourceToTarget.values.toSet contains _.id)
+    log.debug(s"Deleting cards not present in export data ${cardsToDelete}")
+    cardsToDelete.foreach(api.deleteCollectionItem)
+
+    cardIdSourceToTarget
   }
 
   @tailrec
-  final def createSubCollections(toCreate: List[Collection], collMap: Map[BigInt, BigInt]): Map[BigInt, BigInt] = {
+  final def createSubCollections(
+    toCreate: List[Collection],
+    collMap: Map[CollId, CollId],
+    dashboardsInCollMap: Map[CollId, List[CollectionItem]],
+    cardsInCollMap: Map[CollId, List[CollectionItem]]
+  ): (Map[CollId, CollId], Map[CollId, List[CollectionItem]], Map[CollId, List[CollectionItem]]) = {
+
     def parentIsCreated(child: Collection) =
       collMap contains child.parent_id.getOrElse(
         throw new Exception("Child existingCollections should always have a parent Id!")
       )
+
     toCreate match {
       case Nil =>
-        collMap
+        (collMap, dashboardsInCollMap, cardsInCollMap)
+
       case remaining =>
         val (parentCreated, parentNotCreated) = remaining partition parentIsCreated
-        val updatedCollMap = parentCreated.foldLeft(collMap) { (acc, coll) =>
-          val childrenNames = parentNotCreated filter { _.parent_id == Some(coll.id) } map { _.name }
-          acc + createCollection(coll, coll.parent_id.map(collMap), childrenNames)
-        }
-        createSubCollections(parentNotCreated, updatedCollMap)
+        val (updatedCollMap, updatedDashboardsInCollMap, updatedCardsInCollMap) =
+          parentCreated.foldLeft((collMap, dashboardsInCollMap, cardsInCollMap)) {
+            case ((accColl, accDash, accCard), coll) =>
+              val childrenNames = parentNotCreated.filter(_.parent_id contains coll.id).map(_.name)
+              val ((source, target), dashboards, cards) = createCollection(coll, coll.parent_id.map(collMap), childrenNames)
+              (
+                accColl + (source -> target),
+                accDash + (target -> dashboards),
+                accCard + (target -> cards)
+              )
+          }
+        createSubCollections(parentNotCreated, updatedCollMap, updatedDashboardsInCollMap, updatedCardsInCollMap)
     }
   }
 
-  // creates (or deletes all items if one exists with the same name) the collection to import
+  // creates the collection to import, or if it already exists, collect all its dashboards and cards,
   // and returns a map mapping the source id with the target id
   def createCollection(sourceColl: Collection,
                        parentCollId: Option[BigInt],
-                       childCollNames: List[String]) = {
+                       childCollNames: List[String]): ((CollId, CollId), List[CollectionItem], List[CollectionItem]) = {
     log.debug(s"Creating collection from export data: ${sourceColl.toJson}")
     val existsInTarget = api.getItemsInCollecton(parentCollId)
-      .filter(_.model == "collection")
+      .filter(_.model == Models.COLLECTION)
       .filter(_.name == sourceColl.name)
 
     assert(
@@ -152,35 +237,35 @@ class Importer(api: ApiClient) extends Logging {
       "Found more than one collection with the same name as the collection to import in the parent collection. Do not know which one overwrite"
     )
 
-    // Create collection and get its id if it does not exits, otherwise delete all its elements
-    // the subcolections that are not included in this export are archived or if
+    // Create collection and get its id if it does not exits, otherwise store all its elements (cards and dashboards)
+    // the subcollections that are not included in this export are archived or if
     // we see that we are going to create a new one and archive an old one we
     // simply rename the old one to the new name
-    val targetCollId = existsInTarget.headOption.map(_.id) match {
+    val (targetCollId, dashboards, cards) = existsInTarget.headOption.map(_.id) match {
       case Some(existingCollId) =>
         log.debug("A collection with the same name as the imported collection in the parent collection exists. Will now overwrite its contents")
-        val (existingSubcollections, existingNonCollItems) = api.getItemsInCollecton(existingCollId)
-          .partition { _.model == "collection" }
 
-        // delete all non-collection items
-        log.debug("Deleting non-collection items from existing collection")
-        existingNonCollItems.foreach(api.deleteCollectionItem)
+        val existingItems          = api.getItemsInCollecton(existingCollId).groupBy(_.model)
+        val existingSubcollections = existingItems.getOrElse(Models.COLLECTION, List.empty)
+        val existingDashboards     = existingItems.getOrElse(Models.DASHBOARD , List.empty)
+        val existingCards          = existingItems.getOrElse(Models.CARD      , List.empty)
 
         // delete the collections that are currently present in target but not in the export
         val collsToArchive = existingSubcollections filterNot { childCollNames contains _.name }
         if (collsToArchive.nonEmpty) log.debug(
-          s"The following subcollections in the exisiting collection are not present in the export data. Will now archive them: ${collsToArchive.map(_.toJson)}"
+          s"The following subcollections in the existing collection are not present in the export data. Will now archive them: ${collsToArchive.map(_.toJson)}"
         )
         collsToArchive.map(_.id).foreach(api.archiveCollecton)
 
-        existingCollId
+        (existingCollId, existingDashboards, existingCards)
 
       case None =>
         log.debug("Imported collection does not exists inside the parent collection. Will now create it")
-        api.createCollection(sourceColl.copy(parent_id = parentCollId)).id
+        val collId = api.createCollection(sourceColl.copy(parent_id = parentCollId)).id
+        (collId, List.empty[CollectionItem], List.empty[CollectionItem])
     }
 
-    (sourceColl.id -> targetCollId)
+    ((sourceColl.id -> targetCollId), dashboards, cards)
   }
 
   def deleteCollection(id: BigInt): Unit = {
@@ -191,7 +276,7 @@ class Importer(api: ApiClient) extends Logging {
     api.archiveCollecton(id)
 
     // now we delete the inner items
-    val (colls, notColls) = items.partition(_.model == "collection")
+    val (colls, notColls) = items.partition(_.model == Models.COLLECTION)
     notColls.foreach(api.deleteCollectionItem)
     colls match {
       case Nil => ()
@@ -199,7 +284,7 @@ class Importer(api: ApiClient) extends Logging {
     }
   }
 
-  def getDbMap(exportedCollection: ExportedCollection) = {
+  def getDbMap(exportedCollection: ExportedCollection): DbMaps = {
     if (api.humanizationEnabled)
       log.warn("Metabase seems to have table and field names humanization activated. This will make necessary to get all fields in the DBs when importing")
     if (exportedCollection.humanizationEnabled)

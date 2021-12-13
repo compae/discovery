@@ -6,7 +6,9 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.{ MBJson, Logging, ReplacementUtils, MetadataChecksum }
+import com.stratio.discoverycicd.utils.{ MBJson, Logging, MetadataChecksum }
+import com.stratio.discoverycicd.utils.ReplacementUtils.replacementMayFail
+import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
 import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
 import scala.util.Try
 
@@ -21,9 +23,7 @@ case class Card(id: BigInt,
                 collection_id: Option[BigInt],
                 collection_position: Option[BigInt],
                 dataset_query: JValue,
-                result_metadata: JValue) extends ReplacementUtils {
-
-  override val entityType = "Card"
+                result_metadata: JValue) {
 
   private val isJObject = dataset_query match {
     case JObject(_) => true
@@ -42,20 +42,20 @@ case class Card(id: BigInt,
 
   def getDatabaseIds = MBJson.getDatabaseIds(dataset_query)
 
-  def replaceFieldIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail("Field") {
-    copy(dataset_query = MBJson.replaceFieldIds(dataset_query, replacements))
+  def replaceFieldIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Field") {
+    _.copy(dataset_query = MBJson.replaceFieldIds(dataset_query, replacements))
   }
 
-  def replaceTableIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail("Table") {
-    copy(dataset_query = MBJson.replaceTableIds(dataset_query, replacements))
+  def replaceTableIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Table") {
+    _.copy(dataset_query = MBJson.replaceTableIds(dataset_query, replacements))
   }
 
-  def replaceDatabaseIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail("Database") {
-    copy(dataset_query = MBJson.replaceDatabaseIds(dataset_query, replacements))
+  def replaceDatabaseIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail(this, "Database") {
+    _.copy(dataset_query = MBJson.replaceDatabaseIds(dataset_query, replacements))
   }
 
-  def replaceCollectionIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail("Collection") {
-    copy(collection_id = Some(replacements.getTargetCollection(collection_id.get)))
+  def replaceCollectionIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail(this, "Collection") {
+    _.copy(collection_id = Some(replacements.getTargetCollection(collection_id.get)))
   }
 
   def metadata_checksum = Try(MetadataChecksum(result_metadata)).toOption

@@ -7,6 +7,7 @@
 package com.stratio.discoverycicd.utils
 
 import com.stratio.discoverycicd.model._
+import com.stratio.discoverycicd.model.Collection.Models
 import com.stratio.discoverycicd.utils.ApiClient._
 import com.stratio.discoverycicd.utils.ImplicitExtensions.HttpRequestExtension
 import org.json4s.DefaultFormats
@@ -54,7 +55,7 @@ class ApiClient(metabaseUrl: String,
     request(s"collection/$collectionId").put("""{"archived":true}""").execute()
 
   def deleteCollectionItem(item: CollectionItem) =
-    if (item.model == "collection") archiveCollecton(item.id)
+    if (item.model == Models.COLLECTION) archiveCollecton(item.id)
     else request(s"${item.model}/${item.id}").method("DELETE").execute()
 
   def createCollection(collection: Collection) = request("collection").postData(write(collection)).as[Collection].body
@@ -82,9 +83,19 @@ class ApiClient(metabaseUrl: String,
       .put(s""" { "cards": ${write(dashCards)} } """)
       .execute()
 
+  def deleteAllDashcardsFromDashboard(id: BigInt) = {
+    val dashcards = getDashboard(id).ordered_cards
+    dashcards.foreach {
+      dashcard =>
+        request(s"dashboard/$id/cards?dashcardId=${dashcard.id}").method("DELETE").execute()
+    }
+  }
+
   def getCard(cardId: BigInt) = request(s"card/$cardId").as[Card].body
 
   def createCard(card: CardToPost) = request("card").postData(write(card)).as[Card].body
+
+  def updateCard(card: Card) = request(s"card/${card.id}").put(write(card.toPostDto)).as[Card].body
 
   def getDatabase(databaseId: BigInt) = request(s"database/$databaseId").as[Database].body
 

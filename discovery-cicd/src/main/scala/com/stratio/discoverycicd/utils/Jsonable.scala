@@ -6,13 +6,21 @@
 
 package com.stratio.discoverycicd.utils
 
+import com.stratio.discoverycicd.model._
 import org.json4s.native.Serialization.write
 import org.json4s.DefaultFormats
 
-trait Jsonable {
-
+trait Jsonable[A] {
   implicit val formats = DefaultFormats
+  def toJson(a: A): String = write(a)
+}
 
-  def toJson: String = write(this)
+object Jsonable {
+
+  implicit class JsonableOps[A: Jsonable](a: A) {
+    def toJson = implicitly[Jsonable[A]].toJson(a)
+  }
+
+  implicit def defaultJsonableInstance[A] = new Jsonable[A] {}
 
 }

@@ -4,6 +4,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 0.40.7-0.1.0 (upcoming)
 
+* [ROCK-5607] Discovery CICD: preserve dashboard and question IDs when importing 
 * [ROCK-5578] Upgrade to metabase 0.40.7 (builder image 0.40.7-0.1.0)
 * [ROCK-5578] Fix vulnerabilities: Update to Java 11
 * [ROCK-5578] Fix vulnerabilities: Update prometheus java agent to 0.14.0
