@@ -13,10 +13,9 @@ import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 // so we can match the tables in the source and target metabases
 case class Field(id: BigInt, name: String, table: Table, display_name: String) {
 
-  // Be careful, in the DbFieldDto, table_name is actually the display name
-  // this method only works well if humazation of names in Metabase is disbled
+  // Be careful, in the DbFieldDto, table_name and name are actually the display names
   def isTheSameAs(dbField: DbFieldDto, dbName: String): Boolean =
-    (name == dbField.name) &&
+    (display_name == dbField.name) &&
       (table.display_name == dbField.table_name) &&
       (table.schema == dbField.schema) &&
       (table.dbName == dbName)

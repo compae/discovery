@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.40.7-0.1.1 (upcoming)
+
+* [ROCK-5792] Fix: do not compare names with display_names while filtering fields
+
 ## 0.40.7-0.1.0 (December 14, 2021)
 
 * [ROCK-5607] Discovery CICD: preserve dashboard and question IDs when importing 
