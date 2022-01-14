@@ -184,7 +184,7 @@
             "title": "Namespace",
             "default": "${k8sNamespace}"
           },
-          "environment": {
+          "deploymentEnvironment": {
             "description": "Deployment environment",
             "type": "string",
             "minimum": 1,
