@@ -14,6 +14,10 @@ hose {
                        credentials: "CREDENTIALS_ROCKET_SSH",
                        remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/descriptors",
                        remoteServer: "rocketqa.int.stratio.com", activeDelete: true], onPr: false)
+        doSsh(conf: config, sshConf: [files: "deployment/CCT/k8s-descriptors/*",
+                       credentials: "CREDENTIALS_ROCKET_SSH",
+                       remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/k8s-descriptors",
+                       remoteServer: "rocketqa.int.stratio.com", activeDelete: true], onPr: false)
         doSsh(conf: config, sshConf: [files: "deployment/CCT/rules/*",
                        credentials: "CREDENTIALS_ROCKET_SSH",
                        remoteFolder: "rocketqa/CCT/discovery/${config.UPSTREAM_VERSION}-${config.INTERNAL_VERSION}/rules",
