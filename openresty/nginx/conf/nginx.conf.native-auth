@@ -18,6 +18,7 @@ http {
         listen 443 ssl;
         ssl_certificate     /etc/pki/proxy.pem;
         ssl_certificate_key /etc/pki/proxy.key;
+        ssl_protocols       TLSv1.2 TLSv1.3;
 
         set $uid '-';
 

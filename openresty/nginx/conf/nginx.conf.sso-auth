@@ -24,6 +24,7 @@ http {
         listen 443 ssl;
         ssl_certificate     /etc/pki/proxy.pem;
         ssl_certificate_key /etc/pki/proxy.key;
+        ssl_protocols       TLSv1.2 TLSv1.3;
 
         set $uid '-';
         set $groups '';
@@ -46,6 +47,10 @@ http {
 
         # These endpoints are not authenticated (see metabase/routes.clj )
         location ~ ^/(favicon.ico|app|public|embed) {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
+
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:3000;
         }
@@ -55,14 +60,19 @@ http {
         # since in the metabase end we are just looking for some headers
         # session/properties though we keep it open just in case these (public) properties are needed
         location ~ ^/api/(embed|geojson|public|setup|util|session/properties) {
-            # TODO: try to get user from jwt token also in these public enpoints but if
-            # token not found just set uid to '-' instead of redirecting to login
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
+
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:3000;
         }
 
 
         location /api/health {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
             proxy_pass http://127.0.0.1:3000;
         }
 
@@ -88,6 +98,9 @@ http {
         set $uid '-';
 
         location "/api/health" {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
             proxy_pass http://127.0.0.1:3000;
         }
     }

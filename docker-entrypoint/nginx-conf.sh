@@ -28,5 +28,5 @@ fi
 
 # if we do not have secrets modify nginx.conf to not use ssl
 if [[ "$DOWNLOAD_SECRETS" = "false" ]]; then
-    sed -i 's/listen 443 ssl/listen 443/ ; /ssl_certificate/d' ${nginx_conf_dir}/nginx.conf
+    sed -i 's/listen 443 ssl/listen 443/ ; /ssl_certificate/d ; /ssl_protocols/d' ${nginx_conf_dir}/nginx.conf
 fi

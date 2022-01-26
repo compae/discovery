@@ -5,6 +5,8 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 0.40.7-0.1.1 (upcoming)
 
 * [ROCK-5792] Fix: do not compare names with display_names while filtering fields
+* [ROCK-5951] Fix vulnerabilities: Embedded nginx offers insecure TLS protocols
+* [ROCK-5913] Fix vulnerabilities: Broken Auth when using gosec-sso authenticator
 
 ## 0.40.7-0.1.0 (December 14, 2021)
 

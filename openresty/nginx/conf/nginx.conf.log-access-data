@@ -81,6 +81,7 @@ http {
         listen 443 ssl;
         ssl_certificate     /etc/pki/proxy.pem;
         ssl_certificate_key /etc/pki/proxy.key;
+        ssl_protocols       TLSv1.2 TLSv1.3;
 
         set $uid '-';
         set $groups '';
@@ -137,6 +138,10 @@ http {
                 ngx.var.isBinary = true
                 encrypt_response_message()
             }
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
+
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:3000;
         }
@@ -157,12 +162,20 @@ http {
             # if that is the case. Modify the accept-encoding header and gzip the outgoing response here.
             gzip on;
             proxy_set_header Accept-Encoding "";
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
+
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:3000;
         }
 
         # These endpoints are not authenticated (see metabase/routes.clj )
         location ~ ^/(favicon.ico|app|public|embed) {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
+
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:3000;
         }
@@ -173,11 +186,18 @@ http {
         # since in the metabase end we are just looking for some headers
         # session/properties though we keep it open just in case these (public) properties are needed
         location ~ ^/api/(geojson|public|setup|util|session/properties) {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
+
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
             proxy_pass http://127.0.0.1:3000;
         }
 
         location /api/health {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
             proxy_pass http://127.0.0.1:3000;
         }
 
@@ -205,6 +225,9 @@ http {
         set $response_message '$remote_addr - $remote_user [$time_local] $request $status $body_bytes_sent $http_referer $http_user_agent $http_x_forwarded_for $response_body';
 
         location "/api/health" {
+            proxy_set_header X-DCOS-OAUTH-USER '';
+            proxy_set_header X-DCOS-OAUTH-GROUPS '';
+            proxy_set_header X-DCOS-OAUTH-TENANT '';
             proxy_pass http://127.0.0.1:3000;
         }
     }
