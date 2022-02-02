@@ -1,7 +1,7 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-# ChangelogOnly listing significant user-visible, not internal code cleanups and minor bug fixes.## 0.40.7-0.1.1 (2022-02-02)
+## 0.40.7-0.1.1 (2022-02-02)
 
 * [ROCK-5792] Fix: do not compare names with display_names while filtering fields
 * [ROCK-5951] Fix vulnerabilities: Embedded nginx offers insecure TLS protocols
