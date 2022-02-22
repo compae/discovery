@@ -1,6 +1,10 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.42.1-0.1.0 (upcoming)
+
+* Upgrade to metabase 0.42.1
+
 ## 0.40.7-0.1.1 (2022-02-02)
 
 * [ROCK-5792] Fix: do not compare names with display_names while filtering fields
