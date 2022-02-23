@@ -5,5 +5,5 @@ set -euo pipefail
 source "./bin/check-clojure-cli.sh"
 check_clojure_cli
 
-cd bin/write-mb-checksum
-clojure -M -m write-mb-checksum
+cd /app/source/bin/update-metabase-dep
+clojure -M -m update-metabase-dep

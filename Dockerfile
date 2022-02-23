@@ -9,18 +9,15 @@ WORKDIR /app/source
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
 
-# Add drivers source code and script to calculate correct metabase checksum
-# (so the driver build proccess does not trigger a metabase rebuild)
-ADD ./metabase/modules /app/source/modules
-ADD ./metabase/bin     /app/source/bin
+# Add drivers source code, script to replace metabase dependency, and deps.edn with srtatio mvn repo
+COPY ./metabase/modules                          /app/source/modules
+COPY ./metabase/bin                              /app/source/bin
+COPY ./metabase/modules/drivers/stratio-repo.edn /root/.clojure/deps.edn
 
-# write checksum file so drivers build does not trigger metabase build
-RUN bin/write-mb-checksum.sh
+# replace metabase dependency in bin/build-drivers modules so it points to the already-compiled jar
+RUN bin/update-metabase-dep.sh
 
 # build the drivers
-# Uncomment below to be able to resolve niquel.int.stratio.con in local builds (needed to build crossdata driver)
-# RUN echo -e "search stratio.com\nnameserver 10.120.0.42\nnameserver 172.19.0.42\n" >> /etc/resolv.conf \
-#   && bin/build-drivers.sh
 RUN bin/build-drivers.sh
 
 
@@ -53,10 +50,6 @@ RUN wget http://tools.stratio.com/jdk/openjdk-11.0.2_linux-x64_bin.tar.gz \
   && rm -rf $JAVA_HOME/man \
   && rm openjdk-11.0.2_linux-x64_bin.tar.gz
 ENV PATH=$JAVA_HOME/bin:$PATH
-
-# add fixed cacerts
-# COPY --from=builder /etc/ssl/certs/java/cacerts /usr/lib/jvm/default-jvm/jre/lib/security/cacerts
-COPY --from=builder /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
 
 
 ################################

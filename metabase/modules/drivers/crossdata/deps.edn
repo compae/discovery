@@ -1,0 +1,10 @@
+{:paths
+ ["src" "resources"]
+
+ :mvn/repos
+ {"stratio" {:url "https://niquel.int.stratio.com:1443/repository/public"}}
+
+ :deps
+ {com.stratio.crossdata.driver/stratio-crossdata-jdbc4
+  {:mvn/version "2.22.1-d9034f2"
+   :exclusions [com.fasterxml.jackson.core/jackson-core]}}}

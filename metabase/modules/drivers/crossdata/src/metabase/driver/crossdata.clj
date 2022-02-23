@@ -17,6 +17,7 @@
             [metabase.driver.sql-jdbc.execute :as sql-jdbc.execute]
             [metabase.driver.sql-jdbc.execute.legacy-impl :as legacy]
             [metabase.driver.sql-jdbc.sync :as sql-jdbc.sync]
+            [metabase.driver.sql.parameters.substitution :as params.substitution]
             [metabase.driver.sql.query-processor :as sql.qp]
             [metabase.driver.sql.util :as sql.u]
             [metabase.driver.sql.util.unprepare :as unprepare]
@@ -28,6 +29,7 @@
             [metabase.query-processor.store :as qp.store]
             [metabase.query-processor.timezone :as qp.timezone]
             [metabase.query-processor.util :as qputil]
+            [metabase.query-processor.util.add-alias-info :as add]
             [metabase.stratio.middleware :as st.mw]
             [metabase.sync.util :as sync-util]
             [metabase.util :as u]
@@ -49,8 +51,8 @@
 (driver/register! :crossdata :parent #{:sql-jdbc ::legacy/use-legacy-classes-for-read-and-set})
 
 (defmethod driver/db-start-of-week :crossdata
-           [_]
-           :sunday)
+  [_]
+  :sunday)
 
 (defmethod sql-jdbc.conn/data-warehouse-connection-pool-properties :crossdata
   [driver database]
@@ -123,8 +125,8 @@
 (defmethod sql.qp/date [:crossdata :year]            [_ _ expr] (hsql/call :trunc (hx/->timestamp expr) (hx/literal :year)))
 
 (defmethod sql.qp/date [:crossdata :day-of-week]
-  [_ _ expr]
-  (sql.qp/adjust-day-of-week :crossdata
+  [driver _ expr]
+  (sql.qp/adjust-day-of-week driver
                              (hx/->integer (date-format "u"
                                                         (hx/+ (hx/->timestamp expr)
                                                               (hsql/raw "interval '1' day"))))))
@@ -169,16 +171,6 @@
 (defmethod sql.qp/add-interval-honeysql-form :crossdata
   [_ hsql-form amount unit]
   (hx/+ (hx/->timestamp hsql-form) (hsql/raw (format "(INTERVAL '%d' %s)" (int amount) (name unit)))))
-
-;; ignore the schema when producing the identifier
-(defn qualified-name-components
-  "Return the pieces that represent a path to `field`, of the form `[table-name parent-fields-name* field-name]`."
-  [{field-name :name, table-id :table_id}]
-  [(db/select-one-field :name Table, :id table-id) field-name])
-
-(defmethod sql.qp/field->identifier :crossdata
-  [_ field]
-  (apply hsql/qualify (qualified-name-components field)))
 
 (def ^:dynamic *param-splice-style*
   "How we should splice params into SQL (i.e. 'unprepare' the SQL). Either `:friendly` (the default) or `:paranoid`.
@@ -242,18 +234,33 @@
   "Default alias for all source tables. (Not for source queries; those still use the default SQL QP alias of `source`.)"
   "t1")
 
-;; use `source-table-alias` for the source Table, e.g. `t1.field` instead of the normal `schema.table.field`
-(defmethod sql.qp/->honeysql [:crossdata (class Field)]
-  [driver field]
-  (binding [sql.qp/*table-alias* (or sql.qp/*table-alias* source-table-alias)]
-    ;; < STRATIO - we do not have :hive-like driver in our build
-    ((get-method sql.qp/->honeysql [:sql (class Field)]) driver field)
-    ;; ((get-method sql.qp/->honeysql [:hive-like (class Field)]) driver field)
-    ;; STRATIO />
-    ))
+(defmethod sql.qp/->honeysql [:crossdata :field]
+  [driver [_ _ {::params.substitution/keys [compiling-field-filter?]} :as field-clause]]
+  ;; use [[source-table-alias]] instead of the usual `schema.table` to qualify fields e.g. `t1.field` instead of the
+  ;; normal `schema.table.field`
+  ;; < STRATIO - we do not have :hive-like driver in our build
+  ;; (let parent-method (get-method sql.qp/->honeysql [:hive-like :field])
+  (let [parent-method (get-method sql.qp/->honeysql [:sql :field])
+        ;; STRATIO >
+        field-clause  (mbql.u/update-field-options field-clause
+                                                   update
+                                                   ::add/source-table
+                                                   (fn [source-table]
+                                                     (cond
+                                                       ;; DO NOT qualify fields from field filters with `t1`, that won't
+                                                       ;; work unless the user-written SQL query is doing the same
+                                                       ;; thing.
+                                                       compiling-field-filter? ::add/none
+                                                       ;; for all other fields from the source table qualify them with
+                                                       ;; `t1`
+                                                       (integer? source-table) source-table-alias
+                                                       ;; no changes for anyone else.
+                                                       :else                   source-table)))]
+    (parent-method driver field-clause)))
 
 
-(defmethod sql.qp/apply-top-level-clause [:crossdata :page] [_ _ honeysql-form {{:keys [items page]} :page}]
+(defmethod sql.qp/apply-top-level-clause [:crossdata :page]
+  [_ _ honeysql-form {{:keys [items page]} :page}]
   (let [offset (* (dec page) items)]
     (if (zero? offset)
       ;; if there's no offset we can simply use limit
@@ -293,7 +300,7 @@
 ;; STRATIO />
 
 
-;; < STRATIO - sparksql driver implements describe-databases and describe-table because there is som problem
+;; < STRATIO - sparksql driver implements describe-databases and describe-table because there is some problem
 ;; with the Thrift server but in croossdata we do not have this problem so we do not need to implement them.
 ;; However, we do have to implement describe-table in order to
 ;;   - do a refresh table

@@ -1,0 +1,3 @@
+{:deps
+ {metabase/stratiopostgres {:local/root "stratiopostgres"}
+  metabase/crossdata       {:local/root "crossdata"}}}
