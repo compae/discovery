@@ -3,7 +3,8 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 0.42.1-0.1.0 (upcoming)
 
-* Upgrade to metabase 0.42.1
+* [ROCK-6000] Upgrade to metabase 0.42
+* [ROCK-6000] Add setting to add all needed ssl options with a simple click in stratiopostgres driver
 
 ## 0.40.7-0.1.1 (2022-02-02)
 

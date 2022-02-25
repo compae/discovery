@@ -2,10 +2,13 @@
   "Postgres driver that also sets a custom variable/postgres role with the name or email of the current user"
   (:require [clojure.core.async :as a]
             [clojure.java.jdbc :as jdbc]
+            [clojure.set :as set]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [metabase.api.common :as api]
+            [metabase.db.spec :as db.spec]
             [metabase.driver :as driver]
+            [metabase.driver.sql-jdbc.common :as sql-jdbc.common]
             [metabase.driver.sql-jdbc.connection :as sql-jdbc.conn]
             [metabase.driver.sql-jdbc.execute :as sql-jdbc.execute]
             [metabase.driver.sql-jdbc.sync.common :as common]
@@ -27,6 +30,26 @@
 
 
 (driver/register! :stratiopostgres, :parent :postgres)
+
+(def ^:private ssl-options
+  (str
+   "ssl=true&"
+   "sslmode=verify-full&"
+   "sslcert=/etc/pki/discovery.pem&"
+   "sslkey=/etc/pki/discovery.pk8&"
+   "sslrootcert=/etc/pki/ca-bundle.pem&"))
+
+
+;; We override this method to make it easier to inject the "default" ssl properties
+;; before calling the parent method so that users do not need to include
+;; all these paths and params as "additional JDBC options" and just by
+;; checking an option all the ssl things are configured for them
+(defmethod sql-jdbc.conn/connection-details->spec :stratiopostgres
+  [driver {use-ssl-authentication? :use-ssl-authentication, :as details-map}]
+  (let [details-map-with-ssl (if use-ssl-authentication?
+                               (update details-map :additional-options (partial str ssl-options))
+                               details-map)]
+    ((get-method sql-jdbc.conn/connection-details->spec :postgres) driver details-map-with-ssl)))
 
 (defn- user-variable-name []
   (let [details       (:details (qp.store/database))

@@ -8,6 +8,17 @@ driver:
   lazy-load: true
   parent: postgres
   connection-properties:
+    - host
+    - port
+    - dbname
+    - user
+    - password
+
+    - name: use-ssl-authentication
+      display-name: Use SSL authentication?
+      type: boolean
+      default: true
+
     - name: impersonate
       display-name: Set ROLE in postgres with the current logged user?
       default: false
@@ -21,16 +32,14 @@ driver:
     - name: user-var-name
       display-name: Name of the variable to be set with the current logged user (must contain a dot .)
       default: customvar.user_id
+      visible-if:
+        add-user-var: true
 
-    - host
-    - port
-    - dbname
-    - user
-    - password
-
-    - merge:
-      - additional-options
-      - placeholder: ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem&prepareThreshold=0
+    - name: additional-options
+      display-name: Additional JDBC connection string options
+      placeholder: prepareThreshold=0&ssl=true&sslmode=verify-full&sslcert=/etc/eki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem
+      default: prepareThreshold=0
+      required: false
 
   connection-properties-include-tunnel-config: true
 init:

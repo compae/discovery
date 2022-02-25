@@ -26,12 +26,13 @@ driver:
 
     - name: ssl-option
       display-name: Use a secure connection (SSL)?
-      default: false
+      default: true
       type: boolean
 
-    - merge:
-        - additional-options
-        - placeholder: "prepareThreshold = 0"
+    - name: additional-options
+      display-name: Additional JDBC connection string options
+      placeholder: prepareThreshold=0
+      required: false
 
 init:
   - step: load-namespace
