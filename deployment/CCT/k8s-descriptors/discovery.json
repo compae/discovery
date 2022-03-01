@@ -10,7 +10,7 @@
       "runners": [
         {
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.42.1-0.1.0",
+          "image": "${eos.dockerRegistry}/discovery:0.42.2-0.1.0",
           "forcePullImage": true,
           "privileged": false
         }

@@ -5,7 +5,7 @@ hose {
     DEVTIMEOUT = 45
     RELEASETIMEOUT = 45
     DEPLOYONPRS = true
-    UPSTREAM_VERSION = '0.42.1'
+    UPSTREAM_VERSION = '0.42.2'
     FREESTYLE_BRANCHING = true
 
     DEV = { config ->
