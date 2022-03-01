@@ -18,7 +18,7 @@
         <scalaj.version>2.4.2</scalaj.version>
         <scopt.version>3.7.1</scopt.version>
         <slf4j.api.version>1.7.30</slf4j.api.version>
-        <slf4j.impl.version>2.15.0</slf4j.impl.version>
+        <slf4j.impl.version>2.17.1</slf4j.impl.version>
         <pureconfig.version>0.12.3</pureconfig.version>
         <pureconfig.enumeratum.version>0.12.3</pureconfig.enumeratum.version>
         <akka.version>2.6.5</akka.version>
