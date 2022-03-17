@@ -58,6 +58,13 @@
             "name": "1",
             "labels": {},
             "containerPort": 443
+          },
+          {
+            "servicePort": 0,
+            "protocol": "tcp",
+            "name": "metrics",
+            "labels": {},
+            "containerPort": 6080
           }
         ],
         "requirePorts": false
@@ -917,6 +924,30 @@
                 "internalName": "PERCENTAGE_MAX_HEAP_JVM",
                 "title": "Memory percentage for JVM max heap",
                 "default": 70
+              }
+            },
+            "required": []
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "metrics",
+            "title": "Metrics",
+            "description": "JMX and Prometheus metrics configuration for service and asset executions",
+            "properties": {
+              "prometheusMetricsEnable": {
+                "description": "Allow metrics to be sent to Prometheus",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "PROMETHEUS_METRICS_ENABLE",
+                "title": "Use Prometheus metrics",
+                "default": true
               }
             },
             "required": []

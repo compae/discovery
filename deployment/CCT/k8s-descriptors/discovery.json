@@ -15,8 +15,7 @@
           "privileged": false
         }
       ],
-      "volumes": [
-      ]
+      "volumes": []
     },
     "networking": {
       "expose": [
@@ -60,6 +59,13 @@
             "name": "healthcheck",
             "labels": {},
             "containerPort": 3009
+          },
+          {
+            "servicePort": 0,
+            "protocol": "tcp",
+            "name": "monitor",
+            "labels": {},
+            "containerPort": 6080
           }
         ],
         "requirePorts": false
@@ -77,7 +83,8 @@
           "secure": false,
           "timeoutSeconds": 10,
           "delaySeconds": 15
-        }],
+        }
+      ],
       "command": []
     },
     "autoscaling": {
@@ -639,6 +646,30 @@
               "MEM",
               "DISK"
             ]
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "metrics",
+            "title": "Metrics",
+            "description": "JMX and Prometheus metrics configuration for service and asset executions",
+            "properties": {
+              "prometheusMetricsEnable": {
+                "description": "Allow metrics to be sent to Prometheus",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "PROMETHEUS_METRICS_ENABLE",
+                "title": "Use Prometheus metrics",
+                "default": true
+              }
+            },
+            "required": []
           },
           "log": {
             "type": "object",
@@ -1230,6 +1261,17 @@
               ]
             }
           ]
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "monitoring.coreos.com/v1",
+          "kind": "ServiceMonitor",
+          "name": "${serviceId}",
+          "namespace": "${k8sNamespace}",
+          "spec": "{\"endpoints\": [{\"interval\": \"5s\",\"port\": \"monitor\",\"path\": \"/metrics\",\"scheme\": \"http\"}],\"namespaceSelector\": {\"matchNames\": [\"${Application.domain}\"]},\"selector\": {\"matchLabels\": {\"cct.stratio.com/application_id\": \"${serviceId}.${k8sNamespace}\"}}}",
+          "annotations": "{\"meta.helm.sh/release-name\": \"core-prometheus\", \"meta.helm.sh/release-namespace\": \"${k8sNamespace}\"}",
+          "labels": "{\"app\": \"kube-prometheus-stack-prometheus\", \"app.kubernetes.io/managed-by\": \"Helm\", \"chart\": \"kube-prometheus-stack-10.1.1\", \"heritage\": \"Helm\", \"release\": \"core-prometheus\"}",
+          "enabled": "${prometheusMetricsEnable}"
         },
         {
           "label": "=> Wait 10s until everything is configured...",
