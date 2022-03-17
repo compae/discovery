@@ -63,7 +63,7 @@
           {
             "servicePort": 0,
             "protocol": "tcp",
-            "name": "monitor",
+            "name": "metrics",
             "labels": {},
             "containerPort": 6080
           }
@@ -1261,17 +1261,6 @@
               ]
             }
           ]
-        },
-        {
-          "type": "kubernetes/customresource/create",
-          "apiVersion": "monitoring.coreos.com/v1",
-          "kind": "ServiceMonitor",
-          "name": "${serviceId}",
-          "namespace": "${k8sNamespace}",
-          "spec": "{\"endpoints\": [{\"interval\": \"5s\",\"port\": \"monitor\",\"path\": \"/metrics\",\"scheme\": \"http\"}],\"namespaceSelector\": {\"matchNames\": [\"${Application.domain}\"]},\"selector\": {\"matchLabels\": {\"cct.stratio.com/application_id\": \"${serviceId}.${k8sNamespace}\"}}}",
-          "annotations": "{\"meta.helm.sh/release-name\": \"core-prometheus\", \"meta.helm.sh/release-namespace\": \"${k8sNamespace}\"}",
-          "labels": "{\"app\": \"kube-prometheus-stack-prometheus\", \"app.kubernetes.io/managed-by\": \"Helm\", \"chart\": \"kube-prometheus-stack-10.1.1\", \"heritage\": \"Helm\", \"release\": \"core-prometheus\"}",
-          "enabled": "${prometheusMetricsEnable}"
         },
         {
           "label": "=> Wait 10s until everything is configured...",
