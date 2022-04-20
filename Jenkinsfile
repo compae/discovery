@@ -6,7 +6,7 @@ hose {
     RELEASETIMEOUT = 45
     DEPLOYONPRS = true
     UPSTREAM_VERSION = '0.42.2'
-    FREESTYLE_BRANCHING = true
+    VERSIONING_TYPE = "stratioVersion-3-3"
 
     DEV = { config ->
         doPackage(config)
