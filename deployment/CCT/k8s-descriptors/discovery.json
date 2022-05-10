@@ -2,7 +2,7 @@
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "0.1.0-SNAPSHOT",
+    "version": "0.3.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module",
     "framework": false,
     "highAvailability": false,
@@ -91,6 +91,12 @@
       "appRole": "role",
       "secretRole": "${approlename}"
     },
+    "permissions": {
+      "enabled": true,
+      "policies": [
+        "K8sApplicationRole(id ${Application.name})"
+      ]
+    },
     "dependencies": [
       {
         "id": "postgresConnectionDB",
@@ -157,17 +163,6 @@
             "title": "Discovery instance name",
             "default": "${Application.id}"
           },
-          "stratioModule": {
-            "description": "Stratio module",
-            "type": "boolean",
-            "required": true,
-            "readOnly": true,
-            "application": true,
-            "level": 2,
-            "internalName": "STRATIO_MODULE",
-            "title": "Stratio Module",
-            "default": true
-          },
           "namespace": {
             "description": "Namespace",
             "type": "string",
@@ -212,7 +207,7 @@
                 "description": "URL host to access to your Stratio Discovery service. Usually in Stratio laboratories the value is any subdomain of xxx.labs.stratio.com, i.e. discovery.k8s.xxx.labs.stratio.com.",
                 "type": "string",
                 "minimum": 1,
-                "default": "${serviceId}.${eos.internalDomain}",
+                "default": "${serviceId}.${external_domain}",
                 "required": true,
                 "readOnly": false,
                 "application": false,
@@ -998,7 +993,7 @@
                 "default": "1024"
               },
               "nginxWorkerProcesses": {
-                "description": "Sets the number of worker processes for Nginx configuration. The optimal value depends on many factors including (but not limited to) the number of CPU cores, the number of hard disk drives that store data, and load pattern. When one is in doubt, setting it to the number of available CPU cores would be a good start (the value “auto” will try to autodetect it).",
+                "description": "Sets the number of worker processes for Nginx configuration. The optimal value depends on many factors including (but not limited to) the number of CPU cores, the number of hard disk drives that store data, and load pattern. When one is in doubt, setting it to the number of available CPU cores would be a good start (the value 'auto' will try to autodetect it).",
                 "type": "string",
                 "maxLength": 100,
                 "minLength": 1,
@@ -1096,7 +1091,7 @@
               "updatable": false
             },
             "title": "Secret Role",
-            "default": "default"
+            "default": "${Application.domain}-${Application.name}"
           },
           "useDynamicAuthentication": {
             "description": "Enable dynamic authentication.",
@@ -1253,6 +1248,16 @@
               ]
             }
           ]
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "secrets.stratio.com/v1",
+          "kind": "SecretsIdentity",
+          "plural": "SecretsIdentities",
+          "name": "${Application.name}",
+          "namespace": "${Application.domain}",
+          "spec": "{\"bundles\":[\"${Application.name}\"],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}",
+          "enabled": "true"
         },
         {
           "label": "=> Wait 10s until everything is configured...",
