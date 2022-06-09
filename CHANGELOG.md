@@ -1,6 +1,10 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.42.2-0.1.1 (upcoming)
+
+* [ROCK-7358] Add missing sync-scheduling options to our metabase drivers
+
 ## 0.42.2-0.1.0 (2022-03-22)
 
 * [ROCK-6000] Upgrade to metabase 0.42

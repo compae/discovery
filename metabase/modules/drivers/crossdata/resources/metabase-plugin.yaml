@@ -34,6 +34,9 @@ driver:
       placeholder: prepareThreshold=0
       required: false
 
+    - advanced-options-start
+    - default-advanced-options
+
 init:
   - step: load-namespace
     namespace: metabase.driver.crossdata

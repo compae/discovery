@@ -41,6 +41,9 @@ driver:
       default: prepareThreshold=0
       required: false
 
+    - advanced-options-start
+    - default-advanced-options
+
   connection-properties-include-tunnel-config: true
 init:
   - step: load-namespace
