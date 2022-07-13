@@ -2,7 +2,7 @@
 # STAGE 1: stratio drivers builder
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.42.2-0.1.0 as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.43.4-0.1.0-SNAPSHOT as builder
 
 WORKDIR /app/source
 
@@ -26,7 +26,7 @@ RUN bin/build-drivers.sh
 # # STAGE 2: runner
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/oauth-base:0.2.0-c7fbb63 as runner
+FROM qa.int.stratio.com/stratio/oauth-base:0.2.0-b174182 as runner
 
 WORKDIR /app
 
