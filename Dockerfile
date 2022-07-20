@@ -32,13 +32,14 @@ WORKDIR /app
 
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
+ENV DISCOVERY_VERSION 0.43.4
 
 ################################
 ###       DEPENDENCIES       ###
 ################################
 # apt things
 RUN apt-get update \
-  &&  apt-get install -y ttf-dejavu fontconfig wget \
+  &&  apt-get install -y ttf-dejavu fontconfig wget zip \
   && apt-get --only-upgrade install -y libfreetype6 libssl1.1 libssl1.0.0 openssl libsystemd0 libudev1\
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/*
@@ -58,6 +59,12 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 # add Metabase uberjar
 RUN mkdir -p bin target/uberjar
 COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
+
+# adapt MANIFEST.MF to implementation discovery version
+RUN jar xf /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF  \
+    && sed -i '1s;^;Implementation-Version: '"$DISCOVERY_VERSION"'\n;' META-INF/MANIFEST.MF \
+    && zip /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF \
+    && rm -rf META-INF
 
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins
