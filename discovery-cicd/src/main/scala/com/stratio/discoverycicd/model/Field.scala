@@ -6,6 +6,7 @@
 
 package com.stratio.discoverycicd.model
 
+import com.stratio.discoverycicd.exceptions.MappingException
 import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 
 // This is the model we use to "identify" a metabase Field
@@ -29,7 +30,7 @@ case class FieldDto(id: BigInt, name: String, table_id: BigInt, display_name: St
   def toField(tableIdToTableMap: Map[BigInt, Table]) =
     Field(id, name, tableIdToTableMap.getOrElse(table_id, throw mappingError(table_id)), display_name)
 
-  def mappingError(table_id: BigInt) = new Exception(
+  def mappingError(table_id: BigInt) = MappingException(
     s"Field obtained from api: ${this.toJson} claims to be in table with id $table_id but this table was not found in metabase"
   )
 }

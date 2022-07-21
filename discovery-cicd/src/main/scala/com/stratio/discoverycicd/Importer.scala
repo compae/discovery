@@ -6,12 +6,14 @@
 
 package com.stratio.discoverycicd
 
+import com.stratio.discoverycicd.exceptions.ValidationDataException
 import com.stratio.discoverycicd.utils.{ApiClient, Logging}
 import com.stratio.discoverycicd.utils.TypeAliases._
 import com.stratio.discoverycicd.model._
 import com.stratio.discoverycicd.model.Collection.Models
 import com.stratio.discoverycicd.utils.Identificable.IdentificableOps
 import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
+
 import scala.annotation.tailrec
 
 class Importer(api: ApiClient) extends Logging {
@@ -196,9 +198,9 @@ class Importer(api: ApiClient) extends Logging {
     cardsInCollMap: Map[CollId, List[CollectionItem]]
   ): (Map[CollId, CollId], Map[CollId, List[CollectionItem]], Map[CollId, List[CollectionItem]]) = {
 
-    def parentIsCreated(child: Collection) =
+    def parentIsCreated(child: Collection): Boolean =
       collMap contains child.parent_id.getOrElse(
-        throw new Exception("Child existingCollections should always have a parent Id!")
+        throw new ValidationDataException("Child existingCollections should always have a parent Id!")
       )
 
     toCreate match {
@@ -232,7 +234,7 @@ class Importer(api: ApiClient) extends Logging {
       .filter(_.model == Models.COLLECTION)
       .filter(_.name == sourceColl.name)
 
-    assert(
+    require(
       existsInTarget.size <= 1,
       "Found more than one collection with the same name as the collection to import in the parent collection. Do not know which one overwrite"
     )
@@ -292,13 +294,13 @@ class Importer(api: ApiClient) extends Logging {
     val needAllFields = api.humanizationEnabled || exportedCollection.humanizationEnabled
 
     val databases = allDatabases filter { db => exportedCollection.databases exists (_ isTheSameAs db) }
-    assert(exportedCollection.databases.size == databases.size,
+    require(exportedCollection.databases.size == databases.size,
            "Some of the needed databases to perform the import are not found in the target metabase")
 
     val tables = if (exportedCollection.tables.isEmpty) List.empty
                  else allTables filter { t => exportedCollection.tables exists (_ isTheSameAs t) }
     lazy val missingTables = exportedCollection.tables.filterNot { t => allTables exists (_ isTheSameAs t) }
-    assert(exportedCollection.tables.size == tables.size,
+    require(exportedCollection.tables.size == tables.size,
            s"Some of the needed tables to perform the import are not found in the target metabase:\nNeeded: ${exportedCollection.tables.map(_.toJson)}\n\nMissing: ${missingTables.map(_.toJson)}\n\nAll found tables: ${allTables.map(_.toJson)}")
 
     val fields =
@@ -317,7 +319,7 @@ class Importer(api: ApiClient) extends Logging {
         if exportedCollection.fields exists (_ isTheSameAs field)
       } yield field
 
-    assert(exportedCollection.fields.size == fields.size,
+    require(exportedCollection.fields.size == fields.size,
            s"Some of the needed fields to perform the import are not found in the target metabase.\n\nNeeded: ${exportedCollection.fields.map(_.toJson)}.\n\nFound: ${fields.map(_.toJson)}")
 
     // Maps with id correspondence between source and target metabases

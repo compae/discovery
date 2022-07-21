@@ -6,6 +6,7 @@
 
 package com.stratio.discoverycicd.model
 
+import com.stratio.discoverycicd.exceptions.MappingException
 import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 
 // This is the model we use to "identify" a metabase Table
@@ -24,7 +25,7 @@ case class TableDto(id: BigInt,
                     schema: Option[String],
                     display_name: String) {
 
-  def mappingError(db_id: BigInt) = new Exception(
+  def mappingError(db_id: BigInt) = MappingException(
     s"Table obtained from api: ${this.toJson} claims to be in db with id $db_id, but this db was not found in metabase"
   )
 

@@ -1,7 +1,6 @@
 package com.stratio.discoverycicd.routes
 
 import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ExceptionHandler, Route}
@@ -12,7 +11,9 @@ import com.stratio.discoverycicd.{Exporter, Importer}
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport
 import org.json4s.DefaultFormats
 import com.stratio.discoverycicd.utils.Logging
-import com.stratio.discoverycicd.exceptions.CustomException
+import com.stratio.discoverycicd.exceptions.{CustomException, UnauthorizedException, UnhandledException}
+
+import scala.util.{Failure, Success, Try}
 
 class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport {
 
@@ -25,18 +26,18 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
     handleExceptions(exceptionHandler) {
       (path(Segment / ExportSegment / Segment) & get) { (_, id) =>
         headerValueByName(SessionIdHeaderName) { sessionId =>
-          val api =
-            new ApiClient(
-              apiClientConfig.metabaseUrl,
-              sessionId,
-              apiClientConfig.allowUnsafeSsl,
-              apiClientConfig.timeout
-            )
-          if (api.user.body.is_superuser) {
-            val exporter = new Exporter(api)
-            complete(exporter.exportCollection(BigInt(id)))
-          } else {
-            complete(StatusCodes.Unauthorized, unauthorizedReason(sessionId))
+          withRequestTimeout(apiClientConfig.getTimeoutExport) {
+            val api =
+              new ApiClient(
+                apiClientConfig.metabaseUrl,
+                sessionId,
+                apiClientConfig.allowUnsafeSsl,
+                apiClientConfig.timeoutMetabase
+              )
+            if (api.user.body.is_superuser) {
+              val exporter = new Exporter(api)
+              complete(exporter.exportCollection(BigInt(id)))
+            } else throw UnauthorizedException(unauthorizedReason(sessionId))
           }
         }
       } ~
@@ -45,19 +46,23 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
           parameter(ParentId.as[Long].?) { parentId =>
             headerValueByName(SessionIdHeaderName) { sessionId =>
               entity(as[ExportedCollection]) { collection =>
-                val api =
-                  new ApiClient(
-                    apiClientConfig.metabaseUrl,
-                    sessionId,
-                    apiClientConfig.allowUnsafeSsl,
-                    apiClientConfig.timeout
-                  )
-                if (api.user.body.is_superuser) {
-                  val importer = new Importer(api)
-                  importer.importCollection(collection, parentId.map(BigInt.apply))
-                  complete(StatusCodes.OK)
-                } else {
-                  complete(StatusCodes.Unauthorized, unauthorizedReason(sessionId))
+                withRequestTimeout(apiClientConfig.getTimeoutImport) {
+                  val api =
+                    new ApiClient(
+                      apiClientConfig.metabaseUrl,
+                      sessionId,
+                      apiClientConfig.allowUnsafeSsl,
+                      apiClientConfig.timeoutMetabase
+                    )
+                  if (api.user.body.is_superuser) {
+                    Try {
+                      val importer = new Importer(api)
+                      importer.importCollection(collection, parentId.map(BigInt.apply))
+                    } match {
+                      case Success(_) => complete(StatusCodes.OK)
+                      case Failure(e) => throw e
+                    }
+                  } else throw UnauthorizedException(unauthorizedReason(sessionId))
                 }
               }
             }
@@ -77,10 +82,11 @@ object ServerRoutes extends Logging {
 
   def exceptionHandler: ExceptionHandler =
     ExceptionHandler {
-      case error: CustomException => complete(HttpResponse(error.statusCode, entity = error.msg))
+      case error: CustomException =>
+        complete(HttpResponse(error.statusCode, entity = HttpEntity(MediaTypes.`application/json`, error.toJson)))
       case error =>
-        val msg = s"Unexpected exception handling export/import request: $error"
-        log.error(msg, error)
-        complete(HttpResponse(InternalServerError, entity = msg))
+        val exception = UnhandledException(error)
+        log.error(exception.msg, error)
+        complete(HttpResponse(exception.statusCode, entity = HttpEntity(MediaTypes.`application/json`, exception.toJson)))
     }
 }

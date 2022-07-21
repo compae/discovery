@@ -6,17 +6,17 @@
 
 package com.stratio.discoverycicd
 
-import com.stratio.discoverycicd.exceptions.DuplicatedEntityException
+import com.stratio.discoverycicd.exceptions.{DuplicatedEntityException, GetDataException, ResponseDeserializationException}
 import com.stratio.discoverycicd.model.Collection.Models
 import com.stratio.discoverycicd.model._
-import com.stratio.discoverycicd.utils.{ ApiClient, Identificable, Logging, MBJson }
+import com.stratio.discoverycicd.utils.{ApiClient, Identificable, Logging, MBJson}
 import com.stratio.discoverycicd.utils.Identificable.IdentificableOps
 import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
-import org.json4s.{ DefaultFormats, Extraction }
+import org.json4s.{DefaultFormats, Extraction}
 import org.json4s.JsonAST.JValue
 
 import scala.annotation.tailrec
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class Exporter(api: ApiClient) extends Logging {
 
@@ -29,9 +29,13 @@ class Exporter(api: ApiClient) extends Logging {
 
     // get collection
     val collection =
-      Try{
+      Try {
         api.getCollection(collectionId)
-      }.getOrElse(throw new Exception(s"An error occurred getting the collection:$collectionId. Please, check logs."))
+      } match {
+        case Success(collection) => collection
+        case Failure(exRes: ResponseDeserializationException) => throw GetDataException(s"An error occurred getting the collection with id:[$collectionId]. Cause: ${exRes.msg}.")
+        case Failure(ex) => throw GetDataException(s"An error occurred getting the collection with id:[$collectionId]. Cause: ${ex.getMessage}.")
+      }
 
     // get cards, dashboards and subcollections in collection
     val items = itemsInCollAndSubColls(collectionId)
@@ -69,15 +73,20 @@ class Exporter(api: ApiClient) extends Logging {
 
     // Collect permissions data
     val groupIdToName = api.getGroupIdToNameMap
-    val collectionGraph = api.getCollectionGraph
+    val collectionGraph =
+      Try {
+        api.getCollectionGraph
+      } match {
+        case Success(collectionGraph) => collectionGraph
+        case Failure(exRes: ResponseDeserializationException) => throw GetDataException(s"An error occurred getting the permissions per group of collection with id:[$collectionId]. Cause: ${exRes.msg}.")
+        case Failure(ex) => throw GetDataException(s"An error occurred getting the permissions per group of collection with id:[$collectionId]. Cause: ${ex.getMessage}.")
+      }
+
     // of parent collection
     val permissionsPerGroup =
-    Try {
       collectionGraph.groups.map {
         case (gId, map) => (groupIdToName(gId), map(collectionId.toString))
       }
-    }.getOrElse(throw new Exception(s"An error occurred getting the permissions per group of collection:$collectionId. Please, check logs."))
-
     // of children
     val children = subCollections map { coll =>
       val permissionsPerGroup = collectionGraph.groups.map {
@@ -115,7 +124,7 @@ class Exporter(api: ApiClient) extends Logging {
   def checkAllCardsAreInCollection(cardIdsInColl: List[BigInt], dashoardsJson: JValue) = {
     val cardsInDashboards = MBJson.getCardIs(dashoardsJson).toSet
     val neededCardsNotInColl = cardsInDashboards diff cardIdsInColl.toSet
-    assert(neededCardsNotInColl isEmpty,
+    require(neededCardsNotInColl isEmpty,
       s"""The question with ids '${neededCardsNotInColl.mkString(",")}' are used in some dashboard but are not present in the collection"""
     )
   }

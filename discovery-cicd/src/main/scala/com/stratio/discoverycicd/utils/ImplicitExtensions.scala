@@ -6,7 +6,7 @@
 
 package com.stratio.discoverycicd.utils
 
-import com.stratio.discoverycicd.exceptions.{ResponseDeserializationExepction, ReplacementException}
+import com.stratio.discoverycicd.exceptions.{ResponseDeserializationException, ReplacementException}
 import org.json4s.Formats
 import org.json4s.native.Serialization.read
 import scalaj.http.{HttpRequest, HttpResponse, StringBodyConnectFunc, ByteBodyConnectFunc, MultiPartConnectFunc}
@@ -28,7 +28,7 @@ object ImplicitExtensions {
                     s"Status: ${response.code}. Response body: ${response.body}. " +
                     s"Original exception: $e"
           logError(response)
-          throw ResponseDeserializationExepction(msg)
+          throw ResponseDeserializationException(msg)
       }
     }
 
@@ -64,7 +64,7 @@ object ImplicitExtensions {
 
     private def throwReplacementError(replacedThing: String, id: BigInt) = {
       log.error(s"ERROR: It seems that an exported object references a $replacedThing that has id '$id' in the source Metabase, but was not found in the target Metabase")
-      throw new ReplacementException(s"Could not replace $replacedThing id $id with the found ${replacedThing}s in target Metabase")
+      throw ReplacementException(s"Could not replace $replacedThing id $id with the found ${replacedThing}s in target Metabase")
     }
 
   }

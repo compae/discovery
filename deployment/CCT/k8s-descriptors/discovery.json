@@ -927,17 +927,30 @@
             "title": "Import/Export service",
             "description": "Configure import/export service. This feature can be used for promote collections, dashboards, questions ... over environments.",
             "properties": {
-              "akkaRequestTimeout": {
-                "description": "Akka request timeout for import/export API.",
+              "akkaRequestTimeoutImport": {
+                "description": "Akka request timeout for Discovery-cicd api. Specific to Import operation.",
                 "type": "string",
                 "maxLength": 100,
                 "minLength": 1,
                 "required": false,
                 "readOnly": false,
                 "application": false,
-                "level": 1,
-                "internalName": "DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT",
-                "title": "Akka request timeout.",
+                "level": 2,
+                "internalName": "DISCOVERY_CICD_API_IMPORT_TIMEOUT",
+                "title": "Akka request timeout. Import operation.",
+                "default": "100s"
+              },
+              "akkaRequestTimeoutExport": {
+                "description": "Akka request timeout for Discovery-cicd api. Specific to Export operation.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "DISCOVERY_CICD_API_EXPORT_TIMEOUT",
+                "title": "Akka request timeout. Export operation.",
                 "default": "40s"
               },
               "cicdJavaOptions": {

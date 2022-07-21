@@ -16,7 +16,7 @@ object ShellRunner {
   def run(args: Array[String]): Unit = {
     val initialConf = Config()
     val config = parser.parse(args, Config()).getOrElse{ System.exit(1); initialConf }
-    assert(config.isValid, "Provided parameters are not valid")
+    require(config.isValid, "Provided parameters are not valid")
 
     val api =
       new ApiClient(

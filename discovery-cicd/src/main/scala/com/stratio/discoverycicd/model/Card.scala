@@ -29,7 +29,7 @@ case class Card(id: BigInt,
     case JObject(_) => true
     case _ => false
   }
-  assert(isJObject, s"Received Card with invalid dataset_query: $dataset_query")
+  require(isJObject, s"Received Card with invalid dataset_query: $dataset_query")
 
   def toPostDto = CardToPost(
     name, description, display, visualization_settings,

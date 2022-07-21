@@ -4,6 +4,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 0.43.4-0.1.0 (upcoming)
 
 * [ROCK-7390] Upgrade Metabase 0.43
+* [ROCK-7181] Improvements in error messages of discovery CICD API
 
 
 ## 0.42.2-0.1.1 (2022-06-13)
