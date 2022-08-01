@@ -14,10 +14,12 @@
             [metabase.driver.sql-jdbc.sync.common :as common]
             [metabase.driver.sql-jdbc.sync.describe-table :as sync.describe-table]
             [metabase.driver.sql-jdbc.sync.interface :as i]
+            [metabase.driver.sql-jdbc.sync :as sql-jdbc.sync]
             [metabase.mbql.util :as mbql.u]
             [metabase.query-processor.context :as context]
             [metabase.query-processor.error-type :as qp.error-type]
             [metabase.query-processor.interface :as qp.i]
+            [metabase.query-processor.middleware.limit :as limit]
             [metabase.query-processor.store :as qp.store]
             [metabase.query-processor.timezone :as qp.timezone]
             [metabase.query-processor.util :as qputil]
@@ -39,6 +41,14 @@
    "sslkey=/etc/pki/discovery.pk8&"
    "sslrootcert=/etc/pki/ca-bundle.pem&"))
 
+;; Implementing our driver (:stratiopostgres) method for the describe-nested-field-columns multimethod
+;; Since the method in sync.describe-table/describe-nested-field-columns does pattern matching only
+;; wrt the following types (case driver :postgres :ansi :mysql :mysql), we will
+;; explicitly pass as driver type the keyword :postgres to use the postgres method implementation.
+(defmethod sql-jdbc.sync/describe-nested-field-columns :stratiopostgres
+           [driver database table]
+           (let [spec   (sql-jdbc.conn/db->pooled-connection-spec database)]
+                (sync.describe-table/describe-nested-field-columns :postgres spec table)))
 
 ;; We override this method to make it easier to inject the "default" ssl properties
 ;; before calling the parent method so that users do not need to include
@@ -108,9 +118,8 @@
    {:pre [(string? sql) (seq sql)]}
    (let [remark   (qputil/query->remark driver outer-query)
          sql      (str "-- " remark "\n" sql)
-         max-rows (or (mbql.u/query->max-rows-limit outer-query)
-                      qp.i/absolute-max-results)]
-     (execute-reducible-query driver sql params max-rows context respond)))
+         max-rows (limit/determine-query-max-rows outer-query)]
+        (execute-reducible-query driver sql params max-rows context respond)))
 
   ([driver sql params max-rows context respond]
    (with-open [conn          (sql-jdbc.execute/connection-with-timezone driver (qp.store/database) (qp.timezone/report-timezone-id-if-supported))
@@ -125,8 +134,8 @@
                                  ;;  STRATIO >
                                  (#'sql-jdbc.execute/execute-statement-or-prepared-statement! driver stmt max-rows params sql)
                                  (catch Throwable e
-                                   (throw (ex-info (tru "Error executing query")
-                                                   {:sql sql, :params params, :type qp.error-type/driver}
+                                   (throw (ex-info (tru "Error executing query: {0}" (ex-message e))
+                                                   {:sql sql, :params params, :type qp.error-type/invalid-query}
                                                    e)))
                                  ;; < STRATIO - impersonate
                                  (finally
