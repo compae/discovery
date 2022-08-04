@@ -10,8 +10,9 @@ ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
 
 # Add drivers source code, script to replace metabase dependency, and deps.edn with srtatio mvn repo
-COPY ./metabase/modules                          /app/source/modules
-COPY ./metabase/bin                              /app/source/bin
+COPY ./metabase/modules                                /app/source/modules
+COPY ./metabase/bin                                    /app/source/bin
+COPY ./metabase/resources/migrations/100_stratio.yaml  /app/source/resources/migrations/100_stratio.yaml
 COPY ./metabase/modules/drivers/stratio-repo.edn /root/.clojure/deps.edn
 
 # replace metabase dependency in bin/build-drivers modules so it points to the already-compiled jar
@@ -59,12 +60,20 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 # add Metabase uberjar
 RUN mkdir -p bin target/uberjar
 COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
+COPY --from=builder /app/source/resources/migrations/100_stratio.yaml /app/source/resources/migrations/
 
 # adapt MANIFEST.MF to implementation discovery version
 RUN jar xf /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF  \
     && sed -i '1s;^;Implementation-Version: '"$DISCOVERY_VERSION"'\n;' META-INF/MANIFEST.MF \
     && zip /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF \
     && rm -rf META-INF
+
+
+# Append to the default migration yaml our 100_stratio.yaml and overwrite it inside the jar
+RUN jar xf /app/target/uberjar/metabase.jar migrations/000_migrations.yaml \
+    && cat /app/source/resources/migrations/100_stratio.yaml >> migrations/000_migrations.yaml \
+    && zip /app/target/uberjar/metabase.jar migrations/000_migrations.yaml \
+    && rm -rf migrations/000_migrations.yaml
 
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins

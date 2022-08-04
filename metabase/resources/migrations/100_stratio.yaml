@@ -1,0 +1,71 @@
+  - changeSet:
+      id: 0.43.4-0.1.0-001
+      author: stratio
+      comment: Change names of already present subscription so they have unique names
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              UPDATE pulse SET name = uuid_in(md5(random()::text || random()::text)::cstring)
+              WHERE pulse.name = (SELECT name FROM report_dashboard WHERE report_dashboard.id = pulse.dashboard_id);
+
+  - changeSet:
+      id: 0.43.4-0.1.0-002
+      author: stratio
+      comment: Create trigger ensuring newly created subscriptions have unique names
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: "false"
+            endDelimiter: "\n\n"
+            sql: >-
+              CREATE FUNCTION stratio_insert_subscription()
+              RETURNS TRIGGER
+              LANGUAGE plpgsql
+              AS $$
+              BEGIN
+                IF (NEW.dashboard_id IS NULL) THEN
+                  RETURN NEW;
+                ELSE
+                  NEW.name := uuid_in(md5(random()::text || random()::text)::cstring);
+                  RETURN NEW;
+                END IF;
+              END;
+              $$;
+
+
+              CREATE TRIGGER stratio_insert_subscriptions
+              BEFORE INSERT ON pulse
+              FOR EACH ROW
+              EXECUTE PROCEDURE stratio_insert_subscription();
+
+  - changeSet:
+      id: 0.43.4-0.1.0-003
+      author: stratio
+      comment: Create trigger ensuring subscription names do not change during updates
+      changes:
+        - sql:
+            dbms: postgresql
+            endDelimiter: "\n\n"
+            splitStatements: "false"
+            sql: >-
+              CREATE FUNCTION stratio_update_subscription()
+              RETURNS TRIGGER
+              LANGUAGE plpgsql
+              AS $$
+              BEGIN
+                IF (NEW.dashboard_id IS NULL) THEN
+                  RETURN NEW;
+                ELSE
+                  NEW.name := OLD.name;
+                  RETURN NEW;
+                END IF;
+              END;
+              $$;
+
+
+              CREATE TRIGGER stratio_update_subscriptions
+              BEFORE UPDATE ON pulse
+              FOR EACH ROW
+              EXECUTE PROCEDURE stratio_update_subscription();
+
