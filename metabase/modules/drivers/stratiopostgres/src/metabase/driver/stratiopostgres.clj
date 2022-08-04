@@ -128,7 +128,7 @@
                ^ResultSet rs (let [auto-commit (.getAutoCommit conn)]
                                (try
                                  ;; < STRATIO - impersonate
-                                 (.setAutoCommit conn false)
+                                 (.setAutoCommit conn false) ;; metabase already sets autoCommit to false, but we keep this just in case
                                  (set-user-if-needed! conn)
                                  (set-role-if-needed! conn)
                                  ;;  STRATIO >
@@ -140,7 +140,6 @@
                                  ;; < STRATIO - impersonate
                                  (finally
                                    (reset-role! conn)
-                                   (.rollback conn)
                                    (.setAutoCommit conn auto-commit))))]
                                  ;;  STRATIO >
      (let [rsmeta           (.getMetaData rs)

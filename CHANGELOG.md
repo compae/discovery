@@ -5,6 +5,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 * [ROCK-7390] Upgrade Metabase 0.43
 * [ROCK-7181] Improvements in error messages of discovery CICD API
+* [ROCK-8025] Fix 'portal "C_x" does not exist' error in stratiopostgres driver
 
 
 ## 0.42.2-0.1.1 (2022-06-13)
