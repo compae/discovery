@@ -52,7 +52,10 @@ class Importer(api: ApiClient) extends Logging {
     val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, cardsByCollection)
 
     log.debug("Importing dashboards from export data")
-    createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
+    val (dashboardMap, dashCardMap) = createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
+
+    log.debug("Importing subscriptions from export data")
+    createSubscriptions(exportedCollection.subscriptions, collMap, dashboardMap, cardMap, dashCardMap, dbMaps.field, dashboardsByCollection)
 
     // update permissions in collection and its children
     log.debug(s"Importing Permissions of collection $targetCollId (id in target)")
@@ -81,8 +84,8 @@ class Importer(api: ApiClient) extends Logging {
                        dbMaps: DbMaps,
                        collMap: IdMap,
                        cardMap: IdMap,
-                       existingDashboards: Map[CollId, List[CollectionItem]]): Unit = {
-    val finalDashboardIds = dashboards.map { dashboard =>
+                       existingDashboards: Map[CollId, List[CollectionItem]]): (IdMap, IdMap) = {
+    val (dashboardIdSourceToTarget, dashCardIdSourceToTarget) = dashboards.map { dashboard =>
       log.debug(s"Creating/updating dashboard from exported data: ${dashboard.toJson}")
       log.debug(s"Replacing collection, database, table and field Ids in dashboard")
       val dashboardToCreateOrUpdate =
@@ -93,7 +96,7 @@ class Importer(api: ApiClient) extends Logging {
           .replaceTableIds(dbMaps.table)
           .replaceFieldIds(dbMaps.field)
           .replaceCardIds(cardMap)
-      
+
       val createdOrUpdatedDashboardId = dashboardToCreateOrUpdate
         .collection_id
         .flatMap {
@@ -124,23 +127,24 @@ class Importer(api: ApiClient) extends Logging {
 
       // add the needed cards as dashcards, and update the dashcard list with the new ids
       log.debug("Adding dashcards to dashboard")
-      val dashCardsWithNewIds = dashboardToCreateOrUpdate.ordered_cards.map { dashCard =>
+      val (dashCardsWithNewIds, dashCardIdSourceToTarget) = dashboardToCreateOrUpdate.ordered_cards.map { dashCard =>
         log.debug(s"Adding dashcard ${dashCard.toJson} to dashboard")
         val dashCardId = api.addCardToDashboard(createdOrUpdatedDashboardId, CardPost(dashCard.card_id)).id
-        dashCard.copy(id = dashCardId, dashboard_id = createdOrUpdatedDashboardId)
-      }
+        (dashCard.copy(id = dashCardId, dashboard_id = createdOrUpdatedDashboardId), dashCard.id -> dashCardId)
+      }.unzip
 
       // add the correct positions, settings etc to all dashcards
       log.debug("Updating dashcards in dashboard with correct positions, settings, etc...")
       api.updateDashCardsInDashboard(createdOrUpdatedDashboardId, dashCardsWithNewIds)
-
-      createdOrUpdatedDashboardId
-    }
+      (dashboard.id -> createdOrUpdatedDashboardId, dashCardIdSourceToTarget)
+    }.unzip
 
     // Delete dashboards that have not been created or updated (not present in export data)
-    val dashboardsToDelete = existingDashboards.values.flatten.filterNot(finalDashboardIds contains _.id)
+    val dashboardsToDelete = existingDashboards.values.flatten.filterNot(dashboardIdSourceToTarget.toMap.values.toSet contains _.id)
     log.debug(s"Deleting dashboards not present in export data ${dashboardsToDelete}")
     dashboardsToDelete.foreach(api.deleteCollectionItem)
+
+    (dashboardIdSourceToTarget.toMap, dashCardIdSourceToTarget.flatten.toMap)
   }
 
 
@@ -189,6 +193,59 @@ class Importer(api: ApiClient) extends Logging {
 
     cardIdSourceToTarget
   }
+
+  def createSubscriptions(subscriptions: List[Subscription],
+                          collMap: IdMap,
+                          dashboardMap: IdMap,
+                          cardMap: IdMap,
+                          dashboardsCardsMap: IdMap,
+                          FieldsMap: IdMap,
+                          existingDashboards: Map[CollId, List[CollectionItem]]): Unit = {
+
+    //Find all subscriptions from target
+    val existingSubscriptions = existingDashboards.values.flatten.map {
+      dashboardItem => (dashboardItem.id, api.getSubscriptions(dashboardItem.id))
+    }.toMap.withDefaultValue(List.empty[Subscription])
+
+    // Create or update subscription depending on whether each subscription is found in the target
+    val subscriptionIdCreatedOrUpdated = subscriptions.map { subscription =>
+      log.debug(s"Creating/updating subscription from exported data: ${subscription.toJson}")
+      log.debug(s"Replacing collection, dashboard and card Ids in subscription")
+      val subscriptionToCreateOrUpdate =
+        subscription
+          .replaceCollectionId(collMap)
+          .replaceDashboardIds(dashboardMap)
+          .replaceCardIds(cardMap)
+          .replaceDashboardCardsIds(dashboardsCardsMap)
+          .replaceFieldIds(FieldsMap)
+          .clearSubscribers
+
+      (existingSubscriptions(subscriptionToCreateOrUpdate.dashboard_id)
+          .filter(_.name == subscriptionToCreateOrUpdate.name) match {
+          case Nil => None
+          case head :: Nil => Some(head)
+          case head :: tail =>
+            log.warn(s"Found ${tail.length + 1} subscriptions in the target dashboard with the same name as the imported one: '${subscription.name}'. Will update the one with id ${head.id} and delete the rest (ids: ${tail.map(_.id)}).")
+            tail.foreach(sub => api.deleteSubscription(sub.id))
+            Some(head)
+      }).map {
+        subscription =>
+          log.debug(s"Subscription with name ${subscription.name} already present in dashboard target. Updating the subscription.")
+          api.updateSubscription(subscriptionToCreateOrUpdate.toPutDto(subscription))
+          subscription.id
+      }
+      .getOrElse {
+        log.debug(s"Subscription with name ${subscription.name} not found in dashboard target. Creating new subscription.")
+        api.createSubscription(subscriptionToCreateOrUpdate.toPostDto)
+      }
+    }
+
+    // Delete all non-exported subscriptions that have not been found
+    val subscriptionsToDelete = existingSubscriptions.values.flatten.filterNot(subscriptionIdCreatedOrUpdated contains _.id)
+    log.debug(s"Deleting subscriptions not present in export data $subscriptionsToDelete")
+    subscriptionsToDelete.foreach(sub => api.deleteSubscription(sub.id))
+  }
+
 
   @tailrec
   final def createSubCollections(

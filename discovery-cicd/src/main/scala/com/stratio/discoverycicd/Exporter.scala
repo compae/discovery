@@ -46,6 +46,7 @@ class Exporter(api: ApiClient) extends Logging {
     val cards = getCards(cardIdsInColl)
     val dashboards = getDashboards(dashboardIdsInColl)
     val subCollections = getCollections(collsIdsInColl)
+    val subscriptions = getSubscriptions(dashboardIdsInColl)
 
     // we do not allow to export two entities with the same identifier across metabase instances
     checkDuplicates(cards)
@@ -101,6 +102,7 @@ class Exporter(api: ApiClient) extends Logging {
       fields = fields.toList,
       tables = tables.toList,
       databases = databases.toList,
+      subscriptions = subscriptions,
       collection = collection,
       children = children,
       permissionsPerGroup = permissionsPerGroup,
@@ -145,6 +147,8 @@ class Exporter(api: ApiClient) extends Logging {
   def getCards(cardIds: List[BigInt]) = cardIds.map(api.getCard).map(_.cleanDescription)
 
   def getCollections(collIds: List[BigInt]) = collIds map api.getCollection
+
+  def getSubscriptions(dashboardIds: List[BigInt]) = dashboardIds flatMap api.getSubscriptions
 
   def checkDuplicates[A: Identificable](items: List[A]): Unit = {
     val duplicatedItems = items

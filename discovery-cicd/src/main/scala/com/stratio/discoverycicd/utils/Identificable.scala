@@ -7,6 +7,7 @@
 package com.stratio.discoverycicd.utils
 
 import com.stratio.discoverycicd.model._
+import com.stratio.discoverycicd.utils.TypeAliases.{CollId, DashboardId}
 
 /**
  * Trait representing the capability of being able to tell that an entity
@@ -59,6 +60,11 @@ object Identificable {
   implicit val identificableCollection = new Identificable[Collection] {
     type Identifier = String
     def  identifier(collection: Collection) = collection.name
+  }
+
+  implicit val identificableSubscription = new Identificable[Subscription] {
+    type Identifier = (String, DashboardId, CollId)
+    def  identifier(subscription: Subscription) = (subscription.name, subscription.dashboard_id, subscription.collection_id)
   }
 
 }

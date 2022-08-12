@@ -4,27 +4,27 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 0.43.4-0.1.0 (upcoming)
 
 * [ROCK-7390] Upgrade Metabase 0.43
+* [ROCK-6458] Subscription promotion in discovery CI/CD
 * [ROCK-7181] Improvements in error messages of discovery CICD API
 * [ROCK-8025] Fix 'portal "C_x" does not exist' error in stratiopostgres driver
 
+## Previous development
 
-## 0.42.2-0.1.1 (2022-06-13)
+### 0.42.2-0.1.1 (2022-06-13)
 
 * [ROCK-7358] Add missing sync-scheduling options to our metabase drivers
 
-## 0.42.2-0.1.0 (2022-03-22)
+### 0.42.2-0.1.0 (2022-03-22)
 
 * [ROCK-6000] Upgrade to metabase 0.42
 * [ROCK-6000] Add setting to add all needed ssl options with a simple click in stratiopostgres driver
 * [ROCK-6269] Fix prometheus metrics
 
-## 0.40.7-0.1.1 (2022-02-02)
+### 0.40.7-0.1.1 (2022-02-02)
 
 * [ROCK-5792] Fix: do not compare names with display_names while filtering fields
 * [ROCK-5951] Fix vulnerabilities: Embedded nginx offers insecure TLS protocols
 * [ROCK-5913] Fix vulnerabilities: Broken Auth when using gosec-sso authenticator
-
-## Previous development
 
 ### Branched to branch-0.40.7-0.1 (2021-12-14)
 

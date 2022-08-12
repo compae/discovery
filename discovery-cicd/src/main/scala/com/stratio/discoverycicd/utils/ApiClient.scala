@@ -65,11 +65,11 @@ class ApiClient(metabaseUrl: String,
 
   def getDashboard(dashboardId: BigInt) = request(s"dashboard/$dashboardId").as[Dashboard].body
 
-  def createDashboard(dashboard: Dashboard) = request("dashboard").postData(write(dashboard)).as[Id].body.id
+  def createDashboard(dashboard: Dashboard) = request("dashboard").postData(write(dashboard.toDto)).as[Id].body.id
 
   def updateDashboard(id: BigInt, dashboard: Dashboard) =
     request(s"dashboard/$id")
-      .put(write(dashboard)(formats.preservingEmptyValues))
+      .put(write(dashboard.toDto)(formats.preservingEmptyValues))
       .execute()
 
   def addCardToDashboard(id: BigInt, card: CardPost) =
@@ -121,6 +121,18 @@ class ApiClient(metabaseUrl: String,
   def getGroupIdToNameMap = getGroups.map(g => g.id -> g.name).toMap + ("3" -> "MetaBot")
 
   def getGroupNameToIdMap = getGroupIdToNameMap.map(_.swap)
+
+  def getSubscriptions(dashboardId: BigInt) =
+    request(s"pulse?dashboard_id=$dashboardId").as[List[Subscription]].body
+
+  def updateSubscription(subscription: SubscriptionToPut) =
+    request(s"pulse/${subscription.id}").put(write(subscription)).as[Subscription].body
+
+  def createSubscription(subscription: SubscriptionToPost) =
+    request("pulse").postData(write(subscription)).as[Id].body.id
+
+  def deleteSubscription(idSubscription: BigInt) =
+    request(s"pulse/$idSubscription").put("""{"archived":true}""").execute()
 
   def request(apiPath: String): HttpRequest = {
     val safeRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers).timeout(connectionAndReadTimeout, connectionAndReadTimeout)

@@ -9,16 +9,18 @@ package com.stratio.discoverycicd.model
 import com.stratio.discoverycicd.utils.MBJson
 import com.stratio.discoverycicd.utils.ReplacementUtils.replacementMayFail
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
-import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
+import com.stratio.discoverycicd.utils.TypeAliases.{CollId, DashboardId}
+import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
 
-case class Dashboard(name: String,
+case class Dashboard(id: DashboardId,
+                     name: String,
                      description: Option[String],
                      caveats: Option[String],
                      points_of_interest: Option[String],
                      show_in_getting_started: Option[Boolean],
                      parameters: JValue,
                      position: Option[BigInt],
-                     collection_id: Option[BigInt],
+                     collection_id: Option[CollId],
                      collection_position: Option[BigInt],
                      ordered_cards: List[DashCard],
                      creator_id: BigInt) {
@@ -43,7 +45,19 @@ case class Dashboard(name: String,
     _.copy(collection_id = collection_id.map(replacements.getTargetCollection))
   }
 
-
+  def toDto = DashboardDto(
+    name,
+    description,
+    caveats,
+    points_of_interest,
+    show_in_getting_started,
+    parameters,
+    position,
+    collection_id,
+    collection_position,
+    ordered_cards,
+    creator_id
+  )
 
 }
 
@@ -81,10 +95,17 @@ case class DashCard(id: BigInt,
   }
 }
 
-case class DashboardPut(collection_id: Option[BigInt],
+case class DashboardDto(name: String,
                         description: Option[String],
+                        caveats: Option[String],
+                        points_of_interest: Option[String],
+                        show_in_getting_started: Option[Boolean],
+                        parameters: JValue,
+                        position: Option[BigInt],
+                        collection_id: Option[CollId],
                         collection_position: Option[BigInt],
-                        position: Option[BigInt])
+                        ordered_cards: List[DashCard],
+                        creator_id: BigInt)
 
 // this is used to add cards to a dashboard, we should be careful that metabase is
 // looking to refactor this enpoint so the body should be card_id instead of cardId :S
