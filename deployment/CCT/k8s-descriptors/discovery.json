@@ -1161,6 +1161,11 @@
           "text": "Lifecycle: Install/start"
         },
         {
+          "type": "core/disable",
+          "tag": "gosec-register",
+          "enabled": "false"
+        },
+        {
           "label": "Init secrets creation log",
           "type": "io/print",
           "text": "------------- Instance secrets creation --------------"
