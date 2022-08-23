@@ -2,7 +2,7 @@
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "0.3.0-SNAPSHOT",
+    "version": "12.2.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module",
     "framework": false,
     "highAvailability": false,
@@ -10,7 +10,7 @@
       "runners": [
         {
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.43.4-0.1.0",
+          "image": "${eos.dockerRegistry}/discovery:0.43.4-0.1.0-SNAPSHOT",
           "forcePullImage": true,
           "privileged": false
         }
@@ -139,6 +139,8 @@
             "default": "discovery",
             "required": true,
             "readOnly": false,
+            "maxLength": 253,
+            "pattern": "^([a-z0-9][a-z0-9-]*[a-z0-9])$",
             "application": true,
             "internalName": "SERVICE_ID",
             "ui": {
@@ -207,15 +209,14 @@
                 "description": "URL host to access to your Stratio Discovery service. Usually in Stratio laboratories the value is any subdomain of xxx.labs.stratio.com, i.e. discovery.k8s.xxx.labs.stratio.com.",
                 "type": "string",
                 "minimum": 1,
-                "default": "${serviceId}.${external_domain}",
+                "default": "${serviceId}.${tenantId}.${external_domain}",
                 "required": true,
                 "readOnly": false,
                 "application": false,
                 "level": 1,
                 "internalName": "VIRTUAL_HOST",
                 "examples": [
-                  "public.kubernetes.stratio.com",
-                  "discovery.k8s.xxx.labs.stratio.com"
+                  "discovery.myTenant.k8s.xxx.labs.stratio.com"
                 ],
                 "ui": {
                   "updatable": false
@@ -561,6 +562,7 @@
               "INSTANCES": {
                 "description": "Instances for the service",
                 "type": "integer",
+                "minimum": 0,
                 "required": true,
                 "readOnly": false,
                 "application": true,
@@ -1155,6 +1157,11 @@
   "lifecycles": {
     "install": {
       "start": [
+        {
+          "type": "core/disable",
+          "tag": "gosec-register",
+          "enabled": "false"
+        },
         {
           "label": "Print install start log",
           "type": "io/print",
