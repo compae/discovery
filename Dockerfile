@@ -92,7 +92,7 @@ COPY --from=builder /app/source/resources/modules/* /plugins/
 ################################
 # Download prometheus jar
 RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent.jar \
-    http://sodio.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar \
+    http://sodio.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.17.1/jmx_prometheus_javaagent-0.17.1.jar \
     && echo '{}' > /app/target/uberjar/config.yaml
 
 COPY log4j2.xml /app/target/log4j2.xml

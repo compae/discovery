@@ -9,6 +9,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-8025] Fix 'portal "C_x" does not exist' error in stratiopostgres driver
 * [ROCK-8431] [ROCK-8438] Fix security vulnerabilities of H2 embedded database (CVE-2022-23221)
 * [ROCK-6516] Add antora doc to repo
+* Fix vulnerabilities: Update prometheus java agent to 0.17.1 to resolve the org.yaml:snakeyaml security vulnerability (GHSA-3mc7-4q67-w48m)
 
 ## Previous development
 
