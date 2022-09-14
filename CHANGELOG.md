@@ -7,6 +7,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-6458] Subscription promotion in discovery CI/CD
 * [ROCK-7181] Improvements in error messages of discovery CICD API
 * [ROCK-8025] Fix 'portal "C_x" does not exist' error in stratiopostgres driver
+* [ROCK-8431] [ROCK-8438] Fix security vulnerabilities of H2 embedded database (CVE-2022-23221)
 
 ## Previous development
 

@@ -75,6 +75,10 @@ RUN jar xf /app/target/uberjar/metabase.jar migrations/000_migrations.yaml \
     && zip /app/target/uberjar/metabase.jar migrations/000_migrations.yaml \
     && rm -rf migrations/000_migrations.yaml
 
+# Fix vulnerability of H2 embedded database (CVE-2022-23221)
+# TODO Remove this line when Metabase fixes this vulnerability
+RUN zip -d /app/target/uberjar/metabase.jar sample-database.db.mv.db
+
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins
 RUN chmod a+rwx /plugins
