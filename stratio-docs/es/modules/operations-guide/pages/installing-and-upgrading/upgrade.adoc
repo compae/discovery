@@ -1,0 +1,170 @@
+= Actualización de versión
+
+_Stratio Discovery_ no necesita ningún mecanismo de actualización. De esta forma, para realizar una actualización efectiva, simplemente cambia la imagen de _Stratio Discovery_ en tu entorno.
+
+Aún así, *puede haber algunas discrepancias con respecto a las versiones anteriores de los descriptores y es posible que se necesiten algunos pequeños cambios en algunas definiciones de bases de datos*, se recomienda encarecidamente leer las siguientes secciones.
+
+:warning-caption: ADVERTENCIA
+
+WARNING: En el descriptor del Universo 12.2 (liberado para entornos con Kubernetes) se rompió la retrocompatibilidad porque cambió la manera de generar la dirección _host_ para acceder a la instancia. Este problema surge relativamente al registro de este _host_ dentro del mecanismo de _Stratio Gosec_ SSO: dado que no se vuelve a modificar este registro en los procesos de actualización, hay que desinstalar e instalar otra vez _Stratio Discovery_.
+
+== Actualizar a 0.40.5-0.1.0 desde 0.38.1-x.y.z
+
+En esta versión, puedes configurar explícitamente el comportamiento del proxy interno que se encarga de la autenticación (permitiendo OAuth con _Stratio SSO_ o simplemente validando el JWT obtenido mediante la autenticación realizada contra un elemento externo) con la variable de entorno `OAUTH_ENABLED`, aunque no es obligatoria porque, en caso de que no exista, el comportamiento se puede inferir a partir de otras variables de entorno.
+
+:note-caption: AVISO
+
+NOTE: Si estás actualizando _Stratio Discovery_ desde una versión anterior a la xref:operations-guide:key-concepts.adoc[doble versión] (es decir, 0.40.0 o anterior), ten en cuenta lo que se explica en la siguiente sección.
+
+== Actualizar a 0.38.1-0.1.1 desde versiones anteriores
+
+Ten en cuenta que el esquema de control de versiones del módulo ha cambiado. Ahora la versión consta de dos partes, la primera establece la versión de Metabase incluida con esta versión de _Stratio Discovery_, y la segunda se refiere a la versión de los cambios personalizados y las adiciones agregadas por _Stratio_ al core de Metabase.
+
+El cambio más destacable de esta versión es la *actualización de Metabase de 0.33.2 a 0.38.1*. Aunque esto es un gran cambio, no se necesita intervención manual para migrar los datos de la base de datos interna de Metabase. Esta actualización trae la función de respuestas en _streaming_, lo que hace que el límite máximo de filas introducido en versiones anteriores ya no sea necesario.
+
+Además, la forma en que el módulo se integra con _Stratio GoSec_ SSO ha cambiado; consulta cómo funciona en xref:end-user-authentication.adoc[este resumen]. Lo más destacado es que ya no es necesario hacer un "doble inicio de sesión" (primero con _Stratio GoSec_ SSO y luego con un correo electrónico de administrador) para configurar Metabase antes de que otros usuarios puedan acceder. Ahora, los grupos de usuarios en _Stratio GoSec_ se sincronizan automáticamente con sus grupos de Metabase y hay una _whitelist_ de grupos para controlar quién puede acceder a _Stratio Discovery_.
+
+Finalmente, las rutas a los certificados utilizados para conectarse a las bases de datos _Stratio PostgreSQL_ a través de TLS mutuo han cambiado, por lo que debes cambiar estas rutas en el campo `additional JDBC options` en la definición de la base de datos. Un ejemplo de las opciones necesarias con las rutas correctas a los certificados sería `ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem&prepareThreshold=0`.
+
+Todos estos cambios vienen con varias adiciones, cambios y eliminaciones de las variables de entorno utilizadas para configurar _Stratio Discovery_, que puedes encontrar en la siguiente tabla:
+
+|===
+|Nombre |Descripción| Estado
+
+|`AUTHENTICATOR`
+|Define el método para autenticar a los usuarios finales, uno de `gosec-sso`, `headers`, `jwt` o `metabase-native`.
+|nuevo
+
+|`USE_GROUP_WHITELIST`
+|(true/false). Indica si restringir el acceso a _Stratio Discovery_ en función de una _whitelist_ que compruebe el nombre del grupo al que pertenece el usuario con el que se ha iniciado sesión.
+|nuevo
+
+|`ALLOWED_GROUPS`
+|_Whitelist_ separada por comas que especifica los grupos permitidos.
+|nuevo
+
+|`CREATE_AND_SYNC_GROUPS`
+|(true/false). Indica si sincronizar grupos de usuarios entre _Stratio GoSec_ y Metabase en cada inicio de sesión de usuario.
+|nuevo
+
+|`ADMIN_GROUP`
+|Grupo cuyos usuarios serán administradores de Metabase.
+|modificado (antiguo `MB_ADMIN_GROUP_HEADER`)
+
+|`STRATIO_ABSOLUTE_MAX_RESULTS`
+|Esta variable no tiene efecto ahora, ya que no es necesaria debido a las respuestas en _streaming_ en Metabase.
+|borrado
+
+|`MB_INIT_ADMIN_USER`
+|Nombre del usuario administrador para configurar Metabase (ya no es necesario).
+|borrado
+
+|`MB_INIT_ADMIN_PASSWORD`
+|Contraseña del usuario administrador para configurar Metabase (ya no es necesaria).
+|borrado
+|`MB_INIT_ADMIN_MAIL`
+|Correo del usuario administrador para configurar Metabase (ya no es necesario).
+|borrado
+|===
+
+== Actualizar a 0.39.3 desde versiones anteriores
+
+En esta versión, hay un par de cosas adicionales que se pueden configurar con las siguientes variables nuevas:
+
+|===
+| Nombre | Descripción
+
+|`PROXY_READ_TIMEOUT`
+|Tiempo de espera para el proxy nginx interno, aplicado tanto al _backend_ de Metabase como al _backend_ de colecciones de exportación/importación.
+
+|`STRATIO_ABSOLUTE_MAX_RESULTS`
+|Límite superior para la cantidad de filas en los resultados de las consultas que se entregarán a través de la API.
+|===
+
+== Actualizar a 0.38.2 desde versiones anteriores
+
+Además de las variables recién agregadas, echa un vistazo a:
+
+* las *variables renombradas* (reemplazando guiones con guiones bajos, para cumplir con el estándar),
+* los cambios recientes en términos del *procedimiento de _health checks_* y *propiedades de red*.
+
+=== Variables añadidas
+
+A partir de la versión 0.38, se tiene más flexibilidad en términos de opciones de nivel de _log_ para los diferentes componentes de su instancia de _Stratio Discovery_. Además, la siguiente tabla resume las variables recién agregadas.
+
+|===
+| Nombre | Descripción
+
+|`MB_DB_URL`
+|Si se define esta variable, se utilizará para establecer la conexión con la base de datos utilizada para almacenar los metadatos de la instancia. Si no está definido, en su lugar se usarán `MB_DB_HOST` y `MB_DB_PORT`.
+
+|`USE_GOSEC_SSO_AUTH`
+|Habilita la autenticación a través de _Stratio GoSec_ SSO. `true` es el valor predeterminado aquí. Ten en cuenta que *establecer esta variable en `true` deshabilitará la autenticación mediante cabeceras*.
+
+| `SSO_URI`
+| URI para el procedimiento de inicio de sesión a través del SSO de _Stratio GoSec_ (por ejemplo, `+https://bootstrap.labs.stratio.com:9005/sso+`). Esta variable es obligatoria solo si `USE_GOSEC_SSO_AUTH` se establece en `true`.
+
+| `SERVICE_URL`
+| URL de acceso de tu instancia de _Stratio Discovery_. Normalmente, esto se establece automáticamente en `+https://${haproxyhost}${haproxypath}+`, donde `haproxyhost` corresponde a `HAPROXY_1_VHOST` y `haproxypath` a `HAPROXY_1_PATH`.
+
+| `SERVICE_LOG_LEVEL`
+| Aplica a los _logs_ de servicio, `ERROR` es el valor predeterminado.
+
+| `DRIVER_LOG_NIVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.driver"`, `ERROR` es el valor predeterminado.
+
+| `MIDDLEWARE_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.middleware"`, `DEBUG` es el valor predeterminado.
+
+| `MODELPERMISSIONS_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.models.permissions"`, `INFO` es el valor predeterminado.
+
+| `QUERYPROCESSORPERMISIONS_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.query-processor.permissions"`, `INFO` es el valor predeterminado.
+
+| `QUERYPROCESSOR_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.query-processor"`, `DEBUG` es el valor predeterminado.
+
+| `SYNC_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.sync"`, `INFO` es el valor predeterminado.
+
+| `FIELDVALUES_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"mebase.models.field-values"`, `INFO` es el valor predeterminado.
+
+| `METABASE_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase"`, `ERROR` es el valor predeterminado.
+
+| `API_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"metabase.api"`, `DEBUG` es el valor predeterminado.
+
+| `MCHANGE_LOG_LEVEL`
+| Aplica a todos aquellos _logs_ cuyo padre sea `"com.mchange"`, `ERROR` es el valor predeterminado.
+|===
+
+=== Variables modificadas
+
+|===
+| Nombre obsoleto | Nuevo nombre | Descripción
+
+| `MB-INIT-ADMIN-USER`
+| `MB_INIT_ADMIN_USER`
+| El nombre del usuario administrador creado durante el despliegue de _Stratio Discovery_.
+
+| `MB-INIT-ADMIN-PASSWORD`
+| `MB_INIT_ADMIN_PASSWORD`
+| La contraseña del usuario administrador creado durante el despliegue de _Stratio Discovery_. A partir de la versión 0.38, *la contraseña acepta cualquier carácter alfanumérico* mientras que en versiones anteriores solo se permitían dígitos numéricos.
+
+| `MB-INIT-ADMIN-MAIL`
+| `MB_INIT_ADMIN_MAIL`
+| El correo del usuario administrador creado durante el despliegue de _Stratio Discovery_.
+|===
+
+=== Nuevo procedimiento de _health check_
+
+El *procedimiento de _health check_* ahora se ejecutará a través del protocolo `HTTP` en lugar de `TCP` (como se hacía en las versiones anteriores), comprobando el _endpoint_ de _Stratio Discovery_ `/api/health` disponible a través del puerto `3009`.
+
+=== Capacidades de red
+
+La versión 0.38.x de _Stratio Discovery_ se implementó y probó principalmente con *redes Calico*. Esto significa que podría funcionar correctamente en otros modos (`BRIDGE` y `HOST`) pero también que *se desaconseja usarlos, ya que no se probaron a fondo*.
+
+Para acceder a tu instancia de _Stratio Discovery_, debes usar la dirección dentro de la variable de entorno `SERVICE_URL`, cuyo contenido es `+https://${HAPROXY_1_VHOST}${HAPROXY_1_PATH}+`. Ten en cuenta que el puerto diseñado para exponer el servicio a través de Marathon-LB es el *segundo* (*`HAPROXY_1_VHOST`* en lugar de `HAPROXY_0_VHOST`), porque *es el que se corresponde al puerto `443` del contenedor*, es decir el puerto predeterminado para `HTTPS`.

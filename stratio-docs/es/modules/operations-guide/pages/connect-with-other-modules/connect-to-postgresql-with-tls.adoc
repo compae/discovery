@@ -1,0 +1,48 @@
+= Conectar con PostgreSQL con TLS
+
+Aquí encontrarás la configuración necesaria para habilitar una conexión TLS con una base de datos de PostgreSQL. Para ello, debes acceder a _Stratio Discovery_.
+
+== Conector para _Stratio PostgreSQL_
+
+Además del conector estándar PostgreSQL incluido en Metabase, _Stratio Discovery_ ofrece el conector para _Stratio PostgreSQL_, que funciona de la misma manera que el estándar pero añadiendo la posibilidad de incluir en todas las consultas una variable PostgreSQL que contenga el nombre del usuario registrado que ha realizado la consulta, así como otras mejoras.
+
+El objetivo de esta variable es filtrar los resultados según el usuario registrado que realiza la consulta, ya que la misma consulta puede arrojar resultados diferentes según el usuario que la ejecute. Esto se puede hacer creando vistas en la base de datos de PostgreSQL que usen esta variable para filtrar los registros.
+
+:warning-caption: ADVERTENCIA
+
+WARNING: Las consultas realizadas automáticamente por _Stratio Discovery_, como aquellas para recopilar valores de campo para usar en el generador de preguntas gráficas o aquellas para obtener resultados de pulsos, no tendrán ningún valor asociado al usuario registrado, por lo que fallarán al consultar las vistas que usan esta variable. Se recomienda entonces configurar la opción de valores de campo de escaneo en "manual" para las bases de datos _Stratio PostgreSQL_ y no usar pulsos.
+
+:warning-caption: ADVERTENCIA
+
+WARNING: Si un administrador activa manualmente el escaneo de los valores archivados, solo se almacenarán los valores que pueda ver. Esto puede causar confusión más adelante cuando otros usuarios construyan consultas gráficamente con filtros, ya que se les pueden ofrecer algunos valores cuando no deberían o algunos valores no se les ofrecerán cuando deberían. Por lo tanto, se recomienda marcar manualmente en _Stratio Discovery_ como "search" o "text" el tipo de columnas que se pueden usar como filtros cuando se trata de bases de datos _Stratio PostgreSQL_. Ten en cuenta que pueden surgir problemas similares si activas la caché de Metabase, ya que los resultados almacenados en caché correspondientes a un usuario pueden mostrarse a un usuario diferente.
+
+== Parámetros de configuración
+
+Completa los siguientes parámetros como se muestra a continuación:
+
+* *Name*: elige el nombre de tu base de datos.
+* *Set ROLE in PostgreSQL with the current logged user?* (solo _Stratio PostgreSQL_): usa el usuario registrado actualmente como el rol para conectarse.
+* *Set a variable containing the current logged user in all queries?* (solo _Stratio PostgreSQL_): indica si hay que establecer la variable personalizada con el usuario registrado en las consultas a la base de datos o no.
+* *Name of the variable to be set with the current logged user (must contain a dot .)* (solo _Stratio PostgreSQL_): nombre de la variable PostgreSQL que contendrá al usuario registrado.
+* *Host*: dirección _host_ de PostgreSQL. ej.: pg-0001.marathon.mesos.
+* *Port*: puerto PostgreSQL.
+* *Database name*: nombre de la base de datos a la que deseas conectarte.
+* *Username*: igual que el parámetro `DISCOVERY_INSTANCE_NAME` en el xref:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
+* *Password*: N/A.
+* *Additional JDBC connection string*: rellena este bloque con el valor adecuado del parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_]. Este es un ejemplo de cadena de conexión JDBC adicional apuntando a las rutas correctas donde se encuentran los certificados TLS necesarios: _prepareThreshold=0&ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem_.
+* *Use SSL*: habilita la autenticación SSL y añade automáticamente los certificados a la cadena de conexión JDBC, de modo que no sea necesario indicar la ruta de forma explícita.
+
+image::discovery_connection_example.png[]
+
+== Crear un usuario y establecer permisos
+
+Sigue estos pasos para aprender cómo crear un usuario y establecer permisos para una base de datos en _Stratio PostgreSQL_:
+
+. Ve a _Stratio GoSec_.
+. Busca una política existente de la instancia de _Stratio PostgreSQL_ a la que quieres conectarte o crea una nueva.
+. Agrega el usuario de descubrimiento (nombre de usuario de la instancia _Stratio Discovery_) a esta política.
+. Guarda la política.
+
+:tip-caption: CONSEJO
+
+TIP: Para obtener más información, consulta la xref:stratio-gosec:operations-guide:stratio-gosec.adoc[documentación de _Stratio GoSec_].

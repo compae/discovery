@@ -1,0 +1,76 @@
+= Instalación
+
+== Configuración
+
+Es posible desplegar _Stratio Discovery_ a través de _Stratio Command Center_ (independientemente de si estás en _Stratio KEOS_ o en _Stratio EOS_) haciendo clic en *Services* → *New Service* (botón azul).
+
+image::cct_services_list_discovery_deployment_0001.png[]
+
+En este punto, se mostrará todo el catálogo de servicios. Aquí debes filtrar por la versión que deseas desplegar y buscar _discovery_ en el cuadro de búsqueda.
+
+image::cct_deploy_service_discovery_deployment_0002.png[]
+
+Una vez que hayas configurado todo, haz clic en el botón "Get" y serás redirigido a una página de confirmación donde podrás elegir una versión _minor_ del servicio en caso de que lo necesites. Cuando hayas elegido qué versión desplegar, puedes confirmarla haciendo clic en el botón "Use this version".
+
+image::cct_confirm_version_discovery_deployment_0003.png[]
+
+Según el inicio de sesión que hayas realizado, es posible que debas seleccionar el _namespace_ (o el _tenant_, si estás en DC/OS) donde deseas desplegar tu servicio. En el siguiente ejemplo, se establece en `Tenant1`:
+
+image::cct_select_tenant_discovery_deployment_0004.png[]
+
+:warning-caption: ADVERTENCIA
+
+[WARNING] 
+.Solo para _Stratio KEOS_
+====
+El nombre de la aplicación debe ser único a nivel de _tenant_. Por lo tanto, no se pueden desplegar dos instancias con el mismo nombre en distintos _namespaces_ si comparten el mismo _tenant_, lo que no quita que se puedan desplegar dos instancias con el mismo nombre en distintos _tenants_.
+
+
+Cuando hayas seleccionado un _namespace_, se mostrará un formulario donde debes completar los campos mínimos requeridos para poder desplegar tu instancia de _Stratio Discovery_:
+
+* General: nombre del servicio de descubrimiento.
+* PostgreSQL: nombre y ruta del servicio de _Stratio PostgresSQL Framework_.
+* Service identity: rol de Vault.
+* Calico network: nombre de la red (no es necesario en _Stratio KEOS_).
+
+image::cct_configure_discovery_deployment_0005.png[]
+
+En caso de que necesites establecer una configuración avanzada, haz clic en "Customize deployment" en la barra de menú superior derecha de esta página:
+
+image::cct_advanced_configuration_discovery_deployment_0006.png[]
+
+La configuración de despliegue se ha dividido en diferentes secciones que se muestran en el menú de la izquierda:
+
+* *General*, donde están todas las variables obligatorias (en rojo).
+* *Settings*, donde puedes ajustar la instancia según las necesidades del usuario.
+* *Environment*, donde se configuran automáticamente todas las variables de entorno global del _cluster_ (esta es una sección de solo lectura).
+* *Placements*, donde puedes especificar restricciones de Mesos para ubicar la aplicación (solo en _Stratio EOS_).
+
+Entre las configuraciones de la sección *General*, puedes establecer el nombre del grupo con poderes de administrador (`Admin group`) y los grupos que contienen usuarios con poderes limitados (`Allowed groups`) dentro de _Stratio Discovery_.
+
+image::users_discovery.png[]
+
+Algunas de las configuraciones avanzadas más comunes que se pueden personalizar se encuentran en *Settings*. En esta sección, puedes configurar parámetros adicionales para la conexión JDBC.
+Veamos este apartado con sus valores por defecto.
+
+image::cct_advanced_settings_discovery_deployment_0009.png[]
+
+Dado que hay muchas variables para configurar, es mejor que el operador busque el significado de una variable (cuando su nombre no es autoexplicativo) dentro del icono *Help* (?), para buscar la propiedad deseada dentro de la sección relacionada.
+
+image::cct_help_discovery_deployment_0007.png[]
+
+Por ejemplo, si deseas saber qué es la propiedad 'Postgres service name' y qué hace, simplemente ve a *Help*, luego a *Settings*, luego a *General*, desplázate hacia abajo y finalmente a *PostgresSQL*, o usa el cuadro de búsqueda para encontrar la información sobre `PostgreSQL`.
+
+image::cct_help_tooltip_discovery_deployment_0008.png[]
+
+Por defecto, _Stratio Discovery_ se desplegará integrado con el SSO de _Stratio GoSec_. Eso significa que la instancia desplegada se registrará en el SSO de _Stratio GoSec_ como un servicio y registrará un secreto adicional en Vault, pero no te preocupes por cómo hacerlo porque _Stratio Command Center_ lo realizará por sí mismo.
+
+== Despliegue
+
+Ahora que todo está configurado... ¡haz clic en el botón "Deploy"!
+
+image::cct_deploy_discovery_0010.png[]
+
+Todo debería funcionar de inmediato y la instancia pronto debería estar en ejecución.
+
+image::cct_healthy_discovery_0011.png[]

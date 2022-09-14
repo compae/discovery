@@ -1,0 +1,94 @@
+= Configurar ACL para PostgreSQL
+
+_Stratio Discovery_ utiliza la base de datos de _Stratio PostgresSQL Framework_ para funcionar correctamente y necesita autorización para acceder a ella. Los permisos necesarios se pueden administrar a través de _Stratio GoSec_, que es el servicio proporcionado por la plataforma _Stratio Augmented Data Fabric_ que centraliza la autorización de usuarios y servicios a diferentes bases de datos u otros servicios.
+
+Para configurar correctamente los permisos necesarios para _Stratio Discovery_, sigue los pasos a continuación.
+
+:warning-caption: ADVERTENCIA
+
+WARNING: Ten en cuenta que, si instalas a través de _Stratio Command Center_, estos pasos se realizan automáticamente.
+
+== Crear un usuario de servicio de instancia
+
+Para otorgar los permisos sobre los almacenes de datos necesarios para el correcto funcionamiento de la aplicación, debe existir un usuario de servicio asociado a la instancia de _Stratio Discovery_ en _Stratio GoSec_.
+
+Si este usuario de servicio ya existe en el proveedor de identidades de la empresa (LDAP o Active Directory), ya debería estar incluido en _Stratio GoSec_ y no se necesita ninguna otra acción. Sin embargo, si aún no existe un usuario del servicio, debes crear uno en la aplicación _Stratio GoSec_ haciendo clic en el botón "Create user". Luego, se te pedirá el nombre, identificador y correo electrónico del nuevo usuario:
+
+* El campo de nombre es lo que se mostrará en la interfaz de _Stratio GoSec_.
+* El campo ID es el más importante ya que es lo que se comparará con las credenciales de autenticación presentadas por el usuario; en el caso de _Stratio Discovery_, el _Common Name_ del certificado TLS. Recuerda que este certificado xref:installing-and-upgrading/prerequisites.adoc[se almacena en Vault] y que su CN debe coincidir con la variable `DISCOVERY_INSTANCE_NAME` de la implementación.
+* El campo de correo electrónico no es relevante y se puede completar con cualquier valor.
+
+== Crear una política para acceder a _Stratio PostgresSQL Framework_
+
+El usuario del servicio _Stratio Discovery_ se debe agregar a una política donde configurar permisos para el servicio de _Stratio PostgresSQL Framework_ (la instancia de _Stratio PostgresSQL Framework_ debe ser aquella cuya URL sea la configurada en el despliegue de _Stratio Discovery_).
+
+Debes otorgar los siguientes permisos en los siguientes recursos (donde `+${metadataDbName}+` debe reemplazarse con el nombre de la base de datos definido durante el despliegue de _Stratio Discovery_ `MB_DB_DBNAME` en el _pod_, o en el parámetro "Database Name" en el formulario de despliegue de _Stratio Command Center_):
+
+|===
+| Tipo de recurso | Nombre | Recursivo | Comportamiento
+
+| Domain
+| `+${metadataDbName}.*+`
+| false
+| Usage
+
+| Tablespace
+| `+${metadataDbName}+`
+| false
+| Create
+
+| Sequence
+| `+${metadataDbName}.*+`
+| false
+| Select, Update, Usage
+
+| Function
+| `+${metadataDbName}.*+`
+| false
+| Execute
+
+| Foreign Data Wrapper
+| `+${metadataDbName}.*+`
+| false
+| Usage
+
+| Large Object
+| `+${metadataDbName}.*+`
+| false
+| Select, Update
+
+| Type
+| `+${metadataDbName}.*+`
+| false
+| Usage
+
+| View
+| `+${metadataDbName}.*+`
+| false
+| Select, Insert, Update, Delete, Truncate, Create, Usage
+
+| Schema
+| `+${metadataDbName}.*+`
+| false
+| Create, Usage
+
+| Database
+| `+${metadataDbName}+`
+| false
+| Create, Connect
+
+| Table
+| `+${metadataDbName}.*+`
+| false
+| Select, Insert, Update, Delete, Truncate, References, Trigger
+
+| Foreign Server
+| `+${metadataDbName}.*+`
+| false
+| Usage
+
+| Language
+| `+${metadataDbName}.*+`
+| false
+| Usage
+|===

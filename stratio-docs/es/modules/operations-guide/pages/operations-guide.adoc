@@ -1,0 +1,25 @@
+= Guía de operaciones
+
+En esta sección podrás encontrar toda la información relacionada con cómo configurar, instalar y operar una instancia de _Stratio Discovery_.
+
+Independientemente del motivo por el que estés consultando esta sección, deberás leer primero esta xref:operations-guide:key-concepts.adoc[breve introducción a _Stratio Discovery_]. Conocer la arquitectura te ayudará no solo para solucionar problemas, sino también para realizar ajustes en el despliegue.
+
+Después, visita xref:operations-guide:installing-and-upgrading.adoc[esta página y sus secciones] para realizar una instalación completa con éxito.
+
+Si ya estás listo para operar con _Stratio Discovery_, consulta las siguientes subsecciones con información detallada de cada apartado:
+
+** xref:operations-guide:connect-with-other-modules.adoc[Conectar con otros módulos]
+*** xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[Conectar con PostgreSQL con TLS]
+*** xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Crear una nueva conexión con _Stratio Virtualizer_]
+** xref:operations-guide:installing-and-upgrading.adoc[Instalación y actualización]
+*** xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerrequisitos]
+*** xref:operations-guide:installing-and-upgrading/deployment.adoc[Instalación]
+*** xref:operations-guide:installing-and-upgrading/environment-variables.adoc[Variables de entorno]
+*** xref:operations-guide:installing-and-upgrading/verify-installation.adoc[Comprobar la instalación]
+*** xref:operations-guide:installing-and-upgrading/upgrade.adoc[Actualización de versión]
+** xref:operations-guide:basic-operations.adoc[Operaciones básicas]
+** xref:operations-guide:configure-postgresql-acl.adoc[Configurar ACL para PostgreSQL]
+** xref:operations-guide:end-user-authentication.adoc[Autenticación del usuario final]
+** xref:operations-guide:export-and-import-collections.adoc[Importar y exportar colecciones]
+** xref:operations-guide:key-concepts.adoc[Conceptos importantes]
+** xref:operations-guide:troubleshooting.adoc[_Troubleshooting_]

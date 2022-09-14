@@ -1,0 +1,27 @@
+= Notas de _release_
+
+Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
+
+== 0.42.2-0.1.1 (13 de junio de 2022) _Scorpio 11.1_
+
+* Agregación de las opciones de programación de sincronización faltantes a nuestros _drivers_ de Metabase.
+
+== 0.42.2-0.1.0 (22 de marzo de 2022)
+
+* Actualización a Metabase 0.42.
+* Agregación de la configuración para añadir todas las opciones SSL necesarias con un simple clic en el _driver_ _stratiopostgres_.
+* Arreglo de las métricas de Prometheus.
+
+== 0.40.7-0.1.1 (2 de febrero de 2022)
+
+* Solución: no compara nombres con _display$$_$$names_ mientras filtra campos.
+* Solución de vulnerabilidades: nginx incorporado ofrece protocolos TLS inseguros.
+* Solución de vulnerabilidades: autenticación rota al usar el autenticador _gosec-sso_.
+
+== 0.40.7-0.1.0 (14 de diciembre de 2021)
+
+* Discovery CICD: conservación de los _dashboards_ y los ID de las preguntas al importar.
+* Actualización a Metabase 0.40.7 (imagen del _builder_ 0.40.7-0.1.0).
+* Solución de vulnerabilidades: actualización a Java 11.
+* Solución de vulnerabilidades: actualización del agente Java de Prometheus a 0.14.0.
+* Solución de vulnerabilidades: actualización de metabase-builder a 0.40.7-0.1.0.

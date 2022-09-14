@@ -1,0 +1,7 @@
+= Comprobar la instalación
+
+Puedes seguir estos pasos para comprobar si la instalación de _Stratio Discovery_ se ha realizado correctamente:
+
+. Accede a la interfaz de usuario de _Stratio Discovery_.
+. Inicia sesión si aún no lo has hecho.
+. Ve a 'new question' y ejecuta una pregunta personalizada sobre cualquier dato.

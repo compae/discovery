@@ -1,0 +1,93 @@
+= Prerequisitos
+
+== Servicios externos
+
+En primer lugar, debes tener todos los módulos principales desplegados y en ejecución: los más importantes son _Stratio GoSec_ y _Stratio Command Center_.
+
+:important-caption: AVISO
+
+NOTE: Si despliegas a través de _Stratio Command Center_, es probable que estos requisitos previos ya se cumplan antes del despliegue de _Stratio Discovery_.
+
+A partir de entonces, tu entorno deberá cumplir con estos prerrequisitos:
+
+* Tener un servicio _Stratio PostgreSQL_ y su PgBouncer asociado: aunque el _pool_ de conexiones no es obligatorio, se recomienda encarecidamente para no saturar las conexiones de un solo nodo.
+* Dado que _Stratio Discovery_ almacenará sus metadatos dentro de _Stratio PostgreSQL_, *se recomienda que nunca almacene ningún otro dato dentro del esquema `public` de la base de datos asignada a la instancia*. Esta base de datos se configura durante el despliegue mediante la variable de entorno `MB_DB_URL` o `MB_DB_DBNAME` en versiones anteriores.
+
+:important-caption: AVISO
+
+[NOTE]
+====
+No importa qué tipo de _Stratio PostgreSQL_ se utilice siempre que el rol/usuario en _Stratio PostgreSQL_ tenga también el atributo `LOGIN`, que la base de datos especificada en `MB_DB_DBNAME` exista y que el rol/usuario tenga los permisos necesarios en ella.
+
+Se da por sentado que se van a utilizar conexiones SSL/TLS a la instancia de _Stratio PostgreSQL_: por lo tanto, según cómo esa versión específica maneje la concesión de privilegios, el administrador del sistema necesitará agregar una política en _Stratio GoSec_ o crear el rol y otorgar los privilegios requeridos dentro de la instancia.
+
+Si sigues la implementación recomendada, *todos estos requisitos serán gestionados automáticamente por _Stratio Command Center_*.
+====
+
+== Secretos
+
+Si despliegas a través de _Stratio Command Center_ y seleccionas 'Execute prerequisites', puedes omitir esta sección porque estos secretos se crean automáticamente durante el primer despliegue.
+
+Esta sección es esencialmente una referencia para la resolución de problemas.
+
+=== Certificados
+
+El certificado _client-server_ utilizado para conectarse a _Stratio PostgreSQL_ y _Stratio Virtualizer_ (así como para cualquier otra conexión TLS/SSL) se almacena en Vault dentro de la ruta `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
+
+El valor `DISCOVERY_INSTANCE_NAME` se puede recuperar en el descriptor de la instancia (es una variable de entorno) y corresponde al nombre proporcionado durante el despliegue a través de _Stratio Command Center_.
+
+El `Common Name` (*CN*) del certificado también corresponde al valor `DISCOVERY_INSTANCE_NAME`, mientras que el `Subject Alternative Name` (*SAN*) depende del tipo de entorno (Kubernetes o Mesos).
+
+|===
+| Entorno | Definiciones SAN
+
+| Mesos
+| `+${DISCOVERY_INSTANCE_NAME}.${MESOS_DNS},${haproxyhost}+` +
+donde +
+`+${MESOS_DNS}+` se forma a partir del ID del servicio invirtiéndolo, reemplazando "/" por "." y agregando ".marathon.mesos" +
+y +
+`+${haproxyhost}+` es el _host_ virtual proporcionado durante el despliegue y se puede buscar dentro de la etiqueta `HAPROXY_1_VHOST`.
+
+| Kubernetes
+| `+${DISCOVERY_INSTANCE_NAME}-${KUBERNETES_NAMESPACE}+`, +
+`+${DISCOVERY_INSTANCE_NAME}-${KUBERNETES_NAMESPACE}.${KUBERNETES_NAMESPACE}+` +
+donde `+${KUBERNETES_NAMESPACE}+` es el _namespace_ donde se desplegó la instancia.
+|===
+
+:important-caption: AVISO
+
+NOTE: Recuerda que existe un prerrequisito en el despliegue de _Stratio Command Center_ que creará automáticamente este secreto para ti.
+
+=== Contraseñas
+
+Hay contraseñas obligatorias según el método de autenticación (seleccionado a través de la variable de entorno 'AUTHENTICATOR') empleadas para el inicio de sesión del usuario:
+
+* `gosec-sso`
+* `headers`
+* `jwt`
+* `metabase-native` (el valor predeterminado, si no se selecciona ninguno de los anteriores)
+
+Si deseas utilizar el sistema de autenticación de SSO de _Stratio GoSec_ para acceder a tu instancia, tienes que configurar `AUTHENTICATOR` con el valor `gosec-sso` (en versiones anteriores se habilitaba configurando la variable `USE_GOSEC_SSO_AUTH` en `true`) y debes tener un secreto almacenado en la ruta de Vault `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/oauth+`. Este secreto está compuesto por un usuario y una contraseña que deben coincidir con los definidos durante el registro del servicio SSO para tu instancia de _Stratio Discovery_ (esta acción generalmente la ejecuta _Stratio Command Center_ a través de un prerrequisito).
+
+El secreto de Vault tendrá el siguiente formato:
+
+[source,json]
+----
+{
+  "pass": "**************",
+  "user": "${DISCOVERY_INSTANCE_NAME}"
+}
+----
+
+Si estás desplegando una instancia de _Stratio Discovery_ utilizando el modelo _discovery-governance_, ya que el servicio se expondrá a través de una interfaz administrativa (por ejemplo, un _Admin Router_ en Mesos), es posible que necesites otra contraseña para firmar o verificar los JWT de la instancia.
+
+Esta contraseña debe almacenarse en la ruta de Vault `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/jwtsecret+` y debe coincidir con la contraseña _jwtsecret_ global.
+
+[source,json]
+----
+{
+  "pass": "**************"
+}
+----
+
+Recuerda que existe un prerrequisito de _Stratio Command Center_ que creará automáticamente estos secretos según el tipo seleccionado que elijas (`discovery-governance` o `discovery-default`).

@@ -1,0 +1,87 @@
+= Crear una nueva conexión con _Stratio Virtualizer_
+
+La siguiente información explica cómo puedes conectarte a _Stratio Virtualizer_ con o sin TLS:
+
+== Con TLS
+
+Rellena los siguientes parámetros:
+
+* *Name*: elige el nombre de tu base de datos.
+* *Host*: dirección _host_ de _Stratio Virtualizer_. Por ejemplo: _crossdata-1.marathon.mesos_.
+* *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio Virtualizer_].
+* *Database username*: igual que el parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
+* *Connect with Discovery login user?*: haz clic en "yes" para habilitar la suplantación de identidad.
+* *Use a secure connection (SSL)?*: sí.
+* *Additional parameters*: N/A.
+* *Large database*: marca para minimizar la sincronización de datos.
+
+image::crossdata_configuration.png[]
+
+== Sin TLS
+
+image::crossdata_configuration.png[]
+
+* *Name*: elige el nombre de tu base de datos.
+* *Host*: dirección _host_ de _Stratio Virtualizer_. Por ejemplo: _crossdata-1.marathon.mesos_.
+* *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio Virtualizer_].
+* *Database username*: usuario de _Stratio Virtualizer_.
+* *Connect with Discovery login user?*: haz clic en "yes" para habilitar la suplantación de identidad.
+* *Use a secure connection (SSL)?*: no.
+* *Additional parameters*: N/A.
+* *Large database*: marca para minimizar la sincronización de datos.
+
+image::crossdata_configuration_notls.png[]
+
+== Obtener el puerto de _Stratio Virtualizer_
+
+En la mayoría de los casos, el puerto para la conexión será 8000 por defecto si el servicio _Stratio Virtualizer_ se ha instalado a través de _Stratio Command Center_. Si no, tendrás que contactar con un administrador para que te diga el puerto que tienes que usar.
+
+== Configuración de permisos de _Stratio GoSec_ para _Stratio Discovery_ sobre _Stratio Virtualizer_
+
+. Ve a _Stratio GoSec_.
+. Busca en _policies_ una política existente de la instancia de _Stratio Virtualizer_ a la que quieres conectarte o crea una nueva.
+. Agrega el usuario de descubrimiento (nombre de usuario de la instancia de descubrimiento) a esta política.
+. Guarda la política.
+
+:tip-caption: CONSEJO
+
+TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:operations-guide:stratio-gosec.adoc[_Stratio GoSec_].
+
+== Suplantación de identidad en _Stratio Virtualizer_
+
+Si deseas una auditoría más detallada de quién realizó qué consulta, debes habilitar la suplantación de identidad. Para hacerlo, solo necesitas activar la opción 'Connect with Discovery login user'.
+
+:important-caption: IMPORTANTE
+
+IMPORTANT: Debido a problemas de compatibilidad, esta función se ha deshabilitado en todas las versiones de _Stratio Discovery_ posteriores a la 0.33.x, pero ahora vuelve a estar disponible a partir de la versión 0.39.1 y posteriores.
+
+image::impersonation_enabled.png[]
+
+Ten en cuenta que, una vez que habilites la suplantación de identidad, *todas las consultas que puedes ejecutar en la interfaz gráfica de usuario ahora se ejecutarán con el usuario de inicio de sesión*. Además, *incluso si puedes navegar por la interfaz gráfica de usuario y ver las diferentes bases de datos y tablas, esto no significa que tu usuario pueda acceder a ellas*.
+
+Si deseas asegurarte de que la suplantación de identidad esté realmente activada, puedes establecer la variable de entorno `DRIVER_LOG_LEVEL` a `DEBUG`, de modo que puedas asegurarte de que la consulta comience con `EXECUTE AS` comprobando las trazas de `stdout`.
+
+[source,bash]
+----
+Impersonation as user ${yourUser} for DB set to true [|false].
+Current query:  {:query EXECUTE AS ${yourUser} create table default.mytest
+as select id from testfra.test, ... }
+----
+
+Puedes encontrarte con errores de autenticación mientras navegas por tus datos si una política de _Stratio Virtualizer_ te prohíbe ver u operar en una tabla.
+
+image::discovery_exception.png[]
+
+Esto significa, como muestra claramente el siguiente _log_, que no puedes acceder a esa tabla.
+
+[source,logs]
+----
+SQLSyntaxErrorException:
+ Message: Operation not authorized
+ SQLState: 42000
+ Error Code: 7
+----
+
+Por favor, revisa cuidadosamente la xref:stratio-virtualizer:operations-guide:configuration/security-configuration.adoc[documentación relacionada para definir correctamente tu política de _Stratio Virtualizer_], porque los problemas de autorización surgirán también en aquellas consultas que se ejecutan en la página de consulta SQL.
+
+image::operation_not_authorized.png[]

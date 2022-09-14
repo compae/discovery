@@ -1,0 +1,33 @@
+= Introducción
+
+_Stratio Discovery_ es una herramienta de descubrimiento y visualización de datos que forma parte de _Stratio Augmented Data Fabric_. Se trata de una *herramienta analítica* simple y potente que permite aprender y tomar decisiones en base a los datos de la empresa sin necesidad de tener conocimientos técnicos (ni siquiera SQL).
+
+Dada su capacidad para conectarse con datos y metadatos y para comprender la información que estás buscando, permite generar fácilmente _dashboards_ e informes, incluso si se desconoce la ubicación de los datos.
+
+_Stratio Discovery_ ofrece una conexión nativa y segura a la infraestructura de procesamiento de datos _Stratio Augmented Data Fabric_ (tiene _drivers_ desarrollados adrede para _Stratio Virtualizer_ y _Stratio PostgreSQL_) además de a otras fuentes de datos como Oracle, MySQL, PostgreSQL, MongoDB, Google Analytics, BigQuery o Amazon Redshift.
+
+image::introduction.png[]
+
+Proporciona un entorno para crear tu propio conjunto de datos a través de la navegación visual de bases de datos y tablas, permitiéndote explorar, contar, filtrar, resumir y agrupar los resultados de datos. Algunas de las actividades que puedes realizar son:
+
+* Acceder a todos tus datos y comprender el valor que representan para tu empresa.
+* Hacer preguntas, guardarlas y publicarlas en tus propios _dashboards_.
+* Crear nuevos _dashboards_.
+* Medir la calidad de tus datos.
+
+Estas son las principales ventajas de usar _Stratio Discovery_:
+
+* Despliegue y escalado sencillo.
+* Tolerancia a fallos y alta disponibilidad.
+* Conexiones a múltiples bases de datos.
+* *Seguridad* con autorización de datos y auditoría de datos.
+* *Metadatos y descubrimiento*: asistencia para consultas, recopilación de preguntas y uso compartido de preguntas.
+* _Stratio Discovery_ como servicio.
+* Multiusuario, _multi-tenant_ y multiinstancia.
+* _Dashboards_ ágiles: creación, uso compartido, filtrado, integración del _dashboard_ en otras aplicaciones...
+* Perfilado de datos mediante _dashboards_ generados automáticamente.
+* Herramienta para exportar/importar colecciones de preguntas y _dashboards_.
+
+:note-caption: AVISO
+
+NOTE: _Stratio Discovery_ se basa en https://github.com/metabase/metabase[Metabase], un proyecto de código abierto con licencia *GNU Affero General Public License v3.0.*
