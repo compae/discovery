@@ -35,4 +35,8 @@ hose {
             ]
         )
     }
+
+    DOC = { config ->
+        doStratioDocsChecks(conf: config)
+    }
 }
