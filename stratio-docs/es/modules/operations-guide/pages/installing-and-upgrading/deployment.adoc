@@ -24,6 +24,7 @@ image::cct_select_tenant_discovery_deployment_0004.png[]
 .Solo para _Stratio KEOS_
 ====
 El nombre de la aplicación debe ser único a nivel de _tenant_. Por lo tanto, no se pueden desplegar dos instancias con el mismo nombre en distintos _namespaces_ si comparten el mismo _tenant_, lo que no quita que se puedan desplegar dos instancias con el mismo nombre en distintos _tenants_.
+====
 
 
 Cuando hayas seleccionado un _namespace_, se mostrará un formulario donde debes completar los campos mínimos requeridos para poder desplegar tu instancia de _Stratio Discovery_:

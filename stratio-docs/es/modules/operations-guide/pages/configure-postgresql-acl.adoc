@@ -15,7 +15,7 @@ Para otorgar los permisos sobre los almacenes de datos necesarios para el correc
 Si este usuario de servicio ya existe en el proveedor de identidades de la empresa (LDAP o Active Directory), ya debería estar incluido en _Stratio GoSec_ y no se necesita ninguna otra acción. Sin embargo, si aún no existe un usuario del servicio, debes crear uno en la aplicación _Stratio GoSec_ haciendo clic en el botón "Create user". Luego, se te pedirá el nombre, identificador y correo electrónico del nuevo usuario:
 
 * El campo de nombre es lo que se mostrará en la interfaz de _Stratio GoSec_.
-* El campo ID es el más importante ya que es lo que se comparará con las credenciales de autenticación presentadas por el usuario; en el caso de _Stratio Discovery_, el _Common Name_ del certificado TLS. Recuerda que este certificado xref:installing-and-upgrading/prerequisites.adoc[se almacena en Vault] y que su CN debe coincidir con la variable `DISCOVERY_INSTANCE_NAME` de la implementación.
+* El campo ID es el más importante ya que es lo que se comparará con las credenciales de autenticación presentadas por el usuario; en el caso de _Stratio Discovery_, el _Common Name_ del certificado TLS. Recuerda que este certificado xref:operations-guide:installing-and-upgrading/prerequisites.adoc[se almacena en Vault] y que su CN debe coincidir con la variable `DISCOVERY_INSTANCE_NAME` de la implementación.
 * El campo de correo electrónico no es relevante y se puede completar con cualquier valor.
 
 == Crear una política para acceder a _Stratio PostgresSQL Framework_

@@ -10,7 +10,7 @@ Si comprendes correctamente la (solo a primera vista) compleja interacción entr
 * elegir la configuración de la base de datos en Metabase que mejor se adapte a tus necesidades, y
 * comprender dónde se genera exactamente un error.
 
-El último paso es el más importante porque, incluso siguiendo la xref:troubleshooting.adoc[guía de _troubleshooting_], muchos de los problemas informados no se deben al mal comportamiento de _Stratio Discovery_ sino a las bases de datos a las que está conectado.
+El último paso es el más importante porque, incluso siguiendo la xref:operations-guide:troubleshooting.adoc[guía de _troubleshooting_], muchos de los problemas informados no se deben al mal comportamiento de _Stratio Discovery_ sino a las bases de datos a las que está conectado.
 
 No vamos a reinventar la rueda: hay una guía detallada paso a paso que se ofrece en la https://www.metabase.com/learn/[documentación oficial de Metabase] que te enseñará cómo usar Metabase, su configuración y puesta a punto.
 
@@ -42,7 +42,7 @@ Sabemos que queremos conectar Metabase, nuestra aplicación, con una o más base
 
 Desafortunadamente, creamos mecanismos de intercomunicación que pueden ser tan engorrosos y complejos como las comunicaciones entre humanos de diferentes idiomas.
 
-Si crees que sabes cómo interactúan un _driver_ y un JDBC, puedes saltarte la siguiente sección y dirigirte directamente a donde se explican los xref:key-concepts.adoc#_jdbc_y_drivers_en_metabase[JDBC y _drivers_ en Metabase]. De lo contrario, ¡abróchate el cinturón de seguridad!
+Si crees que sabes cómo interactúan un _driver_ y un JDBC, puedes saltarte la siguiente sección y dirigirte directamente a donde se explican los xref:operations-guide:key-concepts.adoc#_jdbc_y_drivers_en_metabase[JDBC y _drivers_ en Metabase]. De lo contrario, ¡abróchate el cinturón de seguridad!
 
 === Una historia de dificultades de intercomunicación
 
@@ -89,4 +89,4 @@ Para comprender en cuál de estos casos se encuentra tu situación, no hojees la
 
 La función de importación/exportación es esencialmente otro programa con su propio proceso Java que funciona de forma independiente a Metabase y cuyos _endpoints_ están expuestos fuera del contenedor para que puedas enviarles solicitudes HTTP.
 
-Puedes informarnos de cualquier error o comportamiento inesperado que haya surgido aquí (que no esté presente en la xref:troubleshooting.adoc[sección de _troubleshooting_]) e intentaremos solucionarlo cuanto antes.
+Puedes informarnos de cualquier error o comportamiento inesperado que haya surgido aquí (que no esté presente en la xref:operations-guide:troubleshooting.adoc[sección de _troubleshooting_]) e intentaremos solucionarlo cuanto antes.

@@ -9,7 +9,7 @@ Rellena los siguientes parámetros:
 * *Name*: elige el nombre de tu base de datos.
 * *Host*: dirección _host_ de _Stratio Virtualizer_. Por ejemplo: _crossdata-1.marathon.mesos_.
 * *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio Virtualizer_].
-* *Database username*: igual que el parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
+* *Database username*: igual que el parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
 * *Connect with Discovery login user?*: haz clic en "yes" para habilitar la suplantación de identidad.
 * *Use a secure connection (SSL)?*: sí.
 * *Additional parameters*: N/A.

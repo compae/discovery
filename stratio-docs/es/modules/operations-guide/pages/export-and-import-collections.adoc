@@ -2,6 +2,18 @@
 
 _Stratio Discovery_ te permite exportar colecciones junto con todos sus tableros, preguntas y subcolecciones en formato JSON, que luego se pueden importar en otra instancia de _Stratio Discovery_ siempre que ambas tengan la misma versión. Esta función será útil para mover colecciones entre entornos y puede integrarse de forma sencilla dentro de una herramienta de CI/CD.
 
+:warning-caption: ADVERTENCIA
+
+WARNING: A partir de la xref:operations-guide:installing-and-upgrading:upgrade.adoc[versión 0.43.4-x.x], en los datos exportados de una colección, junto con los _dashboards_, están también sus relativas https://www.metabase.com/docs/latest/dashboards/subscriptions[suscripciones]. Dado que la importación/exportación de datos se ha desarrollado para permitir el intercambio entre instancias de _Stratio Discovery_ de la misma versión en distintos entornos, se supone que cada instancia tendrá distintos usuarios. Por lo tanto, al exportar una colección, no se guardan los usuarios dentro de los metadatos de las suscripciones, a fin de evitar discrepancias en la instancia donde se importarán sucesivamente los datos.
+
+:tip-caption: CONSEJO
+
+[TIP]
+.Diferencia entre pulsos y subscripciones
+====
+Mientras que los pulsos podían establecerse sobre preguntas o colecciones, las suscripciones están enlazadas solo a un _dashboard_. Las suscripciones representan una evolución de los pulsos, por ello *se recomienda utilizar suscripciones y no pulsos*, dado que https://www.metabase.com/docs/v0.40/users-guide/10-pulses#dashboard-subscriptions-will-replace-pulses-in-a-future-release[estos se eliminarán pronto como herramienta en Metabase], marcándose como obsoletos a partir de la versión 0.40.
+====
+
 _Stratio Discovery_ expone una API REST HTTP de Akka basada en _endpoints_ de exportación e importación:
 
 == Exportar colección

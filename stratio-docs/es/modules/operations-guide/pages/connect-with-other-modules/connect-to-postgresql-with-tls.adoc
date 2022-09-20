@@ -27,9 +27,9 @@ Completa los siguientes parámetros como se muestra a continuación:
 * *Host*: dirección _host_ de PostgreSQL. ej.: pg-0001.marathon.mesos.
 * *Port*: puerto PostgreSQL.
 * *Database name*: nombre de la base de datos a la que deseas conectarte.
-* *Username*: igual que el parámetro `DISCOVERY_INSTANCE_NAME` en el xref:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
+* *Username*: igual que el parámetro `DISCOVERY_INSTANCE_NAME` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
 * *Password*: N/A.
-* *Additional JDBC connection string*: rellena este bloque con el valor adecuado del parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_]. Este es un ejemplo de cadena de conexión JDBC adicional apuntando a las rutas correctas donde se encuentran los certificados TLS necesarios: _prepareThreshold=0&ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem_.
+* *Additional JDBC connection string*: rellena este bloque con el valor adecuado del parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_]. Este es un ejemplo de cadena de conexión JDBC adicional apuntando a las rutas correctas donde se encuentran los certificados TLS necesarios: _prepareThreshold=0&ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem_.
 * *Use SSL*: habilita la autenticación SSL y añade automáticamente los certificados a la cadena de conexión JDBC, de modo que no sea necesario indicar la ruta de forma explícita.
 
 image::discovery_connection_example.png[]

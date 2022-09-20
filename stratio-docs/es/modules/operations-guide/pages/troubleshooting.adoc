@@ -12,8 +12,8 @@ image::discovery_version.png[]
 
 Esta página de _troubleshooting_ se estructura en las siguientes secciones:
 
-* xref:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Problemas de instalación y configuración], para problemas que impiden la ejecución exitosa del proceso de instalación/actualización.
-* xref:troubleshooting.adoc#_problemas_de_uso[Problemas de uso], para todos los demás problemas que puedan surgir durante las operaciones diarias.
+* xref:operations-guide:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Problemas de instalación y configuración], para problemas que impiden la ejecución exitosa del proceso de instalación/actualización.
+* xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Problemas de uso], para todos los demás problemas que puedan surgir durante las operaciones diarias.
 
 :important-caption: ATENCIÓN
 
@@ -50,10 +50,11 @@ No des por sentado que "la optimización prematura es la raíz de todos los male
 
 === No se pueden importar o exportar colecciones debido a error por tiempos de espera
 
-Si recibes una respuesta de tiempo máximo de espera excedido (por ejemplo, `504 Gateway Time-out`), significa que en el xref:operations-guide:export-and-import-collections.adoc[mecanismo de importación/exportación] se produjo un error por superar el tiempo máximo de espera durante el procesamiento y que debes incrementar alguna de las siguientes variables de _timeout_, según dónde resida tu problema:
+Si recibes una respuesta de tiempo máximo de espera excedido (por ejemplo, `504 Gateway Time-out`), significa que en el xref:operations-guide:operations-guide:export-and-import-collections.adoc[mecanismo de importación/exportación] se produjo un error por superar el tiempo máximo de espera durante el procesamiento y que debes incrementar alguna de las siguientes variables de _timeout_, según dónde resida tu problema:
 
 * `PROXY_READ_TIMEOUT`,
-* `DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT`,
+* `DISCOVERY_CICD_API_IMPORT_TIMEOUT`,
+* `DISCOVERY_CICD_API_EXPORT_TIMEOUT`,
 * `DISCOVERY_CICD_API_METABASE_TIMEOUT`.
 
 Además de eso, es posible que desees ajustar el mecanismo de importación/exportación (el llamado descubrimiento CI/CD) de las opciones de Java a través de `DISCOVERY_CICD_JAVA_OPTIONS`. Según dónde se generó el error por tiempo máximo de espera excedido, es probable que el proceso de importación/exportación aún esté en funcionamiento y que se complete con éxito.
@@ -100,7 +101,7 @@ Ten en cuenta que la cancelación de una consulta (es decir, la transacción act
 
 === No se pueden ver en la página de inicio las tablas o vistas recién creadas
 
-Te redirigimos a la xref:key-concepts.adoc[guía de conceptos básicos]: ¡Metabase debe usarse para visualizar los datos y no para operar sobre ellos!
+Te redirigimos a la xref:operations-guide:key-concepts.adoc[guía de conceptos básicos]: ¡Metabase debe usarse para visualizar los datos y no para operar sobre ellos!
 
 Aún así, si lograste crear una tabla en el "Native query editor", es probable que aún no puedas verla en la página de inicio cuando navegues a esa base de datos. Esto sucede porque se debe realizar una sincronización para actualizar los metadatos de campo y tabla almacenados en Metabase que se muestran en la página de inicio.
 
@@ -121,9 +122,9 @@ INFO - [FINISHED: Sync metadata for crossdata Base de Datos 45 'crossdata-pro' (
 
 === No se pueden actualizar correctamente las tablas y vistas de _Stratio Virtualizer_
 
-Supongamos que ya has sincronizado los datos como se explica en la  xref:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los _logs_: según el error, es posible que debas solicitar la ayuda del equipo de _Stratio Virtualizer_.
+Supongamos que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los _logs_: según el error, es posible que debas solicitar la ayuda del equipo de _Stratio Virtualizer_.
 
-Supongamos también que has leído la xref:key-concepts.adoc[breve introducción] donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos en el ecosistema de Stratio. Al observar el error dentro de los _logs_, puedes comprender dónde se produjo el error.
+Supongamos también que has leído la xref:operations-guide:key-concepts.adoc[breve introducción] donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos en el ecosistema de Stratio. Al observar el error dentro de los _logs_, puedes comprender dónde se produjo el error.
 
 Centrémonos en el siguiente ejemplo:
 
@@ -151,12 +152,18 @@ Por ejemplo, una solución para este error `Cannot recover session with sessionI
 
 === No se puede acceder a algunas tablas almacenadas en _Stratio Virtualizer_ o _Stratio PostgreSQL_
 
-Otros problemas en los que xref:troubleshooting.adoc#_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer[la capacidad recién adquirida para leer los _logs_] puede ser útil son aquellos relacionados con los problemas de autorización.
+Otros problemas en los que xref:operations-guide:troubleshooting.adoc#_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer[la capacidad recién adquirida para leer los _logs_] puede ser útil son aquellos relacionados con los problemas de autorización.
 
 Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección], también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
 
-Por ejemplo, *tanto _Stratio Virtualizer_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio Virtualizer_, debes xref:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL que utiliza el mecanismo TLS predeterminado].
+Por ejemplo, *tanto _Stratio Virtualizer_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio Virtualizer_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL que utiliza el mecanismo TLS predeterminado].
 
 En las versiones de _Stratio Discovery_ anteriores a la 0.38.1-0.2, *el usuario con el que habías hecho _login_ se usaba también para realizar acciones relacionadas con la actualización interna de metadatos cuando seleccionabas manualmente una sincronización forzada* (`Sync database schema now`, `Re-scan field values now`) si la suplantación de identidad estaba habilitada.
 
 Desafortunadamente, esto podía generar metadatos obsoletos o corruptos si tu usuario no tenía acceso completo a todas las bases de datos, esquemas y tablas de la base de datos a la que estás conectándote.
+
+=== Después de actualizar a la 0.43.4.-0.x.x no puedo acceder a las _questions_ y los _dashboards_ que apuntan a la "Sample Database"
+
+Por temas de seguridad, en la versión 0.43.4-0.x.x de _Stratio Discovery_, la base de datos de ejemplo, más conocida como "Sample Database", ha sido borrada. Esto significa que no se podrá consultar nada que apunte a ella (por ejemplo: _dashboards_, _questions_, etc.). Por ello, debes eliminar todas las referencias a esa base de datos.
+
+image::error_sample_db_missing.png[]

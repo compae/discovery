@@ -146,7 +146,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |
 
 | AUTHENTICATOR
-| Elige un xref:end-user-authentication.adoc[método de autenticación]. Reemplaza USE_JWT_AUTHENTICATION y USE_GOSEC_SSO_AUTH.
+| Elige un xref:operations-guide:end-user-authentication.adoc[método de autenticación]. Reemplaza USE_JWT_AUTHENTICATION y USE_GOSEC_SSO_AUTH.
 | gosec-sso
 | Si
 | String
@@ -286,6 +286,20 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 
 | DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT
 | Tiempo de espera de Akka en segundos para solicitudes al servicio de importación/exportación.
+| 40s
+| No
+| String
+| Obsoleta desde 0.43.4-0.1
+
+| DISCOVERY_CICD_API_IMPORT_TIMEOUT
+| Tiempo de espera de Akka en segundos para solicitudes al servicio de importación.
+| 100s
+| No
+| String
+|
+
+| DISCOVERY_CICD_API_EXPORT_TIMEOUT
+| Tiempo de espera de Akka en segundos para solicitudes al servicio de exportación.
 | 40s
 | No
 | String

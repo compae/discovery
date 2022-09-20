@@ -8,6 +8,15 @@ Aún así, *puede haber algunas discrepancias con respecto a las versiones anter
 
 WARNING: En el descriptor del Universo 12.2 (liberado para entornos con Kubernetes) se rompió la retrocompatibilidad porque cambió la manera de generar la dirección _host_ para acceder a la instancia. Este problema surge relativamente al registro de este _host_ dentro del mecanismo de _Stratio Gosec_ SSO: dado que no se vuelve a modificar este registro en los procesos de actualización, hay que desinstalar e instalar otra vez _Stratio Discovery_.
 
+
+== Actualizar a 0.43.4-0.1.0 desde 0.42.x o inferiores
+
+En esta versión, para poder garantizar la xref:operations-guide:export-and-import-collections.adoc[exportación e importación] de suscripciones de _dashboards_, se ha añadido un mecanismo de migración de Stratio por encima de la migración que tiene internamente Metabase. Este mecanismo genera dos _triggers_ en la base de datos de _Stratio Discovery_ (`stratio_insert_subscriptions` y `stratio_update_subscriptions`), que ejecutan dos funciones que se encargan de que cada suscripción tenga un nombre unívoco y que sea distinto del nombre del _dashboard_ al que está asociada. Los pulsos (cuyos nombres se pueden editar) y las promociones ya existentes no se verán afectados por estos _triggers_, siempre que las promociones tengan un nombre distinto del nombre del _dashboard_.
+
+:important-caption: IMPORTANTE
+
+IMPORTANT: Debido a una vulnerabilidad de seguridad con respecto a los _drivers_ de h2, en la versión 0.43.4-0.1.0 de _Stratio Discovery_ se quitó la base de datos de ejemplo (más conocida como el "Sample Database"). En el caso de que se haga una actualización y esta base de datos ya exista, te pedimos que la borres así como todos los _dashboards_ o las _questions_ asociadas.
+
 == Actualizar a 0.40.5-0.1.0 desde 0.38.1-x.y.z
 
 En esta versión, puedes configurar explícitamente el comportamiento del proxy interno que se encarga de la autenticación (permitiendo OAuth con _Stratio SSO_ o simplemente validando el JWT obtenido mediante la autenticación realizada contra un elemento externo) con la variable de entorno `OAUTH_ENABLED`, aunque no es obligatoria porque, en caso de que no exista, el comportamiento se puede inferir a partir de otras variables de entorno.
@@ -22,7 +31,7 @@ Ten en cuenta que el esquema de control de versiones del módulo ha cambiado. Ah
 
 El cambio más destacable de esta versión es la *actualización de Metabase de 0.33.2 a 0.38.1*. Aunque esto es un gran cambio, no se necesita intervención manual para migrar los datos de la base de datos interna de Metabase. Esta actualización trae la función de respuestas en _streaming_, lo que hace que el límite máximo de filas introducido en versiones anteriores ya no sea necesario.
 
-Además, la forma en que el módulo se integra con _Stratio GoSec_ SSO ha cambiado; consulta cómo funciona en xref:end-user-authentication.adoc[este resumen]. Lo más destacado es que ya no es necesario hacer un "doble inicio de sesión" (primero con _Stratio GoSec_ SSO y luego con un correo electrónico de administrador) para configurar Metabase antes de que otros usuarios puedan acceder. Ahora, los grupos de usuarios en _Stratio GoSec_ se sincronizan automáticamente con sus grupos de Metabase y hay una _whitelist_ de grupos para controlar quién puede acceder a _Stratio Discovery_.
+Además, la forma en que el módulo se integra con _Stratio GoSec_ SSO ha cambiado; consulta cómo funciona en xref:operations-guide:end-user-authentication.adoc[este resumen]. Lo más destacado es que ya no es necesario hacer un "doble inicio de sesión" (primero con _Stratio GoSec_ SSO y luego con un correo electrónico de administrador) para configurar Metabase antes de que otros usuarios puedan acceder. Ahora, los grupos de usuarios en _Stratio GoSec_ se sincronizan automáticamente con sus grupos de Metabase y hay una _whitelist_ de grupos para controlar quién puede acceder a _Stratio Discovery_.
 
 Finalmente, las rutas a los certificados utilizados para conectarse a las bases de datos _Stratio PostgreSQL_ a través de TLS mutuo han cambiado, por lo que debes cambiar estas rutas en el campo `additional JDBC options` en la definición de la base de datos. Un ejemplo de las opciones necesarias con las rutas correctas a los certificados sería `ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem&prepareThreshold=0`.
 
