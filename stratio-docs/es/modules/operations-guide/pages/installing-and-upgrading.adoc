@@ -6,7 +6,7 @@ WARNING: Se recomienda encarecidamente instalar _Stratio Discovery_ a través de
 
 Consulta las siguientes guías detalladas para iniciar el proceso:
 
-* xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerequisitos]
+* xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerrequisitos]
 * xref:operations-guide:installing-and-upgrading/deployment.adoc[Despliegue]
 * xref:operations-guide:installing-and-upgrading/verify-installation.adoc[Verificar instalación]
 * xref:operations-guide:installing-and-upgrading/upgrade.adoc[Actualización de versión]

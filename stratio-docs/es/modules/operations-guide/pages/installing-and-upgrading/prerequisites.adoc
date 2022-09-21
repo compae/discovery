@@ -1,4 +1,4 @@
-= Prerequisitos
+= Prerrequisitos
 
 == Servicios externos
 
@@ -13,7 +13,7 @@ A partir de entonces, tu entorno deberá cumplir con estos prerrequisitos:
 * Tener un servicio _Stratio PostgreSQL_ y su PgBouncer asociado: aunque el _pool_ de conexiones no es obligatorio, se recomienda encarecidamente para no saturar las conexiones de un solo nodo.
 * Dado que _Stratio Discovery_ almacenará sus metadatos dentro de _Stratio PostgreSQL_, *se recomienda que nunca almacene ningún otro dato dentro del esquema `public` de la base de datos asignada a la instancia*. Esta base de datos se configura durante el despliegue mediante la variable de entorno `MB_DB_URL` o `MB_DB_DBNAME` en versiones anteriores.
 
-:important-caption: AVISO
+:note-caption: AVISO
 
 [NOTE]
 ====
@@ -54,7 +54,7 @@ y +
 donde `+${KUBERNETES_NAMESPACE}+` es el _namespace_ donde se desplegó la instancia.
 |===
 
-:important-caption: AVISO
+:note-caption: AVISO
 
 NOTE: Recuerda que existe un prerrequisito en el despliegue de _Stratio Command Center_ que creará automáticamente este secreto para ti.
 

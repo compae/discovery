@@ -4,7 +4,7 @@ _Stratio Discovery_ es una herramienta fácil de usar que permite conectarse con
 
 image::arquitectura.png[]
 
-_Stratio Discovery_ encapsula todas las funcionalidades del producto *Metabase* (aquí xref:https://www.metabase.com/docs/v0.42/[más información]), un producto de analítica que permite conectarse a diversos servicios de datos a través de sus conectores y, de forma modular, incluir nuevos conectores.
+_Stratio Discovery_ encapsula todas las funcionalidades del producto *Metabase* (aquí https://www.metabase.com/docs/v0.42/[más información]), un producto de analítica que permite conectarse a diversos servicios de datos a través de sus conectores y, de forma modular, incluir nuevos conectores.
 
 En el caso de _Stratio Discovery_, se incluyen dos nuevos conectores para utilizar con cualquier repositorio de datos accesible a través de _Stratio PostgreSQL_ y _Stratio Virtualizer_, además de poder conectarse con otros servicios externos siempre que sean soportados por *Metabase*:
 
@@ -17,7 +17,7 @@ Su arquitectura, por tanto, está basada en la propia arquitectura de *Metabase*
 
 image::arquitectura3.png[]
 
-Consulta la xref:https://www.metabase.com/learn/administration/metabase-at-scale[documentación de la arquitectura de Metabase] para más información.
+Consulta la https://www.metabase.com/learn/administration/metabase-at-scale[documentación de la arquitectura de Metabase] para más información.
 
 De esta forma, la potencia de _Stratio Discovery_ permite acceder de forma uniforme, homogénea y transparente a datos internos y externos a la plataforma, así como relacionarlos y hacer preguntas sobre ellos… en resumen, hacer analítica e informes de análisis.
 

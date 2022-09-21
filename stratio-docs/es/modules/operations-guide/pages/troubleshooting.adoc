@@ -15,11 +15,10 @@ Esta página de _troubleshooting_ se estructura en las siguientes secciones:
 * xref:operations-guide:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Problemas de instalación y configuración], para problemas que impiden la ejecución exitosa del proceso de instalación/actualización.
 * xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Problemas de uso], para todos los demás problemas que puedan surgir durante las operaciones diarias.
 
-:important-caption: ATENCIÓN
+:important-caption: IMPORTANTE
 
 [IMPORTANT]
 ====
-
 Si encuentras un error que no se encuentra entre los siguientes, te sugerimos que verifiques si existe un https://github.com/metabase/metabase/issues/[problema similar en Metabase] que ya se haya informado o resuelto.
 
 *Si el problema sigue abierto, debes buscar soluciones alternativas* porque dependemos del código abierto de Metabase y de su corrección de errores. Las únicas intervenciones que aplicamos son esencialmente mejoras con respecto a la seguridad y a las integraciones con los otros módulos dentro del ecosistema de Stratio.
