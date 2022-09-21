@@ -2,7 +2,7 @@
 
 Como sabes, _Stratio Discovery_ se basa en https://www.metabase.com/learn/getting-started/getting-started[Metabase]. Por eso, antes de intentar ejecutar operaciones avanzadas, será de gran utilidad que consultes los siguientes enlaces:
 
-* https://www.metabase.com/docs/v0.42/users-guide/04-asking-questions.html[Hacer preguntas en Metabase]
-* https://www.metabase.com/docs/v0.42/users-guide/06-sharing-answers.html[Compartir preguntas guardadas]
-* https://www.metabase.com/docs/v0.42/users-guide/07-dashboards.html[Creación de paneles]
-* https://www.metabase.com/docs/v0.42/users-guide/09-multi-series-charting.html[Creación de gráficos]
+* https://www.metabase.com/docs/v0.43/users-guide/04-asking-questions.html[Hacer preguntas en Metabase]
+* https://www.metabase.com/docs/v0.43/users-guide/06-sharing-answers.html[Compartir preguntas guardadas]
+* https://www.metabase.com/docs/v0.43/users-guide/07-dashboards.html[Creación de paneles]
+* https://www.metabase.com/docs/v0.43/users-guide/09-multi-series-charting.html[Creación de gráficos]

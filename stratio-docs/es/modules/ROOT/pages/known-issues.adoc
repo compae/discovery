@@ -2,7 +2,7 @@
 
 == _Troubleshooting_ de Metabase
 
-En caso de experimentar algún problema al usar _Stratio Discovery_, consulta la https://www.metabase.com/docs/v0.42/troubleshooting-guide/index.html[guía de _troubleshooting_ de Metabase].
+En caso de experimentar algún problema al usar _Stratio Discovery_, consulta la https://www.metabase.com/docs/v0.43/troubleshooting-guide/index.html[guía de _troubleshooting_ de Metabase].
 
 == No puedo especificar correctamente el fichero (_key_) que contiene la clave privada del certificado para crear una conexión con una base de datos de PostgreSQL mediante SSL.
 

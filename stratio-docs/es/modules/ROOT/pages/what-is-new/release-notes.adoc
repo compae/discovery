@@ -2,6 +2,13 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
+== 0.43.4-0.1.0 (septiembre 2022) _R1_
+
+* Actualización a Metabase 0.43.4.
+* Mejoras en la gestión de errores de la API de Discovery CI/CD.
+* Importación y exportación de suscripciones de _dashboards_ en Discovery CI/CD.
+* Solución de vulnerabilidades: actualización a la version 0.17.1 del agente Java de Prometheus.
+
 == 0.42.2-0.1.1 (13 de junio de 2022) _Scorpio 11.1_
 
 * Agregación de las opciones de programación de sincronización faltantes a nuestros _drivers_ de Metabase.

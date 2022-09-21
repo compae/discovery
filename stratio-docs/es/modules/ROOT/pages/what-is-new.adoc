@@ -1,11 +1,11 @@
 = Novedades
 
-Estos son los últimos cambios realizados en _Stratio Discovery_ versión *0.42.2-0.1.1* (lanzado en junio de 2022):
+Estos son los últimos cambios realizados en _Stratio Discovery_ versión *0.43.4-0.1.0* (lanzado en septiembre de 2022):
 
-* Actualización a Metabase 0.42.2.
-* Agregación de la opción SSL en el _driver_ *Stratio PostgreSQL* para cargar automáticamente los certificados TLS necesarios.
-* Agregación de las opciones de programación de sincronización faltantes a nuestros _drivers_ de Metabase.
-* Arreglo de las métricas de Prometheus.
+* Actualización a Metabase 0.43.4.
+* Mejoras en la gestión de errores de la API de Discovery CI/CD.
+* Importación y exportación de suscripciones de _dashboards_ en Discovery CI/CD.
+* Solución de vulnerabilidades: actualización a la version 0.17.1 del agente Java de Prometheus.
 
 :tip-caption: CONSEJO
 
