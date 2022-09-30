@@ -114,6 +114,7 @@
       }
     ],
     "sso": {
+      "name": "${Application.name}",
       "clientId": "${Application.id}-oauth-id",
       "serviceId": "https://${haproxyhost}${haproxypath}/login",
       "secretPath": "userland/passwords/${Application.id}/oauth"
