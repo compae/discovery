@@ -5,4 +5,4 @@
  {"stratio" {:url "https://niquel.int.stratio.com:1443/repository/public"}}
 
  :deps
- {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.22.3-d467a54"}}}
+ {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.22.7-e2c665f"}}}

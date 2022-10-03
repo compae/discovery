@@ -8,7 +8,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-7181] Improvements in error messages of discovery CICD API
 * [ROCK-8025] Fix 'portal "C_x" does not exist' error in stratiopostgres driver
 * [ROCK-8431] [ROCK-8438] Fix security vulnerabilities of H2 embedded database (CVE-2022-23221)
-* [ROCK-6516] Add antora doc to repo
+* [ROCK-8534] Fix: bump Crossdata JDBC to 2.22.7-e2c665f
 * Fix vulnerabilities: Update prometheus java agent to 0.17.1 to resolve the org.yaml:snakeyaml security vulnerability (GHSA-3mc7-4q67-w48m)
 
 ## Previous development
