@@ -52,9 +52,9 @@ Para explicar el rol de los `drivers` y `JDBC`, vamos a bromear un poco. Imagine
 |===
 | De habla hispana | Tierra de nadie | De habla inglesa
 
-| Metabase :left_right_arrow: Driver
-| :left_right_arrow:
-| JDBC :left_right_arrow: Database
+| Metabase ↔ Driver
+| ↔
+| JDBC ↔ Database
 |===
 
 Imaginemos que queremos ejecutar la acción _sobremesa_ desde Metabase dentro de nuestra base de datos. Metabase habla español y sabe lo que es una _sobremesa_, pero nuestra base de datos quedaría perpleja ante una traducción literal (_sobre la mesa_... ¿qué?). Aún así, nuestra base de datos en inglés tiene todas las acciones respectivas que componen _sobremesa_, solo que las tiene individualmente: 'preparar café después del almuerzo', 'sentarse todos juntos a la mesa', 'hablar mientras toman el café' y, en última instancia, 'terminar el café y dejar la mesa'.

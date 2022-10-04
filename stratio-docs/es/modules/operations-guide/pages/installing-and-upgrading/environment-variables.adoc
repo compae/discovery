@@ -105,7 +105,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 
 | JWT_PUBLIC_KEY_ENDPOINT
 | URL donde encontrar la clave pública para verificar el JWT.
-| https://public-key-endopoint/key
+| https://public-key-endpoint/key
 | No (obligatorio si se usa JWT)
 | String
 |
@@ -361,63 +361,63 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Obsoleta desde 0.38.1-0.2.
 
 | QUERYPROCESSORPERMISIONS_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"metabase.query-processor.permissions"`.
+| Aplica a los _logs_ cuyo padre sea `"metabase.query-processor.permissions"`.
 | `INFO`
 | Si
 | String
 | Obsoleta desde 0.38.1-0.2.
 
 | QUERYPROCESSOR_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"metabase.query-processor"`.
+| Aplica a los _logs_ cuyo padre sea `"metabase.query-processor"`.
 | `DEBUG`
 | Si
 | String
 |
 
 | SYNC_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"mebase.sync"`.
+| Aplica a los _logs_ cuyo padre sea `"mebase.sync"`.
 | `INFO`
 | Si
 | String
 |
 
 | FIELDVALUES_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"metabase.models.field-values"`.
+| Aplica a los _logs_ cuyo padre sea `"metabase.models.field-values"`.
 | `INFO`
 | Si
 | String
 | Obsoleta desde 0.38.1-0.2.
 
 | METABASE_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"metabase"`.
+| Aplica a los _logs_ cuyo padre sea `"metabase"`.
 | `ERROR`
 | Si
 | String
 |
 
 | API_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"metabase.api"`.
+| Aplica a los _logs_ cuyo padre sea `"metabase.api"`.
 | `DEBUG`
 | Si
 | String
 |
 
 | MCHANGE_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"com.mchange"`.
+| Aplica a los _logs_ cuyo padre sea `"com.mchange"`.
 | `ERROR`
 | Si
 | String
 |
 
 | STRATIO_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"metabase.stratio"`.
+| Aplica a los _logs_ cuyo padre sea `"metabase.stratio"`.
 | `DEBUG`
 | Si
 | String
 |
 
 | DISCOVERYCICD_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea`"com.stratio.discoverycicd"`.
+| Aplica a los _logs_ cuyo padre sea `"com.stratio.discoverycicd"`.
 | `INFO`
 | Si
 | String

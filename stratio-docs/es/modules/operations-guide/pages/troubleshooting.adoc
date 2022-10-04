@@ -1,4 +1,4 @@
-= Resolución de problemas
+= _Troubleshooting_
 
 En primer lugar, *ayúdanos a ayudarte*.
 
@@ -151,7 +151,7 @@ Por ejemplo, una solución para este error `Cannot recover session with sessionI
 
 === No se puede acceder a algunas tablas almacenadas en _Stratio Virtualizer_ o _Stratio PostgreSQL_
 
-Otros problemas en los que xref:operations-guide:troubleshooting.adoc#_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer[la capacidad recién adquirida para leer los _logs_] puede ser útil son aquellos relacionados con los problemas de autorización.
+Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con los problemas de autorización.
 
 Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección], también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
 
