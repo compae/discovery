@@ -1,6 +1,6 @@
 = Guía de inicio rápido
 
-_Stratio Discovery_ es una herramienta de análisis simple y potente que permite a cualquier persona aprender y tomar decisiones a partir de los de su compañía. Sólo tienes que poner en tu navegador los mismos valores que tus propiedades en _Stratio Command Center_: *Settings → HA Proxy host +Settings → Path HA Proxy*.
+_Stratio Discovery_ es una herramienta de análisis simple y potente que permite a cualquier persona aprender y tomar decisiones a partir de los de su compañía. Sólo tienes que poner en tu navegador los mismos valores que tus propiedades en _Stratio Command Center_: *Settings → HA Proxy host + Settings → Path HA Proxy*.
 
 Por ejemplo:
 

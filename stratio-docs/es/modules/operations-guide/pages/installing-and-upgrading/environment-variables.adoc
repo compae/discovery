@@ -45,7 +45,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 *Seguridad*
 
 |===
-| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Deprecado
+| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
 
 | APPROLE
 | AppRole utilizado para recuperar un token de Vault con una política predefinida. NOTA: solo se usa con la autenticación dinámica habilitada.
@@ -69,7 +69,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |
 
 | VAULT_TOKEN
-| Token de autenticación de Vault NOTA: Úsalo sólo con la autenticación dinámica deshabilitada.
+| Token de autenticación de Vault. NOTA: Úsalo sólo con la autenticación dinámica deshabilitada.
 | AAAA-BBBB-CCCC-DDDD
 | No
 | String
@@ -170,7 +170,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 *Env*
 
 |===
-| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Deprecado
+| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
 
 | MB_DB_TYPE
 | El tipo de base de datos utilizada como repositorio de metadatos.
