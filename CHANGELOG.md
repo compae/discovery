@@ -1,7 +1,7 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.43.4-0.1.0 (upcoming)
+## 0.43.4-0.1.0 (2022-10-07)
 
 * [ROCK-7390] Upgrade Metabase 0.43
 * [ROCK-6458] Subscription promotion in discovery CI/CD
