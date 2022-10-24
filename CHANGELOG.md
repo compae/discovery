@@ -1,6 +1,10 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.43.4-0.1.1 (upcoming)
+
+* [ROCK-8674] Fix: Sync admin status correctly (bump stratio-metabase to 0.43.4-0.1.1)
+
 ## 0.43.4-0.1.0 (2022-10-07)
 
 * [ROCK-7390] Upgrade Metabase 0.43
