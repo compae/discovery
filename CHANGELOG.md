@@ -1,7 +1,7 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.43.4-0.1.1 (upcoming)
+## 0.43.4-0.1.1 (2022-10-25)
 
 * [ROCK-8674] Fix: Sync admin status correctly (bump stratio-metabase to 0.43.4-0.1.1)
 
