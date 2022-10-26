@@ -2,7 +2,11 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
-== 0.43.4-0.1.0 (septiembre 2022) _R1_
+== 0.43.4-0.1.1 (octubre 2022) Universo 13.0
+
+* Solución: sincronización correcta del estatus de adminstrador de usuarios.
+
+== 0.43.4-0.1.0 (septiembre 2022)
 
 * Actualización a Metabase 0.43.4.
 * Mejoras en la gestión de errores de la API de Discovery CI/CD.

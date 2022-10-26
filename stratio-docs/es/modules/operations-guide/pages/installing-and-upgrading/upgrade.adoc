@@ -9,7 +9,7 @@ Aún así, *puede haber algunas discrepancias con respecto a las versiones anter
 WARNING: En el descriptor del Universo 12.2 (liberado para entornos con Kubernetes) se rompió la retrocompatibilidad porque cambió la manera de generar la dirección _host_ para acceder a la instancia. Este problema surge relativamente al registro de este _host_ dentro del mecanismo de _Stratio Gosec_ SSO: dado que no se vuelve a modificar este registro en los procesos de actualización, hay que desinstalar e instalar otra vez _Stratio Discovery_.
 
 
-== Actualizar a 0.43.4-0.1.0 desde 0.42.x o inferiores
+== Actualizar a 0.43.4-0.1.x desde 0.42.x o inferiores
 
 En esta versión, para poder garantizar la xref:operations-guide:export-and-import-collections.adoc[exportación e importación] de suscripciones de _dashboards_, se ha añadido un mecanismo de migración de Stratio por encima de la migración que tiene internamente Metabase. Este mecanismo genera dos _triggers_ en la base de datos de _Stratio Discovery_ (`stratio_insert_subscriptions` y `stratio_update_subscriptions`), que ejecutan dos funciones que se encargan de que cada suscripción tenga un nombre unívoco y que sea distinto del nombre del _dashboard_ al que está asociada. Los pulsos (cuyos nombres se pueden editar) y las promociones ya existentes no se verán afectados por estos _triggers_, siempre que las promociones tengan un nombre distinto del nombre del _dashboard_.
 
