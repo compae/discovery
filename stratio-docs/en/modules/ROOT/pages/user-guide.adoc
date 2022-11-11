@@ -1,0 +1,40 @@
+﻿= User guide
+
+This guide gives you more information about _Stratio Discovery_ and how to query the data store. It's aimed at an audience that doesn't need to have technical knowledge, although this is desirable. Its main objective is *to create questions and learn from company data*.
+
+_Stratio Discovery_ works with Metabase, so you can find more information in its https://www.metabase.com/docs/v0.42/users-guide/start.html[user guide].
+
+== Prerequisites
+
+There are a few requirements that must be met before you start using _Stratio Discovery_. The most important ones are:
+
+* There must be a _Stratio Discovery_ instance running and configured correctly in the cluster,
+* The user must know the URL where the service is deployed.
+
+== About _Stratio Discovery_
+
+_Stratio Discovery_ is a simple business intelligence (BI) tool. It lets you ask questions about the data and shows the answers in formats that make sense, whether it's a bar chart or a detailed table.
+
+Questions can be saved for later, allowing you to return to them and/or group them into attractive dashboards. You can also share questions and dashboards with the rest of the team using *collections*.
+
+For a full understanding of how to use _Stratio Discovery,_ it's very useful to have high-level knowledge of the databases, so you can check out https://www.metabase.com/learn/databases/database-basics[the basic concepts of databases] that should be taken into account.
+
+=== What can I do?
+
+_Stratio Discovery_ lets you perform several operations, such as:
+
+* Create questions.
+* Get answers in the form of graphs.
+* Share questions.
+* Create dashboards.
+* Make collaborative collections.
+* Data profiling with _X-ray_.
+
+=== How do I do it?
+
+There's a lot of information about this in https://www.metabase.com/learn/getting-started/getting-started.html[the official Metabase documentation]:
+
+* https://www.metabase.com/docs/v0.42/users-guide/04-asking-questions.html[Asking questions in Metabase].
+* https://www.metabase.com/docs/v0.42/users-guide/06-sharing-answers.html[Sharing saved questions].
+* https://www.metabase.com/docs/v0.42/users-guide/07-dashboards.html[Creating dashboards].
+* https://www.metabase.com/docs/v0.42/users-guide/09-multi-series-charting.html[Creating charts].

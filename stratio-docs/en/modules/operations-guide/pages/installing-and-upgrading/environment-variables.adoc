@@ -1,0 +1,425 @@
+﻿= Environment variables
+
+This section covers all of the possible properties of _Stratio Discovery_ to deploy an instance:
+
+* *Property*: field name.
+* *Description*: description of the value and its use.
+* *Possible/default*: possible values and default values.
+* *Required*: _true_ or _false_.
+* *Type*: type of value.
+
+|===
+| Property | Description | Possible/default | Required | Type:
+
+| cpus
+| CPU quotas to assign to each _Stratio Discovery_ instance.
+|
+|
+|
+
+| instances
+| Number of _Stratio Discovery_ instances to run.
+|
+|
+|
+
+| id
+| The name of the instance (default = /discovery).
+|
+|
+|
+
+| mem
+| Memory (MB) to allocate to each _Bootstrap_ instance.
+| 2048
+| Yes
+| Number
+
+| force_pull_image
+| Forces the Docker image to be downloaded each time an instance is created.
+| _true_
+| Yes
+| Boolean
+|===
+
+*Security*:
+
+|===
+| Property | Description | Possible/default | Required | Type | Deprecated
+
+| APPROLE
+| AppRole used to retrieve a Vault token with a predefined policy. NOTE: only used when dynamic authentication is enabled.
+| _open_
+| No
+| String
+|
+
+| VAULT_HOST
+| Vault connection host.
+| vault.service.paas.labs.stratio.com
+| Yes
+| String
+|
+
+| VAULT_PORT
+| Vault connection port.
+| 8200
+| Yes
+| Number
+|
+
+| VAULT_TOKEN
+| Vault authentication token. NOTE: Use only when dynamic authentication is disabled.
+| AAAA-BBBB-CCCC-DDDD
+| No
+| String
+|
+
+| MB_USER_HEADER
+| HTTP header with user for login used for automatic authentication.
+| vnd.bbva.user-id
+| No
+| String
+|
+
+| MB_GROUP_HEADER
+| HTTP header with an array of groups for automatic authentication.
+| vnd.bbva.group-id
+| No
+| String
+|
+
+| MB_ADMIN_GROUP_HEADER
+| Array of groups that will be configured with administrator privileges.
+| admin1,admin2
+| No
+| String
+| Deprecated since 0.38.1-0.2
+
+| USE_JWT_AUTHENTICATION
+| Indicates whether to perform automatic authentication using headers or JWT.
+| _false_
+| No
+| String
+| Deprecated since 0.38.1-0.2.
+
+| JWT_PUBLIC_KEY_ENDPOINT
+| URL where to find the public key to verify the JWT.
+| https://public-key-endpoint/key
+| No (required if JWT is used)
+| String
+|
+
+| JWT_INSECURE_REQUEST_PKEY
+| Indicator to set whether to verify the TLS connection while obtaining the public key in `JWT_PUBLIC_KEY_ENDPOINT`.
+| _false_
+| No
+| String
+|
+
+| JWT_HEADER_NAME
+| HTTP header where to find the JWT token if authentication with JWT is selected.
+| X-USER-TOKEN
+| No
+| String
+|
+
+| JWT_USERNAME_CLAIM
+| Name of the claim in the JWT token where the username is provided.
+| sub
+| No
+| String
+|
+
+| JWT_GROUPS_CLAIM
+| Name of the claim in the JWT token where the user groups are provided.
+| groups
+| No
+| String
+|
+
+| DISCOVERY_INSTANCE_NAME
+| The name used in Vault to store the secrets of this instance. In multi-tenant clusters, this will be made up of the tenant ID and the name of the service, for example, _tenant1-discovery_.
+| discovery
+| Yes
+| String
+|
+
+| AUTHENTICATOR
+| Chooses an xref:operations-guide:end-user-authentication.adoc[authentication method]. Replaces USE_JWT_AUTHENTICATION and USE_GOSEC_SSO_AUTH.
+| gosec-sso
+| Yes
+| String
+|
+
+| USE_GOSEC_SSO_AUTH
+| Enables _Stratio GoSec_ SSO authentication. Note that *setting this variable to `true` will disable header authentication*. Go to the 'logging' section for more information.
+| _true_
+| Yes
+| Boolean
+| Deprecated since 0.38.1-0.2.
+
+| ipAddress.networkName
+| Name of the Calico network. Use only if network segmentation is enabled.
+| stratio
+| No
+| String
+|
+|===
+
+*Env*
+
+|===
+| Property | Description | Possible/default | Required | Type | Deprecated
+
+| MB_DB_TYPE
+| The type of database used as the metadata repository.
+| postgres
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| MB_DB_HOST
+| The database host is used as the metadata repository.
+| pg-0001.postgrestls.mesos
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| MB_DB_PORT
+| The database port used as the metadata repository.
+| 5432
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| MB_DB_URL
+| If this variable is defined, it will be used to establish the connection to the database used to store the instance metadata. If this isn't defined, `MB_DB_HOST` and `MB_DB_PORT` will be used instead.
+| pg-0001.postgrestls.mesos:5432
+| No
+| String
+|
+
+| SSO_URI
+| URI to initiate a session using _Stratio GoSec_ SSO. This variable is required only if `USE_GOSEC_SSO_AUTH` is set to `true`.
+| e.g. `+https://bootstrap.labs.stratio.com:9005/sso+`
+| No
+| String
+|
+
+| SERVICE_URL
+| The login URL for your _Stratio Discovery_ instance. Typically, this is automatically set to `+https://${haproxyhost} ${haproxypath}+` where `haproxyhost` corresponds to `HAPROXY_1_VHOST` and `haproxypath` to `HAPROXY_1_PATH`.
+| e.g. `+https://public01.labs.stratio.com/discovery+`
+| Yes
+| String
+|
+
+| MB_DB_DBNAME
+| Name of the database used to save _Stratio Discovery_ metadata.
+| discovery
+| Yes
+| String
+|
+
+| MB_DB_USER
+| Username used to connect to the database where the _Stratio Discovery_ metadata is saved.
+| postgres
+| No
+| String
+|
+
+| MB_DB_PASS
+| Password to connect to the database if user and password are used as the authentication mechanism.
+| _password_
+| No
+| String
+|
+
+| MB_DB_SSL
+| Secure TLS connection with PostgreSQL.
+| _false_
+| Yes
+| Boolean
+|
+
+| MB_INIT_ADMIN_USER
+| The name of the administrator user created as an administrator during _Stratio Discovery_ deployment.
+| Demo
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| MB_INIT_ADMIN_PASSWORD
+| Password of the administrator user created as an administrator during _Stratio Discovery_ deployment.
+| 123456
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| MB_INIT_ADMIN_MAIL
+| Email of the administrator user created as administrator during _Stratio Discovery_ deployment.
+| demo@stratio.com
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| HAPROXY_1_VHOST
+| Name of the host used to expose the instance in Marathon-LB.
+| discovery.labs.stratio.com
+| Yes
+| String
+|
+
+| MB_JDBC_PARAMETERS
+| An optional variable to add additional JDBC configuration parameters to the connection string.
+| opt1=123&opt2=true
+| No
+| String
+|
+
+| PROXY_READ_TIMEOUT
+| Proxy read timeout in seconds applied to Marathon-LB and internal proxy.
+| 120
+| Yes
+| Number
+|
+
+| DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT
+| Akka timeout in seconds for import/export service requests.
+| 40s
+| No
+| String
+| Deprecated since 0.43.4-0.1
+
+| DISCOVERY_CICD_API_IMPORT_TIMEOUT
+| Akka timeout in seconds for import service requests.
+| 100s
+| No
+| String
+|
+
+| DISCOVERY_CICD_API_EXPORT_TIMEOUT
+| Akka timeout in seconds for export service requests.
+| 40s
+| No
+| String
+|
+
+| DISCOVERY_CICD_API_METABASE_TIMEOUT
+| Metabase API timeout for internal requests.
+| 10s
+| No
+| String
+|
+
+| DISCOVERY_CICD_JAVA_OPTIONS
+| Lets you configure custom Java options when running the CICD service.
+| e.g. `-Dakka.http.server.request-timeout=120s`
+| _false_
+| String
+|
+
+| STRATIO_ABSOLUTE_MAX_RESULTS
+| Specifies a download limit (maximum number of records exported) in _Stratio Discovery_.
+| e.g. `1048576`
+| No
+| String
+| Deprecated since 0.38.1-0.2.
+|===
+
+Log levels_*
+
+|===
+| Property | Description | Possible/default | Required | Type | Deprecated
+
+| SERVICE_LOG_LEVEL
+| Applies to service logs.
+| `ERROR`
+| Yes
+| String
+|
+
+| DRIVER_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.driver"`.
+| `ERROR`
+| Yes
+| String
+|
+
+| MIDDLEWARE_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.middleware"`.
+| `DEBUG`
+| Yes
+| String
+|
+
+| MODELPERMISSIONS_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.models.permissions"`.
+| `INFO`
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| QUERYPROCESSORPERMISIONS_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.query-processor.permissions"`.
+| `INFO`
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| QUERYPROCESSOR_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.query-processor"`.
+| `DEBUG`
+| Yes
+| String
+|
+
+| SYNC_LOG_LEVEL
+| Applies to logs whose parent is `"mebase.sync"`.
+| `INFO`
+| Yes
+| String
+|
+
+| FIELDVALUES_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.models.field-values"`.
+| `INFO`
+| Yes
+| String
+| Deprecated since 0.38.1-0.2.
+
+| METABASE_LOG_LEVEL
+| Applies to logs whose parent is `"metabase"`.
+| `ERROR`
+| Yes
+| String
+|
+
+| API_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.api"`.
+| `DEBUG`
+| Yes
+| String
+|
+
+| MCHANGE_LOG_LEVEL
+| Applies to logs whose parent is `"com.mchange"`.
+| `ERROR`
+| Yes
+| String
+|
+
+| STRATIO_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.stratio"`.
+| `DEBUG`
+| Yes
+| String
+|
+
+| DISCOVERYCICD_LOG_LEVEL
+| Applies to logs whose parent is `"com.stratio.discoverycicd"`.
+| `INFO`
+| Yes
+| String
+|
+|===

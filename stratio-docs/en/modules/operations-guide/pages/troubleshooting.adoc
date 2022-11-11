@@ -1,0 +1,164 @@
+﻿= Troubleshooting
+
+First, *help us help you*.
+
+_Stratio Discovery_ is based on Metabase, which is a *rapidly developing open-source project*, so some known issues may have already been fixed in a newer version that will eventually be integrated into _Stratio Discovery_.
+
+For this reason we ask you to always *specify the version of _Stratio Discovery_ that you are having the problem with*. If the application is running, it's as easy as clicking "Configuration" and then "About Metabase". The version will be indicated in the `Branch` property: the first tag represents the Metabase version and the last one, the Stratio version.
+
+You can also find out the version by retrieving the Docker image version (there may be differences as to how to check this depending on the deployment environment that is being used).
+
+image::discovery_version.png[]
+
+This troubleshooting page is organized into the following sections:
+
+* xref:operations-guide:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Installation and configuration problems], for problems that prevent the successful execution of the installation/update process.
+* xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Usage issues], for all other problems that may arise during daily operations.
+
+[IMPORTANT]
+====
+If you encounter an error that isn't described here, we suggest that you check to see if there's a https://github.com/metabase/metabase/issues/[similar issue in Metabase] that has already been reported or resolved.
+
+*If the problem is still open, you should look for workarounds* because we depend on Metabase's open source and bug fixes. The only interventions we implement are essentially improvements with respect to security and integrations with the other modules in the Stratio ecosystem.
+
+Otherwise, you are more than welcome to contact us.
+====
+
+== Installation and configuration problems
+
+=== My authentication method is set to `gosec-sso`, but after SSO, I'm redirected to Metabase's user password authentication
+
+Your user must belong to an allowed group or administration group, depending on the role. The way in which the administrator can specify the allowed groups is explained in detail in the xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[End user authentication] section.
+
+=== Can't connect _Stratio Discovery_ to a PgBouncer: ERROR: prepared statement "S_2" does not exist
+
+If the deployment crashes due to this error, it's because _Stratio Discovery_ can't connect to PostgreSQL to store its metadata. To fix this error, you just need to add the following environment variable (if it's not already present):
+
+[source,bash]
+----
+"MB_JDBC_PARAMETERS": "prepareThreshold=0"
+----
+
+== Usage issues
+
+If you notice that an instance slows down or there are problems with a database, first try to fix them by adjusting the databases and Metabase through the https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html[environment variables].
+
+Don't assume that "premature optimization is the root of all evil", because common sense also says that "forewarned is forearmed".
+
+=== Unable to import or export collections due to timeout error
+
+If you receive a timeout exceeded error (e.g. `504 Gateway Time-out`), it means that there was an error in the xref:operations-guide:export-and-import-collections.adoc[import/export mechanism] for exceeding the maximum timeout during processing and that you need to increase any of the following time-out variables, depending on where your problem lies:
+
+* `PROXY_READ_TIMEOUT`,
+* `DISCOVERY_CICD_API_IMPORT_TIMEOUT`,
+* `DISCOVERY_CICD_API_EXPORT_TIMEOUT`,
+* `DISCOVERY_CICD_API_METABASE_TIMEOUT`.
+
+You might also want to adjust the import/export mechanism (the so-called CI/CD discovery) for the Java options through `DISCOVERY_CICD_JAVA_OPTIONS`. Depending on where the timeout error occurred, it's likely that the import/export process is still running and will be completed successfully.
+
+For this reason, if you see a timeout error during an import process, you should check in the instance whether or not the collection was imported correctly before running the same import request again.
+
+For more information, see the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] section in the installation and upgrades guide.
+
+=== High CPU and memory usage after downloading query results as .xlsx files
+
+If you see an increase in memory and CPU usage after downloading the query results as `.xlsx` files, you are *probably running a version older than 0.38.1-0.2*.
+
+NOTE: Remember that the version with the old versioning mechanism (i.e. up to 0.40.x without the second version after the hyphen) is based on Metabase versions earlier than or equal to 0.33.
+
+Fortunately, starting with versions 0.38.x, Metabase introduced mechanisms for streaming results and corrected memory leaks that caused this high CPU and memory usage.
+
+If you can't update yet and your version is 0.39.x or higher, you can limit the size of the download of query results by adding the `STRATIO_ABSOLUTE_MAX_RESULTS` environment variable. If you apply this solution, note that users will not be notified that this restriction is being applied and may be surprised when they discover that the number of rows of results downloaded is less than the actual number of rows of results.
+
+=== A native query to a _Stratio Virtualizer_ table with new lines or carriage returns cannot be parsed correctly
+
+There are some known issues related to queries that have one or more new line characters or carriage returns via the _Stratio Virtualizer_ JDBC, so depending on your version of _Stratio Discovery_, you will probably experience them.
+
+As an alternate solution, remove all new lines or try upgrading to another version of _Stratio Discovery_ that integrates a newer version of the _Stratio Virtualizer_ JDBC.
+
+=== I'm detecting a lot of connections to databases. How can I limit them?
+
+The size of the `max connection pool` can only be set in versions of _Stratio Discovery_ that incorporate a Metabase version 0.38.0 or higher. Since this is a Metabase setting, we suggest that you refer to the https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[environment variables that can be set] to adjust it.
+
+=== I can't save changes to a question until I get the answer from the first query
+
+As soon as you open a question, a first query will start that will contain the previously saved question or a "select all" from the table for which you are writing the question.
+
+Unfortunately, up to and including version 0.40.x of _Stratio Discovery_, you have to wait for this query to be completed before you can save new changes to the question. *If the query isn't finished yet* (you can see this because the logs are not displayed), *even if you press the save button* and select one of the available save options (`Save` and `Save as new question`), *no action will be carried out until the query is finished*.
+
+=== Cannot cancel running queries with _Stratio Virtualizer_ tables
+
+You might want to cancel a query when you realize it is too resource-intensive or takes a long time to complete.
+
+Unfortunately, until version 0.40.x of _Stratio Discovery_ our _Stratio Virtualizer_ integration didn't have this feature. If you think it's essential for your project, consider installing a _Stratio Discovery_ version 0.38.1-0.x.x or higher.
+
+Note that the cancellation of a query (that is, the active transaction in the database) must also be supported by the database itself (see one of the https://github.com/metabase/metabase/issues/2399[Metabase issues in GitHub] where users complain that the query runs did not end correctly).
+
+=== Newly created tables or views don't appear on the homepage
+
+You should go back to the xref:operations-guide:key-concepts.adoc[basics concepts guide]: You should use Metabase to display data and not carry out actions on it!
+
+Even so, if you did manage to create a table in the Native query editor, you probably won't be able to see it on the home page when you browse to that database. This is because a synchronization must be carried out to update the field and table metadata stored in Metabase that are displayed on the home page.
+
+Carefully read the official Metabase documentation in regard to the https://www.metabase.com/docs/v0.42/administration-guide/01-managing-databases.html#database-syncing[synchronization mechanism].
+
+Simply put, if you're an administrator, click on "Sync database schema now" in the "Database" tab in the "Settings" window. This will trigger *an asynchronous synchronization consisting of two phases*: the actual *recovery* of the changes (phase A) with respect to the database (which involves a reusable connection between the open or re-created ones) and the *analysis* (phase B) of the recovered metadata.
+
+A `FINISHED: Sync metadata` in the logs might make you think that everything went well, but keep in mind that *errors might have occurred*. For example, an error may be generated during recovery, but the scan will still run and complete successfully because, in this case, the scan will be carried out on previously stored metadata.
+
+As a warning, an excerpt from the log is provided, where the error during phase A didn't prevent the successful execution of phase B, but ultimately didn't make any changes to the Metabase home page.
+
+[source,bash]
+----
+INFO - [STARTING: Sync metadata for crossdata Database 45 'crossdata-pro']
+ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10c29adb-90a3-435b-b62f-63f564a5ee9d. Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9d\n(\"com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:330)\"\n \"com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:329)\"\n \"scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:253)\"\n \"scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:251)\"\n \"scala.concurrent.impl.CallbackRunnable.run(Promise.scala:32)\"\n \"scala.concurrent.impl.ExecutionContextImpl$AdaptedForkJoinTask.exec(ExecutionContextImpl.scala:121)\"\n \"scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)\"\n \"scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.pollAndExecAll(ForkJoinPool.java:1253)\"\n \"scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1346)\"\n \"scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)\"\n \"scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)\"\n nil)\n\u001B
+INFO - [FINISHED: Sync metadata for crossdata Database 45 'crossdata-pro' (928.7 ms)]
+----
+
+=== Unable to update _Stratio Virtualizer_ tables and views correctly
+
+Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the _Stratio Virtualizer_ team.
+
+Let's suppose that you've also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the error in the logs, you can understand where the error occurred.
+
+Let's take a look at the following example:
+
+[source,bash]
+----
+ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10c29adb-90a3-435b-b62f-63f564a5ee9d.
+Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9d
+("com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:330)"
+ "com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:329)"
+ "scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:253)"
+ "scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:251)"
+ "scala.concurrent.impl.CallbackRunnable.run(Promise.scala:32)"
+ "scala.concurrent.impl.ExecutionContextImpl$AdaptedForkJoinTask.exec(ExecutionContextImpl.scala:121)"
+ "scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)"
+ "scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.pollAndExecAll(ForkJoinPool.java:1253)"
+ "scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1346)"
+ "scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)"
+ "scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)"
+ nil)
+----
+
+Even if the error was propagated to Metabase as a result of the synchronization query, from the log you can see that it originated within _Stratio Virtualizer_. This means that to solve the problem, you need to solve it from the root, that is, in _Stratio Virtualizer_.
+
+For example, one solution for this error `Cannot recover session with sessionId=` was to restart the _Stratio Virtualizer_ instance to force the pending connections to close.
+
+=== Unable to access some tables stored in _Stratio Virtualizer_ or _Stratio PostgreSQL_
+
+<<_unable_to_update_stratio_virtualizer_tables_and_views_correctly, The newly acquired ability to read logs>> can also be useful in solving authorization-related problems.
+
+Briefly, in addition to the https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[native Metabase data access permissions] and https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[collection permissions], there may also be another level of security depending on the database that you connect to.
+
+For example, *both _Stratio Virtualizer_ and _Stratio PostgreSQL_ have their own authorization systems* whose policies can be defined in _Stratio GoSec_. If *you enabled impersonation* in your _Stratio Virtualizer_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio GoSec_ policy] and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL connection that uses the default TLS mechanism].
+
+In _Stratio Discovery_ versions prior to 0.38.1-0.2, *the user that you logged in with was also used to perform actions related to updating internal metadata when you manually selected forced synchronization* (`Sync database schema now`, `Re-scan field values now`) if impersonation was enabled.
+
+Unfortunately, this could generate obsolete or corrupt metadata if your user didn't have full access to all of the databases, schemas, and tables in the database you were connecting to.
+
+=== After upgrading to 0.43.4.-0.x.x, I can't access the questions and dashboards that point to the "Sample Database"
+
+For security reasons, the "Sample Database" was deleted in version 0.43.4-0.x.x of _Stratio Discovery_. This means that you won't be able to query anything pointing to it (for example: dashboards, questions, etc.). You should delete all references to that database.
+
+image::error_sample_db_missing.png[]

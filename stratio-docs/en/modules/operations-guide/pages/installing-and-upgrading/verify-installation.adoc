@@ -1,0 +1,7 @@
+﻿= Checking the installation
+
+Follow these steps to confirm that the installation of _Stratio Discovery_ was successful:
+
+. Access the _Stratio Discovery_ user interface.
+. Log in if you haven't already.
+. Go to 'new question' and run a custom question about any data.

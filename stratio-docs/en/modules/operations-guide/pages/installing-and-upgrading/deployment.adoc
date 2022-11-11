@@ -1,0 +1,75 @@
+﻿= Installation
+
+== Configuration
+
+You can deploy _Stratio Discovery_ using _Stratio Command Center_ (regardless of whether you are in _Stratio KEOS_ or _Stratio EOS_) by clicking on *Services* → *New Service* (blue button).
+
+image::cct_services_list_discovery_deployment_0001.png[]
+
+The entire catalog of services will be displayed. Here, filter by the version you want to deploy and search for _discovery_ in the search box.
+
+image::cct_deploy_service_discovery_deployment_0002.png[]
+
+After you've set everything up, click the "Get" button and you'll be redirected to a confirmation page where you can choose a lower version of the service in case you need it. After you've selected which version to deploy, confirm by clicking the "Use this version" button.
+
+image::cct_confirm_version_discovery_deployment_0003.png[]
+
+Depending on how you logged in, you may need to select the namespace (or tenant, if you are in DC/OS) where you want to deploy your service. In the following example, it's set to `Tenant1`:
+
+image::cct_select_tenant_discovery_deployment_0004.png[]
+
+[WARNING]
+.Only for _Stratio KEOS_
+====
+The application name must be unique at the tenant level. This means that you can't deploy two instances with the same name in different namespaces if they share the same tenant, which doesn't prevent you from deploying two instances with the same name in different tenants.
+====
+
+
+When you've selected a namespace, a form will be displayed and you need to fill in the minimum required fields in order to deploy your _Stratio Discovery_ instance:
+
+* General: name of the discovery service.
+* PostgreSQL: name and path of the _Stratio PostgresSQL Framework_ service.
+* Service identity: Vault role.
+* Calico network: network name (not required in _Stratio KEOS_).
+
+image::cct_configure_discovery_deployment_0005.png[]
+
+If you need to configure advanced settings, click on "Customize deployment" in the top right menu bar of this page.
+
+image::cct_advanced_configuration_discovery_deployment_0006.png[]
+
+The deployment configuration is divided into different sections which are shown in the menu on the left:
+
+* *General*, which includes all of the required variables (in red).
+* *Settings*, where you can configure the instance according to the user's needs.
+* *Environment*, where all cluster's global environment variables are automatically configured (this is a read-only section).
+* *Placements*, where you can specify Mesos restrictions to locate the app (only in _Stratio EOS_).
+
+Among the settings in the *General* section, you can set the name of the group with administrator permissions (`Admin group`) and the groups that contain users with limited permissions (`Allowed groups`) in _Stratio Discovery_.
+
+image::users_discovery.png[]
+
+Some of the most common advanced settings that can be customized are found under *Settings*. In this section, you can configure additional parameters for the JDBC connection.
+Let's take a look at this section with its default values.
+
+image::cct_advanced_settings_discovery_deployment_0009.png[]
+
+Since there are a lot of variables to configure, the operator should search for the meaning of a variable (when the name isn't self-explanatory) by clicking the *Help* (?) icon, to search for the desired property in the related section.
+
+image::cct_help_discovery_deployment_0007.png[]
+
+For example, if you want to know what the 'Postgres service name' property is and what it does, just go to *Help*, then *Settings*, then *General*, scroll down and finally to *PostgresSQL*, or use the search box to find information about `PostgreSQL`.
+
+image::cct_help_tooltip_discovery_deployment_0008.png[]
+
+By default, _Stratio Discovery_ will be deployed integrated with the _Stratio GoSec_ SSO. This means the deployed instance will be registered in the _Stratio GoSec_ SSO as a service and an additional secret will be registered in Vault, but don't worry about how to do this because _Stratio Command Center_ will do it on its own.
+
+== Deployment
+
+Now that everything is set up… click "Deploy"!
+
+image::cct_deploy_discovery_0010.png[]
+
+Everything should work immediately and the instance should soon be running.
+
+image::cct_healthy_discovery_0011.png[]

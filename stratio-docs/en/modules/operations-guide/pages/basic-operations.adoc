@@ -1,0 +1,8 @@
+﻿= Basic operations
+
+As you know, _Stratio Discovery_ is based on https://www.metabase.com/learn/getting-started/getting-started[Metabase]. So before attempting advanced operations, it would be helpful to consult the following links:
+
+* https://www.metabase.com/docs/v0.43/users-guide/04-asking-questions.html[Asking questions in Metabase]
+* https://www.metabase.com/docs/v0.43/users-guide/06-sharing-answers.html[Sharing saved questions]
+* https://www.metabase.com/docs/v0.43/users-guide/07-dashboards.html[Creating dashboards]
+* https://www.metabase.com/docs/v0.43/users-guide/09-multi-series-charting.html[Creating charts]

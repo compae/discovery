@@ -79,7 +79,7 @@ Aunque en alguna integración nativa de base de datos en Metabase las funcionali
 
 Si hay un problema al ejecutar una consulta porque se generó un error en la base de datos, está claro que el culpable es la base de datos o tu consulta (por ejemplo, una consulta que se refiere a tablas o columnas inexistentes).
 
-Si hay un problema al ejecutar una consulta porque en el JDBC surgió un error, *el JDBC generalmente se desarrolla por la base de datos relacionada, así que nuestro trabajo no es corregir ese error*, sino integrar la nueva versión de _JDBC_ que contiene esa corrección de errores.
+Si hay un problema al ejecutar una consulta porque en el JDBC surgió un error, *el JDBC generalmente se desarrolla por la base de datos relacionada, así que nuestro trabajo no es corregir ese error*, sino integrar la nueva versión de JDBC que contiene esa corrección de errores.
 
 Si hay un error en uno de los _drivers_ desarrollados en Stratio, un error de "traducciones ausentes" entre Metabase y un JDBC en particular, es nuestra responsabilidad corregir ese error. Si pertenece a otros _drivers_ desarrollados por la comunidad, no es tan sencillo entender quién debe solucionarlo, pero debes informarnos de todos modos junto con el problema de Metabase relacionado, si lo hay.
 

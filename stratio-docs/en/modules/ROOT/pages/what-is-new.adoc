@@ -1,0 +1,10 @@
+﻿= New developments
+
+These are the latest changes made to _Stratio Discovery_ version *0.43.4-0.1.0* (released in September 2022):
+
+* Upgrade to Metabase 0.43.4.
+* Improvements in error management of the Discovery CI/CD API.
+* Importing and exporting dashboard subscriptions to Discovery CI/CD.
+* Vulnerability fix: upgrading to version 0.17.1 of the Prometheus Java Agent.
+
+TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.

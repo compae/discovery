@@ -1,0 +1,87 @@
+﻿= Prerequisites
+
+== External Services
+
+First, you need to have all of the main modules deployed and running: the most important ones are _Stratio GoSec_ and _Stratio Command Center_.
+
+NOTE: If you are deploying using _Stratio Command Center_, these prerequisites are probably already fulfilled before you deploy _Stratio Discovery_.
+
+From this point on, your environment will have to meet the following prerequisites:
+
+* Have a _Stratio PostgreSQL_ service and its associated PgBouncer: although connection pool isn't required, it is strongly recommended to avoid saturating single-node connections.
+* Since _Stratio Discovery_ will store your metadata in _Stratio PostgreSQL_, *we recommend that you never store any other data in the `public schema` of the database assigned to the instance*. This database is configured during deployment using the `MB_DB_URL` or `MB_DB_DBNAME` environment variables in previous versions.
+
+[NOTE]
+====
+It doesn't matter what type of _Stratio PostgreSQL_ is used as long as the role/user in _Stratio PostgreSQL_ also has the `LOGIN` attribute, the database specified in `MB_DB_DBNAME` exists, and the role/user has the necessary permissions for it.
+
+It is assumed that SSL/TLS connections to the _Stratio PostgreSQL_ instance will be used: this means that depending on how that specific version handles granting privileges, the system administrator will need to add a policy in _Stratio GoSec_ or create the role and grant the required privileges in the instance.
+
+If you follow the recommended implementation, *all of these requirements will be automatically managed by _Stratio Command Center_*.
+====
+
+== Secrets
+
+If you deploy using _Stratio Command Center_ and select 'Execute prerequisites', you can skip this section because these secrets are automatically created during the first deployment.
+
+This section is essentially a reference for troubleshooting.
+
+=== Certificates
+
+The _client-server certificate_ used to connect to _Stratio PostgreSQL_ and _Stratio Virtualizer_ (as well as any other TLS/SSL connections) is stored in Vault on the path `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
+
+The value `DISCOVERY_INSTANCE_NAME` can be retrieved in the instance descriptor (it's an environment variable) and corresponds to the name provided during deployment using _Stratio Command Center_.
+
+The `Common Name` (*CN*) of the certificate also corresponds to the value `DISCOVERY_INSTANCE_NAME`, while the `Subject Alternative Name` (*SAN*) depends on the type of environment (Kubernetes or Mesos).
+
+|===
+| Environment: SAN definitions
+
+| Mesos
+| `+${DISCOVERY_INSTANCE_NAME}.${MESOS_DNS},${haproxyhost}+` +
+where +
+`+${MESOS_DNS}+` is formed from the service ID by reversing it, replacing "/" with "." and adding ".marathon.mesos" +
+and +
+`+${haproxyhost}+` is the virtual host provided during deployment and can be searched within the `HAPROXY_1_VHOST` tag.
+
+| Kubernetes
+| `+${DISCOVERY_INSTANCE_NAME}-${KUBERNETES_NAMESPACE}+`, +
+`+${DISCOVERY_INSTANCE_NAME}-${KUBERNETES_NAMESPACE}.${KUBERNETES_NAMESPACE}+` +
+where `+${KUBERNETES_NAMESPACE}+` is the namespace where the instance was deployed.
+|===
+
+NOTE: Remember that there's a prerequisite in the _Stratio Command Center_ deployment that will create this secret for you automatically.
+
+=== Passwords
+
+There are passwords that are required depending on the authentication method (selected through the 'AUTHENTICATOR' environment variable) used for user login:
+
+* `gosec-sso`
+* `headers`
+* `jwt`
+* `metabase-native` (the default, if none of the above are selected)
+
+If you want to use _Stratio GoSec's_ SSO authentication system to access your instance, configure `AUTHENTICATOR` with the value `gosec-sso` (in previous versions, this was enabled by setting the variable `USE_GOSEC_SSO_AUTH` to `true`), and you need to have a secret stored in Vault on the path `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/oauth+`. This secret is made up of a username and password that must match the ones defined during SSO service registration for your _Stratio Discovery_ instance (this action is usually done by _Stratio Command Center_ with a prerequisite).
+
+The Vault secret will have the following format:
+
+[source,json]
+----
+{
+  "pass": "**************",
+  "user": "${DISCOVERY_INSTANCE_NAME}"
+}
+----
+
+If you are deploying an instance of _Stratio Discovery_ using the discovery-governance model, since the service will be exposed through an administrative interface (for example, an _Admin Router_ in Mesos), you might need another password to sign or verify the instance's JWTs.
+
+This password needs to be stored in Vault on the path `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/jwtsecret +` and must match the global _jwtsecret_ password.
+
+[source,json]
+----
+{
+  "pass": "**************"
+}
+----
+
+Remember that there's a _Stratio Command Center_ prerequisite that will automatically create these secrets based on the selected type you choose (`discovery-governance` or `discovery-default`).

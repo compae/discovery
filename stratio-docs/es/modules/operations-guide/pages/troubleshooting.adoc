@@ -49,7 +49,7 @@ No des por sentado que "la optimización prematura es la raíz de todos los male
 
 === No se pueden importar o exportar colecciones debido a error por tiempos de espera
 
-Si recibes una respuesta de tiempo máximo de espera excedido (por ejemplo, `504 Gateway Time-out`), significa que en el xref:operations-guide:operations-guide:export-and-import-collections.adoc[mecanismo de importación/exportación] se produjo un error por superar el tiempo máximo de espera durante el procesamiento y que debes incrementar alguna de las siguientes variables de _timeout_, según dónde resida tu problema:
+Si recibes una respuesta de tiempo máximo de espera excedido (por ejemplo, `504 Gateway Time-out`), significa que en el xref:operations-guide:export-and-import-collections.adoc[mecanismo de importación/exportación] se produjo un error por superar el tiempo máximo de espera durante el procesamiento y que debes incrementar alguna de las siguientes variables de _timeout_, según dónde resida tu problema:
 
 * `PROXY_READ_TIMEOUT`,
 * `DISCOVERY_CICD_API_IMPORT_TIMEOUT`,

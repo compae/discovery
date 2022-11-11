@@ -1,0 +1,31 @@
+﻿= Introduction
+
+_Stratio Discovery_ is a data discovery and dashbooarding tool that is part of _Stratio Augmented Data Fabric_. It is a simple and powerful *analytical tool* that lets you learn and make decisions based on company data without requiring any technical knowledge (not even SQL).
+
+Because it can connect with data and metadata and in order to understand the information you are looking for, it lets you easily generate dashboards and reports, even if the location of the data is unknown.
+
+_Stratio Discovery_ offers a secure native connection to the _Stratio Augmented Data Fabric_ data processing infrastructure (it has drivers developed specifically for _Stratio Virtualizer_ and _Stratio PostgreSQL_) as well as other data sources such as Oracle, MySQL, PostgreSQL, MongoDB, Google Analytics, BigQuery or Amazon Redshift.
+
+image::introduction.png[]
+
+It provides an environment to create your own data sets by visually browsing databases and tables, allowing you to explore, count, filter, summarize and group data results. Some of the activities you can do are:
+
+* Access all of your data and understand the value it represents for your company.
+* Ask, save and publish questions on your own dashboards.
+* Create new dashboards.
+* Measure the quality of your data.
+
+The main advantages of using _Stratio Discovery_ include:
+
+* Easy deployment and scaling.
+* Fault tolerance and high availability.
+* Connections to multiple databases.
+* *Security* with data authorization and data auditing.
+* *Metadata and discovery*: assistance for consulting, collecting and shared use of questions.
+* _Stratio Discovery_ as a service.
+* Multi-user, multi-tenant and multi-instance.
+* Agile dashboards: creating, sharing, filtering, integrating dashboards into other applications…
+* Data profiling using automatically generated dashboards.
+* Tool to export/import collections of questions and dashboards.
+
+NOTE: _Stratio Discovery_ is based on https://github.com/metabase/metabase[Metabase], an open source project licensed under the *GNU Affero General Public License v3.0.*

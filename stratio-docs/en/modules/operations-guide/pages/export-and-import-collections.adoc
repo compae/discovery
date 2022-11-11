@@ -1,0 +1,69 @@
+﻿= Importing and exporting collections
+
+_Stratio Discovery_ lets you export collections along with all their dashboards, questions and sub-collections in JSON format, which can then be imported into another instance of _Stratio Discovery_ as long as both have the same version. This feature is useful for moving collections between environments and can be easily integrated into a CI/CD tool.
+
+WARNING: Starting with xref:operations-guide:installing-and-upgrading/upgrade.adoc[version 0.43.4-x.x], the data exported from a collection, along with the dashboards, also includes their relative https://www.metabase.com/docs/latest/dashboards/subscriptions[subscriptions]. Since data import/export has been developed to allow it to be exchanged between _Stratio Discovery_ instances with the same versions in different environments, it's assumed that each instance will have different users. This means that when exporting a collection, users are not saved in the subscription metadata to avoid discrepancies in the instance where the data will be imported successively.
+
+[TIP]
+.Difference between pulses and subscriptions
+====
+While pulses could be set for questions or collections, subscriptions are linked only to a dashboard. Subscriptions represent an evolution of pulses, so *we recommend using subscriptions and not pulses* because https://www.metabase.com/docs/v0.40/users-guide/10-pulses#dashboard-subscriptions-will-replace-pulses-in-a-future-release[pulses will soon be removed as a tool in Metabase], and have been marked as obsolete starting with version 0.40.
+====
+
+_Stratio Discovery_ exposes an Akka HTTP rest API based on export and import endpoints:
+
+== Export collection
+
+If you want to export a _Stratio Discovery_ collection, you just need to find the ID of the collection that you want to export:
+
+image::identify_colection_id.png[]
+
+Then just call the export endpoint, indicating the collection identifier. This request must be authenticated using the _Stratio Discovery_ session identifier through the header named `x-metabase-session`.
+
+TIP: For more information about this authorization, see the https://github.com/metabase/metabase/wiki/Using-the-REST-API[Metabase wiki].
+
+|===
+| Type of request | Endpoint | Headings
+
+| GET
+| `/discovery-cicd/export/'collection_id'`
+| `x-metabase-session: 'sessionId'` , `Content-Type: application/json`
+|===
+
+== Import collection
+
+After you've exported the collection, simply call the import endpoint in the destination _Stratio Discovery_ indicating the JSON file containing the exported collection as raw data. For authentication, you'll need to add the _Stratio Discovery_ session identifier to this request through the `x-metabase-session` header.
+
+TIP: For more information about this authorization, see the https://github.com/metabase/metabase/wiki/Using-the-REST-API[Metabase wiki].
+
+|===
+| Type of request | Endpoint | Headings
+
+| POST
+| `/discovery-cicd/import?parentId='parent_collection'`
+| `x-metabase-session: 'sessionId'`, `Content-Type: application/json`
+|===
+
+As you can see, in this endpoint, you have the option of indicating the main collection that you want the imported collection to inherit, using the `parentId` query parameter.
+
+[IMPORTANT]
+====
+You can't export:
+
+* Any personal collection.
+* A collection not created previously.
+* Collections that contain dashboards that use questions that don't belong to the exported collection or one of its sub-collections.
+* Collections containing two or more questions/boards/sub-collections with the same name.
+
+You can't import:
+
+* A collection in a destination _Stratio Discovery_ that doesn't have the same database names, fields, and tables that contain the exported questions.
+
+In these cases, each endpoint will respond with its corresponding error.
+====
+
+Disabling the `FRIENDLY TABLE AND FIELD NAMES` configuration option will speed up the export/import process. This option is in the general section of the Metabase settings:
+
+image::humanize_fields.png[]
+
+This setting must be disabled on both the source and target _Stratio Discovery_ instances if you want to use it.

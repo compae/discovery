@@ -1,0 +1,26 @@
+﻿= Architecture
+
+_Stratio Discovery_ is an easy-to-use tool that lets you connect to multiple databases for analytics, scorecards, and reporting:
+
+image::arquitectura.png[]
+
+It encapsulates all the features of the Metabase product (https://www.metabase.com/docs/v0.42/[more information here]), an analytics product that lets you connect to multiple data services through its connectors and modularly include new connectors.
+
+_Stratio Discovery_ includes two new connectors that can be used with any data repository that can be accessed through _Stratio PostgreSQL_ and _Stratio Virtualizer_, and can also connect to other external services as long as they are supported by Metabase:
+
+image::arquitectura2.png[]
+
+This means that its architecture is based on Metabase's own architecture, but it also provides two fundamental features:
+
+. Uniform secured user access on the platform (through an NGINX HTTP proxy).
+. Access to all of the platform's internal data: _Stratio Virtualizer_ (via _Crossdata driver_) and _Stratio PostgreSQL_ (via _JDBC driver_).
+
+image::arquitectura3.png[]
+
+See the https://www.metabase.com/learn/administration/metabase-at-scale[documentation on the Metabase architecture] for more information.
+
+This means that the power of _Stratio Discovery_ provides uniform, homogeneous and transparent access to data inside and outside the platform, in addition to relating the data and asking questions about it… in short, running analytics and generating analysis reports.
+
+image::arquitectura4.png[]
+
+image::arquitectura5.png[]

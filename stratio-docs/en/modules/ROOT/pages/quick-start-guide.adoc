@@ -1,0 +1,39 @@
+﻿= Quick start guide
+
+_Stratio Discovery_ is a simple and powerful analysis tool that allows anyone to learn and make decisions from those of their company. Just put the same values into your browser as your properties in _Stratio Command Center_: *Settings → HA Proxy host + Settings → Path HA Proxy*.
+
+For example:
+
+Settings → HA Proxy host = http://discovery.labs.stratio.com
+
+Settings → Path HA Proxy = 'discovery'
+
+The final URL would be: https://discovery.labs.stratio.com/discovery
+
+== Logging in
+
+How you sign into _Stratio Discovery_ will depend on how it has been configured. After that, you'll be able to see the home page:
+
+image::home_page.png[]
+
+== Asking new questions
+
+Click "Ask a question" at the top of the screen. You'll now be in the question selection menu. Select "Custom" for a custom question.
+
+Use the bar across the page to ask your questions. Now, you can select the desired table, *Test*:
+
+image::select_a_table.png[]
+
+Click on "Run" to display the table:
+
+image::table_example.png[]
+
+Let's start with a simple question: how many people have registered since 2010? To find out, you need to filter the data by the *field you are interested in*, in this case *start_date*.
+
+After selecting the *start_date* from the filter drop-down, a list of options for the filter will be displayed. Choose "Previous" and type the number 10 in the text box. Then click "Add filter".
+
+image::filtering.png[]
+
+You'll then need to tell _Stratio Discovery_ what you want to view. Under the *View* drop-down menu, select "Count of rows".
+
+image::view_options.png[]

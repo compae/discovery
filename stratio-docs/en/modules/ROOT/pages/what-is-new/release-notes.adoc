@@ -1,0 +1,34 @@
+﻿= Release notes
+
+Here are the most relevant developments of _Stratio Discovery_ in the latest releases:
+
+== 0.43.4-0.1.0 (September 2022) _Universe 13.0_
+
+* Upgrade to Metabase 0.43.4.
+* Improvements in error management of the Discovery CI/CD API.
+* Importing and exporting dashboard subscriptions to Discovery CI/CD.
+* Vulnerability fix: upgrading to version 0.17.1 of the Prometheus Java Agent.
+
+== 0.42.2-0.1.1 (June 13, 2022) _Scorpio 11.1_
+
+* Added missing sync scheduling options to our Metabase drivers.
+
+== 0.42.2-0.1.0 (March 22, 2022)
+
+* Upgrade to Metabase 0.42.
+* Addition to the configuration to add all of the necessary SSL options with a simple click on the _stratiopostgres_ driver.
+* Prometheus metrics fixed.
+
+== 0.40.7-0.1.1 (February 2, 2022)
+
+* Solution: names with _display$$_$$names_ not compared while filtering fields.
+* Vulnerability fix: included nginx offers insecure TLS protocols.
+* Vulnerability fix: authentication broken when using the _gosec-sso_ authenticator.
+
+== 0.40.7-0.1.0 (December 14, 2021)
+
+* CICD Discovery: conservation of dashboards and question IDs when importing.
+* Upgrade to Metabase 0.40.7 (image from builder 0.40.7-0.1.0).
+* Vulnerability fix: update to Java 11.
+* Vulnerability fix: Prometheus Java Agent updated to 0.14.0.
+* Vulnerability fix: metabase-builder updated to 0.40.7-0.1.0.
