@@ -28,7 +28,7 @@ This section is essentially a reference for troubleshooting.
 
 === Certificates
 
-The _client-server certificate_ used to connect to _Stratio PostgreSQL_ and _Stratio Virtualizer_ (as well as any other TLS/SSL connections) is stored in Vault on the path `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
+The _client-server certificate_ used to connect to _Stratio PostgreSQL_ and _Stratio {modulename}_ (as well as any other TLS/SSL connections) is stored in Vault on the path `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
 
 The value `DISCOVERY_INSTANCE_NAME` can be retrieved in the instance descriptor (it's an environment variable) and corresponds to the name provided during deployment using _Stratio Command Center_.
 

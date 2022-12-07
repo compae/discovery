@@ -4,7 +4,7 @@ _Stratio Discovery_ es una herramienta de descubrimiento y visualización de dat
 
 Dada su capacidad para conectarse con datos y metadatos y para comprender la información que estás buscando, permite generar fácilmente _dashboards_ e informes, incluso si se desconoce la ubicación de los datos.
 
-_Stratio Discovery_ ofrece una conexión nativa y segura a la infraestructura de procesamiento de datos _Stratio Augmented Data Fabric_ (tiene _drivers_ desarrollados adrede para _Stratio Virtualizer_ y _Stratio PostgreSQL_) además de a otras fuentes de datos como Oracle, MySQL, PostgreSQL, MongoDB, Google Analytics, BigQuery o Amazon Redshift.
+_Stratio Discovery_ ofrece una conexión nativa y segura a la infraestructura de procesamiento de datos _Stratio Augmented Data Fabric_ (tiene _drivers_ desarrollados adrede para _Stratio {modulename}_ y _Stratio PostgreSQL_) además de a otras fuentes de datos como Oracle, MySQL, PostgreSQL, MongoDB, Google Analytics, BigQuery o Amazon Redshift.
 
 image::introduction.png[]
 

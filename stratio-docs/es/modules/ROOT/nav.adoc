@@ -5,7 +5,7 @@
 * xref:operations-guide:operations-guide.adoc[Guía de operaciones]
 ** xref:operations-guide:connect-with-other-modules.adoc[Conectar con otros módulos]
 *** xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[Conectar con PostgreSQL con TLS]
-*** xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Crear una nueva conexión con _Stratio Virtualizer_]
+*** xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Crear una nueva conexión con _Stratio {modulename}_]
 ** xref:operations-guide:installing-and-upgrading.adoc[Instalación y actualización]
 *** xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerrequisitos]
 *** xref:operations-guide:installing-and-upgrading/deployment.adoc[Instalación]

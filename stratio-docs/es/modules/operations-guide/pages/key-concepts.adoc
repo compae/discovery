@@ -4,7 +4,7 @@
 
 TIP: Por favor, lee esta breve guía antes de desplegar y/o usar _Stratio Discovery_.
 
-Si comprendes correctamente la (solo a primera vista) compleja interacción entre Metabase, _Stratio Discovery_ y los demás componentes del ecosistema de Stratio (_Stratio Virtualizer_, _Stratio PostgreSQL_...), podrás:
+Si comprendes correctamente la (solo a primera vista) compleja interacción entre Metabase, _Stratio Discovery_ y los demás componentes del ecosistema de Stratio (_Stratio {modulename}_, _Stratio PostgreSQL_...), podrás:
 
 * afinar el despliegue,
 * elegir la configuración de la base de datos en Metabase que mejor se adapte a tus necesidades, y
@@ -27,7 +27,7 @@ Por lo tanto, ahora debe quedar claro que si tu consulta tarda mucho tiempo en c
 _Stratio Discovery_ es Metabase integrado en el ecosistema _Stratio_:
 
 * tiene agregadas o modificadas capas de seguridad (por ejemplo, el SSO de _Stratio GoSec_ junto con la autenticación simple predeterminada de Metabase de usuario/contraseña),
-* tiene agregados nuevos _drivers_ (por ejemplo, _Stratio Virtualizer_, _Stratio PostgreSQL_), y
+* tiene agregados nuevos _drivers_ (por ejemplo, _Stratio {modulename}_, _Stratio PostgreSQL_), y
 * las nuevas características con respecto a CI/CD ahora viven de forma independiente junto con Metabase en el mismo contenedor (por ejemplo, posibilidad de exportar una colección `Y` desde una instancia `A` e importarla en otra instancia, `B`, siempre que ya hayas configurado en `B` la base de datos referenciada dentro de la colección `Y`).
 
 Las últimas versiones de _Stratio Discovery_ tienen un nuevo mecanismo de versionado que utiliza la siguiente sintaxis de etiquetas: `${Metabase version}-${Stratio version}`. La primera versión con esta nueva etiqueta fue la 0.38.1-0.1. Se agradece este cambio con respecto al pasado cuando usábamos solo la versión de Stratio, porque el nuevo etiquetado ayuda a saber de inmediato qué versión de Metabase está integrada dentro de un _Stratio Discovery_.
@@ -73,9 +73,9 @@ Este intercambio de información solo puede ocurrir si se establece un formato d
 
 === JDBC y drivers en Metabase
 
-Si bien los *_drivers_ son parte de Metabase* y están basados en la comunidad o desarrollados por nosotros en Stratio (por ejemplo, el driver _Stratio Virtualizer_), *los JDBC generalmente se agregan como una caja negra al contenedor* y no han sido desarrollados ni por nuestro equipo ni por Metabase.
+Si bien los *_drivers_ son parte de Metabase* y están basados en la comunidad o desarrollados por nosotros en Stratio (por ejemplo, el driver _Stratio {modulename}_), *los JDBC generalmente se agregan como una caja negra al contenedor* y no han sido desarrollados ni por nuestro equipo ni por Metabase.
 
-Aunque en alguna integración nativa de base de datos en Metabase las funcionalidades del _driver_ y JDBC se pueden fusionar en una sola pieza, generalmente se requieren muchas capas para la interconexión: por ejemplo, *para conectar _Stratio Discovery_ a un servidor _Stratio Virtualizer_ se necesita un JDBC de _Stratio Virtualizer_ y un _driver_ de _Stratio Virtualizer_ para Metabase*.
+Aunque en alguna integración nativa de base de datos en Metabase las funcionalidades del _driver_ y JDBC se pueden fusionar en una sola pieza, generalmente se requieren muchas capas para la interconexión: por ejemplo, *para conectar _Stratio Discovery_ a un servidor _Stratio {modulename}_ se necesita un JDBC de _Stratio {modulename}_ y un _driver_ de _Stratio {modulename}_ para Metabase*.
 
 Si hay un problema al ejecutar una consulta porque se generó un error en la base de datos, está claro que el culpable es la base de datos o tu consulta (por ejemplo, una consulta que se refiere a tablas o columnas inexistentes).
 

@@ -3,4 +3,4 @@
 This section describes how to configure _Stratio Discovery_ to connect to other modules. Check out the different sections for more information.
 
 * xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[Connecting to PostgreSQL with TLS]
-* xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Creating a new connection with _Stratio Virtualizer_]
+* xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Creating a new connection with _Stratio {modulename}_]

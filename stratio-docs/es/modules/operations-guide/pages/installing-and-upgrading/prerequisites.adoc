@@ -32,7 +32,7 @@ Esta sección es esencialmente una referencia para la resolución de problemas.
 
 === Certificados
 
-El certificado _client-server_ utilizado para conectarse a _Stratio PostgreSQL_ y _Stratio Virtualizer_ (así como para cualquier otra conexión TLS/SSL) se almacena en Vault dentro de la ruta `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
+El certificado _client-server_ utilizado para conectarse a _Stratio PostgreSQL_ y _Stratio {modulename}_ (así como para cualquier otra conexión TLS/SSL) se almacena en Vault dentro de la ruta `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
 
 El valor `DISCOVERY_INSTANCE_NAME` se puede recuperar en el descriptor de la instancia (es una variable de entorno) y corresponde al nombre proporcionado durante el despliegue a través de _Stratio Command Center_.
 

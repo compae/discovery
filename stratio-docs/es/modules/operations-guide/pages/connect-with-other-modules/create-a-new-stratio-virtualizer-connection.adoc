@@ -1,14 +1,14 @@
-= Crear una nueva conexión con _Stratio Virtualizer_
+= Crear una nueva conexión con _Stratio {modulename}_
 
-La siguiente información explica cómo puedes conectarte a _Stratio Virtualizer_ con o sin TLS:
+La siguiente información explica cómo puedes conectarte a _Stratio {modulename}_ con o sin TLS:
 
 == Con TLS
 
 Rellena los siguientes parámetros:
 
 * *Name*: elige el nombre de tu base de datos.
-* *Host*: dirección _host_ de _Stratio Virtualizer_. Por ejemplo: _crossdata-1.marathon.mesos_.
-* *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio Virtualizer_].
+* *Host*: dirección _host_ de _Stratio {modulename}_. Por ejemplo: _crossdata-1.marathon.mesos_.
+* *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio {modulename}_].
 * *Database username*: igual que el parámetro ``DISCOVERY_INSTANCE_NAME`` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
 * *Connect with Discovery login user?*: haz clic en "yes" para habilitar la suplantación de identidad.
 * *Use a secure connection (SSL)?*: sí.
@@ -22,9 +22,9 @@ image::crossdata_configuration.png[]
 image::crossdata_configuration.png[]
 
 * *Name*: elige el nombre de tu base de datos.
-* *Host*: dirección _host_ de _Stratio Virtualizer_. Por ejemplo: _crossdata-1.marathon.mesos_.
-* *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio Virtualizer_].
-* *Database username*: usuario de _Stratio Virtualizer_.
+* *Host*: dirección _host_ de _Stratio {modulename}_. Por ejemplo: _crossdata-1.marathon.mesos_.
+* *Port*: comprueba cómo xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[obtener el puerto de _Stratio {modulename}_].
+* *Database username*: usuario de _Stratio {modulename}_.
 * *Connect with Discovery login user?*: haz clic en "yes" para habilitar la suplantación de identidad.
 * *Use a secure connection (SSL)?*: no.
 * *Additional parameters*: N/A.
@@ -32,14 +32,14 @@ image::crossdata_configuration.png[]
 
 image::crossdata_configuration_notls.png[]
 
-== Obtener el puerto de _Stratio Virtualizer_
+== Obtener el puerto de _Stratio {modulename}_
 
-En la mayoría de los casos, el puerto para la conexión será 8000 por defecto si el servicio _Stratio Virtualizer_ se ha instalado a través de _Stratio Command Center_. Si no, tendrás que contactar con un administrador para que te diga el puerto que tienes que usar.
+En la mayoría de los casos, el puerto para la conexión será 8000 por defecto si el servicio _Stratio {modulename}_ se ha instalado a través de _Stratio Command Center_. Si no, tendrás que contactar con un administrador para que te diga el puerto que tienes que usar.
 
-== Configuración de permisos de _Stratio GoSec_ para _Stratio Discovery_ sobre _Stratio Virtualizer_
+== Configuración de permisos de _Stratio GoSec_ para _Stratio Discovery_ sobre _Stratio {modulename}_
 
 . Ve a _Stratio GoSec_.
-. Busca en _policies_ una política existente de la instancia de _Stratio Virtualizer_ a la que quieres conectarte o crea una nueva.
+. Busca en _policies_ una política existente de la instancia de _Stratio {modulename}_ a la que quieres conectarte o crea una nueva.
 . Agrega el usuario de descubrimiento (nombre de usuario de la instancia de descubrimiento) a esta política.
 . Guarda la política.
 
@@ -47,7 +47,7 @@ En la mayoría de los casos, el puerto para la conexión será 8000 por defecto 
 
 TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:operations-guide:stratio-gosec.adoc[_Stratio GoSec_].
 
-== Suplantación de identidad en _Stratio Virtualizer_
+== Suplantación de identidad en _Stratio {modulename}_
 
 Si deseas una auditoría más detallada de quién realizó qué consulta, debes habilitar la suplantación de identidad. Para hacerlo, solo necesitas activar la opción 'Connect with Discovery login user'.
 
@@ -68,7 +68,7 @@ Current query:  {:query EXECUTE AS ${yourUser} create table default.mytest
 as select id from testfra.test, ... }
 ----
 
-Puedes encontrarte con errores de autenticación mientras navegas por tus datos si una política de _Stratio Virtualizer_ te prohíbe ver u operar en una tabla.
+Puedes encontrarte con errores de autenticación mientras navegas por tus datos si una política de _Stratio {modulename}_ te prohíbe ver u operar en una tabla.
 
 image::discovery_exception.png[]
 
@@ -82,6 +82,6 @@ SQLSyntaxErrorException:
  Error Code: 7
 ----
 
-Por favor, revisa cuidadosamente la xref:stratio-virtualizer:operations-guide:configuration/security-configuration.adoc[documentación relacionada para definir correctamente tu política de _Stratio Virtualizer_], porque los problemas de autorización surgirán también en aquellas consultas que se ejecutan en la página de consulta SQL.
+Por favor, revisa cuidadosamente la xref:{modulenamexdata}:operations-guide:configuration/security-configuration.adoc[documentación relacionada para definir correctamente tu política de _Stratio {modulename}_], porque los problemas de autorización surgirán también en aquellas consultas que se ejecutan en la página de consulta SQL.
 
 image::operation_not_authorized.png[]

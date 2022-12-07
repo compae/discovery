@@ -74,11 +74,11 @@ Afortunadamente, a partir de las versiones 0.38.x, Metabase introdujo mecanismos
 
 Si aún no puedes actualizar y tu versión es superior o igual a 0.39.x, puedes limitar el tamaño de descarga de los resultados de la consulta agregando la variable de entorno `STRATIO_ABSOLUTE_MAX_RESULTS`. Si aplicas esta solución alternativa, ten en cuenta que la aplicación de esta restricción no se notificará a los usuarios que pueden sorprenderse cuando descubran que la cantidad de filas de resultados descargadas es inferior a la cantidad real de filas de resultados.
 
-=== La consulta nativa a una tabla _Stratio Virtualizer_ con líneas nuevas o retornos de carro no se puede analizar correctamente
+=== La consulta nativa a una tabla _Stratio {modulename}_ con líneas nuevas o retornos de carro no se puede analizar correctamente
 
-Ha habido algunos problemas conocidos relacionados con consultas que tienen uno o más caracteres de nueva línea o retornos de carro a través del JDBC de _Stratio Virtualizer_, por lo que, dependiendo de tu versión de _Stratio Discovery_, es probable que los experimentes.
+Ha habido algunos problemas conocidos relacionados con consultas que tienen uno o más caracteres de nueva línea o retornos de carro a través del JDBC de _Stratio {modulename}_, por lo que, dependiendo de tu versión de _Stratio Discovery_, es probable que los experimentes.
 
-Como solución alternativa, quita todas las nuevas líneas o intenta actualizar a otra versión de _Stratio Discovery_ que integre una versión más nueva del JDBC de _Stratio Virtualizer_.
+Como solución alternativa, quita todas las nuevas líneas o intenta actualizar a otra versión de _Stratio Discovery_ que integre una versión más nueva del JDBC de _Stratio {modulename}_.
 
 === Detecto una gran cantidad de conexiones hacia las bases de datos, ¿cómo puedo limitarlas?
 
@@ -90,11 +90,11 @@ Tan pronto como abras una pregunta, se iniciará una primera consulta que conten
 
 Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar nuevos cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles (`Save` y `Save as new question`), *no se realizará ninguna acción hasta que finalice la consulta*.
 
-=== No se pueden cancelar consultas en ejecución con tablas _Stratio Virtualizer_
+=== No se pueden cancelar consultas en ejecución con tablas _Stratio {modulename}_
 
 Es posible que desees cancelar una consulta cuando te das cuenta de que consume demasiados recursos o si tarda mucho tiempo en completarse.
 
-Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ nuestra integración de _Stratio Virtualizer_ no tenía esta función. Si crees que es imprescindible para tu proyecto tenerla, por favor considera instalar una versión de _Stratio Discovery_ superior o igual a la 0.38.1-0.x.x.
+Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ nuestra integración de _Stratio {modulename}_ no tenía esta función. Si crees que es imprescindible para tu proyecto tenerla, por favor considera instalar una versión de _Stratio Discovery_ superior o igual a la 0.38.1-0.x.x.
 
 Ten en cuenta que la cancelación de una consulta (es decir, la transacción activa en la base de datos) también debe ser compatible con la propia base de datos (consulta uno de los https://github.com/metabase/metabase/issues/2399[problemas de Metabase en GitHub] donde los usuarios se quejan de que las ejecuciones de consultas no terminaron correctamente).
 
@@ -119,9 +119,9 @@ ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10
 INFO - [FINISHED: Sync metadata for crossdata Base de Datos 45 'crossdata-pro' (928,7 ms)]
 ----
 
-=== No se pueden actualizar correctamente las tablas y vistas de _Stratio Virtualizer_
+=== No se pueden actualizar correctamente las tablas y vistas de _Stratio {modulename}_
 
-Supongamos que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los _logs_: según el error, es posible que debas solicitar la ayuda del equipo de _Stratio Virtualizer_.
+Supongamos que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los _logs_: según el error, es posible que debas solicitar la ayuda del equipo de _Stratio {modulename}_.
 
 Supongamos también que has leído la xref:operations-guide:key-concepts.adoc[breve introducción] donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos en el ecosistema de Stratio. Al observar el error dentro de los _logs_, puedes comprender dónde se produjo el error.
 
@@ -145,17 +145,17 @@ Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9
  nil)
 ----
 
-Incluso si el error se propagó a Metabase como resultado de la consulta de sincronización, a partir del _log_ se puede entender que se originó dentro de _Stratio Virtualizer_. Por lo tanto, para solucionar el problema, debes resolverlo desde la raíz, es decir, dentro de _Stratio Virtualizer_.
+Incluso si el error se propagó a Metabase como resultado de la consulta de sincronización, a partir del _log_ se puede entender que se originó dentro de _Stratio {modulename}_. Por lo tanto, para solucionar el problema, debes resolverlo desde la raíz, es decir, dentro de _Stratio {modulename}_.
 
-Por ejemplo, una solución para este error `Cannot recover session with sessionId=` fue reiniciar la instancia de _Stratio Virtualizer_ para forzar el cierre de las conexiones pendientes.
+Por ejemplo, una solución para este error `Cannot recover session with sessionId=` fue reiniciar la instancia de _Stratio {modulename}_ para forzar el cierre de las conexiones pendientes.
 
-=== No se puede acceder a algunas tablas almacenadas en _Stratio Virtualizer_ o _Stratio PostgreSQL_
+=== No se puede acceder a algunas tablas almacenadas en _Stratio {modulename}_ o _Stratio PostgreSQL_
 
 Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con los problemas de autorización.
 
 Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección], también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
 
-Por ejemplo, *tanto _Stratio Virtualizer_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio Virtualizer_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL que utiliza el mecanismo TLS predeterminado].
+Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL que utiliza el mecanismo TLS predeterminado].
 
 En las versiones de _Stratio Discovery_ anteriores a la 0.38.1-0.2, *el usuario con el que habías hecho _login_ se usaba también para realizar acciones relacionadas con la actualización interna de metadatos cuando seleccionabas manualmente una sincronización forzada* (`Sync database schema now`, `Re-scan field values now`) si la suplantación de identidad estaba habilitada.
 

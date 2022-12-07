@@ -6,14 +6,14 @@ image::arquitectura.png[]
 
 It encapsulates all the features of the Metabase product (https://www.metabase.com/docs/v0.42/[more information here]), an analytics product that lets you connect to multiple data services through its connectors and modularly include new connectors.
 
-_Stratio Discovery_ includes two new connectors that can be used with any data repository that can be accessed through _Stratio PostgreSQL_ and _Stratio Virtualizer_, and can also connect to other external services as long as they are supported by Metabase:
+_Stratio Discovery_ includes two new connectors that can be used with any data repository that can be accessed through _Stratio PostgreSQL_ and _Stratio {modulename}_, and can also connect to other external services as long as they are supported by Metabase:
 
 image::arquitectura2.png[]
 
 This means that its architecture is based on Metabase's own architecture, but it also provides two fundamental features:
 
 . Uniform secured user access on the platform (through an NGINX HTTP proxy).
-. Access to all of the platform's internal data: _Stratio Virtualizer_ (via _Crossdata driver_) and _Stratio PostgreSQL_ (via _JDBC driver_).
+. Access to all of the platform's internal data: _Stratio {modulename}_ (via _Crossdata driver_) and _Stratio PostgreSQL_ (via _JDBC driver_).
 
 image::arquitectura3.png[]
 

@@ -10,7 +10,7 @@ If you're ready to operate with _Stratio Discovery_, see the following subsectio
 
 ** xref:operations-guide:connect-with-other-modules.adoc[Connecting to other modules]
 *** xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[Connecting to PostgreSQL with TLS]
-*** xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Creating a new connection with _Stratio Virtualizer_]
+*** xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[Creating a new connection with _Stratio {modulename}_]
 ** xref:operations-guide:installing-and-upgrading.adoc[Installation and upgrades]
 *** xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerequisites]
 *** xref:operations-guide:installing-and-upgrading/deployment.adoc[Installation]

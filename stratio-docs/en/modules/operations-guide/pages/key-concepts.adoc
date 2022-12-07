@@ -2,7 +2,7 @@
 
 TIP: Please read this brief guide before deploying and/or using _Stratio Discovery_.
 
-If you understand correctly the (at first glance only) complex interaction between Metabase, _Stratio Discovery_ and the other components of the Stratio ecosystem (_Stratio Virtualizer_, _Stratio PostgreSQL_…), you can:
+If you understand correctly the (at first glance only) complex interaction between Metabase, _Stratio Discovery_ and the other components of the Stratio ecosystem (_Stratio {modulename}_, _Stratio PostgreSQL_…), you can:
 
 * fine-tune the deployment,
 * choose the Metabase database configuration that best suits your needs, and
@@ -25,7 +25,7 @@ It should now be clear that if your query takes a long time to complete, you can
 _Stratio Discovery_ is Metabase integrated into the _Stratio_ ecosystem:
 
 * it has added or modified security layers (for example, the _Stratio GoSec_ SSO, along with Metabase's simple default user/password authentication),
-* it has added new drivers (for example, _Stratio Virtualizer_, _Stratio PostgreSQL_), and
+* it has added new drivers (for example, _Stratio {modulename}_, _Stratio PostgreSQL_), and
 * the new CI/CD features now live independently together with Metabase in the same container (for example, the ability to export a `Y` collection from instance `A` and import it into another instance `B`, provided you've already configured the database referenced in collection `Y` in `B`).
 
 The latest versions of _Stratio Discovery_ have a new versioning mechanism that uses the following tag syntax: `${Metabase version}-${Stratio version}`. The first version with this new label was 0.38.1-0.1. This change from the past when we used only the Stratio version is especially helpful because the new labeling lets you know immediately which version of Metabase is integrated in a _Stratio Discovery_.
@@ -69,9 +69,9 @@ We've now learned that the driver and the JDBC *must agree* on the format of the
 
 === JDBC and drivers in Metabase
 
-While the *drivers are part of Metabase* and are community-based or developed by us in Stratio (for example, the _Stratio Virtualizer_ driver), *JDBCs are usually added to the container as black boxes* and have not been developed by either our team or Metabase.
+While the *drivers are part of Metabase* and are community-based or developed by us in Stratio (for example, the _Stratio {modulename}_ driver), *JDBCs are usually added to the container as black boxes* and have not been developed by either our team or Metabase.
 
-Although in some native database integrations in Metabase, the driver and JDBC functionalities can be merged into a single part, many layers are usually required for interconnection: for example, *connecting _Stratio Discovery_ to a _Stratio Virtualizer_ server requires a _Stratio Virtualizer_ JDBC and a _Stratio Virtualizer_ driver for Metabase*.
+Although in some native database integrations in Metabase, the driver and JDBC functionalities can be merged into a single part, many layers are usually required for interconnection: for example, *connecting _Stratio Discovery_ to a _Stratio {modulename}_ server requires a _Stratio {modulename}_ JDBC and a _Stratio {modulename}_ driver for Metabase*.
 
 If there's a problem executing a query because of an error generated in the database, it's clear that the culprit is the database or your query (for example, a query that refers to non-existent tables or columns).
 
