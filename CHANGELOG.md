@@ -1,7 +1,7 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.43.4-0.1.2 (upcoming)
+## 0.43.4-0.1.2 (2022-12-12)
 
 * [ROCK-9193] Fix: Do not return fethSize error in graphic queries with limit (bump Crossdata JDBC to 2.23.0-b2ae129)
 
