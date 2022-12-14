@@ -538,7 +538,7 @@
                     "readOnly": true,
                     "application": false,
                     "level": 2,
-                    "default": "https://sis.keos-auth:9005/sso",
+                    "default": "${globals.sso.ssoInternalUri}",
                     "internalName": "SSO_URI_INTERNAL",
                     "ui": {
                       "updatable": false
