@@ -2,13 +2,14 @@
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "12.2.0-SNAPSHOT",
+    "version": "13.1.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module",
     "framework": false,
     "highAvailability": false,
     "container": {
       "runners": [
         {
+          "id": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "image": "${eos.dockerRegistry}/discovery:0.43.4-0.1.2-SNAPSHOT",
           "forcePullImage": true,
@@ -20,6 +21,7 @@
     "networking": {
       "expose": [
         {
+          "id": "https_haproxyhost",
           "portIndex": 1,
           "vhost": "${haproxyhost}",
           "path": "",
@@ -40,6 +42,7 @@
         "networkType": "user",
         "ports": [
           {
+            "id": "tcp_default",
             "servicePort": 0,
             "protocol": "tcp",
             "name": "default",
@@ -47,6 +50,7 @@
             "containerPort": 80
           },
           {
+            "id": "tcp_nginxport",
             "servicePort": 0,
             "protocol": "tcp",
             "name": "nginxport",
@@ -54,6 +58,7 @@
             "containerPort": 443
           },
           {
+            "id": "tcp_healthcheck",
             "servicePort": 0,
             "protocol": "tcp",
             "name": "healthcheck",
@@ -61,6 +66,7 @@
             "containerPort": 3009
           },
           {
+            "id": "tcp_metrics",
             "servicePort": 0,
             "protocol": "tcp",
             "name": "metrics",
@@ -75,6 +81,7 @@
       "tcp": [],
       "http": [
         {
+          "id": "healthcheckApiHealth",
           "gracePeriodSeconds": 200,
           "intervalSeconds": 60,
           "maxConsecutiveFailures": 2,
@@ -1159,26 +1166,25 @@
     "install": {
       "start": [
         {
-          "type": "core/disable",
-          "tag": "gosec-register",
-          "enabled": "false"
-        },
-        {
+          "name": "printInstallStart",
           "label": "Print install start log",
           "type": "io/print",
           "text": "Lifecycle: Install/start"
         },
         {
+          "name": "coreDisableGosecRegister",
           "type": "core/disable",
           "tag": "gosec-register",
           "enabled": "false"
         },
         {
+          "name": "printInitSecretsCreation",
           "label": "Init secrets creation log",
           "type": "io/print",
           "text": "------------- Instance secrets creation --------------"
         },
         {
+          "name": "applicationCertificate",
           "label": "=> Secrets Creation during install: Creating instance certificate for ${Application.id}",
           "type": "secret/certificate",
           "path": "/userland/certificates/${Application.id}",
@@ -1187,6 +1193,7 @@
           "altNames": "${serviceId}-${k8sNamespace}, ${rocketServerHost}, ${serviceId}-${k8sNamespace}.${k8sNamespace}, *.${k8sNamespace}"
         },
         {
+          "name": "passwordKeystore",
           "label": "=> Secrets Creation during install: Creating keystore for ${Application.id}",
           "type": "secret/password",
           "path": "/userland/passwords/${Application.id}",
@@ -1194,6 +1201,7 @@
           "password": "${randomString(10)}"
         },
         {
+          "name": "passwordJwt",
           "label": "=> Secrets Creation during install: Creating jwtsecret for ${Application.id}",
           "type": "secret/password",
           "path": "/userland/passwords/${Application.id}",
@@ -1201,6 +1209,7 @@
           "password": "${randomString(10)}"
         },
         {
+          "name": "passwordOauth",
           "label": "=> Secrets Creation during install: Password Oauth for ${Application.id}",
           "type": "secret/password",
           "path": "/userland/passwords/${Application.id}",
@@ -1209,11 +1218,13 @@
           "password": "${randomString(10)}"
         },
         {
-          "label": "Init secrets creation log",
+          "name": "printInitGosecUsersCreation",
+          "label": "Init GoSec users creation",
           "type": "io/print",
           "text": "------------- Gosec users creation --------------"
         },
         {
+          "name": "gosecUser",
           "label": "=> Gosec: Creating user ${Application.id} in tenant ${tenantId}",
           "type": "gosec/users/create",
           "users": [
@@ -1221,11 +1232,13 @@
           ]
         },
         {
+          "name": "printDatabaseCreation",
           "label": "Database creation",
           "type": "io/print",
           "text": "------------- Database creation --------------"
         },
         {
+          "name": "createPostgresDatabase",
           "label": "=> Creating Database: ${postgresDatabase}, hostname: ${postgresDbCreationClusterName}, Namespace: ${postgresNamespace}",
           "type": "postgres/database/create",
           "databaseName": "${postgresDatabase}",
@@ -1235,14 +1248,15 @@
           "enabled": "${postgresDatabaseCreation}"
         },
         {
+          "name": "printCreatingPolicies",
           "label": "Policies creation",
           "type": "io/print",
           "text": "------------- Policies creation --------------"
         },
         {
+          "name": "${discoveryInstanceName}-service-policy",
           "label": "=> Creating Metadata policy: ${discoveryInstanceName}-service-policy, sid: ${postgresServiceId}, database: ${postgresDatabase}, user: ${Application.id}",
           "type": "gosec/policies/create",
-          "name": "${discoveryInstanceName}-service-policy",
           "enabled": "${postgresDatabaseCreation}",
           "groups": [],
           "users": [
@@ -1251,9 +1265,11 @@
           "tid": "${tenantId}",
           "services": [
             {
+              "id": "gosecPostgresService",
               "serviceType": "postgres",
               "instances": [
                 {
+                  "id": "gosecPostgresServicePolicy",
                   "sid": "${postgresServiceId}",
                   "acls": [
                     "ACL(resourceType Domain, name ${postgresDatabase}.*, actionsAllow [Usage], actionsDeny [], recursive false)",
@@ -1276,16 +1292,17 @@
           ]
         },
         {
+          "name": "${Application.name}",
           "type": "kubernetes/customresource/create",
           "apiVersion": "secrets.stratio.com/v1",
           "kind": "SecretsIdentity",
           "plural": "SecretsIdentities",
-          "name": "${Application.name}",
           "namespace": "${Application.domain}",
           "spec": "{\"bundles\":[\"${Application.name}\"],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}",
           "enabled": "true"
         },
         {
+          "name": "sleepUntilEverithingConfigured",
           "label": "=> Wait 10s until everything is configured...",
           "type": "time/sleep",
           "millis": "10000"
@@ -1293,6 +1310,7 @@
       ],
       "install/pre": [
         {
+          "name": "printInstallPre",
           "label": "Print install pre task log",
           "type": "io/print",
           "text": "Printing install pre task log"
@@ -1300,6 +1318,7 @@
       ],
       "install/post": [
         {
+          "name": "printInstallPost",
           "label": "Print install post task log",
           "type": "io/print",
           "text": "Printing install post task log"
@@ -1307,6 +1326,7 @@
       ],
       "install/finalize": [
         {
+          "name": "printInstallFinalize",
           "label": "Print install finalize task log",
           "type": "io/print",
           "text": "Printing install finalize task log"
@@ -1314,6 +1334,7 @@
       ],
       "finish": [
         {
+          "name": "printInstallFinish",
           "label": "Print install finish log",
           "type": "io/print",
           "text": "Printing install finish log"
@@ -1323,6 +1344,7 @@
     "update": {
       "start": [
         {
+          "name": "printUpdateStart",
           "label": "Print update start log",
           "type": "io/print",
           "text": "Printing update start log"
@@ -1330,6 +1352,7 @@
       ],
       "update/pre": [
         {
+          "name": "printUpdatePre",
           "label": "Print update pre task log",
           "type": "io/print",
           "text": "Printing update pre task log"
@@ -1337,6 +1360,7 @@
       ],
       "update/post": [
         {
+          "name": "printUpdatePost",
           "label": "Print update post task log",
           "type": "io/print",
           "text": "Printing update post task log"
@@ -1344,6 +1368,7 @@
       ],
       "update/finalize": [
         {
+          "name": "printUpdateFinalize",
           "label": "Print update finalize task log",
           "type": "io/print",
           "text": "Printing update finalize task log"
@@ -1351,6 +1376,7 @@
       ],
       "finish": [
         {
+          "name": "printUpdateFinish",
           "label": "Print update finish log",
           "type": "io/print",
           "text": "Printing update finish log"
@@ -1360,6 +1386,7 @@
     "upgrade": {
       "start": [
         {
+          "name": "printUpgradeStart",
           "label": "Print upgrade start log",
           "type": "io/print",
           "text": "Printing upgrade start log"
@@ -1367,6 +1394,7 @@
       ],
       "upgrade/pre": [
         {
+          "name": "printUpgradePre",
           "label": "Print upgrade pre task log",
           "type": "io/print",
           "text": "Printing upgrade pre task log"
@@ -1374,6 +1402,7 @@
       ],
       "upgrade/post": [
         {
+          "name": "printUpgradePost",
           "label": "Print upgrade post task log",
           "type": "io/print",
           "text": "Printing upgrade post task log"
@@ -1381,6 +1410,7 @@
       ],
       "upgrade/finalize": [
         {
+          "name": "printUpgradeFinalize",
           "label": "Print upgrade finalize task log",
           "type": "io/print",
           "text": "Printing upgrade finalize task log"
@@ -1388,6 +1418,7 @@
       ],
       "finish": [
         {
+          "name": "printUpgradeFinish",
           "label": "Print upgrade finish log",
           "type": "io/print",
           "text": "Printing upgrade finish log"
@@ -1397,6 +1428,7 @@
     "restart": {
       "start": [
         {
+          "name": "printRestartStart",
           "label": "Print restart start log",
           "type": "io/print",
           "text": "Printing restart start log"
@@ -1404,6 +1436,7 @@
       ],
       "restart/pre": [
         {
+          "name": "printRestartPre",
           "label": "Print restart pre task log",
           "type": "io/print",
           "text": "Printing restart pre task log"
@@ -1411,6 +1444,7 @@
       ],
       "restart/post": [
         {
+          "name": "printRestartPost",
           "label": "Print restart post task log",
           "type": "io/print",
           "text": "Printing restart post task log"
@@ -1418,6 +1452,7 @@
       ],
       "restart/finalize": [
         {
+          "name": "printRestartFinalize",
           "label": "Print restart finalize task log",
           "type": "io/print",
           "text": "Printing restart finalize task log"
@@ -1425,6 +1460,7 @@
       ],
       "finish": [
         {
+          "name": "printRestartFinish",
           "label": "Print restart finish log",
           "type": "io/print",
           "text": "Printing restart finish log"
@@ -1434,6 +1470,7 @@
     "uninstall": {
       "start": [
         {
+          "name": "printUninstallStart",
           "label": "Print uninstall start log",
           "type": "io/print",
           "text": "Printing uninstall start log"
@@ -1441,6 +1478,7 @@
       ],
       "uninstall/pre": [
         {
+          "name": "printUninstallPre",
           "label": "Print uninstall pre task log",
           "type": "io/print",
           "text": "Printing uninstall pre task log"
@@ -1448,6 +1486,7 @@
       ],
       "uninstall/post": [
         {
+          "name": "printUninstallPost",
           "label": "Print uninstall post task log",
           "type": "io/print",
           "text": "Printing uninstall post task log"
@@ -1455,6 +1494,7 @@
       ],
       "uninstall/finalize": [
         {
+          "name": "printUninstallFinalize",
           "label": "Print uninstall finalize task log",
           "type": "io/print",
           "text": "Printing uninstall finalize task log"
@@ -1462,6 +1502,7 @@
       ],
       "finish": [
         {
+          "name": "printUninstallFinish",
           "label": "Print uninstall finish log",
           "type": "io/print",
           "text": "Printing uninstall finish log"
