@@ -2,7 +2,11 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
-== 0.43.4-0.1.1 (octubre 2022) Universo 13.0
+== 0.43.4-0.1.2 (diciembre 2022) _Universo 13.0_
+
+* Solución: No dar error de "_fetchSize_" al hacer consultas gráficas con límite en el _driver_ de _Stratio Crossdata_.
+
+== 0.43.4-0.1.1 (octubre 2022)
 
 * Solución: sincronización correcta del estatus de adminstrador de usuarios.
 

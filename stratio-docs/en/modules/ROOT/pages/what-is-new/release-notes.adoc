@@ -2,7 +2,11 @@
 
 Here are the most relevant developments of _Stratio Discovery_ in the latest releases:
 
-== 0.43.4-0.1.0 (September 2022) _Universe 13.0_
+== 0.43.4-0.1.2 (December 2022) _Universe 13.0_
+
+* Fix: Do not throw "fetchSize" error when doing graphical queries with a limit in the _Stratio Crossdata_ driver.
+
+== 0.43.4-0.1.0 (September 2022)
 
 * Upgrade to Metabase 0.43.4.
 * Improvements in error management of the Discovery CI/CD API.
