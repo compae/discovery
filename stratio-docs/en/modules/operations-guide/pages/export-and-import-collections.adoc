@@ -44,7 +44,7 @@ TIP: For more information about this authorization, see the https://github.com/m
 | `x-metabase-session: 'sessionId'`, `Content-Type: application/json`
 |===
 
-As you can see, in this endpoint, you have the option of indicating the main collection that you want the imported collection to inherit, using the `parentId` query parameter.
+As you can see, in this endpoint you can optionally indicate the parent collection that you want the imported collection to inherit. This can be done through the query parameter `parentId` which must always be a positive integer that refers to the collection's identifier. If you don't provide `parentId` the collection will be imported as a child of the root collection.
 
 [IMPORTANT]
 ====

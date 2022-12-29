@@ -52,7 +52,7 @@ TIP: Para obtener más información sobre esta autorización, consulta la https:
 | `x-metabase-session: 'sessionId'`, `Content-Type: application/json`
 |===
 
-Como puedes ver, en este _endpoint_ puedes indicar opcionalmente la colección principal que deseas que herede la colección importada, a través del parámetro de consulta `parentId`.
+Como puedes ver, en este _endpoint_ puedes indicar opcionalmente la colección principal que deseas que herede la colección importada. Esto se puede hacer a través del parámetro de consulta `parentId` que debe ser siempre un numero entero positivo que se refiere al identificador de la colección. En caso de no informar `parentId` la colección se importará como "hija" de la colección `root`.
 
 :important-caption: IMPORTANTE
 
