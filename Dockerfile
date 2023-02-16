@@ -41,18 +41,15 @@ ENV DISCOVERY_VERSION 0.43.4
 # apt things
 RUN apt-get update \
   &&  apt-get install -y ttf-dejavu fontconfig wget zip \
-  && apt-get --only-upgrade install -y libfreetype6 libssl1.1 libssl1.0.0 openssl libsystemd0 libudev1\
+  && apt-get --only-upgrade install -y libfreetype6 libssl1.1 openssl libsystemd0 libudev1\
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/*
 
 # install JAVA 11
-ENV JAVA_HOME=/usr/local/jdk-11.0.2
-RUN wget http://tools.stratio.com/jdk/openjdk-11.0.2_linux-x64_bin.tar.gz \
-  && tar zfx openjdk-11.0.2_linux-x64_bin.tar.gz -C /usr/local/ \
-  && rm -rf $JAVA_HOME/man \
-  && rm openjdk-11.0.2_linux-x64_bin.tar.gz
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+RUN apt update \
+    && apt install -y openjdk-11-jdk
 ENV PATH=$JAVA_HOME/bin:$PATH
-
 
 ################################
 ###        METABASE          ###
@@ -92,7 +89,7 @@ COPY --from=builder /app/source/resources/modules/* /plugins/
 ################################
 # Download prometheus jar
 RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent.jar \
-    http://qa.int.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.17.1/jmx_prometheus_javaagent-0.17.1.jar \
+    http://qa.int.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.17.2/jmx_prometheus_javaagent-0.17.2.jar \
     && echo '{}' > /app/target/uberjar/config.yaml
 
 COPY log4j2.xml /app/target/log4j2.xml

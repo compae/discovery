@@ -30,7 +30,8 @@ hose {
                 [
                     image : "discovery",
                     dockerfile : "Dockerfile",
-                    conf : config
+                    conf : config,
+                    noCache: true
                 ]
             ]
         )
