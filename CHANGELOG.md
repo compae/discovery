@@ -1,6 +1,10 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.43.4-0.1.4 (upcoming)
+
+* Pending changelog
+
 ## 0.43.4-0.1.3 (2023-02-16)
 
 * [ROCK-8559] Fix: bump Crossdata JDBC to 2.24.0-7394c02 (fix sync of Delta tables)

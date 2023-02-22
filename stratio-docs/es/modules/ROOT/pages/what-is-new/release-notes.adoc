@@ -2,6 +2,10 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
+== 0.43.4-0.1.3 (21 de febrero de 2023)
+
+* Solución: actualización del JDBC de Crossdata a la versión 2.24.0-7394c02 (para solventar la sincronización de tablas Delta)
+
 == 0.43.4-0.1.2 (diciembre 2022) _Universo 13.0_
 
 * Solución: No dar error de "_fetchSize_" al hacer consultas gráficas con límite en el _driver_ de _Stratio Crossdata_.
