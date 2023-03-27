@@ -147,8 +147,8 @@
             "default": "discovery",
             "required": true,
             "readOnly": false,
-            "maxLength": 253,
-            "pattern": "^([a-z0-9][a-z0-9-]*[a-z0-9])$",
+            "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+            "maxLength" : 55,
             "application": true,
             "internalName": "SERVICE_ID",
             "ui": {
