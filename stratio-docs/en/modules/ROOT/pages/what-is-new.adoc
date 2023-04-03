@@ -1,6 +1,8 @@
 ﻿= New developments
 
-These are the latest changes made to _Stratio Discovery_ version *0.43.4-0.1.0* (released in September 2022):
+The latest version released solves a synchronization error with tables _Stratio {modulename}_ whose origin is Delta.
+
+Regarding the functionalities already included in _Stratio Discovery_ *0.43.4-0.1.x*, the most important changes are:
 
 * Upgrade to Metabase 0.43.4.
 * Improvements in error management of the Discovery CI/CD API.

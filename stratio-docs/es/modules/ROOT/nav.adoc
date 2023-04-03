@@ -1,4 +1,6 @@
 * xref:ROOT:introduction.adoc[Introducción]
+* xref:ROOT:what-is-new.adoc[]
+* xref:ROOT:what-is-new/release-notes.adoc[]
 * xref:ROOT:architecture.adoc[Arquitectura]
 * xref:ROOT:quick-start-guide.adoc[Guía de inicio rápido]
 * xref:ROOT:user-guide.adoc[Guía de usuario]
