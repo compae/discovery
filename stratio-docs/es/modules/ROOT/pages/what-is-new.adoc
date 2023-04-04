@@ -1,6 +1,8 @@
 = Novedades
 
-Estos son los últimos cambios realizados en _Stratio Discovery_ versión *0.43.4-0.1.0* (lanzado en septiembre de 2022):
+La última versión liberada (0.43.4-0.1.3) soluciona un error de sincronización con tablas de _Stratio {modulename}_ cuyo origen es Delta.
+
+Respecto a las funcionalidades ya incluidas en _Stratio Discovery_ *0.43.4-0.1.x*, destacan:
 
 * Actualización a Metabase 0.43.4.
 * Mejoras en la gestión de errores de la API de Discovery CI/CD.
