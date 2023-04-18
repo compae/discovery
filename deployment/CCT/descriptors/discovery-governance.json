@@ -564,10 +564,10 @@
                     "type": "string",
                     "readOnly": true,
                     "application": false,
-                    "level": 2,
+                    "level": 1,
                     "internalName": "SERVICE_URL",
                     "ui": {
-                      "updatable": false
+                      "updatable": true
                     },
                     "title": "SERVICE_URL",
                     "default": "${eos.proxyAccessPointURL}"

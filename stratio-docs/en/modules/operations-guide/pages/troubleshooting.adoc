@@ -145,6 +145,12 @@ Even if the error was propagated to Metabase as a result of the synchronization 
 
 For example, one solution for this error `Cannot recover session with sessionId=` was to restart the _Stratio {modulename}_ instance to force the pending connections to close.
 
+=== Dashboard links redirections don't work in _Stratio Discovery_ when deployed in DCOS with _Governance_ flavor
+
+In dashboard subscriptions links or other redirecting links, you may experience that you are not being correctly redirected because the service URL was not adequately built. For example, you are being redirected to https://admin-dev.stratio.com/question/123 instead of https://admin-dev.stratio.com/service/discovery-governance/question/123.
+If this happens even after you have modified your `SITE_URL` configuration (https://github.com/metabase/metabase/issues/13602), please check the environment variable `SERVICE_URL`: its value should be set to the full URL service (e.g. https://admin-dev.stratio.com/service/discovery-governance).
+
+
 === Unable to access some tables stored in _Stratio {modulename}_ or _Stratio PostgreSQL_
 
 <<_unable_to_update_stratio_virtualizer_tables_and_views_correctly, The newly acquired ability to read logs>> can also be useful in solving authorization-related problems.

@@ -32,6 +32,10 @@ De lo contrario, eres más que bienvenido/a a comunicarte con nosotros.
 
 Tu usuario debe pertenecer a un grupo permitido o al grupo de administración, según su rol. La forma en que el administrador puede especificar los grupos permitidos se explica en detalle en la xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[sección de autenticación del usuario final].
 
+=== No redireccionan bien los enlaces a un _dashboard_ en un _Stratio Discovery_ desplegado con _flavor_ _Governance_ en DCOS
+
+Puede ser que notes que en las subscripciones de _dashboards_ o cuando haya redirecciones no se genera bien la URL del servicio (por ejemplo te redirecciona a https://admin-dev.stratio.com/question/123 en lugar de https://admin-dev.stratio.com/service/discovery-governance/question/123). Si esto ocurre incluso después de haber modificado la configuración de `SITE_URL` (https://github.com/metabase/metabase/issues/13602), comprueba la variable de entorno `SERVICE_URL`: su valor debe ajustarse al servicio URL completo (por ejemplo, https://admin-dev.stratio.com/service/discovery-governance).
+
 === No se puede conectar _Stratio Discovery_ a un PgBouncer: ERROR: prepared statement "S_2" does not exist
 
 Si el despliegue se bloquea debido a este error, es porque _Stratio Discovery_ no puede conectarse a PostgreSQL para almacenar sus metadatos. Para arreglar este error solo necesitas agregar la siguiente variable de entorno (si aún no está presente):
