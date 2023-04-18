@@ -64,10 +64,12 @@ No puedes exportar:
 * Una colección no creada previamente.
 * Colecciones que contienen paneles que usan preguntas que no pertenecen a la colección exportada o una de sus subcolecciones.
 * Colecciones que contienen dos o más preguntas/tableros/subcolecciones con el mismo nombre.
+* No esta soportada por el momento la exportación de https://www.metabase.com/learn/sql-questions/sql-snippets[_SQL snippets_ de Metabase].
 
 No puedes importar:
 
 * Una colección en un _Stratio Discovery_ de destino que no tiene los mismos nombres de base de datos, campos y tablas que contienen las preguntas exportadas.
+* No esta soportada por el momento la importación de https://www.metabase.com/learn/sql-questions/sql-snippets[_SQL snippets_ de Metabase].
 
 En estos casos, cada _endpoint_ responderá con su correspondiente error.
 ====

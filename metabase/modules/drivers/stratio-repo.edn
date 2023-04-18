@@ -1,2 +1,2 @@
 {:mvn/repos
- {"stratio" {:url "https://niquel.int.stratio.com:1443/repository/public"}}}
+ {"stratio" {:url "https://qa.int.stratio.com:1443/repository/public"}}}

@@ -54,10 +54,12 @@ You can't export:
 * A collection not created previously.
 * Collections that contain dashboards that use questions that don't belong to the exported collection or one of its sub-collections.
 * Collections containing two or more questions/boards/sub-collections with the same name.
+* At the moment, exporting https://www.metabase.com/learn/sql-questions/sql-snippets[SQL snippets of Metabase] is not supported.
 
 You can't import:
 
 * A collection in a destination _Stratio Discovery_ that doesn't have the same database names, fields, and tables that contain the exported questions.
+* At the moment, importing https://www.metabase.com/learn/sql-questions/sql-snippets[SQL snippets of Metabase] is not supported.
 
 In these cases, each endpoint will respond with its corresponding error.
 ====
