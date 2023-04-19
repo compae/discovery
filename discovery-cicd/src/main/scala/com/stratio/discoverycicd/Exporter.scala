@@ -137,7 +137,7 @@ class Exporter(api: ApiClient) extends Logging {
     items collect { case CollectionItem(id, _, Models.DASHBOARD) => id }
 
   def getCardIdsInColl(items: List[CollectionItem]) =
-    items collect { case CollectionItem(id, _, Models.CARD) => id }
+    items collect { case CollectionItem(id, _, Models.CARD | Models.DATASET) => id }
 
   def getCollsInColl(items: List[CollectionItem]) =
     items collect { case CollectionItem(id, _, Models.COLLECTION) => id }

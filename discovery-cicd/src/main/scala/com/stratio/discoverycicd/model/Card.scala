@@ -23,7 +23,10 @@ case class Card(id: BigInt,
                 collection_id: Option[BigInt],
                 collection_position: Option[BigInt],
                 dataset_query: JValue,
-                result_metadata: JValue) {
+                result_metadata: JValue,
+                // metabase models are questions marked as "dataset" with this flag.
+                // Since we do not export it in previous versions, we give a default value
+                dataset: Boolean = false) {
 
   private val isJObject = dataset_query match {
     case JObject(_) => true
@@ -33,7 +36,7 @@ case class Card(id: BigInt,
 
   def toPostDto = CardToPost(
     name, description, display, visualization_settings,
-    collection_id, collection_position, dataset_query, result_metadata, metadata_checksum
+    collection_id, collection_position, dataset_query, result_metadata, metadata_checksum, dataset
   )
 
   def getFieldIds = MBJson.getFieldIds(dataset_query)
@@ -42,12 +45,22 @@ case class Card(id: BigInt,
 
   def getDatabaseIds = MBJson.getDatabaseIds(dataset_query)
 
+  lazy val getCardsUsedAsTables = MBJson.getCardIdsUsedAsTables(dataset_query)
+
   def replaceFieldIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Field") {
     _.copy(dataset_query = MBJson.replaceFieldIds(dataset_query, replacements))
   }
 
   def replaceTableIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Table") {
     _.copy(dataset_query = MBJson.replaceTableIds(dataset_query, replacements))
+  }
+
+  def replaceCardIdsUsedAsTables(replacements: Map[BigInt, BigInt]): Card = replacementMayFail(this, "Card acting as table") {
+    _.copy(
+      dataset_query          = MBJson.replaceCardIdsUsedAsTables(dataset_query, replacements),
+      result_metadata        = MBJson.replaceCardIdsUsedAsTables(result_metadata, replacements),
+      visualization_settings = MBJson.replaceCardIdsUsedAsTables(visualization_settings, replacements)
+    )
   }
 
   def replaceDatabaseIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail(this, "Database") {
@@ -69,11 +82,12 @@ case class Card(id: BigInt,
 
 // To make the post requests we should not include the id, we also include the metadata_checksum
 case class CardToPost(name: String,
-                         description: Option[String],
-                         display: String,
-                         visualization_settings: JValue,
-                         collection_id: Option[BigInt],
-                         collection_position: Option[BigInt],
-                         dataset_query: JValue,
-                         result_metadata: JValue,
-                         metadata_checksum: Option[String])
+                      description: Option[String],
+                      display: String,
+                      visualization_settings: JValue,
+                      collection_id: Option[BigInt],
+                      collection_position: Option[BigInt],
+                      dataset_query: JValue,
+                      result_metadata: JValue,
+                      metadata_checksum: Option[String],
+                      dataset: Boolean)

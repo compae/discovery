@@ -31,8 +31,22 @@ class Importer(api: ApiClient) extends Logging {
     log.debug("Getting all needed source => target mappings between ids of dbs, tables and fields ")
     val dbMaps = getDbMap(exportedCollection)
 
+    log.debug(
+      "Checking that all questions used as input data to other questions are present in the data to import " +
+      "and that there are no circular dependencies among them"
+    )
+    val trees = dependencyTrees(exportedCollection.cards)
+    val depNotFoundError = checkNotPresentDependencies(trees)
+    val circularDepError = checkCircularDependencies(trees)
+    (depNotFoundError, circularDepError) match {
+      case (Some(notFound), Some(circular)) => throw ValidationDataException(notFound + "\n\n" + circular)
+      case (Some(notFound), None          ) => throw ValidationDataException(notFound)
+      case (None          , Some(circular)) => throw ValidationDataException(circular)
+      case _                                => ()
+    }
+
     val childColls = exportedCollection.children.map(_.collection)
-    val childNames = childColls filter { _.parent_id == Some(exportedCollection.collection.id) } map { _.name }
+    val childNames = childColls.filter(_.parent_id contains exportedCollection.collection.id).map(_.name)
 
     // create necessary items while getting the mapping between source and target ids
     log.debug("Importing root collection from export data")
@@ -46,7 +60,7 @@ class Importer(api: ApiClient) extends Logging {
         Map(sourceCollId -> targetCollId),
         Map(targetCollId -> dashboardsInTargetColl),
         Map(targetCollId -> cardsInTargetColl)
-    )
+      )
 
     log.debug("Importing cards from export data")
     val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, cardsByCollection)
@@ -152,40 +166,74 @@ class Importer(api: ApiClient) extends Logging {
                   dbMaps: DbMaps,
                   collMap: IdMap,
                   existingCards: Map[CollId, List[CollectionItem]]): IdMap = {
-    val cardIdSourceToTarget = cards.foldLeft(Map.empty[BigInt, BigInt]) { (map, card) =>
-      log.debug(s"Creating card from export data: ${card.toJson}")
-      log.debug(s"Replacing collection, database, table and field Ids in card")
-      val cardToCreateOrUpdate = card
-        .replaceCollectionIds(collMap)
-        .replaceDatabaseIds(dbMaps.db)
-        .replaceTableIds(dbMaps.table)
-        .replaceFieldIds(dbMaps.field)
+    @tailrec
+    def createCardsWithSatisfiedDependencies(cards: List[Card], createdCardsMap: IdMap): IdMap = cards match {
+      // base case
+      case Nil =>
+        createdCardsMap
 
-      val createdOrUpdatedCard = cardToCreateOrUpdate
-        .collection_id
-        .flatMap {
-          collId =>
-            existingCards(collId).filter(_.name == card.name) match {
-              case Nil => None
-              case head :: Nil => Some(head)
-              case head :: tail =>
-                log.warn(s"Found ${tail.length + 1} cards in the target collection with the same name as the imported one: '${card.name}'. Will update the one with id ${head.id} and delete the rest (ids: ${tail.map(_.id)}).")
-                tail.foreach(api.deleteCollectionItem)
-                Some(head)
+      // recursive case
+      case pendingCards =>
+        // we can only create those whose card dependencies are already created
+        val cardsToCreate = pendingCards.filter(_.getCardsUsedAsTables subsetOf createdCardsMap.keySet)
+
+        // sanity check (and guard to avoid infinite recursion) in case we receive inconsistent data
+        if (cardsToCreate.isEmpty) {
+          // we still have pending cards to create but they depend on other cards that we have not created yet:
+          // either the depended-on cards were not exported (were not part of the collection) or there may
+          // be circular dependencies between the cards, in either case, we cannot continue with the import
+          // process and must raise an error. Neither case should happen because we check the data before
+          // starting the import process, but just in case...
+          throw ValidationDataException(
+            s"Cannot create cards '${pendingCards.map(_.id).mkString(",")}' since it is impossible to satisfy their " +
+              s"card dependencies. This should have been detected in a previos check but it was missed. The import " +
+              "process has been interrupted before its conclusion, some data may be inconsistent in the target metabase"
+          )
+        }
+
+        val cardIdSourceToTarget = cardsToCreate.foldLeft(Map.empty[BigInt, BigInt]) { (map, card) =>
+          log.debug(s"Creating card from export data: ${card.toJson}")
+          log.debug(s"Replacing collection, database, table and field Ids in card")
+          val cardToCreateOrUpdate = card
+            .replaceCollectionIds(collMap)
+            .replaceDatabaseIds(dbMaps.db)
+            .replaceTableIds(dbMaps.table)
+            .replaceFieldIds(dbMaps.field)
+            .replaceCardIdsUsedAsTables(createdCardsMap)
+
+          val createdOrUpdatedCard = cardToCreateOrUpdate
+            .collection_id
+            .flatMap {
+              collId =>
+                existingCards(collId).filter(_.name == card.name) match {
+                  case Nil => None
+                  case head :: Nil => Some(head)
+                  case head :: tail =>
+                    log.warn(s"Found ${tail.length + 1} cards in the target collection with the same name as the imported one: '${card.name}'. Will update the one with id ${head.id} and delete the rest (ids: ${tail.map(_.id)}).")
+                    tail.foreach(api.deleteCollectionItem)
+                    Some(head)
+                }
             }
-        }
-        .map {
-          existingCard =>
-            log.debug("Updating existing card in Metabase")
-            api.updateCard(cardToCreateOrUpdate.copy(id = existingCard.id))
-        }
-        .getOrElse {
-          log.debug("Creating card to Metabase")
-          api.createCard(cardToCreateOrUpdate.toPostDto)
+            .map {
+              existingCard =>
+                log.debug("Updating existing card in Metabase")
+                api.updateCard(cardToCreateOrUpdate.copy(id = existingCard.id))
+            }
+            .getOrElse {
+              log.debug("Creating card to Metabase")
+              api.createCard(cardToCreateOrUpdate.toPostDto)
+            }
+
+          map + (cardToCreateOrUpdate.id -> createdOrUpdatedCard.id)
         }
 
-      map + (cardToCreateOrUpdate.id -> createdOrUpdatedCard.id)
+        createCardsWithSatisfiedDependencies(
+          pendingCards.filterNot(cardIdSourceToTarget contains _.id), // remove the cards created in this pass from the list
+          createdCardsMap ++ cardIdSourceToTarget                     // accumulate the cardId mappings created in this pass
+        )
     }
+
+    val cardIdSourceToTarget = createCardsWithSatisfiedDependencies(cards, Map.empty)
 
     val cardsToDelete = existingCards.values.flatten.filterNot(cardIdSourceToTarget.values.toSet contains _.id)
     log.debug(s"Deleting cards not present in export data ${cardsToDelete}")
@@ -307,7 +355,9 @@ class Importer(api: ApiClient) extends Logging {
         val existingItems          = api.getItemsInCollecton(existingCollId).groupBy(_.model)
         val existingSubcollections = existingItems.getOrElse(Models.COLLECTION, List.empty)
         val existingDashboards     = existingItems.getOrElse(Models.DASHBOARD , List.empty)
-        val existingCards          = existingItems.getOrElse(Models.CARD      , List.empty)
+        val existingCardsNotModels = existingItems.getOrElse(Models.CARD      , List.empty)
+        val existingCardsModels    = existingItems.getOrElse(Models.DATASET   , List.empty)
+        val existingCards = existingCardsNotModels ++ existingCardsModels
 
         // delete the collections that are currently present in target but not in the export
         val collsToArchive = existingSubcollections filterNot { childCollNames contains _.name }
@@ -402,5 +452,79 @@ class Importer(api: ApiClient) extends Logging {
 object Importer {
 
   case class DbMaps(db: IdMap, table: IdMap, field: IdMap)
+
+  sealed trait DependencyTree extends Product with Serializable {
+    def id: BigInt
+    def children: Set[DependencyTree]
+    def notPresentDependencies: Set[NotFoundDep]
+    def circularDependencies: Set[CircularDep]
+  }
+  case class OkDep(id: BigInt, children: Set[DependencyTree]) extends DependencyTree {
+    def notPresentDependencies: Set[NotFoundDep] = children.flatMap(_.notPresentDependencies)
+    def circularDependencies: Set[CircularDep] = children.flatMap(_.circularDependencies)
+  }
+  case class CircularDep(id: BigInt, cycle: List[BigInt]) extends DependencyTree {
+    def children: Set[DependencyTree] = Set.empty
+    def notPresentDependencies: Set[NotFoundDep] = Set.empty
+    def circularDependencies: Set[CircularDep] = Set(this)
+  }
+  case class NotFoundDep(id: BigInt, neededBy: BigInt) extends DependencyTree {
+    def children: Set[DependencyTree] = Set.empty
+    def notPresentDependencies: Set[NotFoundDep] = Set(this)
+    def circularDependencies: Set[CircularDep] = Set.empty
+  }
+
+  private def dependencyTrees(cardsInData: List[Card]): List[DependencyTree] = {
+    def dependencyTree(cardId: BigInt): DependencyTree = {
+      def loop(cardId: BigInt, lineage: List[BigInt]): DependencyTree = {
+        if (lineage contains cardId) CircularDep(cardId, lineage.reverse.dropWhile(cardId != _))
+        else cardsInData
+          .find(_.id == cardId)
+          .map {
+            card =>
+              // recursion ends when card does not use other cards. If all cards have dependencies, since the list
+              // is finite, either there are circular dependencies (recursion finish in the if branch above)
+              // or there are missing ones (recursion finish in the getOrElse below)
+              val children = card.getCardsUsedAsTables.map(loop(_, cardId :: lineage))
+              OkDep(cardId, children)
+          }
+          .getOrElse(NotFoundDep(cardId, lineage.head))
+      }
+      loop(cardId, List.empty)
+    }
+    cardsInData.map(_.id).map(dependencyTree)
+  }
+
+  private def checkNotPresentDependencies(trees: List[DependencyTree]): Option[String] = {
+    trees.flatMap(_.notPresentDependencies) match {
+      case Nil => None
+      case notPresent => Some(
+        "Some cards used as input data by some imported cards are not present in the import data:\n * " +
+          notPresent
+            .distinct
+            .map {
+              case NotFoundDep(card, neededBy) =>
+                s"card $card (needed by card $neededBy) is not present in the import data."
+            }
+            .mkString("\n * ")
+      )
+    }
+  }
+
+  private def checkCircularDependencies(trees: List[DependencyTree]): Option[String] = {
+    trees.flatMap(_.circularDependencies) match {
+      case Nil => None
+      case circular => Some(
+        "Circular dependencies detected in cards that use other cards as input data:\n * cycle: " +
+          circular
+            .distinct
+            .map {
+              case CircularDep(card, cycle) =>
+                s"${cycle.mkString(" -> ")} -> $card."
+            }
+            .mkString("\n * cycle: ")
+      )
+    }
+  }
 
 }

@@ -3,7 +3,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 0.43.4-0.1.4 (upcoming)
 
-* Pending changelog
+* [ROCK-10071] Take into account cards using other cards as input data in discovery-cicd
 
 ## 0.43.4-0.1.3 (2023-02-16)
 

@@ -24,5 +24,9 @@ object Collection {
     val COLLECTION = "collection"
     val DASHBOARD = "dashboard"
     val CARD = "card"
+    // these are what metabase calls models (https://www.metabase.com/docs/latest/data-modeling/models),
+    // which are implemented just like saved questions (cards) with a flag { "dataset": true }, and are
+    // declared of type "dataset" instead of "card" when retrieving items from a collection
+    val DATASET = "dataset"
   }
 }
