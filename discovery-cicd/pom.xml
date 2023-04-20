@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.stratio</groupId>
         <artifactId>discoverycicd-parent</artifactId>
-        <version>0.1.4-${revision}</version>
+        <version>0.1.4-SNAPSHOT</version>
     </parent>
     <properties>
         <scala.binary.version>2.12</scala.binary.version>
