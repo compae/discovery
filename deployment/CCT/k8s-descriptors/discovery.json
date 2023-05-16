@@ -1,4 +1,9 @@
 {
+  "parentConfiguration": {
+    "serviceName": "stratiobase",
+    "model": "default",
+    "version": "13.1.0-SNAPSHOT"
+  },
   "data": {
     "serviceName": "discovery",
     "model": "default",

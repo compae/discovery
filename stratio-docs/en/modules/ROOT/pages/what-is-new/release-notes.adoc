@@ -2,6 +2,10 @@
 
 Here are the most relevant developments of _Stratio Discovery_ in the latest releases:
 
+== 0.43.4-0.1.4 (April 2023)
+
+* Fix: solves a import problem with collection with questions using other saved questions.
+
 == 0.43.4-0.1.3 (February 2023)
 
 * Fix: bump Crossdata JDBC to 2.24.0-7394c02 (fix sync of Delta tables)

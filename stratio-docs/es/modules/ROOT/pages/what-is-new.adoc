@@ -1,6 +1,6 @@
 = Novedades
 
-La última versión liberada (0.43.4-0.1.3) soluciona un error de sincronización con tablas de _Stratio {modulename}_ cuyo origen es Delta.
+La última versión liberada (0.43.4-0.1.4) soluciona un problema de importación con colecciones que tengan preguntas que utilicen otras preguntas como fuente de datos.
 
 Respecto a las funcionalidades ya incluidas en _Stratio Discovery_ *0.43.4-0.1.x*, destacan:
 
@@ -8,6 +8,7 @@ Respecto a las funcionalidades ya incluidas en _Stratio Discovery_ *0.43.4-0.1.x
 * Mejoras en la gestión de errores de la API de Discovery CI/CD.
 * Importación y exportación de suscripciones de _dashboards_ en Discovery CI/CD.
 * Solución de vulnerabilidades: actualización a la version 0.17.1 del agente Java de Prometheus.
+* Solución de error de sincronización con tablas de _Stratio {modulename}_ cuyo origen es Delta.
 
 :tip-caption: CONSEJO
 
