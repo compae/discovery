@@ -93,7 +93,14 @@ fi
 
 DEBUG "Using these JAVA_OPTS: ${JAVA_OPTS}"
 
+# Check that JETTY_LOG_LEVEL is never set to DEBUG (or lower)
 
+if [[ $JETTY_LOG_LEVEL == "DEBUG" || $JETTY_LOG_LEVEL == "TRACE" ]]; then
+  INFO "[Discovery] Cannot set JETTY_LOG_LEVEL to $JETTY_LOG_LEVEL due to security reasons. Setting it instead to INFO"
+  JETTY_LOG_LEVEL="INFO"
+fi
+
+export JETTY_LOG_LEVEL
 
 ###################################
 ###   PUT VARIABLES IN FILES    ###
@@ -109,6 +116,7 @@ echo "$MB_USER_HEADER"                   > /env_vars/MB_USER_HEADER
 echo "$MB_GROUP_HEADER"                  > /env_vars/MB_GROUP_HEADER
 echo "$JAVA_OPTS"                        > /env_vars/JAVA_OPTS
 echo "$AUTHENTICATOR"                    > /env_vars/AUTHENTICATOR
+echo "$JETTY_LOG_LEVEL"                  > /env_vars/JETTY_LOG_LEVEL
 
 # some default metabase settings we want to set
 echo "/plugins"                          > /env_vars/MB_PLUGINS_DIR

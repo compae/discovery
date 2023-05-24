@@ -1,6 +1,10 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.43.4-0.1.5 (upcoming)
+
+* [ROCK-9940] Fix vulnerabilities: Tracing session cookies on DEBUG via jetty
+
 ## 0.43.4-0.1.4 (2023-04-20)
 
 * [ROCK-10071] Take into account cards using other cards as input data in discovery-cicd

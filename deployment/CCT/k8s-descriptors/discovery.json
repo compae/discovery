@@ -915,6 +915,25 @@
                   "FATAL"
                 ],
                 "default": "INFO"
+              },
+              "jettyLogLevel": {
+                "description": "Log level for jetty",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "internalName": "JETTY_LOG_LEVEL",
+                "title": "Jetty log level",
+                "enum": [
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "ERROR"
               }
             },
             "required": []
