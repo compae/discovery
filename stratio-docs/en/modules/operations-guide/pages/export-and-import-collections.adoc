@@ -10,6 +10,12 @@ WARNING: Starting with xref:operations-guide:installing-and-upgrading/upgrade.ad
 While pulses could be set for questions or collections, subscriptions are linked only to a dashboard. Subscriptions represent an evolution of pulses, so *we recommend using subscriptions and not pulses* because https://www.metabase.com/docs/v0.40/users-guide/10-pulses#dashboard-subscriptions-will-replace-pulses-in-a-future-release[pulses will soon be removed as a tool in Metabase], and have been marked as obsolete starting with version 0.40.
 ====
 
+In promotions, _SQL snippets_ are treated as high-level objects that do not depend on collections. Therefore, https://www.metabase.com/learn/sql-questions/sql-snippets[must have a globally unique name].
+
+In the export, it has been chosen to include the _SQL snippets_ that are being used in the collection to be exported. Therefore, at the time of importing that collection, only that subset of _SQL snippets_ will be created. 
+
+NOTE: In case a _SQL snippet_ with the same name already exists, instead of creating a new one, the current one will be modified.
+
 _Stratio Discovery_ exposes an Akka HTTP rest API based on export and import endpoints:
 
 == Export collection
@@ -54,12 +60,10 @@ You can't export:
 * A collection not created previously.
 * Collections that contain dashboards that use questions that don't belong to the exported collection or one of its sub-collections.
 * Collections containing two or more questions/boards/sub-collections with the same name.
-* At the moment, exporting https://www.metabase.com/learn/sql-questions/sql-snippets[SQL snippets of Metabase] is not supported.
 
 You can't import:
 
 * A collection in a destination _Stratio Discovery_ that doesn't have the same database names, fields, and tables that contain the exported questions.
-* At the moment, importing https://www.metabase.com/learn/sql-questions/sql-snippets[SQL snippets of Metabase] is not supported.
 
 In these cases, each endpoint will respond with its corresponding error.
 ====

@@ -14,6 +14,12 @@ WARNING: A partir de la xref:operations-guide:installing-and-upgrading/upgrade.a
 Mientras que los pulsos podían establecerse sobre preguntas o colecciones, las suscripciones están enlazadas solo a un _dashboard_. Las suscripciones representan una evolución de los pulsos, por ello *se recomienda utilizar suscripciones y no pulsos*, dado que https://www.metabase.com/docs/v0.40/users-guide/10-pulses#dashboard-subscriptions-will-replace-pulses-in-a-future-release[estos se eliminarán pronto como herramienta en Metabase], marcándose como obsoletos a partir de la versión 0.40.
 ====
 
+En las promociones, los _SQL snippets_ se tratan como objetos de alto nivel que no dependen de colecciones. Por tanto, https://www.metabase.com/learn/sql-questions/sql-snippets[deben tener un nombre único a nivel global].
+
+En la exportación, se ha optado por incluir los _SQL snippets_ que se están usando en la colección a exportar. Por tanto, en el momento de importar esa colección, únicamente se creará ese subconjunto de _SQL snippets_. 
+
+NOTE: En caso de que ya exista un _SQL snippet_ con el mismo nombre, en lugar de crear uno nuevo se modificará el actual.
+
 _Stratio Discovery_ expone una API REST HTTP de Akka basada en _endpoints_ de exportación e importación:
 
 == Exportar colección
@@ -64,12 +70,10 @@ No puedes exportar:
 * Una colección no creada previamente.
 * Colecciones que contienen paneles que usan preguntas que no pertenecen a la colección exportada o una de sus subcolecciones.
 * Colecciones que contienen dos o más preguntas/tableros/subcolecciones con el mismo nombre.
-* No esta soportada por el momento la exportación de https://www.metabase.com/learn/sql-questions/sql-snippets[_SQL snippets_ de Metabase].
 
 No puedes importar:
 
 * Una colección en un _Stratio Discovery_ de destino que no tiene los mismos nombres de base de datos, campos y tablas que contienen las preguntas exportadas.
-* No esta soportada por el momento la importación de https://www.metabase.com/learn/sql-questions/sql-snippets[_SQL snippets_ de Metabase].
 
 En estos casos, cada _endpoint_ responderá con su correspondiente error.
 ====
