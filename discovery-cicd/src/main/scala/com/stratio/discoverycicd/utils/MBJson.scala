@@ -6,6 +6,7 @@
 
 package com.stratio.discoverycicd.utils
 
+import com.stratio.discoverycicd.model.SnippetDto
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
 import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
 
@@ -37,6 +38,13 @@ object MBJson extends {
     case (acc, _) => acc
   }
 
+  // jval format examples can be found in tests 
+  def getSnippetIds(jval: JValue) = jval.fold(Set.empty[BigInt]) {
+    case (acc, JObject(kvs)) => acc ++ kvs.collect {
+      case ("snippet-id", JInt(id)) => id
+    }
+    case (acc, _) => acc
+  }
 
   def getCardIs(jval: JValue) = jval.fold(Set.empty[BigInt]) {
     case (acc, JObject(kvs)) => acc ++ kvs.collect { case ("card_id", JInt(id)) => id }
@@ -228,6 +236,65 @@ object MBJson extends {
     )
   }
 
+
+  // "native": {
+  //   "query": "select * FROM people WHERE {{snippet: alwaystrue}} {{snippet: limitresutls}}",
+  //   "template-tags": {
+  //     "snippet: limitresutls": {
+  //       "id": "d6b8c3ea-1cc4-8d86-41ce-243ccc73c038",
+  //       "name": "snippet: limitresutls",
+  //       "display-name": "Snippet: limitresutls",
+  //       "type": "snippet",
+  //       "snippet-name": "limitresutls",
+  //       "snippet-id": 2
+  //     },
+  //   "snippet: alwaystrue": {
+  //     "id": "b95727fd-ecf5-64bd-8244-d71238d4b6f6",
+  //     "name": "snippet: alwaystrue",
+  //     "display-name": "Snippet: alwaystrue",
+  //     "type": "snippet",
+  //     "snippet-name": "alwaystrue",
+  //     "snippet-id": 1
+  //     }
+  //   }
+  // }
+  // replacements (source -> target)
+  def replaceSnippets(jval: JValue, replacements: Map[BigInt, BigInt]): JValue = {
+    jval.transform {
+      case JObject(kvs) => JObject(
+        kvs.map {
+          // native queries
+          case ("native", JObject(nativeQuery)) => "native" -> JObject(
+            nativeQuery.map {
+              // "template-tags": { ... }
+              case ("template-tags", JObject(templateTags)) => "template-tags" -> JObject(
+                templateTags.map {
+                  case jField @ (snippetKey, JObject(snippetInfo)) if isSnippetKey(snippetKey) =>
+                    // "id": "b95727fd-ecf5-64bd-8244-d71238d4b6f6", // keep the same id?
+                    // "name": "snippet: alwaystrue", // keep the same name
+                    // "display-name": "Snippet: alwaystrue", // keep the same display-name
+                    // "type": "snippet", // keep the same type
+                    // "snippet-name": "alwaystrue", // keep the same name
+                    // "snippet-id": 1 // replace the snippet-id
+                    val updatedSnippetInfo = snippetInfo.map {
+                      case ("snippet-id", JInt(sourceSnippetId)) =>
+                        "snippet-id" -> JInt(replacements.getTargetSnippet(sourceSnippetId))
+                      case other => other
+                    }
+                    snippetKey -> JObject(updatedSnippetInfo)
+
+                  case other => other
+                }
+              )
+              case other => other
+            }
+          )
+          case other => other
+        }
+      )
+    }
+  }
+
   private def isTable(jsonField: JField) = Set("source-table", "table_id") contains jsonField._1
 
   private def isTableWithCardValue(jsonField: JField) = jsonField match {
@@ -245,5 +312,8 @@ object MBJson extends {
   private def isCard(jsonField: JField) = Set("card_id", "cardId") contains jsonField._1
 
   private def isField(jsonField: JField) = Set("source-field") contains jsonField._1
+
+  // "snippet: <snippet-name>": { .. }
+  private def isSnippetKey(key: String): Boolean = key.startsWith("snippet:")
 
 }

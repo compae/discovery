@@ -60,6 +60,7 @@ object ImplicitExtensions {
     val getTargetDashboardCard = getOrFail("Dashboard Card")
     val getTargetCard = getOrFail("Card")
     val getTargetCardAsTable = getOrFail("Card acting as table")
+    val getTargetSnippet = getOrFail("Snippet")
 
 
     private def getOrFail(replacedThing: String) = (id: BigInt) => {

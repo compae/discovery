@@ -3,6 +3,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 0.43.4-0.1.5 (upcoming)
 
+* [ROCK-10498] Snippets promotion in discovery CI/CD
 * [ROCK-9940] Fix vulnerabilities: Tracing session cookies on DEBUG via jetty
 
 ## 0.43.4-0.1.4 (2023-04-20)

@@ -67,4 +67,9 @@ object Identificable {
     def  identifier(subscription: Subscription) = (subscription.name, subscription.dashboard_id, subscription.collection_id)
   }
 
+  implicit val identificableSnippet= new Identificable[Snippet] {
+    type Identifier = String
+    def  identifier(snippet: Snippet) = snippet.name
+  }
+
 }

@@ -134,6 +134,16 @@ class ApiClient(metabaseUrl: String,
   def deleteSubscription(idSubscription: BigInt) =
     request(s"pulse/$idSubscription").put("""{"archived":true}""").execute()
 
+  def getSnippet(snippetId: BigInt) = request(s"native-query-snippet/$snippetId").as[SnippetDto].body
+
+  def getAllSnippets = request("native-query-snippet").as[List[SnippetDto]].body
+
+  def updateSnippet(id: BigInt, snippet: SnippetPutDto) =
+    request(s"native-query-snippet/$id").put(write(snippet)).as[SnippetDto].body
+
+  def createSnippet(snippet: SnippetDto) =
+    request("native-query-snippet").postData(write(snippet)).as[Id].body.id
+
   def request(apiPath: String): HttpRequest = {
     val safeRequest = Http(s"$metabaseUrl/api/$apiPath").headers(headers).timeout(connectionAndReadTimeout, connectionAndReadTimeout)
     if (allowUnsafeSsl) safeRequest.option(HttpOptions.allowUnsafeSSL) else safeRequest

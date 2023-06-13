@@ -25,6 +25,8 @@
         <akka.http.version>10.1.11</akka.http.version>
         <akka.http.json4s.version>1.32.0</akka.http.json4s.version>
         <apache.http.core>4.4.13</apache.http.core>
+        <junit.version>4.12</junit.version>
+        <scalatest.version>3.0.8</scalatest.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -98,6 +100,18 @@
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-stream_${scala.binary.version}</artifactId>
             <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.binary.version}</artifactId>
+            <version>${scalatest.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

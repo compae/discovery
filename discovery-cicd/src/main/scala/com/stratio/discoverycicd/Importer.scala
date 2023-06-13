@@ -26,6 +26,9 @@ class Importer(api: ApiClient) extends Logging {
   lazy val allTables = api.getAllTables map { _.toTable(dbId2Name) }
   lazy val id2Table = allTables map { t => t.id -> t } toMap
 
+  lazy val allSnippets = api.getAllSnippets
+  lazy val snippetNameToId = allSnippets map { s => s.name -> s.id } toMap
+
   def importCollection(exportedCollection: ExportedCollection, parentCollId: Option[BigInt]): Unit = {
 
     log.debug("Getting all needed source => target mappings between ids of dbs, tables and fields ")
@@ -62,8 +65,11 @@ class Importer(api: ApiClient) extends Logging {
         Map(targetCollId -> cardsInTargetColl)
       )
 
+    log.debug("Importing snippets from export data")
+    val snippetMap = createSnippets(exportedCollection.snippets)
+
     log.debug("Importing cards from export data")
-    val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, cardsByCollection)
+    val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, snippetMap, cardsByCollection)
 
     log.debug("Importing dashboards from export data")
     val (dashboardMap, dashCardMap) = createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
@@ -165,6 +171,7 @@ class Importer(api: ApiClient) extends Logging {
   def createCards(cards: List[Card],
                   dbMaps: DbMaps,
                   collMap: IdMap,
+                  snippetMap: IdMap,
                   existingCards: Map[CollId, List[CollectionItem]]): IdMap = {
     @tailrec
     def createCardsWithSatisfiedDependencies(cards: List[Card], createdCardsMap: IdMap): IdMap = cards match {
@@ -200,6 +207,7 @@ class Importer(api: ApiClient) extends Logging {
             .replaceTableIds(dbMaps.table)
             .replaceFieldIds(dbMaps.field)
             .replaceCardIdsUsedAsTables(createdCardsMap)
+            .replaceSnippets(snippetMap)
 
           val createdOrUpdatedCard = cardToCreateOrUpdate
             .collection_id
@@ -294,6 +302,20 @@ class Importer(api: ApiClient) extends Logging {
     subscriptionsToDelete.foreach(sub => api.deleteSubscription(sub.id))
   }
 
+  // Create or update snippets depending on whether each snippet is found in the target
+  def createSnippets(snippets: List[Snippet]): IdMap =
+    snippets.map { snippet =>
+      log.debug(s"Creating/updating snippet from exported data: ${snippets.toJson}")
+      snippetNameToId.get(snippet.name).map { existingTargetId =>
+        log.debug(s"Snippet with name '${snippet.name}' already present in target. Updating the snippet.")
+        api.updateSnippet(existingTargetId, snippet.toSnippetPutDto())
+        snippet.id -> existingTargetId
+      } getOrElse {
+        log.debug(s"Snippet with name '${snippet.name}' not found in target. Creating new snippet.")
+        val targetId = api.createSnippet(snippet.toSnippetDto())
+        snippet.id -> targetId
+      }
+    } toMap
 
   @tailrec
   final def createSubCollections(

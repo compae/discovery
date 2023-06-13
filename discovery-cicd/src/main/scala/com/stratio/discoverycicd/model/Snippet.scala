@@ -1,0 +1,39 @@
+/*
+ * © 2020 Stratio Big Data Inc., Sucursal en España. All rights reserved.
+ *
+ * This software – including all its source code – contains proprietary information of Stratio Big Data Inc., Sucursal en España and may not be revealed, sold, transferred, modified, distributed or otherwise made available, licensed or sublicensed to third parties; nor reverse engineered, disassembled or decompiled, without express written authorization from Stratio Big Data Inc., Sucursal en España.
+ */
+package com.stratio.discoverycicd.model
+
+// This is the model we use to "identify" a metabase Snippet
+case class Snippet(id: BigInt, name: String, content: String, description: String)  {
+
+  def toSnippetPutDto(): SnippetPutDto =
+    SnippetPutDto(
+      name = name,
+      content = content,
+      description = description
+    )
+
+  def toSnippetDto(): SnippetDto =
+    SnippetDto(
+      id = id,
+      name = name,
+      content = content,
+      description = description
+    )
+}
+
+case class SnippetDto(id: BigInt, name: String, content: String, description: String) {
+
+  def toSnippet(): Snippet =
+    Snippet(
+      id = id,
+      name = name,
+      content = content,
+      description = description
+    )
+
+}
+
+case class SnippetPutDto(name: String, content: String, description: String)

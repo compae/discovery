@@ -6,10 +6,12 @@
 
 package com.stratio.discoverycicd.model
 
-import com.stratio.discoverycicd.utils.{ MBJson, Logging, MetadataChecksum }
+import com.stratio.discoverycicd.utils.{Logging, MBJson, MetadataChecksum}
 import com.stratio.discoverycicd.utils.ReplacementUtils.replacementMayFail
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
-import org.json4s.{JValue, JArray, JString, JInt, JObject, JField}
+import com.stratio.discoverycicd.utils.TypeAliases.IdMap
+import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
+
 import scala.util.Try
 
 
@@ -45,6 +47,8 @@ case class Card(id: BigInt,
 
   def getDatabaseIds = MBJson.getDatabaseIds(dataset_query)
 
+  def getSnippetIds = MBJson.getSnippetIds(dataset_query)
+
   lazy val getCardsUsedAsTables = MBJson.getCardIdsUsedAsTables(dataset_query)
 
   def replaceFieldIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Field") {
@@ -70,6 +74,13 @@ case class Card(id: BigInt,
   def replaceCollectionIds(replacements: Map[BigInt, BigInt]): Card = replacementMayFail(this, "Collection") {
     _.copy(collection_id = Some(replacements.getTargetCollection(collection_id.get)))
   }
+
+  // replacements (source -> target)
+  def replaceSnippets(replacements: Map[BigInt, BigInt]): Card =
+    replacementMayFail(this, "Snippet") {
+      _.copy(dataset_query = MBJson.replaceSnippets(dataset_query, replacements))
+    }
+
 
   def metadata_checksum = Try(MetadataChecksum(result_metadata)).toOption
 
