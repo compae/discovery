@@ -12,7 +12,7 @@
 *** xref:operations-guide:installing-and-upgrading/prerequisites.adoc[]
 *** xref:operations-guide:installing-and-upgrading/deployment.adoc[]
 *** xref:operations-guide:installing-and-upgrading/environment-variables.adoc[]
-*** xref:operations-guide:installing-and-upgrading/verify-installation.adoc[C]
+*** xref:operations-guide:installing-and-upgrading/verify-installation.adoc[]
 *** xref:operations-guide:installing-and-upgrading/upgrade.adoc[]
 ** xref:operations-guide:basic-operations.adoc[]
 ** xref:operations-guide:configure-postgresql-acl.adoc[]
