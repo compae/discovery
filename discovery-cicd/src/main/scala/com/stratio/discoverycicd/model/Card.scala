@@ -41,7 +41,10 @@ case class Card(id: BigInt,
     collection_id, collection_position, dataset_query, result_metadata, metadata_checksum, dataset
   )
 
-  def getFieldIds = MBJson.getFieldIds(dataset_query)
+  def getFieldIds =
+    MBJson.getFieldIds(dataset_query) ++
+      MBJson.getFieldIds(visualization_settings) ++
+      MBJson.getFieldIds(result_metadata, isResultMetadata = true)
 
   def getTableIds = MBJson.getTableIds(dataset_query)
 
@@ -52,7 +55,11 @@ case class Card(id: BigInt,
   lazy val getCardsUsedAsTables = MBJson.getCardIdsUsedAsTables(dataset_query)
 
   def replaceFieldIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Field") {
-    _.copy(dataset_query = MBJson.replaceFieldIds(dataset_query, replacements))
+    _.copy(
+      dataset_query          = MBJson.replaceFieldIds(dataset_query, replacements),
+      result_metadata        = MBJson.replaceFieldIds(result_metadata, replacements, isResultMetadata = true),
+      visualization_settings = MBJson.replaceFieldIds(visualization_settings, replacements)
+    )
   }
 
   def replaceTableIds(replacements:  Map[BigInt, BigInt]): Card = replacementMayFail(this, "Table") {

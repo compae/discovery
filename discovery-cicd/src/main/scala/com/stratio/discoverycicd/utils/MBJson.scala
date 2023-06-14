@@ -6,17 +6,45 @@
 
 package com.stratio.discoverycicd.utils
 
+import com.stratio.discoverycicd.model.LinkType
+import com.stratio.discoverycicd.model.LinkType._
 import com.stratio.discoverycicd.model.SnippetDto
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
+import com.stratio.discoverycicd.utils.TypeAliases.IdMap
 import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
 
 import scala.util.Try
 
 object MBJson extends {
 
-  def getFieldIds(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
+  // fields in MBQL (metabase query language for visual queries) are always represented with this format:
+  // ["field", <id>, <other-options>] (https://github.com/metabase/metabase/pull/14897), but there are a
+  // couple of situations where we can find field ids in other places, like in visualization_settings of
+  // cards or dashcards, where they may appear in json keys or values as strings but with the above format
+  // (e. g., "[\"field\", <id>, null]"). Also, the card's result_metadata is a list of "column information"
+  // (with some metadata info about the columns that the result of the query returns), and there, if the
+  // column is associated with a field, the field id appears directly as "id". Since there are a lot of
+  // places where an "id" key may appear that do not represent a field, we have to make sure to only collect
+  // these "id" keys as field-ids when we are processing a card's result_metadata
+  def getFieldIds(jval: JValue, isResultMetadata: Boolean = false): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
+    // standard way of representing fields ["field", <id>, <options>]
     case (acc, JArray(List(JString("field"), JInt(fieldId), _))) => acc + fieldId
-    case (acc, JObject(kvs)) => acc ++ kvs.collect { case ("source-field", JInt(id)) => id }
+
+    case (acc, JObject(kvs)) => acc ++ kvs.flatMap {
+      // legacy format (I believe it is not used anymore) for retrocompatibility and just in case...
+      case ("source-field", JInt(id)) => Set(id)
+
+      // string with field format ("[\"field\", <id>, null]") as json key
+      case (k, _) if hasFieldRefs(k) => getReferencedFieldIds(k)
+
+      // string with field format ("[\"field\", <id>, null]") as json string value
+      case (_, JString(v)) if hasFieldRefs(v) => getReferencedFieldIds(v)
+
+      // for card's result metadata, field ids just appear as "id" :S
+      case ("id", JInt(id)) if isResultMetadata => Set(id)
+
+      case _ => Set.empty[BigInt]
+    }
     case (acc, _) => acc
   }
 
@@ -30,7 +58,7 @@ object MBJson extends {
   }
 
 
-  def getDatabaseIds(jval: JValue) = jval.fold(Set.empty[BigInt]) {
+  def getDatabaseIds(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
     case (acc, JObject(kvs)) => acc ++ kvs.collect {
       case ("database"   , JInt(id)) => id
       case ("database_id", JInt(id)) => id
@@ -46,7 +74,7 @@ object MBJson extends {
     case (acc, _) => acc
   }
 
-  def getCardIs(jval: JValue) = jval.fold(Set.empty[BigInt]) {
+  def getCardIs(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
     case (acc, JObject(kvs)) => acc ++ kvs.collect { case ("card_id", JInt(id)) => id }
     case (acc, _) => acc
   }
@@ -130,7 +158,7 @@ object MBJson extends {
     case (acc, _) => acc
   }
 
-  def replaceCardIdsUsedAsTables(jval: JValue, replacements: Map[BigInt, BigInt]): JValue = {
+  def replaceCardIdsUsedAsTables(jval: JValue, replacements: IdMap): JValue = {
     def replaceCardIdInPattern(pattern: BigInt => String, value: String) =
       replacements.foldLeft(value) {
         case (updatedValue, (sourceId, targetId)) =>
@@ -194,42 +222,121 @@ object MBJson extends {
     }
   }
 
-  def replaceFieldIds(jval: JValue, replacements: Map[BigInt, BigInt]): JValue = jval.transform {
+
+  // In dashboard cards the users can configure custom click behaviors for the different columns of the card.
+  // One of the options is to link to other question or to other dashboard, and when they do this the
+  // visualization_settings of the ordered_card (DashCard) json get a value like the following:
+
+  //   {
+  //     "visualization_settings": {
+  //       "column_settings": {
+  //         "[\"ref\",[\"field\",6,null]]": {
+  //           "click_behavior": {
+  //             "type": "link",
+  //             "linkType": "dashboard",
+  //             "parameterMapping": {},
+  //             "targetId": 11,
+  //             "linkTextTemplate": "link absurdo ({{SUBTOTAL}})"
+  //           }
+  //         },
+  //         "[\"ref\",[\"field\",3,null]]": {
+  //           "click_behavior": {
+  //             "targetId": 81,
+  //             "parameterMapping": {
+  //               "[\"dimension\",[\"field\",22,null]]": {
+  //                 "source": {"type": "column", "id": "USER_ID", "name": "USER_ID"},
+  //                 "target": {"type": "dimension", "id": "[\"dimension\",[\"field\",22,null]]", "dimension": ["dimension", ["field", 22, null]]},
+  //                 "id": "[\"dimension\",[\"field\",22,null]]"
+  //               }
+  //             },
+  //             "linkType": "question",
+  //             "type": "link",
+  //             "linkTextTemplate": "Details of user {{USER_ID}}"
+  //           }
+  //         },
+  //         "[\"ref\",[\"field\",9,null]]": {}
+  //       }
+  //     }
+  //  }
+  //  There we see that there is the "targetId" for the question/dashboard link, and also several keys and values
+  //  whose name is a array-looking string with references to field Ids ("ref,["field",3,"null"]") and we need
+  //  to replace these keys so the click_behaviors work correctly
+  //
+  def replaceItemIdsInDashCardLinks(linkType: LinkType)(jval: JValue, replacements: IdMap): JValue = jval.transform {
+    case JObject(kvs) => JObject(
+      kvs.map {
+        case jField @ (k, JObject(clickBehavior)) if isLinkOf(linkType)(jField) =>
+          val replacedClickBehavior = clickBehavior.map {
+            case ("targetId", JInt(cardId)) => ("targetId", JInt(replacements.getTargetCard(cardId)))
+            case other => other
+          }
+          (k, JObject(replacedClickBehavior))
+
+        case other => other
+      }
+    )
+  }
+
+  def getItemIdsInLinks(linkType: LinkType)(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
+    case (acc, JObject(kvs)) =>
+      acc ++ kvs.collect {
+        case jField @ (_, JObject(clickBehavior)) if isLinkOf(linkType)(jField) =>
+          clickBehavior.collect { case ("targetId", JInt(id)) => id }.toSet
+      }.flatten
+
+    case (acc, _) => acc
+  }
+
+
+  def replaceFieldIds(jval: JValue, replacements: IdMap, isResultMetadata: Boolean = false): JValue = jval.transform {
     case JArray(List(JString("field"), JInt(fieldId), optionsMap)) =>
       JArray(List(JString("field"), JInt(replacements.getTargetField(fieldId)), optionsMap))
 
-    case JObject(kvs) if kvs exists isField => JObject(
-      kvs map {
-        case jField @ (k, JInt(id)) if isField(jField) => (k, JInt(replacements.getTargetField(id)))
+    case JObject(kvs) => JObject(
+      kvs.map {
+        case (k, JInt(id)) if isField(k) =>
+          (k, JInt(replacements.getTargetField(id)))
+
+        case (key, value) if hasFieldRefs(key) =>
+          val updatedKey = replaceFieldRefs(replacements, key)
+          (updatedKey, value)
+
+        case (key, JString(value)) =>
+          val updatedValue = replaceFieldRefs(replacements, value)
+          (key, JString(updatedValue))
+
+        case ("id",  JInt(id)) if isResultMetadata =>
+          ("id", JInt(replacements.getTargetField(id)))
+
         case other => other
       }
     )
   }
 
 
-  def replaceTableIds(jval: JValue, replacements: Map[BigInt, BigInt]) = jval.transform {
-    case JObject(kvs) if kvs exists isTable => JObject(
+  def replaceTableIds(jval: JValue, replacements: IdMap): JValue = jval.transform {
+    case JObject(kvs) => JObject(
       kvs map {
-        case jField @ (k, JInt(id)) if (isTable(jField)) => (k, JInt(replacements.getTargetTable(id)))
+        case (k, JInt(id)) if isTable(k) => (k, JInt(replacements.getTargetTable(id)))
         case other => other
       }
     )
   }
 
 
-  def replaceDatabaseIds(jval: JValue, replacements: Map[BigInt, BigInt]) = jval.transform {
-    case JObject(kvs) if kvs exists isDatabase => JObject(
+  def replaceDatabaseIds(jval: JValue, replacements: IdMap): JValue = jval.transform {
+    case JObject(kvs) => JObject(
       kvs map {
-        case jField @ (k, JInt(id)) if (isDatabase(jField)) => (k, JInt(replacements.getTargetDatabase(id)))
+        case (k, JInt(id)) if isDatabase(k) => (k, JInt(replacements.getTargetDatabase(id)))
         case other => other
       }
     )
   }
 
-  def replaceCardIds(jval: JValue, replacements: Map[BigInt, BigInt]) = jval.transform {
-    case JObject(kvs) if kvs exists isCard => JObject(
+  def replaceCardIds(jval: JValue, replacements: IdMap): JValue = jval.transform {
+    case JObject(kvs) => JObject(
       kvs map {
-        case jField @ (k, JInt(id)) if (isCard(jField)) => (k, JInt(replacements.getTargetCard(id)))
+        case (k, JInt(id)) if isCard(k) => (k, JInt(replacements.getTargetCard(id)))
         case other => other
 
       }
@@ -295,10 +402,10 @@ object MBJson extends {
     }
   }
 
-  private def isTable(jsonField: JField) = Set("source-table", "table_id") contains jsonField._1
+  private def isTable(jsonKey: String) = Set("source-table", "table_id") contains jsonKey
 
   private def isTableWithCardValue(jsonField: JField) = jsonField match {
-    case jField @ (_, JString(value)) if isTable(jField) => value startsWith "card__"
+    case (k, JString(value)) if isTable(k) => value startsWith "card__"
     case _ => false
   }
 
@@ -307,11 +414,30 @@ object MBJson extends {
     case _ => false
   }
 
-  private def isDatabase(jsonField: JField) = Set("database", "database_id") contains jsonField._1
+  private def isLinkOf(linkType: LinkType)(jsonField: JField) = jsonField match {
+    case ("click_behavior", JObject(clickBehaviors)) => clickBehaviors contains "linkType" -> JString(linkType)
+    case _ => false
+  }
 
-  private def isCard(jsonField: JField) = Set("card_id", "cardId") contains jsonField._1
+  private val fieldRefPattern = """["field","""
 
-  private def isField(jsonField: JField) = Set("source-field") contains jsonField._1
+  private val fieldRefRegex = """(?<=\["field",)\d+""".r
+
+  private def hasFieldRefs(s: String) = s contains fieldRefPattern
+
+  private def getReferencedFieldIds(s: String): Set[BigInt] =
+    fieldRefRegex.findAllIn(s).map(BigInt(_)).toSet
+
+  private def replaceFieldRefs(replacements: IdMap, value: String) = {
+    val stringReplacements = replacements.map { case (k, v) => (k.toString, v.toString) }
+    fieldRefRegex.replaceAllIn(value, m => stringReplacements.getTargetField(m.matched))
+  }
+
+  private def isDatabase(jsonKey: String) = Set("database", "database_id") contains jsonKey
+
+  private def isCard(jsonKey: String) = Set("card_id", "cardId") contains jsonKey
+
+  private def isField(jsonKey: String) = Set("source-field") contains jsonKey
 
   // "snippet: <snippet-name>": { .. }
   private def isSnippetKey(key: String): Boolean = key.startsWith("snippet:")

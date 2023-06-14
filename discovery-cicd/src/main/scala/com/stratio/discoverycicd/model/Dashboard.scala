@@ -9,7 +9,7 @@ package com.stratio.discoverycicd.model
 import com.stratio.discoverycicd.utils.MBJson
 import com.stratio.discoverycicd.utils.ReplacementUtils.replacementMayFail
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
-import com.stratio.discoverycicd.utils.TypeAliases.{CollId, DashboardId}
+import com.stratio.discoverycicd.utils.TypeAliases.{CollId, DashboardId, IdMap}
 import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
 
 case class Dashboard(id: DashboardId,
@@ -45,6 +45,7 @@ case class Dashboard(id: DashboardId,
     _.copy(collection_id = collection_id.map(replacements.getTargetCollection))
   }
 
+
   def toDto = DashboardDto(
     name,
     description,
@@ -74,7 +75,10 @@ case class DashCard(id: BigInt,
                     parameter_mappings: JValue) {
 
   def replaceFieldIds(replacements: Map[BigInt, BigInt]): DashCard = replacementMayFail(this, "Field") {
-    _.copy(parameter_mappings = MBJson.replaceFieldIds(parameter_mappings, replacements))
+    _.copy(
+      parameter_mappings = MBJson.replaceFieldIds(parameter_mappings, replacements),
+      visualization_settings = MBJson.replaceFieldIds(visualization_settings, replacements)
+    )
   }
 
   def replaceTableIds(replacements: Map[BigInt, BigInt]): DashCard = replacementMayFail(this, "Table") {
@@ -90,9 +94,17 @@ case class DashCard(id: BigInt,
       card_id = card_id.map(replacements.getTargetCard),
       card = MaybeId(card_id.map(replacements.getTargetCard)),
       series = series.map(cid => Id(replacements.getTargetCard(cid.id))),
-      parameter_mappings =  MBJson.replaceCardIds(parameter_mappings, replacements)
+      parameter_mappings =  MBJson.replaceCardIds(parameter_mappings, replacements),
+      visualization_settings = MBJson.replaceItemIdsInDashCardLinks(LinkType.Question)(visualization_settings, replacements)
     )
   }
+
+  def replaceDashboardLinks(replacements: IdMap): DashCard = replacementMayFail(this, "Dashboard (link)") {
+    _.copy(
+      visualization_settings = MBJson.replaceItemIdsInDashCardLinks(LinkType.Dashboard)(visualization_settings, replacements)
+    )
+  }
+
 }
 
 case class DashboardDto(name: String,
@@ -108,5 +120,5 @@ case class DashboardDto(name: String,
                         creator_id: BigInt)
 
 // this is used to add cards to a dashboard, we should be careful that metabase is
-// looking to refactor this enpoint so the body should be card_id instead of cardId :S
+// looking to refactor this endpoint so the body should be card_id instead of cardId :S
 case class CardPost(cardId: Option[BigInt])

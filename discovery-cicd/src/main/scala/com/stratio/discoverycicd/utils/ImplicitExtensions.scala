@@ -50,7 +50,7 @@ object ImplicitExtensions {
   }
 
 
-  implicit class MapExtension(replacements: Map[BigInt, BigInt]) extends Logging {
+  implicit class MapExtension[K, V](replacements: Map[K, V]) extends Logging {
 
     val getTargetField = getOrFail("Field")
     val getTargetTable = getOrFail("Table")
@@ -63,11 +63,11 @@ object ImplicitExtensions {
     val getTargetSnippet = getOrFail("Snippet")
 
 
-    private def getOrFail(replacedThing: String) = (id: BigInt) => {
-      replacements.getOrElse(id, throwReplacementError(replacedThing, id))
+    private def getOrFail(replacedThing: String) = (id: K) => {
+      replacements.getOrElse(id, throwReplacementError(replacedThing, id.toString))
     }
 
-    private def throwReplacementError(replacedThing: String, id: BigInt) = {
+    private def throwReplacementError(replacedThing: String, id: String) = {
       log.error(s"ERROR: It seems that an exported object references a $replacedThing that has id '$id' in the source Metabase, but was not found in the target Metabase")
       throw ReplacementException(s"Could not replace $replacedThing id $id with the found ${replacedThing}s in target Metabase")
     }

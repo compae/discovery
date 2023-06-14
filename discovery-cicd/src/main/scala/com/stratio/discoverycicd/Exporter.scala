@@ -58,6 +58,7 @@ class Exporter(api: ApiClient) extends Logging {
 
     val dashboardsJson = Extraction.decompose(dashboards)
     checkAllCardsAreInCollection(cardIdsInColl, dashboardsJson)
+    checkAllDashboardsAreInCollection(dashboardIdsInColl, dashboardsJson)
 
     // Collect needed DB data to be able to obtain in the target metabase all field, table and database IDs
     val databaseIds = cards.map(_.getDatabaseIds).fold(Set.empty)(_ union _) union MBJson.getDatabaseIds(dashboardsJson)
@@ -127,11 +128,19 @@ class Exporter(api: ApiClient) extends Logging {
   }
 
 
-  def checkAllCardsAreInCollection(cardIdsInColl: List[BigInt], dashoardsJson: JValue) = {
-    val cardsInDashboards = MBJson.getCardIs(dashoardsJson).toSet
+  def checkAllCardsAreInCollection(cardIdsInColl: List[BigInt], dashboardsJson: JValue): Unit = {
+    val cardsInDashboards = MBJson.getCardIs(dashboardsJson) ++ MBJson.getItemIdsInLinks(LinkType.Question)(dashboardsJson)
     val neededCardsNotInColl = cardsInDashboards diff cardIdsInColl.toSet
-    require(neededCardsNotInColl isEmpty,
-      s"""The question with ids '${neededCardsNotInColl.mkString(",")}' are used in some dashboard but are not present in the collection"""
+    require(neededCardsNotInColl.isEmpty,
+      s"""The questions with ids '${neededCardsNotInColl.mkString(",")}' are used in some dashboard but are not present in the collection"""
+    )
+  }
+
+  def checkAllDashboardsAreInCollection(dashboardIdsInColl: List[BigInt], dashboardsJson: JValue): Unit = {
+    val dashboardsInDashboards = MBJson.getItemIdsInLinks(LinkType.Dashboard)(dashboardsJson)
+    val neededDashboardsNotInColl = dashboardsInDashboards diff dashboardIdsInColl.toSet
+    require(neededDashboardsNotInColl.isEmpty,
+      s"""The dashboards with ids '${neededDashboardsNotInColl.mkString(",")}' are linked in some dashboard but are not present in the collection"""
     )
   }
 

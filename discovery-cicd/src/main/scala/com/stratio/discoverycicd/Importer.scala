@@ -105,7 +105,7 @@ class Importer(api: ApiClient) extends Logging {
                        collMap: IdMap,
                        cardMap: IdMap,
                        existingDashboards: Map[CollId, List[CollectionItem]]): (IdMap, IdMap) = {
-    val (dashboardIdSourceToTarget, dashCardIdSourceToTarget) = dashboards.map { dashboard =>
+    val (dashboardIdSourceToTarget, dashCardsByDashboard, dashCardIdSourceToTarget) = dashboards.map { dashboard =>
       log.debug(s"Creating/updating dashboard from exported data: ${dashboard.toJson}")
       log.debug(s"Replacing collection, database, table and field Ids in dashboard")
       val dashboardToCreateOrUpdate =
@@ -153,11 +153,23 @@ class Importer(api: ApiClient) extends Logging {
         (dashCard.copy(id = dashCardId, dashboard_id = createdOrUpdatedDashboardId), dashCard.id -> dashCardId)
       }.unzip
 
-      // add the correct positions, settings etc to all dashcards
-      log.debug("Updating dashcards in dashboard with correct positions, settings, etc...")
-      api.updateDashCardsInDashboard(createdOrUpdatedDashboardId, dashCardsWithNewIds)
-      (dashboard.id -> createdOrUpdatedDashboardId, dashCardIdSourceToTarget)
-    }.unzip
+      (
+        dashboard.id -> createdOrUpdatedDashboardId,
+        createdOrUpdatedDashboardId -> dashCardsWithNewIds,
+        dashCardIdSourceToTarget
+      )
+    }.unzip3
+
+    // Add the correct positions, settings, ids of links to dashboards, etc to all dashcards.
+    // We have to make it outside the map over dashboards above because we need the dashboardIs source->target map
+    dashCardsByDashboard.foreach { case (dashboardId, dashCards) =>
+      log.debug(s"Updating dashcards in dashboard '$dashboardId' with correct positions, settings, ids of links, etc...")
+      api.updateDashCardsInDashboard(
+        dashboardId,
+        dashCards.map(_.replaceDashboardLinks(dashboardIdSourceToTarget.toMap))
+      )
+    }
+
 
     // Delete dashboards that have not been created or updated (not present in export data)
     val dashboardsToDelete = existingDashboards.values.flatten.filterNot(dashboardIdSourceToTarget.toMap.values.toSet contains _.id)
