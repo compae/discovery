@@ -2,4 +2,7 @@
 exec 2>&1
 
 # chpst -e reads the files in /env_vars as names of environment variables with value the content of the file
-chpst -e /env_vars java ${DISCOVERY_CICD_JAVA_OPTIONS} -jar /app/target/uberjar/discovery-cicd.jar server
+# and pass this environment to the command. However, this environment only applies to the subproccess spawned
+# by the command, so JAVA_OPTS is not set in the command itself, we must set it explicitly
+DISCOVERY_CICD_MEMORY_OPTS=$(cat /env_vars/DISCOVERY_CICD_MEMORY_OPTS)
+chpst -e /env_vars java ${DISCOVERY_CICD_JAVA_OPTIONS} ${DISCOVERY_CICD_MEMORY_OPTS} -jar /app/target/uberjar/discovery-cicd.jar server

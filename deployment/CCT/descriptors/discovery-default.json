@@ -899,18 +899,27 @@
                 "title": "Memory (MB)",
                 "default": 4096
               },
-              "percentageMaxHeap": {
-                "description": "Memory percentage to be the max heap for JVM",
-                "type": "integer",
-                "minimum": 40,
-                "maximum": 95,
-                "required": true,
+              "javaInitialRamPercentage": {
+                "description": "Initial size of the Java heap as a percentage (0 - 100) of the total memory available to the VM. Corresponding to '-XX:InitialRAMPercentage'. Default 30.0",
+                "type": "string",
+                "required": false,
                 "readOnly": false,
                 "application": false,
                 "level": 1,
-                "internalName": "PERCENTAGE_MAX_HEAP_JVM",
-                "title": "Memory percentage for JVM max heap",
-                "default": 70
+                "internalName": "JAVA_INITIAL_RAM_PERCENTAGE",
+                "title": "Initial size of the Java heap as a percentage",
+                "default": "-XX:InitialRAMPercentage=30.0"
+              },
+              "javaMaxRamPercentage": {
+                "description": "Maximum size of the Java heap as a percentage (0 - 100) of the total memory available to the VM. Corresponding to '-XX:MaxRAMPercentage'. Default 70.0",
+                "type": "string",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "JAVA_MAX_RAM_PERCENTAGE",
+                "title": "Maximum size of the Java heap as a percentage",
+                "default": "-XX:MaxRAMPercentage=70.0"
               }
             },
             "required": []
@@ -1295,8 +1304,30 @@
             "title": "Max Body Size for CI/CD endpoint",
             "default": "2M"
           },
+          "cicdJavaInitialRamPercentage": {
+            "description": "Initial size of the Java heap as a percentage (0 - 100) of the total memory available to the VM (relevant to server and workers). Corresponding to '-XX:InitialRAMPercentage'. Default 10.0",
+            "type": "string",
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "DISCOVERY_CICD_JAVA_INITIAL_RAM_PERCENTAGE",
+            "title": "Initial size of the Java heap as a percentage",
+            "default": "-XX:InitialRAMPercentage=10.0"
+          },
+          "cicdJavaMaxRamPercentage": {
+            "description": "Maximum size of the Java heap as a percentage (0 - 100) of the total memory available to the VM (relevant to server and workers). Corresponding to '-XX:MaxRAMPercentage'. Default 25.0",
+            "type": "string",
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "DISCOVERY_CICD_JAVA_MAX_RAM_PERCENTAGE",
+            "title": "Maximum size of the Java heap as a percentage",
+            "default": "-XX:MaxRAMPercentage=25.0"
+          },
           "cicdJavaOptions": {
-            "description": "Add custom Java options to CI/CD service.",
+            "description": "Add custom Java options to CI/CD service (excluding memory options).",
             "type": "string",
             "maxLength": 100,
             "minLength": 3,
@@ -1306,7 +1337,7 @@
             "level": 1,
             "internalName": "DISCOVERY_CICD_JAVA_OPTIONS",
             "title": "Java options for the Import/Export collections service.",
-            "default": "-Xmx1024m"
+            "default": ""
           },
           "cicdApiMetabaseTimeout": {
             "description": "Discovery cicd internal metabase api timeout",

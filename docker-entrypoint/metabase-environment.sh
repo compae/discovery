@@ -72,16 +72,28 @@ JAVA_OPTS="$JAVA_OPTS --XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimi
 # Stratio log format
 JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=/app/target/log4j2.xml"
 
-if [ -n "$MAX_HEAP" ]; then
-    JAVA_OPTS="$JAVA_OPTS -Xmx$MAX_HEAP"
-elif [ -n "$PERCENTAGE_MAX_HEAP_JVM" ] && [ -n "$MARATHON_APP_RESOURCE_MEM" ]; then # We're in Mesos
-    HEAP_IN_MB=$(awk '{printf("%.0f\n", $1*$2/100)}' <<<"$PERCENTAGE_MAX_HEAP_JVM $MARATHON_APP_RESOURCE_MEM")
-    JAVA_OPTS="$JAVA_OPTS -Xmx${HEAP_IN_MB}m"
-elif [ -n "$PERCENTAGE_MAX_HEAP_JVM" ] && [ -n "$MEMORY" ]; then # We're in k8s
-    HEAP_IN_MB=$(awk '{printf("%.0f\n", $1*$2/100)}' <<<"$PERCENTAGE_MAX_HEAP_JVM $MEMORY")
-    JAVA_OPTS="$JAVA_OPTS -Xmx${HEAP_IN_MB}m"
+# JVM memory configuration
+if [[ ! -v JAVA_INITIAL_RAM_PERCENTAGE ]]; then
+    JAVA_INITIAL_RAM_PERCENTAGE="-XX:InitialRAMPercentage=30.0"
 fi
 
+if [[ ! -v JAVA_MAX_RAM_PERCENTAGE ]]; then
+    if [ -n "$PERCENTAGE_MAX_HEAP_JVM" ]; then # legacy PERCENTAGE_MAX_HEAP_JVM env var was an integer in CCT
+        JAVA_MAX_RAM_PERCENTAGE="-XX:MaxRAMPercentage=${PERCENTAGE_MAX_HEAP_JVM}.0"
+    else
+        JAVA_MAX_RAM_PERCENTAGE="-XX:MaxRAMPercentage=70.0"
+    fi
+fi
+
+## Check if the user contains legacy memory JVM options and warn about it
+if [[ $JAVA_OPTS == *"-Xms"* ]] || [[ $JAVA_OPTS == *"-Xmx"* ]]; then
+  WARN "The memory percentage defined by -XX:InitialRAMPercentage and -XX:MaxRAMPercentage will be ignored since JVM options (-Xms -Xmx) are provided in JAVA_OPTS. Please, set the JVM memory configuration using JAVA_INITIAL_RAM_PERCENTAGE and JAVA_MAX_RAM_PERCENTAGE instead."
+fi
+
+JAVA_MEMORY_OPTS="-XX:+UseContainerSupport ${JAVA_INITIAL_RAM_PERCENTAGE} ${JAVA_MAX_RAM_PERCENTAGE}"
+JAVA_OPTS="$JAVA_OPTS -${JAVA_MEMORY_OPTS}"
+
+# Metrics configuration
 if [ "$JMX" ]; then
     JAVA_OPTS="$JAVA_OPTS $JMX"
 fi

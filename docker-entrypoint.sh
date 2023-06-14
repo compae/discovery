@@ -16,5 +16,8 @@ if [[ "$DOWNLOAD_SECRETS" = "true" ]]; then
   source /docker-entrypoint/crossdata.sh
 fi
 
+# set cicd configuration
+source /docker-entrypoint/cicd-conf.sh
+
 # prepare some environment variables for metabase
 source /docker-entrypoint/metabase-environment.sh
