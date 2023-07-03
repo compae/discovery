@@ -33,8 +33,8 @@ Ten en cuenta que la _whitelist_, el grupo de administración y la sincronizaci�
 
 == Autenticación nativa de Metabase
 
-Por último, es posible configurar _Stratio Discovery_ para que no use ninguna forma especial de autenticación de usuario y simplemente funcione como https://www.metabase.com/docs/v0.42/setting-up-metabase.html[lo hace Metabase]^[English]^ (establece `AUTHENTICATOR` en `metabase-native`). De esta manera, https://www.metabase.com/docs/v0.40/administration-guide/04-managing-users.html[email]^[English]^, https://www.metabase.com/docs/v0.42/administration-guide/10-single-sign-on.html[LDAP o Google SSO]^[English]^ pueden configurarse para la autenticación.
+Por último, es posible configurar _Stratio Discovery_ para que no use ninguna forma especial de autenticación de usuario y simplemente funcione como https://www.metabase.com/docs/v0.42/setting-up-metabase.html[lo hace Metabase] ^[English]^ (establece `AUTHENTICATOR` en `metabase-native`). De esta manera, https://www.metabase.com/docs/v0.40/administration-guide/04-managing-users.html[email] ^[English]^, https://www.metabase.com/docs/v0.42/administration-guide/10-single-sign-on.html[LDAP o Google SSO] ^[English]^ pueden configurarse para la autenticación.
 
-TIP: Para obtener más información, consulta la https://www.metabase.com/docs/v0.42/[documentación de Metabase]^[English]^.
+TIP: Para obtener más información, consulta la https://www.metabase.com/docs/v0.42/[documentación de Metabase] ^[English]^.
 
 NOTE: Ten en cuenta que, cuando los otros métodos de autenticación están activados, el inicio de sesión nativo de Metabase por _email_ está deshabilitado.

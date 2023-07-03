@@ -2,7 +2,7 @@
 
 Esta guía permite saber más sobre _Stratio Discovery_ y cómo realizar consultas sobre el almacén de datos. Va dirigida a un público que no necesita tener conocimientos técnicos, aunque es una cualidad deseable. Su principal objetivo es *crear preguntas y aprender de los datos de la empresa*.
 
-_Stratio Discovery_ funciona con Metabase, por lo que puedes encontrar más información en su https://www.metabase.com/docs/v0.42/users-guide/start.html[guía de usuario]^[English]^.
+_Stratio Discovery_ funciona con Metabase, por lo que puedes encontrar más información en su https://www.metabase.com/docs/v0.42/users-guide/start.html[guía de usuario] ^[English]^.
 
 == Prerrequisitos
 
@@ -17,7 +17,7 @@ _Stratio Discovery_ es una herramienta sencilla de inteligencia de negocio (BI).
 
 Las preguntas se pueden guardar para más adelante, lo que permite volver a ellas y/o agruparlas en _dashboards_ con buena apariencia. También es posible compartir preguntas y paneles con el resto del equipo usando *colecciones*.
 
-Para entender completamente cómo usar _Stratio Discovery_ es muy útil tener conocimientos de alto nivel de las bases de datos, por lo que a continuación se muestran https://www.metabase.com/learn/databases/database-basics[los conceptos básicos de las bases de datos]^[English]^ que conviene tener en cuenta.
+Para entender completamente cómo usar _Stratio Discovery_ es muy útil tener conocimientos de alto nivel de las bases de datos, por lo que a continuación se muestran https://www.metabase.com/learn/databases/database-basics[los conceptos básicos de las bases de datos] ^[English]^ que conviene tener en cuenta.
 
 === ¿Qué puedo hacer?
 
@@ -32,9 +32,9 @@ _Stratio Discovery_ permite realizar varias operaciones como:
 
 === ¿Cómo puedo hacerlo?
 
-Hay mucha información al respecto en https://www.metabase.com/learn/getting-started/getting-started.html[la documentación oficial de Metabase]^[English]^:
+Hay mucha información al respecto en https://www.metabase.com/learn/getting-started/getting-started.html[la documentación oficial de Metabase] ^[English]^:
 
-* https://www.metabase.com/docs/v0.42/users-guide/04-asking-questions.html[Realizar preguntas en Metabase]^[English]^.
-* https://www.metabase.com/docs/v0.42/users-guide/06-sharing-answers.html[Compartir preguntas guardadas]^[English]^.
-* https://www.metabase.com/docs/v0.42/users-guide/07-dashboards.html[Crear _dashboards_]^[English]^.
-* https://www.metabase.com/docs/v0.42/users-guide/09-multi-series-charting.html[Crear gráficos]^[English]^.
+* https://www.metabase.com/docs/v0.42/users-guide/04-asking-questions.html[Realizar preguntas en Metabase] ^[English]^.
+* https://www.metabase.com/docs/v0.42/users-guide/06-sharing-answers.html[Compartir preguntas guardadas] ^[English]^.
+* https://www.metabase.com/docs/v0.42/users-guide/07-dashboards.html[Crear _dashboards_] ^[English]^.
+* https://www.metabase.com/docs/v0.42/users-guide/09-multi-series-charting.html[Crear gráficos] ^[English]^.

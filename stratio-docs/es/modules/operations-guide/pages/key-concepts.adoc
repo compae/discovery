@@ -10,7 +10,7 @@ Si comprendes correctamente la (solo a primera vista) compleja interacción entr
 
 El último paso es el más importante porque, incluso siguiendo la xref:operations-guide:troubleshooting.adoc[guía de _troubleshooting_], muchos de los problemas informados no se deben al mal comportamiento de _Stratio Discovery_ sino a las bases de datos a las que está conectado.
 
-No vamos a reinventar la rueda: hay una guía detallada paso a paso que se ofrece en la https://www.metabase.com/learn/[documentación oficial de Metabase]^[English]^ que te enseñará cómo usar Metabase, su configuración y puesta a punto.
+No vamos a reinventar la rueda: hay una guía detallada paso a paso que se ofrece en la https://www.metabase.com/learn/[documentación oficial de Metabase] ^[English]^ que te enseñará cómo usar Metabase, su configuración y puesta a punto.
 
 Dado que Metabase es una *herramienta de BI de código abierto*, su objetivo es *visualizar los datos y no operar sobre ellos*. Esta es la razón por la que no puedes realizar inserciones u otras operaciones de escritura y por la que *solo tienes acceso de lectura a su base de datos*.
 
