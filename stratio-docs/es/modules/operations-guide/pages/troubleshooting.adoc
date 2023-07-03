@@ -15,8 +15,6 @@ Esta página de _troubleshooting_ se estructura en las siguientes secciones:
 * xref:operations-guide:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Problemas de instalación y configuración], para problemas que impiden la ejecución exitosa del proceso de instalación/actualización.
 * xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Problemas de uso], para todos los demás problemas que puedan surgir durante las operaciones diarias.
 
-:important-caption: IMPORTANTE
-
 [IMPORTANT]
 ====
 Si encuentras un error que no se encuentra entre los siguientes, te sugerimos que verifiques si existe un https://github.com/metabase/metabase/issues/[problema similar en Metabase] que ya se haya informado o resuelto.
@@ -32,7 +30,7 @@ De lo contrario, eres más que bienvenido/a a comunicarte con nosotros.
 
 Tu usuario debe pertenecer a un grupo permitido o al grupo de administración, según su rol. La forma en que el administrador puede especificar los grupos permitidos se explica en detalle en la xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[sección de autenticación del usuario final].
 
-=== No redireccionan bien los enlaces a un _dashboard_ en un _Stratio Discovery_ desplegado con _flavor_ _Governance_ en DCOS
+=== No redireccionan bien los enlaces a un _dashboard_ en un _Stratio Discovery_ desplegado con _flavour_ _Governance_ en DC/OS
 
 Puede ser que notes que en las subscripciones de _dashboards_ o cuando haya redirecciones no se genera bien la URL del servicio (por ejemplo te redirecciona a https://admin-dev.stratio.com/question/123 en lugar de https://admin-dev.stratio.com/service/discovery-governance/question/123). Si esto ocurre incluso después de haber modificado la configuración de `SITE_URL` (https://github.com/metabase/metabase/issues/13602), comprueba la variable de entorno `SERVICE_URL`: su valor debe ajustarse al servicio URL completo (por ejemplo, https://admin-dev.stratio.com/service/discovery-governance).
 
@@ -47,7 +45,7 @@ Si el despliegue se bloquea debido a este error, es porque _Stratio Discovery_ n
 
 == Problemas de uso
 
-Si notas una ralentización de la instancia o problemas con respecto a una base de datos, primero intenta solucionarlos ajustando las bases de datos y Metabase a través de sus https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html[variables de entorno].
+Si notas una ralentización de la instancia o problemas con respecto a una base de datos, primero intenta solucionarlos ajustando las bases de datos y Metabase a través de sus https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html[variables de entorno]^[English]^.
 
 No des por sentado que "la optimización prematura es la raíz de todos los males", porque el sentido común también dice que "quien está advertido, está prevenido".
 
@@ -86,7 +84,7 @@ Como solución alternativa, quita todas las nuevas líneas o intenta actualizar 
 
 === Detecto una gran cantidad de conexiones hacia las bases de datos, ¿cómo puedo limitarlas?
 
-El tamaño del `max connection pool` solo se puede establecer en aquellas versiones de _Stratio Discovery_ que incorporen un Metabase más reciente o igual a 0.38.0. Dado que es una configuración de Metabase, te sugerimos que consultes las https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[posibles variables de entorno que se pueden configurar para el ajuste].
+El tamaño del `max connection pool` solo se puede establecer en aquellas versiones de _Stratio Discovery_ que incorporen un Metabase más reciente o igual a 0.38.0. Dado que es una configuración de Metabase, te sugerimos que consultes las https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[posibles variables de entorno que se pueden configurar para el ajuste]^[English]^.
 
 === No puedo guardar los cambios de una pregunta hasta que recibo la respuesta de la primera consulta
 
@@ -108,7 +106,7 @@ Te redirigimos a la xref:operations-guide:key-concepts.adoc[guía de conceptos b
 
 Aún así, si lograste crear una tabla en el "Native query editor", es probable que aún no puedas verla en la página de inicio cuando navegues a esa base de datos. Esto sucede porque se debe realizar una sincronización para actualizar los metadatos de campo y tabla almacenados en Metabase que se muestran en la página de inicio.
 
-Debes leer atentamente la documentación oficial de Metabase con respecto al https://www.metabase.com/docs/v0.42/administration-guide/01-managing-databases.html#database-syncing[mecanismo de sincronización].
+Debes leer atentamente la documentación oficial de Metabase con respecto al https://www.metabase.com/docs/v0.42/administration-guide/01-managing-databases.html#database-syncing[mecanismo de sincronización]^[English]^.
 
 En pocas palabras, si eres un administrador, debes hacer clic en "Sync database schema now" en la pestaña "Database" dentro de la ventana "Settings". Esto activará *una sincronización asíncrona compuesta de dos fases*: la de *recuperación* real de los cambios (fase A) con respecto a la base de datos (que implica una conexión que se puede reutilizar entre las abiertas o creada de nuevo) y la de *análisis* (fase B) de los metadatos recuperados.
 
@@ -157,7 +155,7 @@ Por ejemplo, una solución para este error `Cannot recover session with sessionI
 
 Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con los problemas de autorización.
 
-Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección], también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
+Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase]^[English]^ y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección]^[English]^, también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
 
 Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL que utiliza el mecanismo TLS predeterminado].
 

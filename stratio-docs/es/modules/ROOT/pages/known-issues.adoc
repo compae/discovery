@@ -2,7 +2,7 @@
 
 == _Troubleshooting_ de Metabase
 
-En caso de experimentar algún problema al usar _Stratio Discovery_, consulta la https://www.metabase.com/docs/v0.43/troubleshooting-guide/index.html[guía de _troubleshooting_ de Metabase].
+En caso de experimentar algún problema al usar _Stratio Discovery_, consulta la https://www.metabase.com/docs/v0.43/troubleshooting-guide/index.html[guía de _troubleshooting_ de Metabase]^[English]^.
 
 == No puedo especificar correctamente el fichero (_key_) que contiene la clave privada del certificado para crear una conexión con una base de datos de PostgreSQL mediante SSL.
 
@@ -10,7 +10,7 @@ Este es un _bug_ de Metabase que se ha resuelto en la versión 0.42.3 y posterio
 
 == Cuando entro a la página principal, las exploraciones _x-ray_ no se cargan automáticamente
 
-Este es un problema menor causado por la capa de autenticación que añade _Stratio Discovery_ a Metabase. Para representar el contenido de la página principal, se deben recuperar algunas configuraciones de usuario sobre si se deben mostrar o no sugerencias _x-ray_ (por ejemplo, hay muchas formas de https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[desactivar la funcionalidad de _x-ray_]. Lamentablemente, esta llamada a _get-properties_ no está autenticada y, debido a una condición de carrera, puede ejecutarse antes que las llamadas que establezcan una cookie válida de `metabase.SESSION` tras el _login_.
+Este es un problema menor causado por la capa de autenticación que añade _Stratio Discovery_ a Metabase. Para representar el contenido de la página principal, se deben recuperar algunas configuraciones de usuario sobre si se deben mostrar o no sugerencias _x-ray_ (por ejemplo, hay muchas formas de https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[desactivar la funcionalidad de _x-ray_]^[English]^. Lamentablemente, esta llamada a _get-properties_ no está autenticada y, debido a una condición de carrera, puede ejecutarse antes que las llamadas que establezcan una cookie válida de `metabase.SESSION` tras el _login_.
 
 Dado que se devolverán estas propiedades si y solo si el usuario es de confianza después de haber comprobado que se ha completado la autenticación, si la segunda llamada se ejecuta antes que la primera, todo funcionará correctamente, pero si es al contrario, se devolverá un valor `undefined` o vacío que no se representará en la página principal.
 
