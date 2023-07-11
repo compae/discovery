@@ -118,7 +118,19 @@
       "clientId": "${Application.id}-oauth-id",
       "serviceId": "https://${haproxyhost}${haproxypath}/login",
       "secretPath": "userland/passwords/${Application.id}/oauth"
-    }
+    },
+    "constraints":[
+      {
+        "id": "discoveryPlacements",
+        "title": "Discovery placements",
+        "description": "Placements for every Discovery instance",
+        "query": {
+          "name": "*"
+        },
+        "required": false,
+        "primary": true
+      }
+    ]
   },
   "parameters": {
     "type": "object",
