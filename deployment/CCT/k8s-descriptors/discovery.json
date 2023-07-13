@@ -84,7 +84,7 @@
     },
     "probes": [
       "K8sLivenessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds 15, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})",
-      "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds, 15 successThreshold 1, httpHeaders {})",
+      "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds 15, successThreshold 1, httpHeaders {})",
       "K8sStartupHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 5, failureThreshold 60, timeoutSeconds, 5 successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})"
     ],
     "secrets": {
