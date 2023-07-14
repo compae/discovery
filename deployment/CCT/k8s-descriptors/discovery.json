@@ -82,6 +82,10 @@
         "requirePorts": false
       }
     },
+    "resources": [
+      "Cpu(request ${general.resources.CPUs}, limit ${dynamicCpuLimit})",
+      "Mem(request ${general.resources.MEM}, limit ${dynamicMemLimit})"
+    ],
     "probes": [
       "K8sLivenessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds 15, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})",
       "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds 15, successThreshold 1, httpHeaders {})",
@@ -584,27 +588,88 @@
                 "title": "Instances",
                 "default": 1
               },
+              "cpuResourceType": {
+                "description": "Kubernetes CPU resource type: guaranteed/hard/soft limits. Guaranteed -> request equal to limit. Hard -> limit can be greater than request. Soft -> No limit",
+                "type": "string",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "CPU_RESOURCE_TYPE",
+                "title": "CPU resource type",
+                "enum": [
+                  "Guaranteed",
+                  "Hard",
+                  "Soft"
+                ],
+                "default": "Guaranteed"
+              },
               "CPUs": {
-                "description": "CPUs for the service",
-                "type": "integer",
+                "description": "CPUs request for the service",
+                "type": "number",
                 "required": true,
                 "readOnly": false,
                 "application": true,
                 "level": 1,
                 "internalName": "CPUs",
-                "title": "CPUs",
-                "default": 2
+                "title": "CPUs Request",
+                "default": 2              },
+              "cpuLimit": {
+                "description": "CPUs limit for the service",
+                "type": "number",
+                "required": false,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "CPU_LIMIT",
+                "title": "CPUs Limit",
+                "ui": {
+                  "visible": {
+                    "cpuResourceType": "Hard"
+                  }
+                }
+              },
+              "memResourceType": {
+                "description": "Kubernetes Memory resource type: guaranteed/hard/soft limits. Guaranteed -> request equal to limit. Hard -> limit can be greater than request. Soft -> No limit",
+                "type": "string",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "MEM_RESOURCE_TYPE",
+                "title": "Memory resource type",
+                "enum": [
+                  "Guaranteed",
+                  "Hard",
+                  "Soft"
+                ],
+                "default": "Guaranteed"
               },
               "MEM": {
-                "description": "Memory for the service",
+                "description": "Memory request for the service",
                 "type": "integer",
                 "required": true,
                 "readOnly": false,
                 "application": true,
                 "level": 1,
                 "internalName": "MEM",
-                "title": "Memory (MB)",
+                "title": "Memory request (MB)",
                 "default": 4096
+              },
+              "memLimit": {
+                "description": "Memory limit for the service",
+                "type": "integer",
+                "required": false,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "internalName": "MEMORY_LIMIT",
+                "title": "Memory limit (MB)",
+                "ui": {
+                  "visible": {
+                    "memResourceType": "Hard"
+                  }
+                }
               },
               "memory": {
                 "description": "Memory for the service",
@@ -616,17 +681,6 @@
                 "internalName": "MEMORY",
                 "title": "Memory (MB)",
                 "default": "${MEM}"
-              },
-              "DISK": {
-                "description": "Disk for the service",
-                "type": "integer",
-                "required": true,
-                "readOnly": false,
-                "application": true,
-                "level": 2,
-                "internalName": "DISK",
-                "title": "Disk",
-                "default": 0
               },
               "javaInitialRamPercentage": {
                 "description": "Initial size of the Java heap as a percentage (0 - 100) of the total memory available to the VM. Corresponding to '-XX:InitialRAMPercentage'. Default 30.0",
@@ -654,8 +708,7 @@
             "required": [
               "INSTANCES",
               "CPUs",
-              "MEM",
-              "DISK"
+              "MEM"
             ]
           },
           "metrics": {
@@ -1233,6 +1286,65 @@
           "enabled": "false"
         },
         {
+          "label": "Init resources interpolation log",
+          "type": "io/print",
+          "text": "------------- Instance resources interpolation --------------"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Guaranteed",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Guaranteed'}",
+          "value": "${general.resources.CPUs}"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Hard",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Hard'}",
+          "value": "${general.resources.cpuLimit}"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Soft",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Soft'}",
+          "value": null
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Guaranteed",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Guaranteed'}",
+          "value": "${general.resources.MEM}"
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Hard",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Hard'}",
+          "value": "${general.resources.memLimit}"
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Soft",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Soft'}",
+          "value": null
+        },
+        {
           "name": "printInitSecretsCreation",
           "label": "Init secrets creation log",
           "type": "io/print",
@@ -1403,6 +1515,65 @@
           "label": "Print update start log",
           "type": "io/print",
           "text": "Printing update start log"
+        },
+        {
+          "label": "Init resources interpolation log",
+          "type": "io/print",
+          "text": "------------- Instance resources interpolation --------------"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Guaranteed",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Guaranteed'}",
+          "value": "${general.resources.CPUs}"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Hard",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Hard'}",
+          "value": "${general.resources.cpuLimit}"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Soft",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Soft'}",
+          "value": null
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Guaranteed",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Guaranteed'}",
+          "value": "${general.resources.MEM}"
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Hard",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Hard'}",
+          "value": "${general.resources.memLimit}"
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Soft",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Soft'}",
+          "value": null
         }
       ],
       "update/pre": [
