@@ -1616,6 +1616,65 @@
           "label": "Print upgrade start log",
           "type": "io/print",
           "text": "Printing upgrade start log"
+        },
+        {
+          "label": "Init resources interpolation log",
+          "type": "io/print",
+          "text": "------------- Instance resources interpolation --------------"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Guaranteed",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Guaranteed'}",
+          "value": "${general.resources.CPUs}"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Hard",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Hard'}",
+          "value": "${general.resources.cpuLimit}"
+        },
+        {
+          "name": "Interpolation dynamic CpuLimit Soft",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicCpuLimit",
+          "internalName": "DYNAMIC_CPU_LIMIT",
+          "enabled": "${'${general.resources.cpuResourceType}' == 'Soft'}",
+          "value": null
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Guaranteed",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Guaranteed'}",
+          "value": "${general.resources.MEM}"
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Hard",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Hard'}",
+          "value": "${general.resources.memLimit}"
+        },
+        {
+          "name": "Interpolation dynamic MemLimit Soft",
+          "type": "model/parameter/upsert",
+          "application": "#{Application}",
+          "parameterName": "dynamicMemLimit",
+          "internalName": "DYNAMIC_MEM_LIMIT",
+          "enabled": "${'${general.resources.memResourceType}' == 'Soft'}",
+          "value": null
         }
       ],
       "upgrade/pre": [
