@@ -1073,7 +1073,7 @@
             "level": 2,
             "internalName": "DISCOVERY_CICD_API_IMPORT_TIMEOUT",
             "title": "Akka request timeout. Import operation.",
-            "default": "100s"
+            "default": "200s"
           },
           "akkaRequestTimeoutExport": {
             "description": "Akka request timeout for Discovery-cicd api. Specific to Export operation.",
@@ -1086,7 +1086,7 @@
             "level": 2,
             "internalName": "DISCOVERY_CICD_API_EXPORT_TIMEOUT",
             "title": "Akka request timeout. Export operation.",
-            "default": "40s"
+            "default": "60s"
           },
           "nginxEventConnections": {
             "description": "Sets the maximum number of simultaneous connections that can be opened by a worker process for Nginx configuration (i.e: worker_connections into events section)",
@@ -1172,8 +1172,8 @@
             "application": false,
             "level": 2,
             "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
-            "title": "Discovery cidc Metabase api timeout",
-            "default": "10s"
+            "title": "Discovery cicd Metabase api timeout",
+            "default": "20s"
           }
         },
         "required": []

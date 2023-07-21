@@ -9,6 +9,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-10529] CCT placements in Discovery 
 * [ROCK-9940] Fix vulnerabilities: Tracing session cookies on DEBUG via jetty
 * [ROCK-10759] Fix vulnerabilities: update prometheus java agent to 0.19.0 to resolve the snakeyaml security vulnerability (GHSA-mjmj-j48q-9wg2)
+* [ROCK-10613] Fix: avoid errors when configuring Discovery CI/CD timeouts
 
 ## 0.43.4-0.1.4 (2023-04-20)
 

@@ -37,8 +37,8 @@ object ConfigFacade {
                              timeoutExport: String,
                              timeoutImport: String) {
     import scala.concurrent.duration._
-    lazy val getTimeoutExport: Duration = Try(Duration(timeoutExport)).getOrElse(40 seconds)
-    lazy val getTimeoutImport: Duration = Try(Duration(timeoutImport)).getOrElse(100 seconds)
+    lazy val getTimeoutExport: Duration = Try(Duration(timeoutExport)).getOrElse(60 seconds)
+    lazy val getTimeoutImport: Duration = Try(Duration(timeoutImport)).getOrElse(200 seconds)
   }
 
   lazy val serverConfig = ConfigSource.fromConfig(config.getConfig(ServerPath)).loadOrThrow[ServerConfig]

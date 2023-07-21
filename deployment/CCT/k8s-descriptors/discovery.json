@@ -38,9 +38,9 @@
           "nginx.ingress.kubernetes.io/rewrite-target": "/$2",
           "nginx.ingress.kubernetes.io/backend-protocol": "HTTPS",
           "nginx.ingress.kubernetes.io/proxy-body-size": 0,
-          "nginx.ingress.kubernetes.io/proxy-connect-timeout": 300,
-          "nginx.ingress.kubernetes.io/proxy-send-timeout": 300,
-          "nginx.ingress.kubernetes.io/proxy-read-timeout": 300
+          "nginx.ingress.kubernetes.io/proxy-connect-timeout": "${proxyReadTimeout}",
+          "nginx.ingress.kubernetes.io/proxy-send-timeout": "${proxyReadTimeout}",
+          "nginx.ingress.kubernetes.io/proxy-read-timeout": "${proxyReadTimeout}"
         }
       ],
       "network": {
@@ -123,7 +123,7 @@
       "serviceId": "https://${haproxyhost}${haproxypath}/login",
       "secretPath": "userland/passwords/${Application.id}/oauth"
     },
-    "constraints":[
+    "constraints": [
       {
         "id": "discoveryPlacements",
         "title": "Discovery placements",
@@ -157,7 +157,7 @@
             "required": true,
             "readOnly": false,
             "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
-            "maxLength" : 55,
+            "maxLength": 55,
             "application": true,
             "internalName": "SERVICE_ID",
             "ui": {
@@ -252,15 +252,15 @@
                 "default": "/${Application.name}"
               },
               "proxyReadTimeout": {
-                "description": "Proxy read timeout in seconds applied to marathon-lb & internal proxy",
+                "description": "Proxy read timeout in seconds applied to ingress and internal proxy. It must be higher than import/export timeout",
                 "type": "integer",
                 "required": true,
                 "readOnly": false,
                 "application": false,
-                "level": 2,
+                "level": 1,
                 "internalName": "PROXY_READ_TIMEOUT",
                 "title": "Proxy read timeout (seconds)",
-                "default": 120,
+                "default": 300,
                 "minimum": 30
               }
             },
@@ -1034,7 +1034,7 @@
                 "level": 2,
                 "internalName": "DISCOVERY_CICD_API_IMPORT_TIMEOUT",
                 "title": "Akka request timeout. Import operation.",
-                "default": "100s"
+                "default": "200s"
               },
               "akkaRequestTimeoutExport": {
                 "description": "Akka request timeout for Discovery-cicd api. Specific to Export operation.",
@@ -1047,7 +1047,7 @@
                 "level": 2,
                 "internalName": "DISCOVERY_CICD_API_EXPORT_TIMEOUT",
                 "title": "Akka request timeout. Export operation.",
-                "default": "40s"
+                "default": "60s"
               },
               "cicdJavaInitialRamPercentage": {
                 "description": "Initial size of the Java heap as a percentage (0 - 100) of the total memory available to the VM (relevant to server and workers). Corresponding to '-XX:InitialRAMPercentage'. Default 10.0",
@@ -1072,7 +1072,7 @@
                 "default": "-XX:MaxRAMPercentage=25.0"
               },
               "cicdJavaOptions": {
-            "description": "Add custom Java options to CI/CD service (excluding memory options).",
+                "description": "Add custom Java options to CI/CD service (excluding memory options).",
                 "type": "string",
                 "maxLength": 100,
                 "minLength": 3,
@@ -1095,7 +1095,7 @@
                 "level": 1,
                 "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
                 "title": "Akka http client timeout used in Metabase API requests",
-                "default": "10s"
+                "default": "20s"
               }
             },
             "required": []

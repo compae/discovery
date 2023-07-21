@@ -17,7 +17,7 @@ case class Config(action: Option[Action] = None,
                   session: String = "",
                   metabaseUrl: String = "http://localhost:3000",
                   allowUnsafeSsl: Boolean = false,
-                  timeout: String = "10s") {
+                  timeout: String = "20s") {
 
   def isValid: Boolean = {
     val validCollId = action match {

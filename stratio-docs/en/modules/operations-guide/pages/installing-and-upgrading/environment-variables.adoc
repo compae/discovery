@@ -278,8 +278,8 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 |
 
 | PROXY_READ_TIMEOUT
-| Proxy read timeout in seconds applied to Marathon-LB and internal proxy.
-| 120
+| Proxy read timeout in seconds applied to both internal and external proxy.
+| 300
 | Yes
 | Number
 |
@@ -293,28 +293,28 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 
 | DISCOVERY_CICD_API_IMPORT_TIMEOUT
 | Akka timeout in seconds for import service requests.
-| 100s
+| 200s
 | No
 | String
 |
 
 | DISCOVERY_CICD_API_EXPORT_TIMEOUT
 | Akka timeout in seconds for export service requests.
-| 40s
+| 60s
 | No
 | String
 |
 
 | DISCOVERY_CICD_API_METABASE_TIMEOUT
 | Metabase API timeout for internal requests.
-| 10s
+| 20s
 | No
 | String
 |
 
 | DISCOVERY_CICD_JAVA_OPTIONS
 | Lets you configure custom Java options when running the CICD service.
-| e.g. `-Dakka.http.server.request-timeout=120s`
+| e.g. `-Dakka.http.server.idle-timeout=120s`
 | _false_
 | String
 |

@@ -26,7 +26,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
     handleExceptions(exceptionHandler) {
       (path(Segment / ExportSegment / Segment) & get) { (_, id) =>
         headerValueByName(SessionIdHeaderName) { sessionId =>
-          withRequestTimeout(apiClientConfig.getTimeoutExport) {
+          withRequestTimeout(apiClientConfig.getTimeoutExport, configurableTimeoutHandler(ExportSegment)) {
             val api =
               new ApiClient(
                 apiClientConfig.metabaseUrl,
@@ -46,7 +46,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
           parameter(ParentId.as[Long].?) { parentId =>
             headerValueByName(SessionIdHeaderName) { sessionId =>
               entity(as[ExportedCollection]) { collection =>
-                withRequestTimeout(apiClientConfig.getTimeoutImport) {
+                withRequestTimeout(apiClientConfig.getTimeoutImport, configurableTimeoutHandler(ImportSegment)) {
                   val api =
                     new ApiClient(
                       apiClientConfig.metabaseUrl,
@@ -89,4 +89,13 @@ object ServerRoutes extends Logging {
         log.error(exception.msg, error)
         complete(HttpResponse(exception.statusCode, entity = HttpEntity(MediaTypes.`application/json`, exception.toJson)))
     }
+
+  // actionMsg should be imoprt/export
+  def configurableTimeoutHandler(actionMsg: String): HttpRequest => HttpResponse = _ => {
+    HttpResponse(
+      StatusCodes.ServiceUnavailable,
+      entity = s"The server was not able to produce a timely response to your request.\r\nPlease try increasing the $actionMsg timeout in CCT!"
+    )
+  }
+
 }

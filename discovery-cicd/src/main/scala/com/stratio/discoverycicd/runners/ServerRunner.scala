@@ -8,17 +8,25 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
 import akka.http.scaladsl.{ConnectionContext, Http}
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.settings.ServerSettings
 import akka.stream.TLSClientAuth
 import com.stratio.discoverycicd.config.ConfigFacade
 import com.stratio.discoverycicd.config.ConfigFacade.AuthMode.{MutualTLS, NoAuth}
 import com.stratio.discoverycicd.routes.ServerRoutes
+import com.stratio.discoverycicd.utils.Logging
 import javax.net.ssl.SSLContext
 import org.apache.http.ssl.SSLContextBuilder
 
 import scala.collection.immutable
-import scala.util.{Failure, Success}
+import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
-object ServerRunner {
+object ServerRunner extends Logging {
+
+  import com.stratio.discoverycicd.config.ConfigFacade._
+
+  private lazy val largestRequestTimeout: Duration =
+    apiClientConfig.getTimeoutExport.max(apiClientConfig.getTimeoutImport)
 
   def run(args: Array[String]): Unit = {
     val rootBehavior = Behaviors.setup[Nothing] { context =>
@@ -31,20 +39,52 @@ object ServerRunner {
 
   private def startHttpServer(routes: Route, system: ActorSystem[_]): Unit = {
     implicit val classicSystem: akka.actor.ActorSystem = system.toClassic
-    import com.stratio.discoverycicd.config.ConfigFacade._
     import system.executionContext
     import ConnectionContextUtils._
 
-    val futureBinding = Http().bindAndHandle(routes, serverConfig.hostname, serverConfig.port, connectionContext)
+    val serverIdleTimeout = getServerIdleTiemeout
+    log.debug(s"The 'akka.http.server.idle-timeout' is set to $serverIdleTimeout")
+
+    val serverSettings = {
+      val defaultServerSettings = ServerSettings(config)
+      defaultServerSettings.withTimeouts(defaultServerSettings.withIdleTimeout(serverIdleTimeout))
+    }
+
+    logTimeoutConfigurationError()
+
+    val futureBinding = Http().bindAndHandle(routes, serverConfig.hostname, serverConfig.port, connectionContext, settings = serverSettings)
     futureBinding.onComplete {
       case Success(binding) =>
         val address = binding.localAddress
-        system.log.info("Server online at http://{}:{}/", address.getHostString, address.getPort)
+        log.info("Server online at http://{}:{}/", address.getHostString, address.getPort)
       case Failure(ex) =>
-        system.log.error("Failed to bind HTTP endpoint, terminating system", ex)
+        log.error("Failed to bind HTTP endpoint, terminating system", ex)
         system.terminate()
     }
   }
+
+  private def getServerIdleTiemeout: Duration = {
+    val configuredIdleTimeout = Duration.fromNanos(config.getDuration("akka.http.server.idle-timeout").toNanos) // Java to Scala duration conversion
+    if (largestRequestTimeout.gt(configuredIdleTimeout))
+      largestRequestTimeout.plus(5 seconds)
+    else
+      configuredIdleTimeout
+  }
+
+  private def logTimeoutConfigurationError(): Unit = {
+    val proxyReadTimeoutOpt: Option[Duration] =
+      Try(sys.env.get("PROXY_READ_TIMEOUT").map(_.toInt seconds)).toOption.flatten
+
+    proxyReadTimeoutOpt.foreach { proxyReadTimeout =>
+      if (largestRequestTimeout.gt(proxyReadTimeout)) {
+        log.warn(
+          s"The PROXY_READ_TIMEOUT is lower than the configured request timeout. " +
+          s"Please, increase the proxy timeout in CCT to avoid errors; otherwise, the actual timeout will be PROXY_READ_TIMEOUT seconds"
+        )
+      }
+    }
+  }
+
 }
 
 object ConnectionContextUtils {
