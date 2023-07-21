@@ -1,7 +1,7 @@
 # Changelog
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.43.4-0.2.0 (upcoming)
+## 0.43.4-0.2.0 (2023-07-21)
 
 * [ROCK-10498] Snippets promotion in discovery CI/CD
 * [ROCK-9237] Use percentages to configure the JVM memory in discovery and discovery-cicd
