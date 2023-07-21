@@ -87,9 +87,9 @@
       "Mem(request ${general.resources.MEM}, limit ${dynamicMemLimit})"
     ],
     "probes": [
-      "K8sLivenessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds 15, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})",
-      "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 30, failureThreshold 3, timeoutSeconds 15, successThreshold 1, httpHeaders {})",
-      "K8sStartupHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds 5, failureThreshold 60, timeoutSeconds, 5 successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})"
+      "K8sLivenessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.livenessProbePeriodSeconds}, failureThreshold ${general.probes.livenessProbeFailureThreshold}, timeoutSeconds ${general.probes.livenessProbeTimeoutSeconds}, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})",
+      "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.readinessProbePeriodSeconds}, failureThreshold ${general.probes.readinessProbeFailureThreshold}, timeoutSeconds ${general.probes.readinessProbeTimeoutSeconds}, successThreshold 1, httpHeaders {})",
+      "K8sStartupHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.startupProbePeriodSeconds}, failureThreshold ${general.probes.startupProbeFailureThreshold}, timeoutSeconds ${general.probes.startupProbeTimeoutSeconds}, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})"
     ],
     "secrets": {
       "appRole": "role",
@@ -710,6 +710,154 @@
               "CPUs",
               "MEM"
             ]
+          },
+          "probes": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "probes",
+            "title": "Probes",
+            "description": "Probes configuration for service",
+            "properties": {
+              "startupProbePeriodSeconds": {
+                "description": "Startup probe periodSeconds",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "STARTUP_PROBE_PERIOD_SECONDS",
+                "title": "Startup probe periodSeconds",
+                "default": 5
+              },
+              "startupProbeFailureThreshold": {
+                "description": "Startup probe failureThreshold",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "STARTUP_PROBE_FAILURE_THRESHOLD",
+                "title": "Startup probe failureThreshold",
+                "default": 60
+              },
+              "startupProbeTimeoutSeconds": {
+                "description": "Startup probe timeoutSeconds",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "STARTUP_PROBE_TIMEOUT_SECONDS",
+                "title": "Startup probe timeoutSeconds",
+                "default": 5
+              },
+              "livenessProbePeriodSeconds": {
+                "description": "Liveness probe periodSeconds",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "LIVENESS_PROBE_PERIOD_SECONDS",
+                "title": "Liveness probe periodSeconds",
+                "default": 30
+              },
+              "livenessProbeFailureThreshold": {
+                "description": "Liveness probe failureThreshold",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "LIVENESS_PROBE_FAILURE_THRESHOLD",
+                "title": "Liveness probe failureThreshold",
+                "default": 3
+              },
+              "livenessProbeTimeoutSeconds": {
+                "description": "Liveness probe timeoutSeconds",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "LIVENESS_PROBE_TIMEOUT_SECONDS",
+                "title": "Liveness probe timeoutSeconds",
+                "default": 15
+              },
+              "readinessProbePeriodSeconds": {
+                "description": "Readiness probe periodSeconds",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "READINESS_PROBE_PERIOD_SECONDS",
+                "title": "Readiness probe periodSeconds",
+                "default": 30
+              },
+              "readinessProbeFailureThreshold": {
+                "description": "Readiness probe failureThreshold",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "READINESS_PROBE_FAILURE_THRESHOLD",
+                "title": "Readiness probe failureThreshold",
+                "default": 3
+              },
+              "readinessProbeTimeoutSeconds": {
+                "description": "Readiness probe timeoutSeconds",
+                "type": "integer",
+                "required": true,
+                "readOnly": false,
+                "application": true,
+                "level": 1,
+                "ui": {
+                  "updatable": true,
+                  "visible": true
+                },
+                "internalName": "READINESS_PROBE_TIMEOUT_SECONDS",
+                "title": "Readiness probe timeoutSeconds",
+                "default": 15
+              }
+            },
+            "required": []
           },
           "metrics": {
             "type": "object",
