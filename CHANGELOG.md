@@ -7,6 +7,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-9237] Use percentages to configure the JVM memory in discovery and discovery-cicd
 * [ROCK-10170] Handle dashcard links to other questions or dashboards in discovery CI/CD
 * [ROCK-10529] CCT placements in Discovery 
+* [ROCK-10696] CCT priority class added
 * [ROCK-9940] Fix vulnerabilities: Tracing session cookies on DEBUG via jetty
 * [ROCK-10759] Fix vulnerabilities: update prometheus java agent to 0.19.0 to resolve the snakeyaml security vulnerability (GHSA-mjmj-j48q-9wg2)
 * [ROCK-10613] Fix: avoid errors when configuring Discovery CI/CD timeouts

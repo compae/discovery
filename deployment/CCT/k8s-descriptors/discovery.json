@@ -134,6 +134,15 @@
         "required": false,
         "primary": true
       }
+    ],
+    "priorities": [
+      {
+        "id": "application",
+        "title": "Discovery priority class",
+        "primary": true,
+        "required": false,
+        "defaultValue": "applications-normal"
+      }
     ]
   },
   "parameters": {
