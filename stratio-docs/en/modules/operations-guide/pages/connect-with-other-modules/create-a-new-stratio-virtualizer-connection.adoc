@@ -1,40 +1,26 @@
 ﻿= Creating a new connection with _Stratio {modulename}_
 
-The following information explains how you can connect to _Stratio {modulename}_ with or without TLS:
+The following information explains how you can connect to _Stratio {modulename}_ with or without TLS. To do this, complete the following parameters:
 
-== With TLS
-
-Fill in the following parameters:
-
-* *Name*: choose the name of your database.
-* *Host*: _Stratio {modulename}_ host address. For example: _crossdata-1.marathon.mesos_.
-* *Port*: see how xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[to determine the _Stratio {modulename}_ port].
-* *Database username*: same as the ``DISCOVERY_INSTANCE_NAME`` parameter in the xref:operations-guide:installing-and-upgrading/deployment.adoc[_Stratio Discovery_ deployment].
+* *Name*: choose a name for your database.
+* *Host*: host address of _Stratio {modulename}_. In a Kubernetes environment, the host is composed of `${serviceName}.${Namespace}`. For example: _virtualizer.stratio-datastore_.
+* *Port*: if the _Stratio {modulename}_ service was deployed through _Stratio Command Center_ in a Kubernetes environment, the default port is `13422` (in Mesos, the default port was `8000`).
+* *Database username*: is the _Stratio {modulename}_ user and its value has to be equal to the `DISCOVERY_INSTANCE_NAME` parameter in the xref:operations-guide:installing-and-upgrading/deployment.adoc [_Stratio Discovery_ deployment].
 * *Connect with Discovery login user?*: click "yes" to enable impersonation.
-* *Use a secure connection (SSL)?*: yes.
-* *Additional parameters*: N/A.
-* *Large database*: mark to minimize data synchronization.
+* *Use a secure connection (SSL)?*: if you enable this option the connection will be established with TLS. Otherwise, the connection will be without TLS.
+* *Additional parameters*: read carefully xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes [the _Stratio {modulename}_ documentation] if you want to add parameters to the JDBC connection URL.
+* *Large database*: check to minimize data synchronization.
 
 image::crossdata_configuration.png[]
 
-== Without TLS
+If you get a "Connection refused" error when you try to save the configuration, you should check the *Host* and *Port* values and talk to an administrator to reset them if the previous ones do not work. This error will appear in the logs when there is an error in the JDBC connection string:
 
-image::crossdata_configuration.png[]
-
-* *Name*: choose the name of your database.
-* *Host*: _Stratio {modulename}_ host address. For example: _crossdata-1.marathon.mesos_.
-* *Port*: see how xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc#$$_$$obtener_el_puerto_de_stratio_virtualizer[to determine the _Stratio {modulename}_ port].
-* *Database username*: _Stratio {modulename}_ user.
-* *Connect with Discovery login user?*: click "yes" to enable impersonation.
-* *Use a secure connection (SSL)?*: no.
-* *Additional parameters*: N/A.
-* *Large database*: mark to minimize data synchronization.
-
-image::crossdata_configuration_notls.png[]
-
-== Determining the _Stratio {modulename}_ port
-
-In most cases, the port for the connection will be 8000 by default if the _Stratio {modulename}_ service was installed using the _Stratio Command Center_. If not, you'll need to contact an administrator to tell you the port you need to use.
+[source,bash]
+----
+Impossible to obtain session from server:
+Tcp command [Connect(virtualizer.tmcdev-apps:8000,None,List(),Some(10 seconds),true)]
+failed because of java.net.ConnectException: Connection refused
+----
 
 == Configuring _Stratio GoSec_ permission settings for _Stratio Discovery_ on _Stratio {modulename}_
 
