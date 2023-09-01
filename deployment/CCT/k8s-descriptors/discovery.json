@@ -2,12 +2,12 @@
   "parentConfiguration": {
     "serviceName": "stratiobase",
     "model": "default",
-    "version": "13.1.0-SNAPSHOT"
+    "version": "13.3.0-SNAPSHOT"
   },
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "13.1.0-SNAPSHOT",
+    "version": "13.3.0-SNAPSHOT",
     "description": "Access your data with security, using our multi-datastore discovery module",
     "framework": false,
     "highAvailability": false,
@@ -91,6 +91,23 @@
       "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.readinessProbePeriodSeconds}, failureThreshold ${general.probes.readinessProbeFailureThreshold}, timeoutSeconds ${general.probes.readinessProbeTimeoutSeconds}, successThreshold 1, httpHeaders {})",
       "K8sStartupHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.startupProbePeriodSeconds}, failureThreshold ${general.probes.startupProbeFailureThreshold}, timeoutSeconds ${general.probes.startupProbeTimeoutSeconds}, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})"
     ],
+    "healthChecks": {
+      "tcp": [],
+      "http": [
+        {
+          "id": "healthcheckApiHealth",
+          "gracePeriodSeconds": 200,
+          "intervalSeconds": 60,
+          "maxConsecutiveFailures": 2,
+          "port": 3009,
+          "path": "/api/health",
+          "secure": false,
+          "timeoutSeconds": 10,
+          "delaySeconds": 15
+        }
+      ],
+      "command": []
+    },
     "secrets": {
       "appRole": "role",
       "secretRole": "${approlename}"
@@ -606,6 +623,11 @@
                 "level": 1,
                 "internalName": "CPU_RESOURCE_TYPE",
                 "title": "CPU resource type",
+                "ui": {
+                  "visible": {
+                    "advancedcct": true
+                  }
+                },
                 "enum": [
                   "Guaranteed",
                   "Hard",
@@ -622,7 +644,8 @@
                 "level": 1,
                 "internalName": "CPUs",
                 "title": "CPUs Request",
-                "default": 2              },
+                "default": 2
+              },
               "cpuLimit": {
                 "description": "CPUs limit for the service",
                 "type": "number",
@@ -634,7 +657,8 @@
                 "title": "CPUs Limit",
                 "ui": {
                   "visible": {
-                    "cpuResourceType": "Hard"
+                    "cpuResourceType": "Hard",
+                    "advancedcct": true
                   }
                 }
               },
@@ -647,6 +671,11 @@
                 "level": 1,
                 "internalName": "MEM_RESOURCE_TYPE",
                 "title": "Memory resource type",
+                "ui": {
+                  "visible": {
+                    "advancedcct": true
+                  }
+                },
                 "enum": [
                   "Guaranteed",
                   "Hard",
@@ -676,7 +705,8 @@
                 "title": "Memory limit (MB)",
                 "ui": {
                   "visible": {
-                    "memResourceType": "Hard"
+                    "memResourceType": "Hard",
+                    "advancedcct": true
                   }
                 }
               },
@@ -724,7 +754,10 @@
             "type": "object",
             "additionalProperties": false,
             "ui": {
-              "component": "accordion"
+              "component": "accordion",
+              "visible": {
+                "advancedcct": true
+              }
             },
             "name": "probes",
             "title": "Probes",
