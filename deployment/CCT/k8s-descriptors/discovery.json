@@ -8,7 +8,8 @@
     "serviceName": "discovery",
     "model": "default",
     "version": "13.3.0-SNAPSHOT",
-    "description": "Access your data with security, using our multi-datastore discovery module",
+    "displayServiceName": "Discovery powered by Metabase",
+    "description": "A versatile and powerful data exploration and analysis tool with security that empowers users to intuitively explore, query, and derive insights from diverse datasets.",
     "framework": false,
     "highAvailability": false,
     "container": {
@@ -16,7 +17,7 @@
         {
           "id": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.43.4-0.2.0-SNAPSHOT",
+          "image": "${eos.dockerRegistry}/discovery:0.43.4-0.2.0",
           "forcePullImage": true,
           "privileged": false
         }
