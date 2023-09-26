@@ -2,6 +2,16 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
+== 0.43.4-0.2.0 (18 de septiembre de 2023)
+
+* Importación y exportación de _snippets_ de código SQL en _discovery-cicd_.
+* Gestión correcta de _questions_ que tengan enlaces a otras _questions_ o _dashboards_ en _discovery-cicd_.
+* Soporte para _placements_ y _priority classes_ en el despliegue de _Stratio Discovery_.
+* Uso de porcentajes para configurar la memoria de las máquinas virtuales de Java asociadas a Metabase y a _discovery-cicd_.
+* Solución: mayor facilidad para configurar los _timeouts_ de _discovery-cicd_ para evitar errores comunes.
+* Solución de vulnerabilidades: actualización del agente Java de Prometheus a 0.19.0 (vulnerabilidad del paquete SnakeYAML GHSA-mjmj-j48q-9wg2).
+* Solución de vulnerabilidades: ya no se muestran las _cookies_ de sesión en los _logs_ de nivel `DEBUG` del servidor Jetty de Metabase.
+
 == 0.43.4-0.1.4 (25 de abril de 2023)
 
 * Se tiene en cuenta que las tarjetas pueden utilizar otras tarjetas como datos de entrada en _discovery-cicd_.
@@ -21,8 +31,8 @@ Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos la
 == 0.43.4-0.1.0 (septiembre 2022)
 
 * Actualización a Metabase 0.43.4.
-* Mejoras en la gestión de errores de la API de Discovery CI/CD.
-* Importación y exportación de suscripciones de _dashboards_ en Discovery CI/CD.
+* Mejoras en la gestión de errores de la API de _discovery-cicd_.
+* Importación y exportación de suscripciones de _dashboards_ en _discovery-cicd_.
 * Solución de vulnerabilidades: actualización a la version 0.17.1 del agente Java de Prometheus.
 
 == 0.42.2-0.1.1 (13 de junio de 2022) _Scorpio 11.1_
@@ -43,7 +53,7 @@ Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos la
 
 == 0.40.7-0.1.0 (14 de diciembre de 2021)
 
-* Discovery CICD: conservación de los _dashboards_ y los ID de las preguntas al importar.
+* _discovery-cicd_: conservación de los _dashboards_ y los ID de las preguntas al importar.
 * Actualización a Metabase 0.40.7 (imagen del _builder_ 0.40.7-0.1.0).
 * Solución de vulnerabilidades: actualización a Java 11.
 * Solución de vulnerabilidades: actualización del agente Java de Prometheus a 0.14.0.

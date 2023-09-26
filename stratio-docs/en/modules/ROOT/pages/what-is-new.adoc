@@ -1,13 +1,9 @@
 ﻿= New developments
 
-The latest version released (0.43.4-0.1.4) solves a import problem with collection with questions using other saved questions.
+These are the latest changes made to _Stratio Discovery_ version *0.43.4-0.2.0* (released in September 2023):
 
-Regarding the functionalities already included in _Stratio Discovery_ *0.43.4-0.1.x*, the most important changes are:
-
-* Upgrade to Metabase 0.43.4.
-* Improvements in error management of the Discovery CI/CD API.
-* Importing and exporting dashboard subscriptions to Discovery CI/CD.
-* Vulnerability fix: upgrading to version 0.17.1 of the Prometheus Java Agent.
-* Solves a synchronization error with tables _Stratio {modulename}_ whose origin is Delta.
+* Import and export snippets of SQL code in _discovery-cicd_.
+* Correct handling of questions that have links to other questions or dashboards in _discovery-cicd_.
+* Support for placements and priority classes in _Stratio Discovery_ deployment.
 
 TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.
