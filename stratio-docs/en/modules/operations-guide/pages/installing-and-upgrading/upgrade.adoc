@@ -1,6 +1,6 @@
 ﻿= Version upgrade
 
-_Stratio Discovery_ doesn't need any updating mechanism. This means that to make an effective update, simply change the _Stratio Discovery_ image in your environment.
+_Stratio Discovery_ doesn't need any updating mechanism. This means that to make an effective update, simply upgrade the _Stratio Discovery_ version using _Stratio Command Center_.
 
 Even so, *there may be some discrepancies from previous versions of the descriptors and some minor changes may need to be made to certain database definitions*. We strongly recommend that you read the following sections.
 

@@ -1,6 +1,6 @@
 = Actualización de versión
 
-_Stratio Discovery_ no necesita ningún mecanismo de actualización. De esta forma, para realizar una actualización efectiva, simplemente cambia la imagen de _Stratio Discovery_ en tu entorno.
+_Stratio Discovery_ no necesita ningún mecanismo de actualización. De esta forma, para realizar una actualización efectiva, simplemente actualiza la versión de _Stratio Discovery_ desde _Stratio Command Center_.
 
 Aún así, *puede haber algunas discrepancias con respecto a las versiones anteriores de los descriptores y es posible que se necesiten algunos pequeños cambios en algunas definiciones de bases de datos*, se recomienda encarecidamente leer las siguientes secciones.
 
