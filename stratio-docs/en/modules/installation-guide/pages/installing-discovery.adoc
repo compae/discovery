@@ -1,0 +1,113 @@
+= Install and configure _Stratio Discovery_
+
+See xref:stratio-discovery:operations-guide:installing-and-upgrading.adoc[_Stratio Discovery_ documentation] for details about the component and its architecture.
+
+== Prerequisites
+
+There are no prerequisites for this installation.
+
+== Step 1: Installation
+
+To install _Stratio Discovery_ follow these steps:
+
+. Access _Stratio Command Center_ via `https://${external_domain}/cct` and log in with the new tenant's credentials (for this example, "stratio" user and "stratio" tenant).
+. Access the catalog by clicking on "Marketplace" in the navigation menu. Search for "discovery" in the search box on your right and click on "Get".
++
+image::discovery-installation-1.png[]
+
+. Click on "Deploy".
++
+image::discovery-installation-2.png[]
+
+. Next, you will see the descriptor.
++
+image::discovery-installation-3.png[]
+
+.. In the 'General' section, find "Gosec SSO Authenticator Settings" in the 'User Authentication' subsection, go to "Admin group" and add `stratio-stratio-owners`.
+.. In the 'Namespaces' section, select "stratio-apps".
+.. In the 'Service discovery' section:
+... Find "PostgreSQL used for connection" and select "pool-psql".
+... Find "PostgreSQL used for policy[...]" and select "psql.stratio-datastores".
+.. Click on "Deploy".
+
+== Step 2: Verification
+
+To check that you have installed it correctly, you should be able to access _Stratio Discovery_ and create a _Stratio Virtualizer_ database. To accomplish that, follow these two steps.
+
+=== Permissions in the _Stratio Virtualizer_ policy
+
+In order for _Stratio Discovery_ to access _Stratio Virtualizer_ you will need to assign permissions to it. To do this, you will need to follow these steps:
+
+. Access _Stratio GoSec_ via `https://${external_domain}/gosec`. If necessary, log in with the new tenant’s credentials (for this example, "stratio" user and "stratio" tenant).
+. Go to 'Data Access' in the navigation menu and select the "stratio-virtualizer" policy.
++
+image::discovery-policy-1.png[]
+
+. Once inside the policy, go to the 'Users' section in the left menu and click on "Edit users".
++
+image::discovery-policy-2.png[]
+
+. In the modal window, select the checkbox of the "discovery.stratio-apps" user you want to give permissions to and click on the "Edit" button.
++
+image::discovery-policy-3.png[]
+
+Now _Stratio Discovery_ has the permissions to access _Stratio Virtualizer_!
+
+=== Create a _Stratio Virtualizer_ database
+
+To do so, follow these steps:
+
+. Access _Stratio Command Center_ via `https://${external_domain}/cct` and log in with the new tenant's credentials (for this example, "stratio" user and "stratio" tenant).
+. Go to the namespace folder 'stratio-apps' and click on "virtualizer".
++
+image::discovery-access-1.png[]
++
+image::discovery-access-2.png[]
+
+. Click on the pencil icon to edit the _Stratio Virtualizer_ descriptor.
++
+image::discovery-access-3.png[]
+
+. Once in the descriptor, select the "Customize deployment" option.
++
+image::discovery-access-4.png[]
+
+. Go to the 'Security' tab in the left menu and, in the _CN Whitelist_ field, add a comma and `discovery.stratio-apps`. E.g. `${Application.id},discovery.stratio-apps`.
++
+image::discovery-access-5.png[]
+
+Now you will be able to access _Stratio Discovery_ and create a _Stratio Virtualizer_ database. To do that, follow these steps:
+
+. Access _Stratio Discovery_ using the Stratio menu.
++
+image::menu-discovery.png[]
+
+. From the gear icon menu, select "Admin settings".
++
+image::discovery-verification-1.png[]
+
+. Under "Admin settings", select "Add a database".
++
+image::discovery-verification-2.png[]
+
+. Under "Database type", select "Stratio Crossdata" from the menu and add the information in the other fields as follows:
++
+_Database type_: "Stratio Crossdata" +
+_Display name_: "Virtualizer" +
+_Host_: "virtualizer.stratio-apps" +
+_Port_: "13422" +
+_Username_: "discovery.stratio-apps"
++
+image::discovery-verification-3.png[]
++
+Click on "Save" and you will see a list of databases including the one you just created.
+
+. To view the information, select "Data Model" in the navigation menu.
++
+image::discovery-verification-4.png[]
+
+. Go to the "virtualizer" database you just created and select the "test" table (created for the verification of _Stratio Virtualizer_'s installation). Here you will be able to see the content of the table.
++
+image::discovery-verification-5.png[]
+
+NOTE: If you wish to further customize your installation you can check the xref:stratio-discovery:operations-guide:installing-and-upgrading/environment-variables.adoc[list of environment variables].
