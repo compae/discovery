@@ -11,7 +11,7 @@ No hay requisitos previos para esta instalación.
 Para instalar _Stratio Discovery_ sigue estos pasos:
 
 . Accede a _Stratio Command Center_ a través de `https://${external_domain}/cct` e inicia sesión con las credenciales del nuevo _tenant_ (para este ejemplo, usuario "stratio" y _tenant_ "stratio").
-. Accede al catálogo haciendo clic en "Marketplace" en el menú de navegación. Busca "discovery" en el cuadro de búsqueda de la derecha y haz clic en "Get".
+. Accede al catálogo haciendo clic en "Marketplace" en el menú de navegación. Busca "discovery" en el cuadro de búsqueda de la derecha y haz clic en la caja correspondiente.
 +
 image::discovery-installation-1.png[]
 
@@ -19,16 +19,14 @@ image::discovery-installation-1.png[]
 +
 image::discovery-installation-2.png[]
 
-. A continuación, verás el descriptor.
+. A continuación, verás el formulario del predespliegue.
 +
 image::discovery-installation-3.png[]
 
-.. En la sección 'General', ve a "Gosec SSO Authenticator Settings" en la subsección "User Authentication". En "Admin group", añade `stratio-stratio-owners`.
-.. En la sección 'Namespaces', selecciona "stratio-apps".
-.. En la sección 'Service discovery':
-... En "PostgreSQL used for connection", selecciona "pool-psql".
-... En "PostgreSQL used for policy[...]", selecciona "psql.stratio-datastores".
-.. Haz clic en "Deploy".
+.. Selecciona el _namespace_ "stratio-apps".
+.. En "PostgreSQL used for connection", selecciona "pool-psql".
+.. En "PostgreSQL used for policy[...]", selecciona "psql.stratio-datastores".
+.. Haz clic en "Continue". En el descriptor puedes configurar tu instalación con más detalle. Para más información ve a xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuraciones_especificas[la sección de Configuraciones específicas].
 
 == Paso 2: Verificación
 

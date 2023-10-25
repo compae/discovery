@@ -11,7 +11,7 @@ There are no prerequisites for this installation.
 To install _Stratio Discovery_ follow these steps:
 
 . Access _Stratio Command Center_ via `https://${external_domain}/cct` and log in with the new tenant's credentials (for this example, "stratio" user and "stratio" tenant).
-. Access the catalog by clicking on "Marketplace" in the navigation menu. Search for "discovery" in the search box on your right and click on "Get".
+. Access the catalog by clicking on "Marketplace" in the navigation menu. Search for "discovery" in the search box on your right and click on the corresponding box.
 +
 image::discovery-installation-1.png[]
 
@@ -19,16 +19,14 @@ image::discovery-installation-1.png[]
 +
 image::discovery-installation-2.png[]
 
-. Next, you will see the descriptor.
+. Next, you will see the pre-deployment form.
 +
 image::discovery-installation-3.png[]
 
-.. In the 'General' section, find "Gosec SSO Authenticator Settings" in the 'User Authentication' subsection, go to "Admin group" and add `stratio-stratio-owners`.
-.. In the 'Namespaces' section, select "stratio-apps".
-.. In the 'Service discovery' section:
-... Find "PostgreSQL used for connection" and select "pool-psql".
-... Find "PostgreSQL used for policy[...]" and select "psql.stratio-datastores".
-.. Click on "Deploy".
+.. Select the namespace "stratio-apps".
+.. In "PostgreSQL used for connection" select "pool-psql".
+.. In "PostgreSQL used for policy[...]" select "psql.stratio-datastores".
+.. Click on "Continue". In the descriptor you can further configure of your installation, for more details go to the xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_specific_configurations[Specific configurations section].
 
 == Step 2: Verification
 

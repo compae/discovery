@@ -40,6 +40,8 @@ _Stratio Command Center_ provides you with a list of the priority classes config
 
 WARNING: The application name must be unique at the tenant level. This means that you can't deploy two instances with the same name in different namespaces if they share the same tenant, which doesn't prevent you from deploying two instances with the same name in different tenants.
 
+=== Specific configurations
+
 When you have confirmed the configuration of the 'Pre-deployment' screen, a form will appear where you can complete the configuration more specifically.
 
 image::cct_configure_discovery_deployment_0005.png[]
