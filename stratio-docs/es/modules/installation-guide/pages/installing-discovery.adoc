@@ -24,9 +24,15 @@ image::discovery-installation-2.png[]
 image::discovery-installation-3.png[]
 
 .. Selecciona el _namespace_ "stratio-apps".
-.. En "PostgreSQL used for connection", selecciona "pool-psql".
-.. En "PostgreSQL used for policy[...]", selecciona "psql.stratio-datastores".
-.. Haz clic en "Continue". En el descriptor puedes configurar tu instalación con más detalle. Para más información ve a xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuraciones_especificas[la sección de Configuraciones específicas].
+.. En 'PostgreSQL used for connection', selecciona "pool-psql".
+.. En 'PostgreSQL used for policy[...]', selecciona "psql.stratio-datastores".
+.. Haz clic en "Continue". 
+. A continuación, verás el descriptor.
+.. En la sección 'User Authentication', ve a 'Gosec SSO Authenticator Settings' -> 'Admin group' y añade "stratio-stratio-owners". Para configurar más detalles de tu instalación, consulta la xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuraciones_especificas[sección de configuraciones específicas].
++
+image::discovery-installation-4.png[]
+
+. Haz clic en "Deploy".
 
 == Paso 2: Verificación
 
