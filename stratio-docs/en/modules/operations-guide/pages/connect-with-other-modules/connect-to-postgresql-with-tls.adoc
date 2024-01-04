@@ -39,4 +39,4 @@ Follow these steps to learn how to create a user and set permissions for a datab
 . Add the discovery user (username of the _Stratio Discovery_ instance) to this policy.
 . Save the policy.
 
-TIP: For more information, read the xref:stratio-gosec:operations-guide:stratio-gosec.adoc[_Stratio GoSec_ documentation].
+TIP: For more information, read the xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_ documentation].

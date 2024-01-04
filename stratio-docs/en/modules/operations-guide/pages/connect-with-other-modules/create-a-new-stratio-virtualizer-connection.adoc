@@ -29,7 +29,7 @@ failed because of java.net.ConnectException: Connection refused
 . Add the discovery user (username of the discovery instance) to this policy.
 . Save the policy.
 
-TIP: For more information, see the xref:stratio-gosec:operations-guide:stratio-gosec.adoc[_Stratio GoSec_ documentation].
+TIP: For more information, see the xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_ documentation].
 
 == Impersonation in _Stratio {modulename}_
 

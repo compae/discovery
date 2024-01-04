@@ -45,4 +45,4 @@ Sigue estos pasos para aprender cómo crear un usuario y establecer permisos par
 
 :tip-caption: CONSEJO
 
-TIP: Para obtener más información, consulta la xref:stratio-gosec:operations-guide:stratio-gosec.adoc[documentación de _Stratio GoSec_].
+TIP: Para obtener más información, consulta la xref:stratio-gosec:ROOT:introduction.adoc[documentación de _Stratio GoSec_].

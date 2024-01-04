@@ -31,7 +31,7 @@ failed because of java.net.ConnectException: Connection refused
 
 :tip-caption: CONSEJO
 
-TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:operations-guide:stratio-gosec.adoc[_Stratio GoSec_].
+TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_].
 
 == Suplantación de identidad en _Stratio {modulename}_
 
