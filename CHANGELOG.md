@@ -1,5 +1,10 @@
 # Changelog
+
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
+
+## 0.43.4-0.3.0 (upcoming)
+
+* [ROCK-12172] Subscriptions with dashboard name in subject (bump stratio-metabase to 0.43.4-0.2.0)
 
 ## 0.43.4-0.2.0 (2023-07-21)
 
