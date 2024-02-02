@@ -27,7 +27,7 @@ RUN bin/build-drivers.sh
 # # STAGE 2: runner
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/oauth-base:0.2.0-b174182 as runner
+FROM qa.int.stratio.com/stratio/oauth-base:0.4.0 as runner
 
 WORKDIR /app
 
