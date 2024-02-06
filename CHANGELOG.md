@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.43.4-0.3.0 (upcoming)
+## 0.43.4-0.3.0 (2024-02-06)
 
 * [ROCK-12172] Subscriptions with dashboard name in subject (bump stratio-metabase to 0.43.4-0.2.0)
 * [ROCK-XXXXX] Upgrade oauth-base to 0.4.0
