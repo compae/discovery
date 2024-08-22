@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.50.21-0.1.0
+
+[ROCK-11848] Update metabase to 0.50.21
+
 ## 0.43.4-0.3.0 (2024-02-06)
 
 * [ROCK-12172] Subscriptions with dashboard name in subject (bump stratio-metabase to 0.43.4-0.2.0)
