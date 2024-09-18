@@ -5,4 +5,5 @@
  {"stratio" {:url "https://qa.int.stratio.com:1443/repository/public"}}
 
  :deps
- {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.24.0-7394c02"}}}
+ ;; WATCH OUT! when updating the crossdata jdbc update also the reference.conf in resources
+ {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.30.0-3ae077d"}}}

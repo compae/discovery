@@ -5,7 +5,7 @@ info:
 
 driver:
   name: crossdata
-  display-name: Stratio Crossdata
+  display-name: Stratio Virtualizer
   lazy-load: true
   parent: sql-jdbc
   connection-properties:
@@ -36,6 +36,13 @@ driver:
 
     - advanced-options-start
     - default-advanced-options
+
+    - name: include-user-id-and-hash
+      display-name: Include a comment with User ID and query hash in queries
+      default: false
+      type: boolean
+      visible-if:
+        advanced-options: true
 
 init:
   - step: load-namespace

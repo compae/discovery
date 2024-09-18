@@ -8,12 +8,9 @@ package com.stratio.discoverycicd.utils
 
 import com.stratio.discoverycicd.model.LinkType
 import com.stratio.discoverycicd.model.LinkType._
-import com.stratio.discoverycicd.model.SnippetDto
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
 import com.stratio.discoverycicd.utils.TypeAliases.IdMap
 import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
-
-import scala.util.Try
 
 object MBJson extends {
 

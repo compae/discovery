@@ -2,23 +2,20 @@
 # STAGE 1: stratio drivers builder
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.43.4-0.2.0-d082d9e as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.50.21-0.1.0-SNAPSHOT as builder
 
 WORKDIR /app/source
 
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
 
-# Add drivers source code, script to replace metabase dependency, and deps.edn with srtatio mvn repo
+# Add:
+# - our drivers source code to build them
+# - deps.edn with the stratio mvn repo declared so crossdata-jdbc dependency is resolved when building our drivers
 COPY ./metabase/modules                                /app/source/modules
-COPY ./metabase/bin                                    /app/source/bin
-COPY ./metabase/resources/migrations/100_stratio.yaml  /app/source/resources/migrations/100_stratio.yaml
-COPY ./metabase/modules/drivers/stratio-repo.edn /root/.clojure/deps.edn
+COPY ./metabase/modules/drivers/stratio-repo.edn       /root/.clojure/deps.edn
 
-# replace metabase dependency in bin/build-drivers modules so it points to the already-compiled jar
-RUN bin/update-metabase-dep.sh
-
-# build the drivers
+# build our drivers
 RUN bin/build-drivers.sh
 
 
@@ -55,9 +52,8 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 ###        METABASE          ###
 ################################
 # add Metabase uberjar
-RUN mkdir -p bin target/uberjar
+RUN mkdir -p target/uberjar
 COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
-COPY --from=builder /app/source/resources/migrations/100_stratio.yaml /app/source/resources/migrations/
 
 # adapt MANIFEST.MF to implementation discovery version
 RUN jar xf /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF  \
@@ -66,15 +62,18 @@ RUN jar xf /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF  \
     && rm -rf META-INF
 
 
-# Append to the default migration yaml our 100_stratio.yaml and overwrite it inside the jar
-RUN jar xf /app/target/uberjar/metabase.jar migrations/000_migrations.yaml \
-    && cat /app/source/resources/migrations/100_stratio.yaml >> migrations/000_migrations.yaml \
-    && zip /app/target/uberjar/metabase.jar migrations/000_migrations.yaml \
-    && rm -rf migrations/000_migrations.yaml
+# Append to the default migration yaml our 100_stratio.yaml and to the default "init" sql script
+# our subscription_triggers.sql scripts and overwrite them inside the jar
+COPY ./metabase/resources/migrations/100_stratio.yaml           100_stratio.yaml
+COPY ./metabase/resources/migrations/subscription_triggers.sql  subscription_triggers.sql
 
-# Fix vulnerability of H2 embedded database (CVE-2022-23221)
-# TODO Remove this line when Metabase fixes this vulnerability
-RUN zip -d /app/target/uberjar/metabase.jar sample-database.db.mv.db
+RUN jar xf /app/target/uberjar/metabase.jar migrations/000_legacy_migrations.yaml           \
+ && jar xf /app/target/uberjar/metabase.jar migrations/initialization/metabase_postgres.sql \
+ && cat 100_stratio.yaml          >> migrations/000_legacy_migrations.yaml                  \
+ && cat subscription_triggers.sql >> migrations/initialization/metabase_postgres.sql        \
+ && zip /app/target/uberjar/metabase.jar migrations/000_legacy_migrations.yaml              \
+ && zip /app/target/uberjar/metabase.jar migrations/initialization/metabase_postgres.sql    \
+ && rm -rf migrations/ 100_stratio.yaml subscription_triggers.sql
 
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins

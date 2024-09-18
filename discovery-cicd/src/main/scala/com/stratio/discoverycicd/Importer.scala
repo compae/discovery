@@ -20,14 +20,10 @@ class Importer(api: ApiClient) extends Logging {
 
   import Importer._
 
-  lazy val allDatabases = api.getAllDatabases
-  lazy val dbId2Name = allDatabases map { db => db.id -> db.name } toMap
-
-  lazy val allTables = api.getAllTables map { _.toTable(dbId2Name) }
-  lazy val id2Table = allTables map { t => t.id -> t } toMap
-
-  lazy val allSnippets = api.getAllSnippets
-  lazy val snippetNameToId = allSnippets map { s => s.name -> s.id } toMap
+  private lazy val allDatabases = api.getAllDatabases
+  private lazy val allTables = api.getAllTables
+  private lazy val allSnippets = api.getAllSnippets
+  private lazy val snippetNameToId = allSnippets.map { s => s.name -> s.id }.toMap
 
   def importCollection(exportedCollection: ExportedCollection, parentCollId: Option[BigInt]): Unit = {
 
@@ -72,10 +68,10 @@ class Importer(api: ApiClient) extends Logging {
     val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, snippetMap, cardsByCollection)
 
     log.debug("Importing dashboards from export data")
-    val (dashboardMap, dashCardMap) = createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
+    val dashboardMap = createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
 
     log.debug("Importing subscriptions from export data")
-    createSubscriptions(exportedCollection.subscriptions, collMap, dashboardMap, cardMap, dashCardMap, dbMaps.field, dashboardsByCollection)
+    createSubscriptions(exportedCollection.subscriptions, collMap, dashboardMap, cardMap, dashboardsByCollection)
 
     // update permissions in collection and its children
     log.debug(s"Importing Permissions of collection $targetCollId (id in target)")
@@ -86,7 +82,7 @@ class Importer(api: ApiClient) extends Logging {
     }
   }
 
-  def updatePermissionsInColl(targetCollId: CollId, sourcePermissionsPerGroup: Map[GroupName, Permission]) = {
+  private def updatePermissionsInColl(targetCollId: CollId, sourcePermissionsPerGroup: Map[GroupName, Permission]) = {
     val targetGroupNameToId = api.getGroupNameToIdMap
     val targetPermissionsPerGroup = sourcePermissionsPerGroup flatMap {
       case (gName, permission) if targetGroupNameToId contains gName =>
@@ -100,24 +96,26 @@ class Importer(api: ApiClient) extends Logging {
     api.updateCollectionGraph(collectionGraph)
   }
 
-  def createDashboards(dashboards: List[Dashboard],
-                       dbMaps: DbMaps,
-                       collMap: IdMap,
-                       cardMap: IdMap,
-                       existingDashboards: Map[CollId, List[CollectionItem]]): (IdMap, IdMap) = {
-    val (dashboardIdSourceToTarget, dashCardsByDashboard, dashCardIdSourceToTarget) = dashboards.map { dashboard =>
+  private def createDashboards(
+    dashboards: List[Dashboard],
+    dbMaps: DbMaps,
+    collMap: IdMap,
+    cardMap: IdMap,
+    existingDashboards: Map[CollId, List[CollectionItem]]
+  ): IdMap = {
+    val dashboardSourceToTarget = dashboards.map { dashboard =>
       log.debug(s"Creating/updating dashboard from exported data: ${dashboard.toJson}")
       log.debug(s"Replacing collection, database, table and field Ids in dashboard")
       val dashboardToCreateOrUpdate =
         dashboard
-          .copy(creator_id = api.userId)
           .replaceCollectionId(collMap)
           .replaceDatabaseIds(dbMaps.db)
           .replaceTableIds(dbMaps.table)
           .replaceFieldIds(dbMaps.field)
           .replaceCardIds(cardMap)
+          .withNegativeDashcardsAndTabs
 
-      val createdOrUpdatedDashboardId = dashboardToCreateOrUpdate
+      val createdOrUpdatedDashboard = dashboardToCreateOrUpdate
         .collection_id
         .flatMap {
           collId =>
@@ -132,59 +130,49 @@ class Importer(api: ApiClient) extends Logging {
         }
         .map {
           existingDashboard =>
-            log.debug(s"dashboard with name ${existingDashboard.name} already present in collection. Remove all its dashcards")
-            api.deleteAllDashcardsFromDashboard(existingDashboard.id)
-            existingDashboard.id
+            log.debug(s"dashboard with name ${existingDashboard.name} already present in collection. Removing all its dashcards and tabs")
+            // we cannot yet create the dashcards since we need the full dashboardIds mapping to replace dashboardIds in dashcard links.
+            api.updateDashboard(
+              existingDashboard.id,
+              dashboardToCreateOrUpdate.copy(dashcards = List.empty, tabs = List.empty)
+            )
+            dashboardToCreateOrUpdate.copy(id = existingDashboard.id)
         }
         .getOrElse {
-          log.debug("create (POST) dashboard in Metabase")
-          api.createDashboard(dashboardToCreateOrUpdate)
+          log.debug(s"create (POST) dashboard with name ${dashboardToCreateOrUpdate.name} in Metabase")
+          // we cannot yet create the dashcards since we need the full dashboardIds mapping to replace dashboardIds in dashcard links.
+          api.createDashboard(dashboardToCreateOrUpdate.copy(dashcards = List.empty, tabs = List.empty))
+            .copy(dashcards = dashboardToCreateOrUpdate.dashcards, tabs = dashboardToCreateOrUpdate.tabs)
         }
 
-      // add parameters that cannot be set in the creation post request
-      log.debug("update (PUT) dashboard with extra parameters")
-      api.updateDashboard(createdOrUpdatedDashboardId, dashboardToCreateOrUpdate)
+      dashboard.id -> createdOrUpdatedDashboard
 
-      // add the needed cards as dashcards, and update the dashcard list with the new ids
-      log.debug("Adding dashcards to dashboard")
-      val (dashCardsWithNewIds, dashCardIdSourceToTarget) = dashboardToCreateOrUpdate.ordered_cards.map { dashCard =>
-        log.debug(s"Adding dashcard ${dashCard.toJson} to dashboard")
-        val dashCardId = api.addCardToDashboard(createdOrUpdatedDashboardId, CardPost(dashCard.card_id)).id
-        (dashCard.copy(id = dashCardId, dashboard_id = createdOrUpdatedDashboardId), dashCard.id -> dashCardId)
-      }.unzip
+    }.toMap
 
-      (
-        dashboard.id -> createdOrUpdatedDashboardId,
-        createdOrUpdatedDashboardId -> dashCardsWithNewIds,
-        dashCardIdSourceToTarget
-      )
-    }.unzip3
+    val dashboardIdSourceToTarget = dashboardSourceToTarget.mapValues(_.id)
 
-    // Add the correct positions, settings, ids of links to dashboards, etc to all dashcards.
-    // We have to make it outside the map over dashboards above because we need the dashboardIs source->target map
-    dashCardsByDashboard.foreach { case (dashboardId, dashCards) =>
-      log.debug(s"Updating dashcards in dashboard '$dashboardId' with correct positions, settings, ids of links, etc...")
-      api.updateDashCardsInDashboard(
-        dashboardId,
-        dashCards.map(_.replaceDashboardLinks(dashboardIdSourceToTarget.toMap))
-      )
+    // add parameters that cannot be set in the creation post request, including the dashcards and tabs
+    dashboardSourceToTarget.values.foreach { dashboard =>
+      log.debug(s"update (PUT) dashboard with name ${dashboard.name} to add extra parameters, dashcards and tabs")
+      api.updateDashboard(dashboard.id, dashboard.replaceDashboardLinks(dashboardIdSourceToTarget))
     }
-
 
     // Delete dashboards that have not been created or updated (not present in export data)
     val dashboardsToDelete = existingDashboards.values.flatten.filterNot(dashboardIdSourceToTarget.toMap.values.toSet contains _.id)
-    log.debug(s"Deleting dashboards not present in export data ${dashboardsToDelete}")
+    log.debug(s"Deleting dashboards not present in export data $dashboardsToDelete")
     dashboardsToDelete.foreach(api.deleteCollectionItem)
 
-    (dashboardIdSourceToTarget.toMap, dashCardIdSourceToTarget.flatten.toMap)
+    dashboardIdSourceToTarget
   }
 
 
-  def createCards(cards: List[Card],
-                  dbMaps: DbMaps,
-                  collMap: IdMap,
-                  snippetMap: IdMap,
-                  existingCards: Map[CollId, List[CollectionItem]]): IdMap = {
+  private def createCards(
+    cards: List[Card],
+    dbMaps: DbMaps,
+    collMap: IdMap,
+    snippetMap: IdMap,
+    existingCards: Map[CollId, List[CollectionItem]]
+  ): IdMap = {
     @tailrec
     def createCardsWithSatisfiedDependencies(cards: List[Card], createdCardsMap: IdMap): IdMap = cards match {
       // base case
@@ -198,7 +186,7 @@ class Importer(api: ApiClient) extends Logging {
 
         // sanity check (and guard to avoid infinite recursion) in case we receive inconsistent data
         if (cardsToCreate.isEmpty) {
-          // we still have pending cards to create but they depend on other cards that we have not created yet:
+          // we still have pending cards to create, but they depend on other cards that we have not created yet:
           // either the depended-on cards were not exported (were not part of the collection) or there may
           // be circular dependencies between the cards, in either case, we cannot continue with the import
           // process and must raise an error. Neither case should happen because we check the data before
@@ -241,7 +229,7 @@ class Importer(api: ApiClient) extends Logging {
             }
             .getOrElse {
               log.debug("Creating card to Metabase")
-              api.createCard(cardToCreateOrUpdate.toPostDto)
+              api.createCard(cardToCreateOrUpdate)
             }
 
           map + (cardToCreateOrUpdate.id -> createdOrUpdatedCard.id)
@@ -256,20 +244,19 @@ class Importer(api: ApiClient) extends Logging {
     val cardIdSourceToTarget = createCardsWithSatisfiedDependencies(cards, Map.empty)
 
     val cardsToDelete = existingCards.values.flatten.filterNot(cardIdSourceToTarget.values.toSet contains _.id)
-    log.debug(s"Deleting cards not present in export data ${cardsToDelete}")
+    log.debug(s"Deleting cards not present in export data $cardsToDelete")
     cardsToDelete.foreach(api.deleteCollectionItem)
 
     cardIdSourceToTarget
   }
 
-  def createSubscriptions(subscriptions: List[Subscription],
-                          collMap: IdMap,
-                          dashboardMap: IdMap,
-                          cardMap: IdMap,
-                          dashboardsCardsMap: IdMap,
-                          FieldsMap: IdMap,
-                          existingDashboards: Map[CollId, List[CollectionItem]]): Unit = {
-
+  private def createSubscriptions(
+    subscriptions: List[Subscription],
+    collMap: IdMap,
+    dashboardMap: IdMap,
+    cardMap: IdMap,
+    existingDashboards: Map[CollId, List[CollectionItem]]
+  ): Unit = {
     //Find all subscriptions from target
     val existingSubscriptions = existingDashboards.values.flatten.map {
       dashboardItem => (dashboardItem.id, api.getSubscriptions(dashboardItem.id))
@@ -284,8 +271,6 @@ class Importer(api: ApiClient) extends Logging {
           .replaceCollectionId(collMap)
           .replaceDashboardIds(dashboardMap)
           .replaceCardIds(cardMap)
-          .replaceDashboardCardsIds(dashboardsCardsMap)
-          .replaceFieldIds(FieldsMap)
           .clearSubscribers
 
       (existingSubscriptions(subscriptionToCreateOrUpdate.dashboard_id)
@@ -299,12 +284,12 @@ class Importer(api: ApiClient) extends Logging {
       }).map {
         subscription =>
           log.debug(s"Subscription with name ${subscription.name} already present in dashboard target. Updating the subscription.")
-          api.updateSubscription(subscriptionToCreateOrUpdate.toPutDto(subscription))
+          api.updateSubscription(subscriptionToCreateOrUpdate.useRecipientsOf(subscription))
           subscription.id
       }
       .getOrElse {
         log.debug(s"Subscription with name ${subscription.name} not found in dashboard target. Creating new subscription.")
-        api.createSubscription(subscriptionToCreateOrUpdate.toPostDto)
+        api.createSubscription(subscriptionToCreateOrUpdate)
       }
     }
 
@@ -315,22 +300,27 @@ class Importer(api: ApiClient) extends Logging {
   }
 
   // Create or update snippets depending on whether each snippet is found in the target
-  def createSnippets(snippets: List[Snippet]): IdMap =
-    snippets.map { snippet =>
-      log.debug(s"Creating/updating snippet from exported data: ${snippets.toJson}")
-      snippetNameToId.get(snippet.name).map { existingTargetId =>
-        log.debug(s"Snippet with name '${snippet.name}' already present in target. Updating the snippet.")
-        api.updateSnippet(existingTargetId, snippet.toSnippetPutDto())
-        snippet.id -> existingTargetId
-      } getOrElse {
-        log.debug(s"Snippet with name '${snippet.name}' not found in target. Creating new snippet.")
-        val targetId = api.createSnippet(snippet.toSnippetDto())
-        snippet.id -> targetId
+  private def createSnippets(snippets: List[Snippet]): IdMap =
+    snippets
+      .map { snippet =>
+        log.debug(s"Creating/updating snippet from exported data: ${snippets.toJson}")
+        snippetNameToId
+          .get(snippet.name)
+          .map { existingTargetId =>
+            log.debug(s"Snippet with name '${snippet.name}' already present in target. Updating the snippet.")
+            api.updateSnippet(existingTargetId, snippet)
+            snippet.id -> existingTargetId
+          }
+          .getOrElse {
+            log.debug(s"Snippet with name '${snippet.name}' not found in target. Creating new snippet.")
+            val targetId = api.createSnippet(snippet)
+            snippet.id -> targetId
+          }
       }
-    } toMap
+      .toMap
 
   @tailrec
-  final def createSubCollections(
+  private final def createSubCollections(
     toCreate: List[Collection],
     collMap: Map[CollId, CollId],
     dashboardsInCollMap: Map[CollId, List[CollectionItem]],
@@ -365,11 +355,13 @@ class Importer(api: ApiClient) extends Logging {
 
   // creates the collection to import, or if it already exists, collect all its dashboards and cards,
   // and returns a map mapping the source id with the target id
-  def createCollection(sourceColl: Collection,
-                       parentCollId: Option[BigInt],
-                       childCollNames: List[String]): ((CollId, CollId), List[CollectionItem], List[CollectionItem]) = {
+  private def createCollection(
+    sourceColl: Collection,
+    parentCollId: Option[BigInt],
+    childCollNames: List[String]
+  ): ((CollId, CollId), List[CollectionItem], List[CollectionItem]) = {
     log.debug(s"Creating collection from export data: ${sourceColl.toJson}")
-    val existsInTarget = api.getItemsInCollecton(parentCollId)
+    val existsInTarget = api.getItemsInCollection(parentCollId)
       .filter(_.model == Models.COLLECTION)
       .filter(_.name == sourceColl.name)
 
@@ -378,7 +370,7 @@ class Importer(api: ApiClient) extends Logging {
       "Found more than one collection with the same name as the collection to import in the parent collection. Do not know which one overwrite"
     )
 
-    // Create collection and get its id if it does not exits, otherwise store all its elements (cards and dashboards)
+    // Create collection and get its id if it does not exists, otherwise store all its elements (cards and dashboards)
     // the subcollections that are not included in this export are archived or if
     // we see that we are going to create a new one and archive an old one we
     // simply rename the old one to the new name
@@ -386,7 +378,7 @@ class Importer(api: ApiClient) extends Logging {
       case Some(existingCollId) =>
         log.debug("A collection with the same name as the imported collection in the parent collection exists. Will now overwrite its contents")
 
-        val existingItems          = api.getItemsInCollecton(existingCollId).groupBy(_.model)
+        val existingItems          = api.getItemsInCollection(existingCollId).groupBy(_.model)
         val existingSubcollections = existingItems.getOrElse(Models.COLLECTION, List.empty)
         val existingDashboards     = existingItems.getOrElse(Models.DASHBOARD , List.empty)
         val existingCardsNotModels = existingItems.getOrElse(Models.CARD      , List.empty)
@@ -398,7 +390,7 @@ class Importer(api: ApiClient) extends Logging {
         if (collsToArchive.nonEmpty) log.debug(
           s"The following subcollections in the existing collection are not present in the export data. Will now archive them: ${collsToArchive.map(_.toJson)}"
         )
-        collsToArchive.map(_.id).foreach(api.archiveCollecton)
+        collsToArchive.map(_.id).foreach(api.archiveCollection)
 
         (existingCollId, existingDashboards, existingCards)
 
@@ -411,12 +403,12 @@ class Importer(api: ApiClient) extends Logging {
     ((sourceColl.id -> targetCollId), dashboards, cards)
   }
 
-  def deleteCollection(id: BigInt): Unit = {
+  private def deleteCollection(id: BigInt): Unit = {
     // get items in collection
-    val items = api.getItemsInCollecton(id)
+    val items = api.getItemsInCollection(id)
 
     // archive collection
-    api.archiveCollecton(id)
+    api.archiveCollection(id)
 
     // now we delete the inner items
     val (colls, notColls) = items.partition(_.model == Models.COLLECTION)
@@ -427,16 +419,15 @@ class Importer(api: ApiClient) extends Logging {
     }
   }
 
-  def getDbMap(exportedCollection: ExportedCollection): DbMaps = {
-    if (api.humanizationEnabled)
-      log.warn("Metabase seems to have table and field names humanization activated. This will make necessary to get all fields in the DBs when importing")
-    if (exportedCollection.humanizationEnabled)
-      log.warn("Export data was taken in a Metabase with humanization for table and field names activated. This will make necessary to get all fields in the DBs when importing")
-    val needAllFields = api.humanizationEnabled || exportedCollection.humanizationEnabled
+  private def getDbMap(exportedCollection: ExportedCollection): DbMaps = {
 
     val databases = allDatabases filter { db => exportedCollection.databases exists (_ isTheSameAs db) }
-    require(exportedCollection.databases.size == databases.size,
-           "Some of the needed databases to perform the import are not found in the target metabase")
+    lazy val missingDatabases = exportedCollection.databases.filterNot { db => allDatabases exists (_ isTheSameAs db) }
+    require(
+      exportedCollection.databases.size == databases.size,
+      "Some of the needed Metabase databases to perform the import are not found in the target metabase:" +
+        s"\nNeeded ${exportedCollection.databases.map(_.toJson)}\n\nFound: ${missingDatabases.map(_.toJson)}"
+    )
 
     val tables = if (exportedCollection.tables.isEmpty) List.empty
                  else allTables filter { t => exportedCollection.tables exists (_ isTheSameAs t) }
@@ -446,39 +437,39 @@ class Importer(api: ApiClient) extends Logging {
 
     val fields =
       if (exportedCollection.fields.isEmpty) List.empty
-      else for {
-        db            <- databases
-        dbFieldDto    <- if (needAllFields) api.getFieldsInDb(db.id)
-                         else api.getFieldsInDb(db.id) filter {
-                           x => exportedCollection.fields exists (_.isTheSameAs(x, db.name))
-                         }
-        fieldDto       = api.getField(dbFieldDto.id)
-        // we may not have the table in the map if the table happens to be inactive
-        actualTableMap = if (id2Table contains fieldDto.table_id) id2Table
-                         else Map(fieldDto.table_id -> api.getTable(fieldDto.table_id).toTable(dbId2Name))
-        field          = fieldDto.toField(actualTableMap)
-        if exportedCollection.fields exists (_ isTheSameAs field)
-      } yield field
-
+      else databases.flatMap { db =>
+        api
+          .getFieldsInDb(db.id)
+          .map(_.toField(db.name))
+          .filter(field => exportedCollection.fields exists (_ isTheSameAs field))
+      }
     require(exportedCollection.fields.size == fields.size,
            s"Some of the needed fields to perform the import are not found in the target metabase.\n\nNeeded: ${exportedCollection.fields.map(_.toJson)}.\n\nFound: ${fields.map(_.toJson)}")
 
     // Maps with id correspondence between source and target metabases
-    val dBsource2Target = exportedCollection.databases map { sourceDb =>
-      sourceDb.id -> databases.find(_ isTheSameAs sourceDb).get.id
-    } toMap
+    val dBSource2Target: IdMap =
+      exportedCollection
+        .databases
+        .map { sourceDb => sourceDb.id -> databases.find(_ isTheSameAs sourceDb).get.id }
+        .toMap
 
-    val tableSource2Target = exportedCollection.tables map { sourceTable =>
-      sourceTable.id -> tables.find(_ isTheSameAs sourceTable).get.id
-    } toMap
+    val tableSource2Target: IdMap =
+      exportedCollection
+        .tables
+        .map { sourceTable => sourceTable.id -> tables.find(_ isTheSameAs sourceTable).get.id }
+        .toMap
 
-    val fieldSource2Target = exportedCollection.fields map { sourceField =>
-      sourceField.id -> fields.find(_ isTheSameAs sourceField).get.id
-    } toMap
+    val fieldSource2Target: IdMap =
+      exportedCollection
+        .fields
+        .map { sourceField => sourceField.id -> fields.find(_ isTheSameAs sourceField).get.id }
+        .toMap
 
-    DbMaps(db = dBsource2Target,
-           table = tableSource2Target,
-           field = fieldSource2Target)
+    DbMaps(
+      db = dBSource2Target,
+      table = tableSource2Target,
+      field = fieldSource2Target
+    )
   }
 
 }

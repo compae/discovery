@@ -10,6 +10,7 @@ import com.stratio.discoverycicd.model._
 import com.stratio.discoverycicd.model.Collection.Models
 import com.stratio.discoverycicd.utils.ApiClient._
 import com.stratio.discoverycicd.utils.ImplicitExtensions.HttpRequestExtension
+import com.stratio.discoverycicd.utils.TypeAliases._
 import org.json4s.DefaultFormats
 import org.json4s.native.Serialization.write
 import scalaj.http._
@@ -35,113 +36,102 @@ class ApiClient(metabaseUrl: String,
 
   val connectionAndReadTimeout: Int = Try(Duration(timeout).toMillis.toInt).getOrElse(DefaultTimeout)
 
-  lazy val user = request("user/current").as[User]
-  lazy val userId = user.body.id
-  lazy val humanizationEnabled = request("session/properties").as[Properties].body.`humanization-strategy` != "none"
+  lazy val user: User = request("user/current").as[User].body
 
-  def getCollection(collectionId: BigInt) =
+  def getCollection(collectionId: BigInt): Collection =
     request(s"collection/$collectionId").as[Collection].body
 
-  def getItemsInCollecton(collectionId: BigInt): List[CollectionItem] =
+  def getItemsInCollection(collectionId: BigInt): List[CollectionItem] =
     request(s"collection/$collectionId/items").as[CollectionItemsResponse].body.data
 
   // if we want to get the root collection we pass a None collectionId
-  def getItemsInCollecton(collectionId: Option[BigInt]): List[CollectionItem] ={
+  def getItemsInCollection(collectionId: Option[BigInt]): List[CollectionItem] ={
     val collApiPath = collectionId.map(_.toString).getOrElse("root")
     request(s"collection/$collApiPath/items").as[CollectionItemsResponse].body.data
   }
 
-  def archiveCollecton(collectionId: BigInt) =
+  def archiveCollection(collectionId: BigInt): Unit =
     request(s"collection/$collectionId").put("""{"archived":true}""").execute()
 
-  def deleteCollectionItem(item: CollectionItem) =
-    if (item.model == Models.COLLECTION) archiveCollecton(item.id)
+  def deleteCollectionItem(item: CollectionItem): Unit =
+    if (item.model == Models.COLLECTION) archiveCollection(item.id)
     else request(s"${item.model}/${item.id}").method("DELETE").execute()
 
-  def createCollection(collection: Collection) = request("collection").postData(write(collection)).as[Collection].body
+  def createCollection(collection: Collection): Collection =
+    request("collection").postData(write(collection)).as[Collection].body
 
-  def renameCollection(id: BigInt, newName: String) =
-    request(s"collection/$id").put(s"""{"name": $newName}""").execute()
+  def getDashboard(dashboardId: BigInt): Dashboard =
+    request(s"dashboard/$dashboardId").as[Dashboard].body
 
-  def getDashboard(dashboardId: BigInt) = request(s"dashboard/$dashboardId").as[Dashboard].body
+  def createDashboard(dashboard: Dashboard): Dashboard =
+    request("dashboard").postData(write(dashboard)).as[Dashboard].body
 
-  def createDashboard(dashboard: Dashboard) = request("dashboard").postData(write(dashboard.toDto)).as[Id].body.id
-
-  def updateDashboard(id: BigInt, dashboard: Dashboard) =
+  def updateDashboard(id: BigInt, dashboard: Dashboard): Dashboard =
     request(s"dashboard/$id")
-      .put(write(dashboard.toDto)(formats.preservingEmptyValues))
-      .execute()
-
-  def addCardToDashboard(id: BigInt, card: CardPost) =
-    request(s"dashboard/$id/cards")
-      .postData(write(card))
-      .as[Id]
+      .put(write(dashboard.copy(id = id))(formats.preservingEmptyValues))
+      .as[Dashboard]
       .body
 
-  def updateDashCardsInDashboard(id: BigInt, dashCards: List[DashCard]) =
-    request(s"dashboard/$id/cards")
-      .put(s""" { "cards": ${write(dashCards)} } """)
-      .execute()
+  def getCard(cardId: BigInt): Card =
+    request(s"card/$cardId").as[Card].body
 
-  def deleteAllDashcardsFromDashboard(id: BigInt) = {
-    val dashcards = getDashboard(id).ordered_cards
-    dashcards.foreach {
-      dashcard =>
-        request(s"dashboard/$id/cards?dashcardId=${dashcard.id}").method("DELETE").execute()
-    }
-  }
+  def createCard(card: Card): Card =
+    request("card").postData(write(card)).as[Card].body
 
-  def getCard(cardId: BigInt) = request(s"card/$cardId").as[Card].body
+  def updateCard(card: Card): Card =
+    request(s"card/${card.id}").put(write(card)).as[Card].body
 
-  def createCard(card: CardToPost) = request("card").postData(write(card)).as[Card].body
+  def getDatabase(databaseId: BigInt): Database =
+    request(s"database/$databaseId").as[Database].body
 
-  def updateCard(card: Card) = request(s"card/${card.id}").put(write(card.toPostDto)).as[Card].body
+  def getAllDatabases: List[Database] =
+    request("database").as[ListDatabasesResponse].body.data
 
-  def getDatabase(databaseId: BigInt) = request(s"database/$databaseId").as[Database].body
+  def getFieldsInDb(dbId: BigInt): List[FieldDto] =
+    request(s"database/$dbId/fields").as[List[FieldDto]].body
 
-  def getAllDatabases = request("database").as[ListDatabasesResponse].body.data
+  def getAllTables: List[Table] =
+    request("table").as[List[Table]].body
 
-  def getFieldsInDb(dbId: BigInt) = request(s"database/$dbId/fields").as[List[DbFieldDto]].body
+  def getCollectionGraph: CollectionGraph =
+    request("collection/graph").as[CollectionGraph].body
 
-  def getTable(tableId: BigInt) = request(s"table/$tableId").as[TableDto].body
-
-  def getAllTables = request("table").as[List[TableDto]].body
-
-  def getField(fieldId: BigInt) = request(s"field/$fieldId").as[FieldDto].body
-
-  def getCollectionGraph = request("collection/graph").as[CollectionGraph].body
-
-  def updateCollectionGraph(graph: CollectionGraph) =
+  def updateCollectionGraph(graph: CollectionGraph): CollectionGraph =
     request("collection/graph").put(write(graph)).as[CollectionGraph].body
 
-  def getGroups = request("permissions/group").as[List[Group]].body
+  def getGroups: List[Group] =
+    request("permissions/group").as[List[Group]].body
 
   // The MetaBot group always have id 3. It is not included in this response, but it is included in the
   // collectionGraph so we need it to be in this map
-  def getGroupIdToNameMap = getGroups.map(g => g.id -> g.name).toMap + ("3" -> "MetaBot")
+  def getGroupIdToNameMap: Map[GroupId, GroupName] =
+    getGroups.map(g => g.id -> g.name).toMap + ("3" -> "MetaBot")
 
-  def getGroupNameToIdMap = getGroupIdToNameMap.map(_.swap)
+  def getGroupNameToIdMap: Map[GroupName, GroupId]=
+    getGroupIdToNameMap.map(_.swap)
 
-  def getSubscriptions(dashboardId: BigInt) =
+  def getSubscriptions(dashboardId: BigInt): List[Subscription] =
     request(s"pulse?dashboard_id=$dashboardId").as[List[Subscription]].body
 
-  def updateSubscription(subscription: SubscriptionToPut) =
+  def updateSubscription(subscription: Subscription): Subscription =
     request(s"pulse/${subscription.id}").put(write(subscription)).as[Subscription].body
 
-  def createSubscription(subscription: SubscriptionToPost) =
+  def createSubscription(subscription: Subscription): BigInt =
     request("pulse").postData(write(subscription)).as[Id].body.id
 
-  def deleteSubscription(idSubscription: BigInt) =
+  def deleteSubscription(idSubscription: BigInt): Unit =
     request(s"pulse/$idSubscription").put("""{"archived":true}""").execute()
 
-  def getSnippet(snippetId: BigInt) = request(s"native-query-snippet/$snippetId").as[SnippetDto].body
+  def getSnippet(snippetId: BigInt): Snippet =
+    request(s"native-query-snippet/$snippetId").as[Snippet].body
 
-  def getAllSnippets = request("native-query-snippet").as[List[SnippetDto]].body
+  def getAllSnippets: List[Snippet] =
+    request("native-query-snippet").as[List[Snippet]].body
 
-  def updateSnippet(id: BigInt, snippet: SnippetPutDto) =
-    request(s"native-query-snippet/$id").put(write(snippet)).as[SnippetDto].body
+  def updateSnippet(id: BigInt, snippet: Snippet): Snippet =
+    request(s"native-query-snippet/$id").put(write(snippet)).as[Snippet].body
 
-  def createSnippet(snippet: SnippetDto) =
+  def createSnippet(snippet: Snippet): BigInt =
     request("native-query-snippet").postData(write(snippet)).as[Id].body.id
 
   def request(apiPath: String): HttpRequest = {

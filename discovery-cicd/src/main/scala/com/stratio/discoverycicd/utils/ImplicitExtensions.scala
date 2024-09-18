@@ -39,7 +39,7 @@ object ImplicitExtensions {
       case _ => None
     }
 
-    private def logError(response: HttpResponse[String]) = {
+    private def logError(response: HttpResponse[String]): Unit = {
       val requestBody = getRequestBody
       log.error(s"ERROR: Could not deserialize response from ${request.method} to ${request.url}")
       log.error(s"Response Status code: ${response.code}")
@@ -52,22 +52,22 @@ object ImplicitExtensions {
 
   implicit class MapExtension[K, V](replacements: Map[K, V]) extends Logging {
 
-    val getTargetField = getOrFail("Field")
-    val getTargetTable = getOrFail("Table")
-    val getTargetDatabase = getOrFail("Database")
-    val getTargetCollection = getOrFail("Collection")
-    val getTargetDashboard = getOrFail("Dashboard")
-    val getTargetDashboardCard = getOrFail("Dashboard Card")
-    val getTargetCard = getOrFail("Card")
-    val getTargetCardAsTable = getOrFail("Card acting as table")
-    val getTargetSnippet = getOrFail("Snippet")
+    val getTargetField       : K => V = getOrFail("Field")
+    val getTargetTable       : K => V = getOrFail("Table")
+    val getTargetDatabase    : K => V = getOrFail("Database")
+    val getTargetCollection  : K => V = getOrFail("Collection")
+    val getTargetDashboard   : K => V = getOrFail("Dashboard")
+    val getTargetDashboardTab: K => V = getOrFail("Dashboard Tab")
+    val getTargetCard        : K => V = getOrFail("Card")
+    val getTargetCardAsTable : K => V = getOrFail("Card acting as table")
+    val getTargetSnippet     : K => V = getOrFail("Snippet")
 
 
     private def getOrFail(replacedThing: String) = (id: K) => {
       replacements.getOrElse(id, throwReplacementError(replacedThing, id.toString))
     }
 
-    private def throwReplacementError(replacedThing: String, id: String) = {
+    private def throwReplacementError(replacedThing: String, id: String): Nothing = {
       log.error(s"ERROR: It seems that an exported object references a $replacedThing that has id '$id' in the source Metabase, but was not found in the target Metabase")
       throw ReplacementException(s"Could not replace $replacedThing id $id with the found ${replacedThing}s in target Metabase")
     }

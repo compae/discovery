@@ -30,12 +30,12 @@ object Identificable {
 
   implicit val identificableTable = new Identificable[Table] {
     type Identifier = (String, String, Option[String])
-    def identifier(table: Table): Identifier = (table.name, table.dbName, table.schema)
+    def identifier(table: Table): Identifier = (table.name, table.db.name, table.schema)
   }
 
   implicit val identificableField = new Identificable[Field] {
     type Identifier = (String, String, String, Option[String])
-    def identifier(field: Field): Identifier = (field.name, field.table.name, field.table.dbName, field.table.schema)
+    def identifier(field: Field): Identifier = (field.name, field.table_name, field.dbName, field.schema)
   }
 
   implicit val identificableDatabase = new Identificable[Database] {
@@ -72,4 +72,8 @@ object Identificable {
     def  identifier(snippet: Snippet) = snippet.name
   }
 
+  implicit val identificableDashboardTab = new Identificable[DashboardTab] {
+    type Identifier = (String, DashboardId)
+    def identifier(tab: DashboardTab): Identifier = (tab.name, tab.dashboard_id)
+  }
 }

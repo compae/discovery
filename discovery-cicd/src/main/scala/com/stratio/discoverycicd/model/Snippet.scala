@@ -6,34 +6,9 @@
 package com.stratio.discoverycicd.model
 
 // This is the model we use to "identify" a metabase Snippet
-case class Snippet(id: BigInt, name: String, content: String, description: String)  {
-
-  def toSnippetPutDto(): SnippetPutDto =
-    SnippetPutDto(
-      name = name,
-      content = content,
-      description = description
-    )
-
-  def toSnippetDto(): SnippetDto =
-    SnippetDto(
-      id = id,
-      name = name,
-      content = content,
-      description = description
-    )
-}
-
-case class SnippetDto(id: BigInt, name: String, content: String, description: String) {
-
-  def toSnippet(): Snippet =
-    Snippet(
-      id = id,
-      name = name,
-      content = content,
-      description = description
-    )
-
-}
-
-case class SnippetPutDto(name: String, content: String, description: String)
+case class Snippet(
+  id: BigInt,
+  name: String,
+  content: String,
+  description: String
+)

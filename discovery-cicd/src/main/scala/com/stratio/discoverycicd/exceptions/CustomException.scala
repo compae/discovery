@@ -15,7 +15,7 @@ import org.json4s.native.Serialization._
 sealed trait CustomException extends Exception with Json4sSupport {
   implicit val formats = DefaultFormats
   implicit val serialization = org.json4s.native.Serialization
-  case class ErrorResponse (statusCode: Int, message: String)
+  case class ErrorResponse(statusCode: Int, message: String)
 
   def msg: String
   def statusCode: StatusCode
@@ -32,6 +32,10 @@ final case class ReplacementException(msg: String) extends CustomException {
 }
 
 final case class DuplicatedEntityException(msg: String) extends CustomException {
+  def statusCode: StatusCode = BadRequest
+}
+
+final case class UnsupportedEntityException(msg: String) extends CustomException {
   def statusCode: StatusCode = BadRequest
 }
 

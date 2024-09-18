@@ -6,7 +6,7 @@
 
 package com.stratio.discoverycicd
 
-import com.stratio.discoverycicd.exceptions.{DuplicatedEntityException, GetDataException, ResponseDeserializationException}
+import com.stratio.discoverycicd.exceptions.{DuplicatedEntityException, GetDataException, ResponseDeserializationException, UnsupportedEntityException}
 import com.stratio.discoverycicd.model.Collection.Models
 import com.stratio.discoverycicd.model._
 import com.stratio.discoverycicd.utils.{ApiClient, Identificable, Logging, MBJson}
@@ -21,11 +21,8 @@ import scala.util.{Failure, Success, Try}
 class Exporter(api: ApiClient) extends Logging {
 
 
-  def exportCollection(collectionId: BigInt) = {
+  def exportCollection(collectionId: BigInt): ExportedCollection = {
     implicit val formats = DefaultFormats
-
-    if (api.humanizationEnabled)
-      log.warn("Metabase seems to have table and field names humanization activated. This will make necessary to get all fields in the DB when importing")
 
     // get collection
     val collection =
@@ -44,6 +41,7 @@ class Exporter(api: ApiClient) extends Logging {
     val collsIdsInColl = getCollsInColl(items)
 
     val cards = getCards(cardIdsInColl)
+    checkNoCsvUploads(cards)
     val dashboards = getDashboards(dashboardIdsInColl)
     val subCollections = getCollections(collsIdsInColl)
     val subscriptions = getSubscriptions(dashboardIdsInColl)
@@ -53,6 +51,7 @@ class Exporter(api: ApiClient) extends Logging {
     // we do not allow to export two entities with the same identifier across metabase instances
     checkDuplicates(cards)
     checkDuplicates(dashboards)
+    checkDuplicates(dashboards.flatMap(_.tabs))
     checkDuplicates(collection :: subCollections)
     checkDuplicates(snippets) // this check could be omitted since the name is a unique identifier within a metabase instance
 
@@ -63,18 +62,16 @@ class Exporter(api: ApiClient) extends Logging {
     // Collect needed DB data to be able to obtain in the target metabase all field, table and database IDs
     val databaseIds = cards.map(_.getDatabaseIds).fold(Set.empty)(_ union _) union MBJson.getDatabaseIds(dashboardsJson)
     val fieldIds = cards.map(_.getFieldIds).fold(Set.empty)(_ union _) union MBJson.getFieldIds(dashboardsJson)
-    val fieldDtos = fieldIds.map(api.getField)
-    val tableIds = cards.map(_.getTableIds).fold(Set.empty)(_ union _)
-      .union(MBJson.getTableIds(dashboardsJson))
-      .union(fieldDtos.map(_.table_id).toSet)
+    val tableIds = cards.map(_.getTableIds).fold(Set.empty)(_ union _) union MBJson.getTableIds(dashboardsJson)
 
     val databases = databaseIds map api.getDatabase
-    val dbId2Name = databases map { db => db.id -> db.name } toMap
-
-    val tables = tableIds.map(api.getTable).map(_.toTable(dbId2Name))
-    val id2Table = tables map { t => t.id -> t } toMap
-
-    val fields = fieldDtos.map(_.toField(id2Table))
+    val tables = api.getAllTables.filter(tableIds contains _.id)
+    val fields = databases.flatMap { db =>
+      api
+        .getFieldsInDb(db.id)
+        .filter(fieldIds contains _.id)
+        .map(_.toField(db.name))
+    }
 
     // Collect permissions data
     val groupIdToName = api.getGroupIdToNameMap
@@ -104,14 +101,13 @@ class Exporter(api: ApiClient) extends Logging {
       cards = cards,
       dashboards = dashboards,
       fields = fields.toList,
-      tables = tables.toList,
+      tables = tables,
       databases = databases.toList,
       subscriptions = subscriptions,
       snippets = snippets,
       collection = collection,
       children = children,
       permissionsPerGroup = permissionsPerGroup,
-      humanizationEnabled = api.humanizationEnabled
     )
   }
 
@@ -144,26 +140,45 @@ class Exporter(api: ApiClient) extends Logging {
     )
   }
 
-  def itemsInColl(collectionId: BigInt) = api.getItemsInCollecton(collectionId)
+  def itemsInColl(collectionId: BigInt): List[CollectionItem] =
+    api.getItemsInCollection(collectionId)
 
-  def getDashboardIdsInColl(items: List[CollectionItem]) =
+  def getDashboardIdsInColl(items: List[CollectionItem]): List[BigInt] =
     items collect { case CollectionItem(id, _, Models.DASHBOARD) => id }
 
-  def getCardIdsInColl(items: List[CollectionItem]) =
+  def getCardIdsInColl(items: List[CollectionItem]): List[BigInt] =
     items collect { case CollectionItem(id, _, Models.CARD | Models.DATASET) => id }
 
-  def getCollsInColl(items: List[CollectionItem]) =
+  def getCollsInColl(items: List[CollectionItem]): List[BigInt] =
     items collect { case CollectionItem(id, _, Models.COLLECTION) => id }
 
-  def getDashboards(dashboardIds: List[BigInt]) = dashboardIds map api.getDashboard
+  def getDashboards(dashboardIds: List[BigInt]): List[Dashboard] =
+    dashboardIds map api.getDashboard
 
-  def getCards(cardIds: List[BigInt]) = cardIds.map(api.getCard).map(_.cleanDescription)
+  def getCards(cardIds: List[BigInt]): List[Card] =
+    cardIds.map(api.getCard).map(_.cleanDescription)
 
-  def getCollections(collIds: List[BigInt]) = collIds map api.getCollection
+  def getCollections(collIds: List[BigInt]): List[Collection] =
+    collIds map api.getCollection
 
-  def getSubscriptions(dashboardIds: List[BigInt]) = dashboardIds flatMap api.getSubscriptions
+  def getSubscriptions(dashboardIds: List[BigInt]): List[Subscription] =
+    dashboardIds flatMap api.getSubscriptions
 
-  def getSnippets(snippetIds: List[BigInt]) = snippetIds.map(api.getSnippet).map(_.toSnippet())
+  def getSnippets(snippetIds: List[BigInt]): List[Snippet] =
+    snippetIds.map(api.getSnippet)
+
+  def checkNoCsvUploads(cards: List[Card]): Unit = {
+    val csvUploadModels = cards
+      .filter(_.`type` contains Collection.Models.DATASET)
+      .filter(_.based_on_upload.isDefined)
+    if (csvUploadModels.nonEmpty) {
+      val msg =
+        "Cannot export. Models based on csv uploads are not supported. The following models based" +
+          s"on csv uploads were found: '${csvUploadModels.map(m => m.id + "-" + m.name).mkString(", ")}'"
+      log.error(msg)
+      throw UnsupportedEntityException(msg)
+    }
+  }
 
   def checkDuplicates[A: Identificable](items: List[A]): Unit = {
     val duplicatedItems = items
@@ -180,7 +195,7 @@ class Exporter(api: ApiClient) extends Logging {
           s"Found the following duplicated items of type $itemType: ${duplicatedItems.toJson}"
 
       log.error(errorMsg)
-      throw new DuplicatedEntityException(errorMsg)
+      throw DuplicatedEntityException(errorMsg)
     }
   }
 

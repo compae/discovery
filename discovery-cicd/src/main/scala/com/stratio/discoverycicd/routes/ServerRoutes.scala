@@ -34,7 +34,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
                 apiClientConfig.allowUnsafeSsl,
                 apiClientConfig.timeoutMetabase
               )
-            if (api.user.body.is_superuser) {
+            if (api.user.is_superuser) {
               val exporter = new Exporter(api)
               complete(exporter.exportCollection(BigInt(id)))
             } else throw UnauthorizedException(unauthorizedReason(sessionId))
@@ -54,7 +54,7 @@ class ServerRoutes()(implicit val system: ActorSystem[_]) extends Json4sSupport 
                       apiClientConfig.allowUnsafeSsl,
                       apiClientConfig.timeoutMetabase
                     )
-                  if (api.user.body.is_superuser) {
+                  if (api.user.is_superuser) {
                     Try {
                       val importer = new Importer(api)
                       importer.importCollection(collection, parentId.map(BigInt.apply))
