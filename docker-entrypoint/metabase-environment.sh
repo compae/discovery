@@ -54,10 +54,10 @@ MB_JETTY_SSL_TRUSTSTORE_PASSWORD="$TRUSTSTORE_PASSWORD"
 MB_JETTY_HOST="127.0.0.1"
 
 if [ "$AUTHENTICATOR" = "gosec-sso" ]; then
-    # we need to set the auth headers that the oauth-proxy will send us down
-    # note that the header map in metabase is always lowercase
-    MB_USER_HEADER="x-dcos-oauth-user"
-    MB_GROUP_HEADER="x-dcos-oauth-groups"
+    # we need to set the correct claim for username of the stratio jwt
+    # (default in stratio-metabase code correspond to Datio case)
+    JWT_USERNAME_CLAIM=${JWT_USERNAME_CLAIM:-"uid"}
+    JWT_PUBLIC_KEY_LOCATION="file"
 fi
 
 
@@ -70,7 +70,7 @@ JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"            # Use UTF-8
 JAVA_OPTS="$JAVA_OPTS --XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 
 # Stratio log format
-JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=/app/target/log4j2.xml"
+JAVA_OPTS="$JAVA_OPTS -Dlog4j2.configurationFile=/app/target/log4j2.xml -Dlog4j2.Script.enableLanguages=javascript"
 
 # JVM memory configuration
 if [[ ! -v JAVA_INITIAL_RAM_PERCENTAGE ]]; then
@@ -114,6 +114,15 @@ fi
 
 export JETTY_LOG_LEVEL
 
+# writes the environment variable whose name is passed as argument
+# to the /env_vars folder only if the variable has a value
+function write_to_file_if_exists() {
+    local variable_name=$1
+    if [ -n "${!variable_name}" ]; then
+        echo "${!variable_name}" > "/env_vars/${variable_name}"
+    fi
+}
+
 ###################################
 ###   PUT VARIABLES IN FILES    ###
 ###################################
@@ -130,12 +139,15 @@ echo "$JAVA_OPTS"                        > /env_vars/JAVA_OPTS
 echo "$AUTHENTICATOR"                    > /env_vars/AUTHENTICATOR
 echo "$JETTY_LOG_LEVEL"                  > /env_vars/JETTY_LOG_LEVEL
 
+write_to_file_if_exists JWT_PUBLIC_KEY_FILE
+write_to_file_if_exists JWT_USERNAME_CLAIM
+write_to_file_if_exists JWT_PUBLIC_KEY_LOCATION
+
 # some default metabase settings we want to set
 echo "/plugins"                          > /env_vars/MB_PLUGINS_DIR
 echo "none"                              > /env_vars/MB_HUMANIZATION_STRATEGY
 echo "false"                             > /env_vars/MB_EMOJI_IN_LOGS
+echo "false"                             > /env_vars/MB_COLORIZE_LOGS
 echo "false"                             > /env_vars/MB_ANON_TRACKING_ENABLED
 echo "false"                             > /env_vars/MB_CHECK_FOR_UPDATES
-if [ -n "$SERVICE_URL" ]; then
-    echo "$SERVICE_URL" > /env_vars/MB_SITE_URL
-fi
+write_to_file_if_exists SERVICE_URL

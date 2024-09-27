@@ -7,7 +7,7 @@
 CREATE FUNCTION stratio_insert_subscription()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-AS $$
+AS '
 BEGIN
   IF NEW.dashboard_id is not null AND NEW.name = (SELECT name FROM report_dashboard WHERE id = NEW.dashboard_id) THEN
     NEW.name := uuid_in(md5(random()::text || random()::text)::cstring);
@@ -16,7 +16,8 @@ BEGIN
     RETURN NEW;
   END IF;
 END;
-$$;
+';
+
 
 CREATE TRIGGER stratio_insert_subscriptions
 BEFORE INSERT ON pulse
@@ -29,7 +30,7 @@ EXECUTE PROCEDURE stratio_insert_subscription();
  CREATE FUNCTION stratio_update_subscription()
  RETURNS TRIGGER
  LANGUAGE plpgsql
- AS $$
+ AS '
  BEGIN
    IF (NEW.dashboard_id IS NULL) THEN
      RETURN NEW;
@@ -38,7 +39,7 @@ EXECUTE PROCEDURE stratio_insert_subscription();
      RETURN NEW;
    END IF;
  END;
- $$;
+ ';
 
 
  CREATE TRIGGER stratio_update_subscriptions

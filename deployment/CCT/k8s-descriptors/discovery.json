@@ -2,12 +2,12 @@
   "parentConfiguration": {
     "serviceName": "stratiobase",
     "model": "default",
-    "version": "13.3.0-SNAPSHOT"
+    "version": "14.4.0-SNAPSHOT"
   },
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "13.3.0-SNAPSHOT",
+    "version": "14.6.0-SNAPSHOT",
     "displayServiceName": "Discovery powered by Metabase",
     "description": "A versatile and powerful data exploration and analysis tool with security that empowers users to intuitively explore, query, and derive insights from diverse datasets.",
     "framework": false,
@@ -17,7 +17,7 @@
         {
           "id": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.43.4-0.3.0",
+          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.0-SNAPSHOT",
           "forcePullImage": true,
           "privileged": false
         }
@@ -41,7 +41,9 @@
           "nginx.ingress.kubernetes.io/proxy-body-size": 0,
           "nginx.ingress.kubernetes.io/proxy-connect-timeout": "${proxyReadTimeout}",
           "nginx.ingress.kubernetes.io/proxy-send-timeout": "${proxyReadTimeout}",
-          "nginx.ingress.kubernetes.io/proxy-read-timeout": "${proxyReadTimeout}"
+          "nginx.ingress.kubernetes.io/proxy-read-timeout": "${proxyReadTimeout}",
+          "nginx.ingress.kubernetes.io/auth-url": "${globals.sso.adminOAuth2ProxyAuthUrl}",
+          "nginx.ingress.kubernetes.io/auth-signin": "${eos.proxyAccessPointURL}/oauth2/start?rd=$scheme://$host$request_uri"
         }
       ],
       "network": {
@@ -135,12 +137,6 @@
         "extended": false
       }
     ],
-    "sso": {
-      "name": "${Application.id}",
-      "clientId": "${Application.id}-oauth-id",
-      "serviceId": "https://${haproxyhost}${haproxypath}/login",
-      "secretPath": "userland/passwords/${Application.id}/oauth"
-    },
     "constraints": [
       {
         "id": "discoveryPlacements",
@@ -238,6 +234,21 @@
             },
             "title": "Deployment environment",
             "default": "keos"
+          },
+          "keosTenantId": {
+            "description": "Tenant where Discovery is deployed.",
+            "type": "string",
+            "required": false,
+            "minimum": 1,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "ui": {
+              "updatable": false
+            },
+            "internalName": "TENANT",
+            "title": "Tenant",
+            "default": "${tenantId}"
           },
           "networking": {
             "type": "object",
@@ -1440,7 +1451,23 @@
             "level": 2,
             "internalName": "OAUTH2_COOKIE_NAME",
             "title": "OAuth2 cookie name",
-            "default": "user"
+            "default": "stratio-cookie"
+          },
+          "oauth2Proxy2LogoutUrl": {
+            "description": "URL where to send users when they logout from Discovery. Should redirect to the logout URL of the KEOS oauth2proxy, which will delete the stratio-cookie. Should include the `rd` query param so that just after logout, if the user logs in again, it will be sent again to Discovery instead of to the KEOS default.",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "required": false,
+            "readOnly": true,
+            "application": false,
+            "level": 2,
+            "internalName": "OAUTH2PROXY_LOGOUT_URL",
+            "ui": {
+              "updatable": false
+            },
+            "title": "OAuth2Proxy logout URL",
+            "default": "${eos.proxyAccessPointURL}/oauth2/sign_out?rd=${serviceURL}"
           },
           "serviceAccountName": {
             "description": "Service account used to deploy",
@@ -1536,46 +1563,6 @@
           "value": null
         },
         {
-          "name": "printInitSecretsCreation",
-          "label": "Init secrets creation log",
-          "type": "io/print",
-          "text": "------------- Instance secrets creation --------------"
-        },
-        {
-          "name": "applicationCertificate",
-          "label": "=> Secrets Creation during install: Creating instance certificate for ${Application.id}",
-          "type": "secret/certificate",
-          "path": "/userland/certificates/${Application.id}",
-          "secretName": "${Application.id}",
-          "commonName": "${Application.id}",
-          "altNames": "${serviceId}-${k8sNamespace}, ${rocketServerHost}, ${serviceId}-${k8sNamespace}.${k8sNamespace}, *.${k8sNamespace}"
-        },
-        {
-          "name": "passwordKeystore",
-          "label": "=> Secrets Creation during install: Creating keystore for ${Application.id}",
-          "type": "secret/password",
-          "path": "/userland/passwords/${Application.id}",
-          "secretName": "keystore",
-          "password": "${randomString(10)}"
-        },
-        {
-          "name": "passwordJwt",
-          "label": "=> Secrets Creation during install: Creating jwtsecret for ${Application.id}",
-          "type": "secret/password",
-          "path": "/userland/passwords/${Application.id}",
-          "secretName": "jwtsecret",
-          "password": "${randomString(10)}"
-        },
-        {
-          "name": "passwordOauth",
-          "label": "=> Secrets Creation during install: Password Oauth for ${Application.id}",
-          "type": "secret/password",
-          "path": "/userland/passwords/${Application.id}",
-          "secretName": "oauth",
-          "user": "${Application.id}-oauth-id",
-          "password": "${randomString(10)}"
-        },
-        {
           "name": "printInitGosecUsersCreation",
           "label": "Init GoSec users creation",
           "type": "io/print",
@@ -1650,14 +1637,64 @@
           ]
         },
         {
+          "label": "Creating ingress for public and passthrough endpoints",
+          "type": "io/print",
+          "text": "Creating ingress for public and passthrough endpoints"
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "networking.k8s.io/v1",
+          "name": "${Application.name}-noauth.${Application.domain}.${external_domain}",
+          "kind": "Ingress",
+          "plural": "Ingresses",
+          "namespace": "${Application.domain}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "enabled": "true"
+        },
+        {
+          "label": "Creating SecretsIdentity to allow access to discovery secretsBundle",
+          "type": "io/print",
+          "text": "Creating SecretsIdentity to allow access to discovery secretsBundle"
+        },
+        {
           "name": "${Application.name}",
           "type": "kubernetes/customresource/create",
-          "apiVersion": "secrets.stratio.com/v1",
+          "apiVersion": "secrets.stratio.com/v2",
           "kind": "SecretsIdentity",
           "plural": "SecretsIdentities",
           "namespace": "${Application.domain}",
-          "spec": "{\"bundles\":[\"${Application.name}\"],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}",
+          "spec": "{\"bundles\":[{\"name\":\"${Application.name}\"}],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}",
           "enabled": "true"
+        },
+        {
+          "label": "Creating SecretsBundle with needed discovery secrets",
+          "type": "io/print",
+          "text": "Creating SecretsBundle with needed discovery secrets"
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "secrets.stratio.com/v2",
+          "name": "${Application.name}",
+          "kind": "SecretsBundle",
+          "plural": "SecretsBundles",
+          "namespace": "${Application.domain}",
+          "spec": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${rocketServerHost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"passwords\": [{\"keyName\": \"pass\", \"name\": \"keystore\", \"length\": 10, \"type\": \"generic\"}], \"mount\": \"userland\"}",
+          "enabled": "true"
+        },
+        {
+          "label": "Creating SecretsIdentity to allow access to public key to validate jwt in stratio-cookie",
+          "type": "io/print",
+          "text": "Creating SecretsIdentity to allow access to public key to validate jwt in stratio-cookie"
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "secrets.stratio.com/v2",
+          "name": "${Application.name}-${Application.domain}",
+          "kind": "SecretsIdentity",
+          "plural": "SecretsIdentities",
+          "namespace": "keos-ingress",
+          "spec": "{\"bundles\":[{\"name\":\"ingress-nginx-controller\",\"passwords\":[{\"name\":\"jwt-keys\",\"subPath\":\"public\"}]}],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}"
         },
         {
           "name": "sleepUntilEverithingConfigured",
@@ -1765,6 +1802,22 @@
           "internalName": "DYNAMIC_MEM_LIMIT",
           "enabled": "${'${general.resources.memResourceType}' == 'Soft'}",
           "value": null
+        },
+        {
+          "label": "Updating ingress for public and passthrough endpoints",
+          "type": "io/print",
+          "text": "Creating ingress for public and passthrough endpoints"
+        },
+        {
+          "type": "kubernetes/customresource/update",
+          "apiVersion": "networking.k8s.io/v1",
+          "name": "${Application.name}-noauth.${Application.domain}.${external_domain}",
+          "kind": "Ingress",
+          "plural": "Ingresses",
+          "namespace": "${Application.domain}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "enabled": "true"
         }
       ],
       "update/pre": [
@@ -1866,6 +1919,51 @@
           "internalName": "DYNAMIC_MEM_LIMIT",
           "enabled": "${'${general.resources.memResourceType}' == 'Soft'}",
           "value": null
+        },
+        {
+          "label": "Creating ingress for public and passthrough endpoints",
+          "type": "io/print",
+          "text": "Creating ingress for public and passthrough endpoints"
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "networking.k8s.io/v1",
+          "name": "${Application.name}-noauth.${Application.domain}.${external_domain}",
+          "kind": "Ingress",
+          "plural": "Ingresses",
+          "namespace": "${Application.domain}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "enabled": "true"
+        },
+        {
+          "label": "Creating SecretsBundle with needed discovery secrets",
+          "type": "io/print",
+          "text": "Creating SecretsBundle with needed discovery secrets"
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "secrets.stratio.com/v2",
+          "name": "${Application.name}",
+          "kind": "SecretsBundle",
+          "plural": "SecretsBundles",
+          "namespace": "${Application.domain}",
+          "spec": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${rocketServerHost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"passwords\": [{\"keyName\": \"pass\", \"name\": \"keystore\", \"length\": 10, \"type\": \"generic\"}], \"mount\": \"userland\"}",
+          "enabled": "true"
+        },
+        {
+          "label": "Creating SecretsIdentity to allow access to public key to validate jwt in stratio-cookie",
+          "type": "io/print",
+          "text": "Creating SecretsIdentity to allow access to public key to validate jwt in stratio-cookie"
+        },
+        {
+          "type": "kubernetes/customresource/create",
+          "apiVersion": "secrets.stratio.com/v2",
+          "name": "${Application.name}-${Application.domain}",
+          "kind": "SecretsIdentity",
+          "plural": "SecretsIdentities",
+          "namespace": "keos-ingress",
+          "spec": "{\"bundles\":[{\"name\":\"ingress-nginx-controller\",\"passwords\":[{\"name\":\"jwt-keys\",\"subPath\":\"public\"}]}],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}"
         }
       ],
       "upgrade/pre": [
@@ -1950,6 +2048,51 @@
           "label": "Print uninstall start log",
           "type": "io/print",
           "text": "Printing uninstall start log"
+        },
+        {
+          "label": "Deleting ingress for public and passthrough endpoints",
+          "type": "io/print",
+          "text": "Deleting ingress for public and passthrough endpoints"
+        },
+        {
+          "type": "kubernetes/customresource/delete",
+          "apiVersion": "networking.k8s.io/v1",
+          "name": "${Application.name}-noauth.${Application.domain}.${external_domain}",
+          "kind": "Ingress",
+          "plural": "Ingresses",
+          "namespace": "${Application.domain}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "enabled": "true"
+        },
+        {
+          "label": "Deleting SecretsBundle with needed discovery secrets",
+          "type": "io/print",
+          "text": "Deleting SecretsBundle with needed discovery secrets"
+        },
+        {
+          "type": "kubernetes/customresource/delete",
+          "apiVersion": "secrets.stratio.com/v2",
+          "name": "${Application.name}",
+          "kind": "SecretsBundle",
+          "plural": "SecretsBundles",
+          "namespace": "${Application.domain}",
+          "spec": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${rocketServerHost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"passwords\": [{\"keyName\": \"pass\", \"name\": \"keystore\", \"length\": 10, \"type\": \"generic\"}], \"mount\": \"userland\"}",
+          "enabled": "true"
+        },
+        {
+          "label": "Deleting SecretsIdentity to allow access to public key to validate jwt in stratio-cookie",
+          "type": "io/print",
+          "text": "Deleting SecretsIdentity to allow access to public key to validate jwt in stratio-cookie"
+        },
+        {
+          "type": "kubernetes/customresource/delete",
+          "apiVersion": "secrets.stratio.com/v2",
+          "name": "${Application.name}-${Application.domain}",
+          "kind": "SecretsIdentity",
+          "plural": "SecretsIdentities",
+          "namespace": "keos-ingress",
+          "spec": "{\"bundles\":[{\"name\":\"ingress-nginx-controller\",\"passwords\":[{\"name\":\"jwt-keys\",\"subPath\":\"public\"}]}],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}"
         }
       ],
       "uninstall/pre": [

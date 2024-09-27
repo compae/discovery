@@ -38,6 +38,7 @@ http {
         }
     }
 
+    # TODO: remove this and go through the 443 server above
     # This server is needed for health check purposes
     server {
         listen 3009;

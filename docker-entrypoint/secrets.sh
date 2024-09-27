@@ -55,6 +55,19 @@ else
     exit 1
 fi
 
+# download jwt validation key from vault
+if [ "$AUTHENTICATOR" = "gosec-sso" ]; then
+  INFO "downloading JWT validation public key downloaed"
+  # populates INGRESS_NGINX_CONTROLLER_KEOS_INGRESS_JWT_KEYS_PUBLIC_USER (KEOS stores the cert in the key "user" ¯\_(ツ)_/¯)
+  if getPass "userland" "ingress-nginx-controller.keos-ingress/jwt-keys" "public"; then
+    INFO "JWT validation public key downloaed successfully from Vault"
+    JWT_PUBLIC_KEY_FILE="/etc/pki/jwt-public-key.pem"
+    echo "$INGRESS_NGINX_CONTROLLER_KEOS_INGRESS_JWT_KEYS_PUBLIC_USER" > "$JWT_PUBLIC_KEY_FILE"
+  else
+    ERROR "Error while downloading from Vault JWT validation public key."
+    exit 1
+  fi
+fi
 
 # all in all, between oauth-base rc.local and this, we have the following secrets
 # - certs in pem format:   /etc/pki/[proxy|discovery].pem and /etc/pki/[proxy|discovery].key
@@ -66,6 +79,9 @@ fi
 #
 # - jks keystore passworkd in env. variable KEYSTORE_PASSWORD
 # - jks trustore passworkd in env. variable TRUSTSTORE_PASSWORD
+#
+# - when using gosec-sso authenticator, we also have the JWT validation key: /etc/pki/jwt-public-key.pem
+#
 
 
 if [[ "$LOG_ACCESS_DATA" = "true" ]]; then

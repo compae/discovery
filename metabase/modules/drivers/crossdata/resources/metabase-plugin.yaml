@@ -19,6 +19,10 @@ driver:
 
     - user
 
+    - name: schema-filters
+      type: schema-filters
+      display-name: Collections to sync
+
     - name: impersonate
       display-name: Connect with Discovery login user?
       default: false
