@@ -17,7 +17,7 @@
         {
           "id": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.0-SNAPSHOT",
+          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.0",
           "forcePullImage": true,
           "privileged": false
         }
