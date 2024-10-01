@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.50.21-0.1.0
+## 0.50.21-0.1.0 (upcoming)
 
 * [ROCK-11848] Update stratio-metabase to 0.50.21-0.1.0
 * [ROCK-12171] SSO via KEOS oauth2proxy
