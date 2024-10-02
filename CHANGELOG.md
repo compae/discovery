@@ -7,6 +7,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-11848] Update stratio-metabase to 0.50.21-0.1.0
 * [ROCK-12171] SSO via KEOS oauth2proxy
 * [ROCK-11267] Fix: Improper tenant validation
+* [ROCK-13006] Fix vulnerabilities: upgrade oauth-base image to 0.4.1
 
 ## 0.43.4-0.3.0 (2024-02-06)
 

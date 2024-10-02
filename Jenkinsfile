@@ -7,7 +7,7 @@ hose {
     DEPLOYONPRS = true
     UPSTREAM_VERSION = '0.50.21'
     VERSIONING_TYPE = "stratioVersion-3-3"
-    ANCHORE_TEST = false
+    GRYPE_TEST = false
 
     DEV = { config ->
         doPackage(config)

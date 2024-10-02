@@ -24,7 +24,7 @@ RUN bin/build-drivers.sh
 # # STAGE 2: runner
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/oauth-base:0.4.0 as runner
+FROM qa.int.stratio.com/stratio/oauth-base:0.4.1 as runner
 
 WORKDIR /app
 
@@ -37,8 +37,7 @@ ENV DISCOVERY_VERSION 0.43.4
 ################################
 # apt things
 RUN apt-get update \
-  &&  apt-get install -y ttf-dejavu fontconfig wget zip \
-  && apt-get --only-upgrade install -y libfreetype6 libssl1.1 openssl libsystemd0 libudev1\
+  &&  apt-get install -y fonts-noto-core fontconfig wget zip \
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/*
 
