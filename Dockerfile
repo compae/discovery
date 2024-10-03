@@ -103,6 +103,10 @@ COPY discovery-cicd/target/discoverycicd-*-uber.jar /app/target/uberjar/discover
 RUN  mv /etc/rc.local /etc/rc.local.base
 COPY rc.local /etc/rc.local
 RUN chmod +x /etc/rc.local
+# since we are overriding the stratio-base's rc.local (so no token will be downloaded to /etc/vault-token)
+# we need to delete the token-handler service, otherwise it will continue crashing and showing in the logs
+# the message 'ERROR - 0 token-handler MainProcess /etc/vault-token must exist'
+RUN rm -rf /etc/service/token-handler
 
 # add metabase and discovery-cicd supervised services
 COPY service /etc/service
