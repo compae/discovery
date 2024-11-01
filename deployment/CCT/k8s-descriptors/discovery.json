@@ -1353,6 +1353,17 @@
               }
             },
             "required": []
+          },
+          "createSampleDatabaseOnInit": {
+            "description": "On new deployments, whether to create or not the Metabase sample database.",
+            "type": "boolean",
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "MB_LOAD_SAMPLE_CONTENT",
+            "title": "Create Metabase sample database",
+            "default": false
           }
         },
         "required": []
