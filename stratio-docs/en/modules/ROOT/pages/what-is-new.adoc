@@ -1,9 +1,11 @@
 ﻿= New developments
 
-These are the latest changes made to _Stratio Discovery_ version *0.43.4-0.2.0* (released in September 2023):
+These are the latest changes made in _Stratio Discovery_ version *0.50.21-0.1.0* (released in October 2024):
 
-* Import and export snippets of SQL code in _discovery-cicd_.
-* Correct handling of questions that have links to other questions or dashboards in _discovery-cicd_.
-* Support for placements and priority classes in _Stratio Discovery_ deployment.
+* Metabase update: version 0.50.21 is now used, although certain functionalities such as actions, models created from CSV, timelines, and alerts are not compatible with the export/import of _discovery-cicd_ collections.
+
+== Breaking changes
+
+* Integration with _Stratio GoSec_ SSO has changed. Now, the Oauth2 flow is delegated to the _oauth2proxy_ of _Stratio KEOS_, and the cookie "discovery-oauth-cookie" is no longer used. Instead, the _stratio-cookie_ cookie is set, which contains a JWT token with user information very similar to the one included in the previous cookie, with the advantage that the rest of Stratio applications recognize this new token. In addition, access to the Metabase API no longer requires the inclusion of this cookie, and only the "metabase.SESSION" cookie is needed. Integrations with the _discovery-cicd_ API that simulated a login to retrieve the "discovery-oauth-cookie" cookie, then retrieve a "metabase.SESSION" cookie, will need to be adjusted to use the new _stratio-cookie_ cookie instead.
 
 TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.

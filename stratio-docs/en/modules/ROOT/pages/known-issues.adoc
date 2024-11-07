@@ -4,17 +4,29 @@
 
 If you experience any issues using _Stratio Discovery_, please refer to the https://www.metabase.com/docs/v0.43/troubleshooting-guide/index.html[Metabase troubleshooting guide].
 
-== I can't correctly specify the file (key) that contains the certificate's private key to create a connection to a PostgreSQL database using SSL.
+== Problem specifying the private key for SSL connection to PostgreSQL®
 
-This is a Metabase bug that was fixed in version 0.42.3 and later. If you have an older version and want to establish an SSL connection with PostgresSQL, please note that `SSL Client Key (PKCS-8/DER or PKCS-12)` `File Path` may not be parsed correctly, and you would have to indicate the associated configuration (`sslkey`) in the `Additional JDBC connection string options` field. This doesn't apply if you use the _Stratio PostgresSQL_ database.
+This is a Metabase bug that was fixed in version 0.42.3 and later. If you have an older version and want to establish an SSL connection with PostgreSQL®, please note that `SSL Client Key (PKCS-8/DER or PKCS-12)` `File Path` may not be parsed correctly, and you would have to indicate the associated configuration (`sslkey`) in the `Additional JDBC connection string options` field. This doesn't apply if you use the _Stratio PostgresSQL_ database.
 
 == When I go to the home page, x-ray scans don't load automatically
+
+NOTE: Fixed in version 0.50.21-0.1.0.
 
 This is a minor issue caused by the authentication layer that adds _Stratio Discovery_ to Metabase. To render the content of the homepage, you need to retrieve some user settings about whether or not to display x-ray suggestions (for example, there are many ways to https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[disable x-ray functionality]. Unfortunately, this call to _get-properties_ isn't authenticated and, due to a race condition, can be executed before calls that set a valid `metabase.SESSION` cookie after login.
 
 Since these properties will be returned if and only if the user is trusted after checking that authentication is complete, if the second call is executed before the first, everything will work correctly, but if it is the opposite, an `undefined` or empty value will be returned that will not be shown on the main page.
 
 The solution to this problem is to refresh the homepage once you've logged in. Since the authentication cookie has already been written, the order of execution will no longer matter.
+
+== Momentary appearance of the "You are not allowed to access Metabase" page on first access to _Stratio Discovery_
+
+This minor problem is due to the authentication layer that _Stratio Discovery_ adds to Metabase. To resolve the race condition described in the previous point, the endpoint that retrieves user configurations has been modified to authenticate users and set them the cookie "metabase.SESSION".
+
+During this process, if the user did not previously exist in the Metabase database, it is automatically created. This can generate a race condition on first access to the application, as both the settings endpoint and the authentication endpoint attempt to create the user simultaneously, sometimes causing the authentication endpoint to fail.
+
+Upon failure, the browser redirects to the unauthorized access page. However, since the session cookie has already been established, the application detects that the user is authenticated and redirects the user back to the Metabase home page.
+
+Although the login completes without problems, the unauthorized login page may appear momentarily, but this only occurs on the first access to _Stratio Discovery_.
 
 == Importing collections returns a timeout
 
@@ -25,6 +37,6 @@ The solution to this problem is to refresh the homepage once you've logged in. S
 
 Due to a security vulnerability discovered in one of the Metabase dependencies, the Metabase artifact distributed with _Stratio Discovery_ is compiled using an updated version of this dependency that no longer contains the vulnerability.
 
-This can cause problems in some cases when the Metabase cache is enabled, if one of the columns of the cached results has a type whose deserialization security cannot be guaranteed by Metabase (this occurs, for example, with PostgreSQL's _interval_ and _json_ types).
+This can cause problems in some cases when the Metabase cache is enabled if one of the columns of the cached results has a type whose deserialization security cannot be guaranteed by Metabase (this occurs, for example, with PostgreSQL®'s _interval_ and _json_ types).
 
 No errors will be returned, but the results obtained from the cache for this particular column cannot be used (they'll contain a map with the non-deserialized bytes "in quarantine"). Note that any user can always manually execute the query (without using the cached data) to get the correct results.
