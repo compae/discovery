@@ -1,6 +1,9 @@
 # Changelog
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
+## 0.50.21-0.1.1 (upcoming)
+
+* [ROCK-13154] Environment variable to avoid the statement cancellation that Metabase does in all queries
 
 ## 0.50.21-0.1.0 (2024-10-07)
 

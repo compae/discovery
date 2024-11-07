@@ -1364,6 +1364,17 @@
             "internalName": "MB_LOAD_SAMPLE_CONTENT",
             "title": "Create Metabase sample database",
             "default": false
+          },
+          "virtualizerSkipStmtCancellation": {
+            "description": "Wheter to skip or not in the Virtualizer driver the Statement cancellation performed by Metabase at the end of all query executions, which may cause problems by not closing and returning the connections to the pool.",
+            "type": "boolean",
+            "required": false,
+            "readOnly": false,
+            "application": false,
+            "level": 1,
+            "internalName": "VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION",
+            "title": "Skip Metabase's Statment final cancellation in Virtualizer driver",
+            "default": true
           }
         },
         "required": []

@@ -4,6 +4,7 @@
    [buddy.core.codecs :as codecs]
    [clojure.java.jdbc :as jdbc]
    [clojure.string :as str]
+   [environ.core :as env]
    [honey.sql :as sql]
    [honey.sql.helpers :as sql.helpers]
    [java-time :as t]
@@ -20,18 +21,21 @@
    [metabase.driver.sql.util.unprepare :as unprepare]
    [metabase.legacy-mbql.util :as mbql.u]
    [metabase.lib.metadata :as lib.metadata]
+   [metabase.query-processor.error-type :as qp.error-type]
    [metabase.query-processor.middleware.limit :as limit]
+   [metabase.query-processor.pipeline :as qp.pipeline]
    [metabase.query-processor.store :as qp.store]
+   [metabase.query-processor.timezone :as qp.timezone]
    [metabase.query-processor.util :as qp.util]
    [metabase.query-processor.util.add-alias-info :as add]
    [metabase.stratio.middleware :as st.mw]
    [metabase.sync.util :as sync-util]
    [metabase.util.date-2 :as u.date]
    [metabase.util.honey-sql-2 :as h2x]
-   [metabase.util.i18n :refer [trs]]
+   [metabase.util.i18n :refer [trs tru]]
    [metabase.util.log :as log])
   (:import
-   (java.sql Connection ResultSet Types)
+   (java.sql Connection ResultSet Types SQLFeatureNotSupportedException)
    (java.time LocalDate OffsetDateTime ZonedDateTime)))
 
 ;; This driver should declare sparksql driver as parent and just override a couple of methods, like those of
@@ -436,6 +440,11 @@
 ;; upgrade (from a version without that setting in the manifest) and do not edit any setting of the crossdata
 ;; conection, the setting will not be present when we recover the database metadata so it will use the default,
 ;; which in metabase is true, we just change that to false :/.
+;;
+;; Another problem with the default implementation of execute-reducible query is is that it always makes a
+;; (.cancel stmt) that does not work well with the virtualizer jdbc. It seems to suspend the Thread and the
+;; execution does not continue, so we never reach the point where we close the connection so the connection
+;; never returns to the pool and once we make max-pool-size queries we no longer can make any query
 (defn execute-reducible-query
   "Default impl of [[metabase.driver/execute-reducible-query]] for sql-jdbc drivers."
   {:added "0.35.0", :arglists '([driver query context respond] [driver sql params max-rows context respond])}
@@ -448,7 +457,48 @@
                     sql)
          max-rows (limit/determine-query-max-rows outer-query)]
      ;; we do not copy/paste the other arity implementation and just call the sql-jdbc.excute one directly
-     (sql-jdbc.execute/execute-reducible-query driver sql params max-rows context respond))))
+     (execute-reducible-query driver sql params max-rows context respond)))
+
+  ([driver sql params max-rows _context respond]
+   (sql-jdbc.execute/do-with-connection-with-options
+    driver
+    (lib.metadata/database (qp.store/metadata-provider))
+    {:session-timezone (qp.timezone/report-timezone-id-if-supported driver (lib.metadata/database (qp.store/metadata-provider)))}
+    (fn [^Connection conn]
+      (with-open [stmt          (sql-jdbc.execute/statement-or-prepared-statement driver conn sql params qp.pipeline/*canceled-chan*)
+                  ^ResultSet rs (try
+                                  ;; <STRATIO - #' is a hack to be able to access the private defn >
+                                  (#'sql-jdbc.execute/execute-statement-or-prepared-statement! driver stmt max-rows params sql)
+                                  (catch Throwable e
+                                    (throw (ex-info (tru "Error executing query: {0}" (ex-message e))
+                                                    {:driver driver
+                                                     :sql    (str/split-lines (driver/prettify-native-form driver sql))
+                                                     :params params
+                                                     :type   qp.error-type/invalid-query}
+                                                    e))))]
+        (let [rsmeta           (.getMetaData rs)
+              results-metadata {:cols (sql-jdbc.execute/column-metadata driver rsmeta)}]
+          (try (respond results-metadata (sql-jdbc.execute/reducible-rows driver rs rsmeta qp.pipeline/*canceled-chan*))
+               ;; Following cancels the statment on the dbms side.
+               ;; It avoids blocking `.close` call, in case we reduced the results subset eg. by means of
+               ;; [[metabase.query-processor.middleware.limit/limit-xform]] middleware, while statment is still
+               ;; in progress. This problem was encountered on Redshift. For details see the issue #39018.
+               ;; It also handles situation where query is canceled through [[qp.pipeline/*canceled-chan*]] (#41448).
+               (finally
+                 ;; TODO: Following `when` is in place just to find out if vertica is flaking because of cancelations.
+                 ;;       It should be removed afterwards!
+                 ;; < STRATIO - include our :crossdata driver in the exception
+                 (when-not (or (= :vertica driver)
+                               (and (= :crossdata driver)
+                                    (= (:virtualizer-driver-skip-stmt-cancellation env/env) "true")))
+                   ;; when-not (= :vertica driver)
+                   ;; STRATIO >
+                   (try (.cancel stmt)
+                        (catch SQLFeatureNotSupportedException _
+                          (log/warnf "Statemet's `.cancel` method is not supported by the `%s` driver."
+                                     (name driver)))
+                        (catch Throwable _
+                          (log/warn "Statement cancelation failed."))))))))))))
 ;; STRATIO />
 
 ;; < STRATIO - We modify execute-reducible-query to add impersonation, and to join all lines in
