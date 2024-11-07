@@ -2,7 +2,7 @@
   "parentConfiguration": {
     "serviceName": "stratiobase",
     "model": "default",
-    "version": "14.4.0-SNAPSHOT"
+    "version": "14.6.0-SNAPSHOT"
   },
   "data": {
     "serviceName": "discovery",
@@ -30,7 +30,7 @@
           "id": "https_haproxyhost",
           "portIndex": 1,
           "vhost": "${haproxyhost}",
-          "path": "",
+          "path": "${haproxypath}",
           "redirectHttpToHttps": true,
           "includePortName": false,
           "sticky": false,
@@ -284,7 +284,7 @@
                 "required": true,
                 "readOnly": true,
                 "application": false,
-                "level": 2,
+                "level": 1,
                 "internalName": "HIDDEN_HA",
                 "title": "URL path to access your Discovery service",
                 "default": "/${Application.name}"
@@ -1659,7 +1659,7 @@
           "kind": "Ingress",
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
-          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
           "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
           "enabled": "true"
         },
@@ -1826,7 +1826,7 @@
           "kind": "Ingress",
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
-          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
           "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
           "enabled": "true"
         }
@@ -1943,7 +1943,7 @@
           "kind": "Ingress",
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
-          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
           "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
           "enabled": "true"
         },
@@ -2072,7 +2072,7 @@
           "kind": "Ingress",
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
-          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"/${Application.name}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
+          "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
           "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
           "enabled": "true"
         },
