@@ -17,7 +17,7 @@
         {
           "id": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.0",
+          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.1",
           "forcePullImage": true,
           "privileged": false
         }
@@ -1373,7 +1373,7 @@
             "application": false,
             "level": 1,
             "internalName": "VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION",
-            "title": "Skip Metabase's Statment final cancellation in Virtualizer driver",
+            "title": "Skip Metabase's Statement final cancellation in Virtualizer driver",
             "default": true
           }
         },
