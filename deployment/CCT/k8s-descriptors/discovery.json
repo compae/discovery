@@ -31,6 +31,7 @@
           "portIndex": 1,
           "vhost": "${haproxyhost}",
           "path": "${haproxypath}",
+          "contextPath": false,
           "redirectHttpToHttps": true,
           "includePortName": false,
           "sticky": false,
