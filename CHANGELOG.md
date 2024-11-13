@@ -1,6 +1,10 @@
 # Changelog
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
+## 0.50.21-0.1.2 (upcoming)
+
+* [ROCK-13158] Fix: downgrade Crossdata JDBC to 2.27.0-83e371f (fix queries in virtualizer +2k rows)
+
 ## 0.50.21-0.1.1 (2024-11-07)
 
 * [ROCK-13154] Environment variable to avoid the statement cancellation that Metabase does in all queries
