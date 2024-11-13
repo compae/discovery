@@ -1,7 +1,7 @@
 # Changelog
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
-## 0.50.21-0.1.2 (upcoming)
+## 0.50.21-0.1.2 (2024-11-13)
 
 * [ROCK-13158] Fix: downgrade Crossdata JDBC to 2.27.0-83e371f (fix queries in virtualizer +2k rows)
 
