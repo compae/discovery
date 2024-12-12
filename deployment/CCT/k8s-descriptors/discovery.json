@@ -1355,29 +1355,51 @@
             },
             "required": []
           },
-          "createSampleDatabaseOnInit": {
-            "description": "On new deployments, whether to create or not the Metabase sample database.",
-            "type": "boolean",
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 1,
-            "internalName": "MB_LOAD_SAMPLE_CONTENT",
-            "title": "Create Metabase sample database",
-            "default": false
+          "metabase": {
+            "type": "object",
+            "additionalProperties": false,
+            "ui": {
+              "component": "accordion"
+            },
+            "name": "metabase",
+            "title": "Metabase",
+            "description": "Metabase-related settings",
+            "properties": {
+              "createSampleDatabaseOnInit": {
+                "description": "On new deployments, whether to create or not the Metabase sample database.",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "MB_LOAD_SAMPLE_CONTENT",
+                "title": "Create Metabase sample database",
+                "default": false
+              },
+              "virtualizerSkipStmtCancellation": {
+                "description": "Wheter to skip or not in the Virtualizer driver the Statement cancellation performed by Metabase at the end of all query executions, which may cause problems by not closing and returning the connections to the pool.",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION",
+                "title": "Skip Metabase's Statement final cancellation in Virtualizer driver",
+                "default": true
+              },
+              "extrajars": {
+                "description": "Comma-separated list of URLs with JARs that will be downloaded and added to Metabase plugins folder. You can add here new metabase-plugins, or dependencies that other metabase-plugins need, suchs us the Oracle metabase-plugin that needs the Oracle JDBC driver.",
+                "type": "string",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "EXTRA_JARS",
+                "title": "Extra JARs to add to metabase plugins folder",
+                "default": ""
+              }
+            }
           },
-          "virtualizerSkipStmtCancellation": {
-            "description": "Wheter to skip or not in the Virtualizer driver the Statement cancellation performed by Metabase at the end of all query executions, which may cause problems by not closing and returning the connections to the pool.",
-            "type": "boolean",
-            "required": false,
-            "readOnly": false,
-            "application": false,
-            "level": 1,
-            "internalName": "VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION",
-            "title": "Skip Metabase's Statement final cancellation in Virtualizer driver",
-            "default": true
-          }
-        },
         "required": []
       },
       "environment": {

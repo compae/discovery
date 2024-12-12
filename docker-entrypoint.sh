@@ -16,6 +16,9 @@ if [[ "$DOWNLOAD_SECRETS" = "true" ]]; then
   source /docker-entrypoint/crossdata.sh
 fi
 
+# download extra jars
+source /docker-entrypoint/extra-jars.sh
+
 # set cicd configuration
 source /docker-entrypoint/cicd-conf.sh
 
