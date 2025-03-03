@@ -1234,10 +1234,10 @@
                 "required": false,
                 "readOnly": false,
                 "application": false,
-                "level": 2,
+                "level": 1,
                 "internalName": "DISCOVERY_CICD_API_IMPORT_TIMEOUT",
                 "title": "Akka request timeout. Import operation.",
-                "default": "200s"
+                "default": "300s"
               },
               "akkaRequestTimeoutExport": {
                 "description": "Akka request timeout for Discovery-cicd api. Specific to Export operation.",
@@ -1247,7 +1247,7 @@
                 "required": false,
                 "readOnly": false,
                 "application": false,
-                "level": 2,
+                "level": 1,
                 "internalName": "DISCOVERY_CICD_API_EXPORT_TIMEOUT",
                 "title": "Akka request timeout. Export operation.",
                 "default": "60s"

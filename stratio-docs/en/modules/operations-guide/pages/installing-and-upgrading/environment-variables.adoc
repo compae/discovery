@@ -293,7 +293,7 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 
 | DISCOVERY_CICD_API_IMPORT_TIMEOUT
 | Akka timeout in seconds for import service requests.
-| 200s
+| 300s
 | No
 | String
 |
