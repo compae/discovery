@@ -33,6 +33,7 @@ case class Dashboard(
 
   def replaceFieldIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail(this, "Field") {
     _.copy(dashcards = dashcards.map(_.replaceFieldIds(replacements)))
+      .copy(parameters = MBJson.replaceFieldIds(parameters, replacements))
   }
 
   def replaceTableIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail(this, "Table") {
@@ -45,6 +46,7 @@ case class Dashboard(
 
   def replaceCardIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail(this, "Card") {
     _.copy(dashcards = dashcards.map(_.replaceCardIds(replacements)))
+      .copy(parameters = MBJson.replaceCardIds(parameters, replacements))
   }
 
   def replaceCollectionId(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail(this, "Collection") {
