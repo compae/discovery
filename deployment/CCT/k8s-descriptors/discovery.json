@@ -1387,6 +1387,17 @@
                 "title": "Skip Metabase's Statement final cancellation in Virtualizer driver",
                 "default": true
               },
+              "virtualizerHexEncodeSqlParams": {
+                "description": "In order to prevent SQL injection, whether to hex-encode the user-provided parameters in SQL queries or just escape the special characters. Note that if Virtualizer resolves the query natively, some datastores won't be able to hex-decode the parameter, making the query fail.",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "VIRTUALIZER_DRIVER_HEX_ENCODE_SQL_PARAMS",
+                "title": "Hex-encode user-provided parameters in SQL queries",
+                "default": false
+              },
               "extrajars": {
                 "description": "Comma-separated list of URLs with JARs that will be downloaded and added to Metabase plugins folder. You can add here new metabase-plugins, or dependencies that other metabase-plugins need, suchs us the Oracle metabase-plugin that needs the Oracle JDBC driver.",
                 "type": "string",

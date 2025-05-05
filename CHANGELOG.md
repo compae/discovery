@@ -6,6 +6,9 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 * Add env. variable to download extra jars to the plugins folder
 * [ROCK-13601] Support filter values from other questions in discovery-cicd
+* [ROCK-13616] Make param splicing style in Crossdata MB driver configurable (whether to hex-encode params in sql or not)
+* [ROCK-13627] Fix Virtualizer driver: support syncing schema and table names with hyphens (bump virtualizer jdbc to 2.31.0)
+* [ROCK-13689] Fix Virtualizer driver: use correct SQL dialect to prettify SQL
 
 ## 0.50.21-0.1.2 (2024-11-13)
 

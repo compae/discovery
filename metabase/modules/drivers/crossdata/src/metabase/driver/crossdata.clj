@@ -9,6 +9,7 @@
    [honey.sql.helpers :as sql.helpers]
    [java-time :as t]
    [metabase.api.common :as api]
+   [metabase.config :as config]
    [metabase.driver :as driver]
    [metabase.driver.sql-jdbc.common :as sql-jdbc.common]
    [metabase.driver.sql-jdbc.connection :as sql-jdbc.conn]
@@ -412,7 +413,7 @@
    database
    nil
    (fn [conn]
-     (jdbc/query {:connection conn} [(format "refresh table %s.%s" schema table-name)]))))
+     (jdbc/query {:connection conn} [(format "refresh table `%s`.`%s`" schema table-name)]))))
 
 (defn- empty-table-metadata
   [table]
@@ -505,6 +506,9 @@
 ;; the sql query (removing comments) so we can have multiline queries with the crossdata driver.
 ;; Ideally this should be handled by the crossdata jdbc, but as of now it interpret newlines
 ;; as separate queries (and it only return the results of the first query/line ¯\_(ツ)_/¯)
+;;
+;; also, we make the splicing style configurable via environment variable
+;; (the :paranoid one gives problems with the virtualizer integration with cdata)
 (defn- is-comment?
   [line]
   (str/starts-with? (str/trim line) "--"))
@@ -523,13 +527,20 @@
 (defn- current-user []
   (:first_name @api/*current-user*))
 
+(def ^:private configured-param-splice-style
+  "read value form environment variable VIRTUALIZER_DRIVER_HEX_ENCODE_SQL_PARAMS with default to not :friendly"
+  (let [hex-encode-sql-params? (config/config-bool :virtualizer-driver-hex-encode-sql-params)]
+    (if hex-encode-sql-params? :paranoid :friendly)))
+
 ;; bound variables are not supported in Spark SQL (maybe not Hive either, haven't checked)
 (defmethod driver/execute-reducible-query :crossdata
   [driver {{sql :query, :keys [params], :as inner-query} :native, :as outer-query} context respond]
   (let [inner-query (-> (assoc inner-query
                                :remark (qp.util/query->remark :crossdata outer-query)
                                :query  (if (seq params)
-                                         (binding [*param-splice-style* :paranoid]
+                                         ;; < STRATIO splice style configurable (in spark driver it is hardoced to :paranoid)
+                                         (binding [*param-splice-style* configured-param-splice-style]
+                                           ;;  STRATIO >
                                            (unprepare/unprepare driver (cons sql params)))
                                          sql)
                                :max-rows (mbql.u/query->max-rows-limit outer-query))
@@ -603,3 +614,12 @@
 (defmethod sql.qp/quote-style :crossdata
   [_driver]
   :mysql)
+
+;; ******** things not in sparksql or hive_like driver but that we need to implement ***************
+
+;; so that SQL gets prettyfied correctly (we need to use sparksql dialect)
+;; without this, with the default dialect, when prettyfing it introduces spaces in the backquoted entity names:
+;;   "select * from `table`" -> "selct * from ` table `"
+(defmethod driver/prettify-native-form :crossdata
+  [driver native-form]
+  (sql.u/format-sql-and-fix-params :sparksql native-form))
