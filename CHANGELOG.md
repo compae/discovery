@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.50.21-0.1.3 (upcoming)
+## 0.50.21-0.1.3 (2025-05-12)
 
 * Add env. variable to download extra jars to the plugins folder
 * [ROCK-13601] Support filter values from other questions in discovery-cicd
