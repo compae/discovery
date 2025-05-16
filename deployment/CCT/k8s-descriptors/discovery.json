@@ -1410,8 +1410,9 @@
                 "default": ""
               }
             }
+            "required": []
           },
-        "required": []
+        },
       },
       "environment": {
         "type": "object",
