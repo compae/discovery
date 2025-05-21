@@ -2,12 +2,12 @@
   "parentConfiguration": {
     "serviceName": "stratiobase",
     "model": "default",
-    "version": "14.6.1-SNAPSHOT"
+    "version": "14.6.4-SNAPSHOT"
   },
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "14.6.1-SNAPSHOT",
+    "version": "14.6.4-SNAPSHOT",
     "displayServiceName": "Discovery powered by Metabase",
     "description": "A versatile and powerful data exploration and analysis tool with security that empowers users to intuitively explore, query, and derive insights from diverse datasets.",
     "framework": false,
@@ -17,8 +17,8 @@
         {
           "id": "com.stratio.tais.persistence.model.service.container.DockerRunner",
           "typeClass": "com.stratio.tais.persistence.model.service.container.DockerRunner",
-          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.2",
-          "forcePullImage": true,
+          "image": "${eos.dockerRegistry}/discovery:0.50.21-0.1.3",
+          "forcePullImage": false,
           "privileged": false
         }
       ],
@@ -95,23 +95,6 @@
       "K8sReadinessHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.readinessProbePeriodSeconds}, failureThreshold ${general.probes.readinessProbeFailureThreshold}, timeoutSeconds ${general.probes.readinessProbeTimeoutSeconds}, successThreshold 1, httpHeaders {})",
       "K8sStartupHttp(path /api/health, port healthcheck, scheme HTTP, periodSeconds ${general.probes.startupProbePeriodSeconds}, failureThreshold ${general.probes.startupProbeFailureThreshold}, timeoutSeconds ${general.probes.startupProbeTimeoutSeconds}, successThreshold 1, terminationGracePeriodSeconds 30, httpHeaders {})"
     ],
-    "healthChecks": {
-      "tcp": [],
-      "http": [
-        {
-          "id": "healthcheckApiHealth",
-          "gracePeriodSeconds": 200,
-          "intervalSeconds": 60,
-          "maxConsecutiveFailures": 2,
-          "port": 3009,
-          "path": "/api/health",
-          "secure": false,
-          "timeoutSeconds": 10,
-          "delaySeconds": 15
-        }
-      ],
-      "command": []
-    },
     "secrets": {
       "appRole": "role",
       "secretRole": "${approlename}"
@@ -1409,10 +1392,10 @@
                 "title": "Extra JARs to add to metabase plugins folder",
                 "default": ""
               }
-            }
+            },
             "required": []
-          },
-        },
+          }
+        }
       },
       "environment": {
         "type": "object",
