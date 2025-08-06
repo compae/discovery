@@ -1,13 +1,5 @@
 = Actualización de versión
 
-[IMPORTANT]
-====
-Para instalar o actualizar servicios del Universo 14.0 en un entorno con _Core_ 13.2 es necesario tener la versión 0.8.5 o superior de _Stratio KEOS_ (que incluye _cct-paas-services:0.6.6_) y se debe desmarcar la casilla "Using Core >= R4 in the cluster. (WARNING: if you check this parameter using a Core prior to R4 the deployment may fail)" de la sección 'General' en el formulario del servicio. Si se deja marcada, fallará el despliegue del servicio.
-
-image::r4_warning_cct.png[]
-
-====
-
 _Stratio Discovery_ no necesita ningún mecanismo de actualización. De esta forma, para realizar una actualización efectiva, simplemente actualiza la versión de _Stratio Discovery_ desde _Stratio Command Center_.
 
 Aún así, *puede haber algunas discrepancias con respecto a las versiones anteriores de los descriptores y es posible que se necesiten algunos pequeños cambios en algunas definiciones de bases de datos*, se recomienda encarecidamente leer las siguientes secciones.

@@ -2,12 +2,12 @@
   "parentConfiguration": {
     "serviceName": "stratiobase",
     "model": "default",
-    "version": "14.6.4-SNAPSHOT"
+    "version": "15.0.0-SNAPSHOT"
   },
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "14.6.4-SNAPSHOT",
+    "version": "15.0.0-SNAPSHOT",
     "displayServiceName": "Discovery powered by Metabase",
     "description": "A versatile and powerful data exploration and analysis tool with security that empowers users to intuitively explore, query, and derive insights from diverse datasets.",
     "framework": false,
@@ -619,11 +619,6 @@
                 "level": 1,
                 "internalName": "CPU_RESOURCE_TYPE",
                 "title": "CPU resource type",
-                "ui": {
-                  "visible": {
-                    "advancedcct": true
-                  }
-                },
                 "enum": [
                   "Guaranteed",
                   "Hard",
@@ -653,8 +648,7 @@
                 "title": "CPUs Limit",
                 "ui": {
                   "visible": {
-                    "cpuResourceType": "Hard",
-                    "advancedcct": true
+                    "cpuResourceType": "Hard"
                   }
                 }
               },
@@ -667,11 +661,6 @@
                 "level": 1,
                 "internalName": "MEM_RESOURCE_TYPE",
                 "title": "Memory resource type",
-                "ui": {
-                  "visible": {
-                    "advancedcct": true
-                  }
-                },
                 "enum": [
                   "Guaranteed",
                   "Hard",
@@ -701,8 +690,7 @@
                 "title": "Memory limit (MB)",
                 "ui": {
                   "visible": {
-                    "memResourceType": "Hard",
-                    "advancedcct": true
+                    "memResourceType": "Hard"
                   }
                 }
               },
@@ -750,10 +738,7 @@
             "type": "object",
             "additionalProperties": false,
             "ui": {
-              "component": "accordion",
-              "visible": {
-                "advancedcct": true
-              }
+              "component": "accordion"
             },
             "name": "probes",
             "title": "Probes",
