@@ -5,7 +5,7 @@ hose {
     DEVTIMEOUT = 45
     RELEASETIMEOUT = 45
     DEPLOYONPRS = true
-    UPSTREAM_VERSION = '0.50.21'
+    UPSTREAM_VERSION = '0.55.11'
     VERSIONING_TYPE = "stratioVersion-3-3"
     GRYPE_TEST = false
 
