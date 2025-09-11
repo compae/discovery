@@ -1,7 +1,5 @@
 = Instalación y actualización
 
-:warning-caption: ADVERTENCIA
-
 WARNING: Se recomienda encarecidamente instalar _Stratio Discovery_ a través de _Stratio Command Center_, ya que este último se encarga de generar los secretos necesarios, registrar el servicio y completar automáticamente las variables de todo el entorno en el momento del despliegue.
 
 Consulta las siguientes guías detalladas para iniciar el proceso:

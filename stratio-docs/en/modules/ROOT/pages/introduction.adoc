@@ -1,10 +1,10 @@
 ﻿= Introduction
 
-_Stratio Discovery_ is a data discovery and dashbooarding tool that is part of _Stratio Augmented Data Fabric_. It is a simple and powerful *analytical tool* that lets you learn and make decisions based on company data without requiring any technical knowledge (not even SQL).
+_Stratio Discovery_ is a data discovery and dashbooarding tool that is part of _Stratio Generative AI Data Fabric_. It is a simple and powerful *analytical tool* that lets you learn and make decisions based on company data without requiring any technical knowledge (not even SQL).
 
 Because it can connect with data and metadata and in order to understand the information you are looking for, it lets you easily generate dashboards and reports, even if the location of the data is unknown.
 
-_Stratio Discovery_ offers a secure native connection to the _Stratio Augmented Data Fabric_ data processing infrastructure (it has drivers developed specifically for _Stratio {modulename}_ and _Stratio PostgreSQL_) as well as other data sources such as Oracle, MySQL, PostgreSQL, MongoDB, Google Analytics, BigQuery or Amazon Redshift.
+_Stratio Discovery_ offers a secure native connection to the _Stratio Generative AI Data Fabric_ data processing infrastructure (it has drivers developed specifically for _Stratio {modulename}_ and _Stratio PostgreSQL_) as well as other data sources such as Oracle, MySQL, PostgreSQL®, MongoDB, Google Analytics, BigQuery or Amazon Redshift.
 
 image::introduction.png[]
 

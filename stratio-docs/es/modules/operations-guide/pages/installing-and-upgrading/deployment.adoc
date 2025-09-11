@@ -2,7 +2,7 @@
 
 == Configuración
 
-Es posible desplegar _Stratio Discovery_ a través de _Stratio Command Center_ haciendo clic en *'Services' → 'Deploy a service'* (botón azul).
+Es posible desplegar _Stratio Discovery_ a través de _Stratio Command Center_ haciendo clic en *'Services' → 'Deploy service'* (botón azul).
 
 image::cct_services_list_discovery_deployment_0001.png[]
 
@@ -28,7 +28,7 @@ image::cct_select_tenant_namespace_discovery_deployment_0005.png[]
 
 ==== Almacén de metadatos de la aplicación
 
-_Stratio Command Center_ te permite elegir el _Stratio PostgreSQL_ disponible en el _cluster_ para conectarte. Hay dos selectores de detección de servicios: el primero se usa para construir la URL y podría ser PostgreSQL o PgBouncer, el segundo se utiliza para crear las políticas y la base de datos. Ten en cuenta que ambos campos deben ser coherentes.
+_Stratio Command Center_ te permite elegir el _Stratio PostgreSQL_ disponible en el _cluster_ para conectarte. Hay dos selectores de detección de servicios: el primero se usa para construir la URL y podría ser PostgreSQL® o PgBouncer, el segundo se utiliza para crear las políticas y la base de datos. Ten en cuenta que ambos campos deben ser coherentes.
 
 ==== Definir _placements_ para _Stratio Discovery_
 

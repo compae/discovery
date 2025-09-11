@@ -1,10 +1,8 @@
-= Configurar ACL para PostgreSQL
+= Configurar ACL para PostgreSQL®
 
-_Stratio Discovery_ utiliza la base de datos de _Stratio PostgresSQL Framework_ para funcionar correctamente y necesita autorización para acceder a ella. Los permisos necesarios se pueden administrar a través de _Stratio GoSec_, que es el servicio proporcionado por la plataforma _Stratio Augmented Data Fabric_ que centraliza la autorización de usuarios y servicios a diferentes bases de datos u otros servicios.
+_Stratio Discovery_ utiliza la base de datos de _Stratio PostgresSQL Framework_ para funcionar correctamente y necesita autorización para acceder a ella. Los permisos necesarios se pueden administrar a través de _Stratio GoSec_, que es el servicio proporcionado por la plataforma _Stratio Generative AI Data Fabric_ que centraliza la autorización de usuarios y servicios a diferentes bases de datos u otros servicios.
 
 Para configurar correctamente los permisos necesarios para _Stratio Discovery_, sigue los pasos a continuación.
-
-:warning-caption: ADVERTENCIA
 
 WARNING: Ten en cuenta que, si instalas a través de _Stratio Command Center_, estos pasos se realizan automáticamente.
 

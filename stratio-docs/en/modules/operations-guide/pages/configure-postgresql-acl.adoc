@@ -1,6 +1,6 @@
-﻿= Configuring ACL for PostgreSQL
+﻿= Configuring ACL for PostgreSQL®
 
-_Stratio Discovery_ uses the _Stratio PostgresSQL Framework_ database to function properly and needs authorization to be able to access it. The necessary permissions are managed through _Stratio GoSec_, which is the service in the _Stratio Augmented Data Fabric_ platform that centralizes the authorization of users and services to different databases or other services.
+_Stratio Discovery_ uses the _Stratio PostgresSQL Framework_ database to function properly and needs authorization to be able to access it. The necessary permissions are managed through _Stratio GoSec_, which is the service in the _Stratio Generative AI Data Fabric_ platform that centralizes the authorization of users and services to different databases or other services.
 
 Follow the steps below to properly configure the necessary permissions for _Stratio Discovery_.
 
@@ -10,7 +10,7 @@ WARNING: Note that these steps are carried out automatically if you install usin
 
 To grant permissions on the data stores that are needed for the application to function properly, there must be a service user associated with the _Stratio Discovery_ instance in _Stratio GoSec_.
 
-If this service user already exists in the enterprise identity provider (LDAP or Active Directory), it should already be included in _Stratio GoSec_ and you don't need to do anything else. However, if a service user doesn't yet exist, you'll need to create one in the _Stratio GoSec_ application by clicking the "Create user" button. You'll then be prompted for the new user's name, identifier and email address:
+If this service user already exists in the enterprise identity provider (LDAP or Active Directory), it should already be included in _Stratio GoSec_ and you don't need to do anything else. However, if a service user doesn't yet exist, you'll need to create one in the _Stratio GoSec_ application by clicking on the "Create user" button. You'll then be prompted for the new user's name, identifier and email address:
 
 * The name field is what will be displayed in the _Stratio GoSec_ interface.
 * The ID field is the most important because it will be compared with the authentication credentials provided by the user - in the case of _Stratio Discovery_, the _Common Name_ of the TLS certificate. Remember that this certificate xref:operations-guide:installing-and-upgrading/prerequisites.adoc[is stored in Vault] and that your CN must match the implementation's `DISCOVERY_INSTANCE_NAME` variable.

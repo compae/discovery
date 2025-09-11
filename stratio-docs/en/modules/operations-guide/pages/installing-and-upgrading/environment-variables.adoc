@@ -236,7 +236,7 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 |
 
 | MB_DB_SSL
-| Secure TLS connection with PostgreSQL.
+| Secure TLS connection with PostgreSQL®.
 | _false_
 | Yes
 | Boolean

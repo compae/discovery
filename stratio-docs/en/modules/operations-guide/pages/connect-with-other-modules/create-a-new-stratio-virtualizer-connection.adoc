@@ -2,13 +2,13 @@
 
 The following information explains how you can connect to _Stratio {modulename}_ with or without TLS. To do this, complete the following parameters:
 
-* *Name*: choose a name for your database.
+* *Display name*: choose a name for your database.
 * *Host*: host address of _Stratio {modulename}_. In a Kubernetes environment, the host is composed of `${serviceName}.${Namespace}`. For example: _virtualizer.stratio-datastore_.
 * *Port*: if the _Stratio {modulename}_ service was deployed through _Stratio Command Center_ in a Kubernetes environment, the default port is `13422` (in Mesos, the default port was `8000`).
-* *Database username*: is the _Stratio {modulename}_ user and its value has to be equal to the `DISCOVERY_INSTANCE_NAME` parameter in the xref:operations-guide:installing-and-upgrading/deployment.adoc[_Stratio Discovery_ deployment].
+* *Username*: is the _Stratio {modulename}_ user and its value has to be equal to the `DISCOVERY_INSTANCE_NAME` parameter in the xref:operations-guide:installing-and-upgrading/deployment.adoc[_Stratio Discovery_ deployment].
 * *Connect with Discovery login user?*: click "yes" to enable impersonation.
 * *Use a secure connection (SSL)?*: if you enable this option the connection will be established with TLS. Otherwise, the connection will be without TLS.
-* *Additional parameters*: read carefully xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes [the _Stratio {modulename}_ documentation] if you want to add parameters to the JDBC connection URL.
+* *Additional JDBC connection string options*: read carefully xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes [the _Stratio {modulename}_ documentation] if you want to add parameters to the JDBC connection URL.
 * *Large database*: check to minimize data synchronization.
 
 image::crossdata_configuration.png[]
@@ -33,7 +33,7 @@ TIP: For more information, see the xref:stratio-gosec:ROOT:introduction.adoc[_St
 
 == Impersonation in _Stratio {modulename}_
 
-If you want a more detailed audit of who made which query, you need to enable impersonation. To do this, just activate the 'Connect with Discovery login user' option.
+If you want a more detailed audit of who made which query, you need to enable impersonation. To do this, just activate the "Connect with Discovery login user?" option.
 
 IMPORTANT: Due to compatibility issues, this feature was disabled in all _Stratio Discovery_ versions after 0.33.x, but is now available again starting with version 0.39.1 and later.
 

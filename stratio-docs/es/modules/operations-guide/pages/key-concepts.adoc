@@ -38,7 +38,7 @@ Sabemos que queremos conectar Metabase, nuestra aplicación, con una o más base
 
 Desafortunadamente, creamos mecanismos de intercomunicación que pueden ser tan engorrosos y complejos como las comunicaciones entre humanos de diferentes idiomas.
 
-Si crees que sabes cómo interactúan un _driver_ y un JDBC, puedes saltarte la siguiente sección y dirigirte directamente a donde se explican los xref:operations-guide:key-concepts.adoc#_jdbc_y_drivers_en_metabase[JDBC y _drivers_ en Metabase]. De lo contrario, ¡abróchate el cinturón de seguridad!
+Si crees que sabes cómo interactúan un _driver_ y un JDBC, puedes saltarte la siguiente sección y dirigirte directamente a donde se explican los xref:operations-guide:key-concepts.adoc#_jdbc_y_drivers_en_metabase[JDBC y __drivers__ en Metabase]. De lo contrario, ¡abróchate el cinturón de seguridad!
 
 === Una historia de dificultades de intercomunicación
 

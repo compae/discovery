@@ -12,8 +12,8 @@ image::discovery_version.png[]
 
 This troubleshooting page is organized into the following sections:
 
-* xref:operations-guide:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Installation and configuration problems], for problems that prevent the successful execution of the installation/update process.
-* xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Usage issues], for all other problems that may arise during daily operations.
+* xref:operations-guide:troubleshooting.adoc#_installation_and_configuration_problems[Installation and configuration problems], for problems that prevent the successful execution of the installation/update process.
+* xref:operations-guide:troubleshooting.adoc#_usage_issues[Usage issues], for all other problems that may arise during daily operations.
 
 [IMPORTANT]
 ====
@@ -30,9 +30,13 @@ Otherwise, you are more than welcome to contact us.
 
 Your user must belong to an allowed group or administration group, depending on the role. The way in which the administrator can specify the allowed groups is explained in detail in the xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[End user authentication] section.
 
+=== Links to a dashboard are not redirected correctly in a _Stratio Discovery_ deployed with _Governance_ flavour on DC/OS
+
+You may notice that in dashboard subscriptions or when there are redirects, the service URL is not generated correctly (for example, it redirects you to https://admin-dev.stratio.com/question/123 instead of https://admin-dev.stratio.com/service/discovery-governance/question/123). If this happens even after modifying the `SITE_URL` configuration (https://github.com/metabase/metabase/issues/13602), check the `SERVICE_URL` environment variable: its value must match the full service URL (for example, https://admin-dev.stratio.com/service/discovery-governance).
+
 === Can't connect _Stratio Discovery_ to a PgBouncer: ERROR: prepared statement "S_2" does not exist
 
-If the deployment crashes due to this error, it's because _Stratio Discovery_ can't connect to PostgreSQL to store its metadata. To fix this error, you just need to add the following environment variable (if it's not already present):
+If the deployment crashes due to this error, it's because _Stratio Discovery_ can't connect to PostgreSQL® to store its metadata. To fix this error, you just need to add the following environment variable (if it's not already present):
 
 [source,bash]
 ----
@@ -60,7 +64,7 @@ For this reason, if you see a timeout error during an import process, you should
 
 For more information, see the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] section in the installation and upgrades guide.
 
-=== High CPU and memory usage after downloading query results as .xlsx files
+=== High CPU and memory usage after downloading query results as _.xlsx_ files
 
 If you see an increase in memory and CPU usage after downloading the query results as `.xlsx` files, you are *probably running a version older than 0.38.1-0.2*.
 
@@ -84,7 +88,7 @@ The size of the `max connection pool` can only be set in versions of _Stratio Di
 
 As soon as you open a question, a first query will start that will contain the previously saved question or a "select all" from the table for which you are writing the question.
 
-Unfortunately, up to and including version 0.40.x of _Stratio Discovery_, you have to wait for this query to be completed before you can save new changes to the question. *If the query isn't finished yet* (you can see this because the logs are not displayed), *even if you press the save button* and select one of the available save options (`Save` and `Save as new question`), *no action will be carried out until the query is finished*.
+Unfortunately, up to and including version 0.40.x of _Stratio Discovery_, you have to wait for this query to be completed before you can save new changes to the question. *If the query isn't finished yet* (you can see this because the logs are not displayed), *even if you press the save button* and select one of the available save options ("Save" and "Save as new question"), *no action will be carried out until the query is finished*.
 
 === Cannot cancel running queries with _Stratio {modulename}_ tables
 
@@ -117,7 +121,7 @@ INFO - [FINISHED: Sync metadata for crossdata Database 45 'crossdata-pro' (928.7
 
 === Unable to update _Stratio {modulename}_ tables and views correctly
 
-Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the _Stratio {modulename}_ team.
+Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#_newly_created_tables_or_views_dont_appear_on_the_homepage[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the __Stratio Virtualizer__ team.
 
 Let's suppose that you've also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the error in the logs, you can understand where the error occurred.
 
@@ -143,13 +147,7 @@ Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9
 
 Even if the error was propagated to Metabase as a result of the synchronization query, from the log you can see that it originated within _Stratio {modulename}_. This means that to solve the problem, you need to solve it from the root, that is, in _Stratio {modulename}_.
 
-For example, one solution for this error `Cannot recover session with sessionId=` was to restart the _Stratio {modulename}_ instance to force the pending connections to close.
-
-=== Dashboard links redirections don't work in _Stratio Discovery_ when deployed in DCOS with _Governance_ flavor
-
-In dashboard subscriptions links or other redirecting links, you may experience that you are not being correctly redirected because the service URL was not adequately built. For example, you are being redirected to https://admin-dev.stratio.com/question/123 instead of https://admin-dev.stratio.com/service/discovery-governance/question/123.
-If this happens even after you have modified your `SITE_URL` configuration (https://github.com/metabase/metabase/issues/13602), please check the environment variable `SERVICE_URL`: its value should be set to the full URL service (e.g. https://admin-dev.stratio.com/service/discovery-governance).
-
+For example, one solution for this error "Cannot recover session with sessionId="" was to restart the _Stratio {modulename}_ instance to force the pending connections to close.
 
 === Unable to access some tables stored in _Stratio {modulename}_ or _Stratio PostgreSQL_
 
@@ -157,7 +155,7 @@ If this happens even after you have modified your `SITE_URL` configuration (http
 
 Briefly, in addition to the https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[native Metabase data access permissions] and https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[collection permissions], there may also be another level of security depending on the database that you connect to.
 
-For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL_ have their own authorization systems* whose policies can be defined in _Stratio GoSec_. If *you enabled impersonation* in your _Stratio {modulename}_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio GoSec_ policy] and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL connection that uses the default TLS mechanism].
+For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL_ have their own authorization systems* whose policies can be defined in _Stratio GoSec_. If *you enabled impersonation* in your _Stratio {modulename}_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio GoSec_ policy] and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL® connection that uses the default TLS mechanism].
 
 In _Stratio Discovery_ versions prior to 0.38.1-0.2, *the user that you logged in with was also used to perform actions related to updating internal metadata when you manually selected forced synchronization* (`Sync database schema now`, `Re-scan field values now`) if impersonation was enabled.
 

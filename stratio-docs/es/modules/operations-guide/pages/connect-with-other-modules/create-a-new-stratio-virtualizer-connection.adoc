@@ -2,13 +2,13 @@
 
 La siguiente información explica cómo puedes conectarte a _Stratio {modulename}_ con o sin TLS. Para ello, completa los siguientes parámetros:
 
-* *Name*: elige un nombre para tu base de datos.
+* *Display name*: elige un nombre para tu base de datos.
 * *Host*: dirección _host_ de _Stratio {modulename}_. En un entorno de Kubernetes, el _host_ está compuesto por `${serviceName}.${Namespace}`. Por ejemplo: _virtualizer.stratio-datastore_.
 * *Port*: si el servicio de _Stratio {modulename}_ se desplegó a través de _Stratio Command Center_ en un entorno de Kubernetes, el puerto por defecto es el `13422` (en Mesos, el puerto por defecto era el `8000`).
-* *Database username*: es el usuario de _Stratio {modulename}_ y su valor tiene que ser igual al parámetro `DISCOVERY_INSTANCE_NAME` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
+* *Username*: es el usuario de _Stratio {modulename}_ y su valor tiene que ser igual al parámetro `DISCOVERY_INSTANCE_NAME` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
 * *Connect with Discovery login user?*: haz clic en "yes" para habilitar la suplantación de identidad.
 * *Use a secure connection (SSL)?*: si habilitas esta opción la conexión se establecerá con TLS. De forma contraria, la conexión será sin TLS.
-* *Additional parameters*: lee detenidamente xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes[la documentación de _Stratio {modulename}_] si quieres añadir parámetros a la URL de conexión JDBC.
+* *Additional JDBC connection string options*: lee detenidamente xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes[la documentación de _Stratio {modulename}_] si quieres añadir parámetros a la URL de conexión JDBC.
 * *Large database*: marca para minimizar la sincronización de datos.
 
 image::crossdata_configuration.png[]
@@ -29,15 +29,11 @@ failed because of java.net.ConnectException: Connection refused
 . Agrega el usuario de descubrimiento (nombre de usuario de la instancia de descubrimiento) a esta política.
 . Guarda la política.
 
-:tip-caption: CONSEJO
-
 TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_].
 
 == Suplantación de identidad en _Stratio {modulename}_
 
-Si deseas una auditoría más detallada de quién realizó qué consulta, debes habilitar la suplantación de identidad. Para hacerlo, solo necesitas activar la opción 'Connect with Discovery login user'.
-
-:important-caption: IMPORTANTE
+Si deseas una auditoría más detallada de quién realizó qué consulta, debes habilitar la suplantación de identidad. Para hacerlo, solo necesitas activar la opción "Connect with Discovery login user?".
 
 IMPORTANT: Debido a problemas de compatibilidad, esta función se ha deshabilitado en todas las versiones de _Stratio Discovery_ posteriores a la 0.33.x, pero ahora vuelve a estar disponible a partir de la versión 0.39.1 y posteriores.
 

@@ -2,7 +2,7 @@
 
 == Configuration
 
-It is possible to deploy _Stratio Discovery_ through _Stratio Command Center_ by clicking *'Services' → 'Deploy a service'* (blue button).
+It is possible to deploy _Stratio Discovery_ through _Stratio Command Center_ by clicking on *'Services' → 'Deploy service'* (blue button).
 
 image::cct_services_list_discovery_deployment_0001.png[]
 
@@ -10,7 +10,7 @@ At this point, the entire service catalog will be displayed. Here you must filte
 
 image::cct_deploy_service_discovery_deployment_0002.png[]
 
-Once you have configured everything, select the "Discovery" service, and you will be redirected to a confirmation page where you can choose a minor version of the service in case you need it. When you have chosen which version to deploy, you can confirm it by clicking "Deploy".
+Once you have configured everything, select the "Discovery" service, and you will be redirected to a confirmation page where you can choose a minor version of the service in case you need it. When you have chosen which version to deploy, you can confirm it by clicking on "Deploy".
 
 image::cct_confirm_version_discovery_deployment_0003.png[]
 
@@ -28,7 +28,7 @@ image::cct_select_tenant_namespace_discovery_deployment_0005.png[]
 
 ==== Application metadata store
 
-_Stratio Command Center_ allows you to choose the _Stratio PostgreSQL_ available in the cluster to connect to. There are two service discovery selectors: the first one is used to build the URL and could be PostgreSQL or PgBouncer, and the second one is used to create the policies and the database. Note that both fields must be consistent.
+_Stratio Command Center_ allows you to choose the _Stratio PostgreSQL_ available in the cluster to connect to. There are two service discovery selectors: the first one is used to build the URL and could be PostgreSQL® or PgBouncer, and the second one is used to create the policies and the database. Note that both fields must be consistent.
 
 ==== Defining placements for _Stratio Discovery_
 
@@ -66,7 +66,7 @@ Let's take a look at this section with its default values.
 
 image::cct_advanced_settings_discovery_deployment_0009.png[]
 
-Since there are a lot of variables to configure, the operator should search for the meaning of a variable (when the name isn't self-explanatory) by clicking the *Help* (?) icon, to search for the desired property in the related section.
+Since there are a lot of variables to configure, the operator should search for the meaning of a variable (when the name isn't self-explanatory) by clicking on the *Help* (?) icon, to search for the desired property in the related section.
 
 image::cct_help_discovery_deployment_0007.png[]
 

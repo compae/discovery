@@ -37,6 +37,6 @@ Aunque el acceso se completa sin problemas, puede aparecer momentáneamente la p
 
 Por una vulnerabilidad de seguridad descubierta en una de las dependencias de Metabase, el artefacto de Metabase distribuido con _Stratio Discovery_ se compila utilizando una versión actualizada de esta dependencia que ya no contiene la vulnerabilidad.
 
-Esto puede causar problemas en algunos casos cuando se activa la caché de Metabase, si una de las columnas de los resultados cacheados tiene un tipo cuya seguridad de deserialización no puede garantizarse por Metabase (esto ocurre, por ejemplo, con los tipos _interval_ y _json_ de PostgreSQL).
+Esto puede causar problemas en algunos casos cuando se activa la caché de Metabase, si una de las columnas de los resultados cacheados tiene un tipo cuya seguridad de deserialización no puede garantizarse por Metabase (esto ocurre, por ejemplo, con los tipos _interval_ y _json_ de PostgreSQL®).
 
 No se devolverán errores, pero los resultados obtenidos de la caché para esta columna en particular no se podrán utilizar (contendrán un mapa con los _bytes_ no deserializados "en cuarentena"). Ten en cuenta que cualquier usuario puede siempre activar una ejecución manual de la consulta (sin usar los datos cacheados) para obtener los resultados correctos.

@@ -32,11 +32,11 @@ Tu usuario debe pertenecer a un grupo permitido o al grupo de administración, s
 
 === No redireccionan bien los enlaces a un _dashboard_ en un _Stratio Discovery_ desplegado con _flavour_ _Governance_ en DC/OS
 
-Puede ser que notes que en las subscripciones de _dashboards_ o cuando haya redirecciones no se genera bien la URL del servicio (por ejemplo te redirecciona a https://admin-dev.stratio.com/question/123 en lugar de https://admin-dev.stratio.com/service/discovery-governance/question/123). Si esto ocurre incluso después de haber modificado la configuración de `SITE_URL` (https://github.com/metabase/metabase/issues/13602), comprueba la variable de entorno `SERVICE_URL`: su valor debe ajustarse al servicio URL completo (por ejemplo, https://admin-dev.stratio.com/service/discovery-governance).
+Puede ser que notes que en las suscripciones de _dashboards_ o cuando haya redirecciones no se genera bien la URL del servicio (por ejemplo te redirecciona a https://admin-dev.stratio.com/question/123 en lugar de https://admin-dev.stratio.com/service/discovery-governance/question/123). Si esto ocurre incluso después de haber modificado la configuración de `SITE_URL` (https://github.com/metabase/metabase/issues/13602), comprueba la variable de entorno `SERVICE_URL`: su valor debe ajustarse al servicio URL completo (por ejemplo, https://admin-dev.stratio.com/service/discovery-governance).
 
 === No se puede conectar _Stratio Discovery_ a un PgBouncer: ERROR: prepared statement "S_2" does not exist
 
-Si el despliegue se bloquea debido a este error, es porque _Stratio Discovery_ no puede conectarse a PostgreSQL para almacenar sus metadatos. Para arreglar este error solo necesitas agregar la siguiente variable de entorno (si aún no está presente):
+Si el despliegue se bloquea debido a este error, es porque _Stratio Discovery_ no puede conectarse a PostgreSQL® para almacenar sus metadatos. Para arreglar este error solo necesitas agregar la siguiente variable de entorno (si aún no está presente):
 
 [source,bash]
 ----
@@ -64,11 +64,9 @@ Por esta razón, si ves un error de _timeout_ durante un proceso de importación
 
 Para obtener más información, consulta xref:operations-guide:installing-and-upgrading/environment-variables.adoc[la sección de variables de entorno dentro de la guía de instalación y actualización].
 
-=== Alto consumo de CPU y memoria después de descargar los resultados de la consulta como archivos .xlsx
+=== Alto consumo de CPU y memoria después de descargar los resultados de la consulta como archivos _.xlsx_
 
 Si ves un aumento en el consumo de memoria y CPU después de descargar los resultados de la consulta como archivos `.xlsx`, *seguramente tu versión sea anterior a la 0.38.1-0.2*.
-
-:important-caption: AVISO
 
 NOTE: Recuerda que la versión con el antiguo mecanismo de versionado (es decir, hasta la 0.40.x sin la segunda versión después del guión) se basa en versiones de Metabase anteriores o iguales a la 0.33.
 
@@ -90,7 +88,7 @@ El tamaño del `max connection pool` solo se puede establecer en aquellas versio
 
 Tan pronto como abras una pregunta, se iniciará una primera consulta que contendrá la pregunta guardada anteriormente o un "select all" de la tabla para la que estás escribiendo la pregunta.
 
-Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar nuevos cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles (`Save` y `Save as new question`), *no se realizará ninguna acción hasta que finalice la consulta*.
+Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar nuevos cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles ("Save" y "Save as new question"), *no se realizará ninguna acción hasta que finalice la consulta*.
 
 === No se pueden cancelar consultas en ejecución con tablas _Stratio {modulename}_
 
@@ -123,7 +121,7 @@ INFO - [FINISHED: Sync metadata for crossdata Base de Datos 45 'crossdata-pro' (
 
 === No se pueden actualizar correctamente las tablas y vistas de _Stratio {modulename}_
 
-Supongamos que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#\_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los _logs_: según el error, es posible que debas solicitar la ayuda del equipo de _Stratio {modulename}_.
+Supongamos que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los __logs__. Según el error, es posible que debas solicitar la ayuda del equipo de __Stratio {modulename}__.
 
 Supongamos también que has leído la xref:operations-guide:key-concepts.adoc[breve introducción] donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos en el ecosistema de Stratio. Al observar el error dentro de los _logs_, puedes comprender dónde se produjo el error.
 
@@ -149,7 +147,7 @@ Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9
 
 Incluso si el error se propagó a Metabase como resultado de la consulta de sincronización, a partir del _log_ se puede entender que se originó dentro de _Stratio {modulename}_. Por lo tanto, para solucionar el problema, debes resolverlo desde la raíz, es decir, dentro de _Stratio {modulename}_.
 
-Por ejemplo, una solución para este error `Cannot recover session with sessionId=` fue reiniciar la instancia de _Stratio {modulename}_ para forzar el cierre de las conexiones pendientes.
+Por ejemplo, una solución para este error "Cannot recover session with sessionId="" fue reiniciar la instancia de _Stratio {modulename}_ para forzar el cierre de las conexiones pendientes.
 
 === No se puede acceder a algunas tablas almacenadas en _Stratio {modulename}_ o _Stratio PostgreSQL_
 
@@ -157,7 +155,7 @@ Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y
 
 Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] ^[English]^ y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección] ^[English]^, también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
 
-Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL que utiliza el mecanismo TLS predeterminado].
+Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL® que utiliza el mecanismo TLS predeterminado].
 
 En las versiones de _Stratio Discovery_ anteriores a la 0.38.1-0.2, *el usuario con el que habías hecho _login_ se usaba también para realizar acciones relacionadas con la actualización interna de metadatos cuando seleccionabas manualmente una sincronización forzada* (`Sync database schema now`, `Re-scan field values now`) si la suplantación de identidad estaba habilitada.
 
