@@ -6,7 +6,7 @@ En caso de experimentar algún problema al usar _Stratio Discovery_, consulta la
 
 == Problema al especificar la clave privada para la conexión SSL con PostgreSQL®
 
-Este es un _bug_ de Metabase que se ha resuelto en la versión 0.42.3 y posteriores. Si tienes una versión anterior y quieres establecer una conexión SSL con PostgresSQL, ten en cuenta que `File Path` de `SSL Client Key (PKCS-8/DER o PKCS-12)` podría no parsearse correctamente y tendrías que indicar la configuración asociada (`sslkey`) en el campo `Additional JDBC connection string options`. Esta incidencia no aplica si utilizas la base de datos _Stratio PostgresSQL_.
+Este es un _bug_ de Metabase que se ha resuelto en la versión 0.42.3 y posteriores. Si tienes una versión anterior y quieres establecer una conexión SSL con PostgreSQL®, ten en cuenta que `File Path` de `SSL Client Key (PKCS-8/DER o PKCS-12)` podría no parsearse correctamente y tendrías que indicar la configuración asociada (`sslkey`) en el campo `Additional JDBC connection string options`. Esta incidencia no aplica si utilizas la base de datos _Stratio PostgresSQL_.
 
 == Cuando entro a la página principal, las exploraciones _x-ray_ no se cargan automáticamente
 

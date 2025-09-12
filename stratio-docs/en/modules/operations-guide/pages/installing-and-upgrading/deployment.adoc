@@ -78,7 +78,7 @@ By default, _Stratio Discovery_ will be deployed integrated with the _Stratio Go
 
 == Deployment
 
-Now that everything is set up… click "Deploy"!
+Now that everything is set up… click on "Deploy"!
 
 image::cct_deploy_discovery_0010.png[]
 
