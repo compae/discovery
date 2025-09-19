@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.55.11-0.1.0 (upcoming)
+## 0.56.4-0.1.0 (upcoming)
 
 * TODO
 
