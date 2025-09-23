@@ -2,9 +2,9 @@
 # STAGE 1: stratio drivers builder
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.50.21-0.1.0 as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.56.4-0.1.0-SNAPSHOT as builder
 
-WORKDIR /app/source
+WORKDIR /home/node
 
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
@@ -12,11 +12,12 @@ ENV LC_CTYPE en_US.UTF-8
 # Add:
 # - our drivers source code to build them
 # - deps.edn with the stratio mvn repo declared so crossdata-jdbc dependency is resolved when building our drivers
-COPY ./metabase/modules                                /app/source/modules
+COPY ./metabase/modules                                /home/node/modules
 COPY ./metabase/modules/drivers/stratio-repo.edn       /root/.clojure/deps.edn
 
 # build our drivers
-RUN bin/build-drivers.sh
+RUN bin/build-driver.sh crossdata
+RUN bin/build-driver.sh stratiopostgres
 
 
 
@@ -42,9 +43,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # install JAVA 11
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 RUN apt update \
-    && apt install -y openjdk-11-jdk
+    && apt install -y openjdk-21-jdk
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 ################################
@@ -52,7 +53,7 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 ################################
 # add Metabase uberjar
 RUN mkdir -p target/uberjar
-COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
+COPY --from=builder /home/node/target/uberjar/metabase.jar /app/target/uberjar/
 
 # adapt MANIFEST.MF to implementation discovery version
 RUN jar xf /app/target/uberjar/metabase.jar META-INF/MANIFEST.MF  \
@@ -79,7 +80,7 @@ RUN mkdir -p /plugins
 RUN chmod a+rwx /plugins
 
 # add stratio drivers jars to plugins folder
-COPY --from=builder /app/source/resources/modules/* /plugins/
+COPY --from=builder /home/node/resources/modules/* /plugins/
 
 
 ################################

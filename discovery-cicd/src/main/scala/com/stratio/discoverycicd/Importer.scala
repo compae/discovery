@@ -182,7 +182,7 @@ class Importer(api: ApiClient) extends Logging {
       // recursive case
       case pendingCards =>
         // we can only create those whose card dependencies are already created
-        val cardsToCreate = pendingCards.filter(_.getCardsUsedAsTables subsetOf createdCardsMap.keySet)
+        val cardsToCreate = pendingCards.filter(_.getCardsUsedAsTablesOrMetrics subsetOf createdCardsMap.keySet)
 
         // sanity check (and guard to avoid infinite recursion) in case we receive inconsistent data
         if (cardsToCreate.isEmpty) {
@@ -207,6 +207,7 @@ class Importer(api: ApiClient) extends Logging {
             .replaceTableIds(dbMaps.table)
             .replaceFieldIds(dbMaps.field)
             .replaceCardIdsUsedAsTables(createdCardsMap)
+            .replaceCardIdsUsedAsMetrics(createdCardsMap)
             .replaceSnippets(snippetMap)
 
           val createdOrUpdatedCard = cardToCreateOrUpdate
@@ -381,9 +382,10 @@ class Importer(api: ApiClient) extends Logging {
         val existingItems          = api.getItemsInCollection(existingCollId).groupBy(_.model)
         val existingSubcollections = existingItems.getOrElse(Models.COLLECTION, List.empty)
         val existingDashboards     = existingItems.getOrElse(Models.DASHBOARD , List.empty)
-        val existingCardsNotModels = existingItems.getOrElse(Models.CARD      , List.empty)
+        val existingNormalCards    = existingItems.getOrElse(Models.CARD      , List.empty)
         val existingCardsModels    = existingItems.getOrElse(Models.DATASET   , List.empty)
-        val existingCards = existingCardsNotModels ++ existingCardsModels
+        val existingCardsMetrics   = existingItems.getOrElse(Models.METRIC    , List.empty)
+        val existingCards          = existingNormalCards ++ existingCardsModels ++ existingCardsMetrics
 
         // delete the collections that are currently present in target but not in the export
         val collsToArchive = existingSubcollections filterNot { childCollNames contains _.name }
@@ -510,7 +512,7 @@ object Importer {
               // recursion ends when card does not use other cards. If all cards have dependencies, since the list
               // is finite, either there are circular dependencies (recursion finish in the if branch above)
               // or there are missing ones (recursion finish in the getOrElse below)
-              val children = card.getCardsUsedAsTables.map(loop(_, cardId :: lineage))
+              val children = card.getCardsUsedAsTablesOrMetrics.map(loop(_, cardId :: lineage))
               OkDep(cardId, children)
           }
           .getOrElse(NotFoundDep(cardId, lineage.head))

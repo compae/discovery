@@ -20,6 +20,7 @@ import scala.util.Try
 
 object ApiClient {
   val DefaultTimeout = 10000
+  val Limit = 9999L
 }
 
 class ApiClient(metabaseUrl: String,
@@ -34,6 +35,15 @@ class ApiClient(metabaseUrl: String,
     "X-Metabase-Session" -> sessionId
   )
 
+  private def consumeAllPages(makePaginatedRequest: (Long, Long) => CollectionItemsResponse) = {
+    val response = makePaginatedRequest(Limit, 0)
+    val limit = response.limit.getOrElse(Limit)
+    val total = response.total.getOrElse(0L)
+    val offset = limit
+    val remainingItems = if (total - limit > 0) makePaginatedRequest(total, offset).data else List.empty
+    response.data ++ remainingItems
+  }
+
   val connectionAndReadTimeout: Int = Try(Duration(timeout).toMillis.toInt).getOrElse(DefaultTimeout)
 
   lazy val user: User = request("user/current").as[User].body
@@ -41,13 +51,14 @@ class ApiClient(metabaseUrl: String,
   def getCollection(collectionId: BigInt): Collection =
     request(s"collection/$collectionId").as[Collection].body
 
-  def getItemsInCollection(collectionId: BigInt): List[CollectionItem] =
-    request(s"collection/$collectionId/items").as[CollectionItemsResponse].body.data
+  def getItemsInCollection(collectionId: BigInt): List[CollectionItem] = consumeAllPages { (limit, offset) =>
+    request(s"collection/$collectionId/items?limit=$limit&offset=$offset&show_dashboard_questions=true").as[CollectionItemsResponse].body
+  }
 
   // if we want to get the root collection we pass a None collectionId
-  def getItemsInCollection(collectionId: Option[BigInt]): List[CollectionItem] ={
+  def getItemsInCollection(collectionId: Option[BigInt]): List[CollectionItem] = consumeAllPages { (limit, offset) =>
     val collApiPath = collectionId.map(_.toString).getOrElse("root")
-    request(s"collection/$collApiPath/items").as[CollectionItemsResponse].body.data
+    request(s"collection/$collApiPath/items?limit=$limit&offset=$offset&show_dashboard_questions=true").as[CollectionItemsResponse].body
   }
 
   def archiveCollection(collectionId: BigInt): Unit =
@@ -73,7 +84,7 @@ class ApiClient(metabaseUrl: String,
       .body
 
   def getCard(cardId: BigInt): Card =
-    request(s"card/$cardId").as[Card].body
+    request(s"card/$cardId").as[Card].body.fixHyphens
 
   def createCard(card: Card): Card =
     request("card").postData(write(card)).as[Card].body

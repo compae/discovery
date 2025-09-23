@@ -10,7 +10,7 @@ import com.stratio.discoverycicd.model.LinkType
 import com.stratio.discoverycicd.model.LinkType._
 import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
 import com.stratio.discoverycicd.utils.TypeAliases.IdMap
-import org.json4s.{JArray, JField, JInt, JObject, JString, JValue}
+import org.json4s.{JArray, JField, JInt, JObject, JString, JValue, JNull}
 
 object MBJson extends {
 
@@ -128,7 +128,7 @@ object MBJson extends {
   //    ...
   //  }
   //
-  def getCardIdsUsedAsTables(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
+  def getCardIdsUsedAsTablesOrMetrics(jval: JValue): Set[BigInt] = jval.fold(Set.empty[BigInt]) {
     case (acc, JObject(kvs)) =>
       val cardIds = kvs
         .collect {
@@ -152,7 +152,16 @@ object MBJson extends {
 
       acc ++ cardIds
 
+    // metrics (we have only seen them appear in construbs like ["metric", <id>])
+    case (acc, JArray(List(JString("metric"), JInt(cardId)))) =>
+      acc + cardId
+
     case (acc, _) => acc
+  }
+
+  def replaceCardIdsUsedAsMetrics(jval: JValue, replacements: IdMap): JValue = jval.transform {
+    case JArray(List(JString("metric"), JInt(cardId))) =>
+      JArray(List(JString("metric"), JInt(replacements.getTargetMetric(cardId))))
   }
 
   def replaceCardIdsUsedAsTables(jval: JValue, replacements: IdMap): JValue = {
@@ -397,6 +406,32 @@ object MBJson extends {
         }
       )
     }
+  }
+
+  // We've noticed that sometimes we receive the fields with a hyphen instead of an underscore, i. e.,
+  // display-name instead of display_name, and that then causes later errors when POSTing/PUTing back
+  // the entity. I've not been able to reproduce that by creating entities in the Metabase UI and have
+  // only seen that with the sample content that Metabase can create automatically at startup (maybe
+  // a bug in the Metabase sample content? although the Metabase UI seem to be able to handle that well)
+  // In any case, we make these profilactic transformations just in case it may happens outside the
+  // sample content
+  def fixHyphens(json: JValue): JValue = {
+    val problematicFields = List(
+      "display-name", "base-type", "table-id", "database-type", "effective-type", "field-ref"
+    )
+    val compulsoryFields = List("display_name", "base_type")
+    json
+      .transform {
+        case JObject(jFields) => JObject(
+          jFields.filter{
+            case (fieldName, JNull) if compulsoryFields contains fieldName => false
+            case other => true
+          })
+      }
+      .transformField {
+        case JField(fieldName, fieldValue) if problematicFields contains fieldName =>
+          JField(fieldName.replace("-", "_"), fieldValue)
+      }
   }
 
   private def isTable(jsonKey: String) = Set("source-table", "table_id") contains jsonKey

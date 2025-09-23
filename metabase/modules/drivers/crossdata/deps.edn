@@ -7,4 +7,4 @@
 
  :deps
  ;; WATCH OUT! when updating the crossdata jdbc update also the reference.conf in resources
- {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.31.0-03b9561"}}}
+ {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.32.0-968039a"}}}

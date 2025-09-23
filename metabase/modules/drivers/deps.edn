@@ -1,3 +1,7 @@
 {:deps
  {metabase/stratiopostgres {:local/root "stratiopostgres"}
+  ;; we have to also include also the hive-like and the sparksql
+  ;; drivers since they are dependencies of our crossdata driver
+  metabase/hive-like       {:local/root "hive-like"}
+  metabase/sparksql        {:local/root "sparksql"}
   metabase/crossdata       {:local/root "crossdata"}}}

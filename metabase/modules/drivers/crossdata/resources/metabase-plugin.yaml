@@ -3,11 +3,14 @@ info:
   version: 1.0.0-SNAPSHOT-7.0.0-jre8
   description: Allows Metabase to connect to Crossdata databases.
 
+dependencies:
+  - plugin: Metabase Spark SQL Driver
+
 driver:
   name: crossdata
   display-name: Stratio Virtualizer
   lazy-load: true
-  parent: sql-jdbc
+  parent: sparksql
   connection-properties:
     - merge:
       - host
@@ -49,6 +52,10 @@ driver:
         advanced-options: true
 
 init:
+  - step: load-namespace
+    namespace: metabase.driver.hive-like
+  - step: load-namespace
+    namespace: metabase.driver.sparksql
   - step: load-namespace
     namespace: metabase.driver.crossdata
   - step: register-jdbc-driver

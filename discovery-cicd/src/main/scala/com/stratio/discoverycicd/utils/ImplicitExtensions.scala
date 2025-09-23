@@ -60,6 +60,7 @@ object ImplicitExtensions {
     val getTargetDashboardTab: K => V = getOrFail("Dashboard Tab")
     val getTargetCard        : K => V = getOrFail("Card")
     val getTargetCardAsTable : K => V = getOrFail("Card acting as table")
+    val getTargetMetric      : K => V = getOrFail("Metric")
     val getTargetSnippet     : K => V = getOrFail("Snippet")
 
 

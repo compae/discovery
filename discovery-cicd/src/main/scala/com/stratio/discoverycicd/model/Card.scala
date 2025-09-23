@@ -59,8 +59,8 @@ case class Card(
   def getSnippetIds: Set[BigInt] =
    MBJson.getSnippetIds(dataset_query)
 
-  lazy val getCardsUsedAsTables: Set[BigInt] =
-    MBJson.getCardIdsUsedAsTables(dataset_query)
+  lazy val getCardsUsedAsTablesOrMetrics: Set[BigInt] =
+    MBJson.getCardIdsUsedAsTablesOrMetrics(dataset_query)
 
   def replaceFieldIds(replacements: IdMap): Card = replacementMayFail(this, "Field") {
     _.copy(
@@ -86,6 +86,12 @@ case class Card(
     )
   }
 
+  def replaceCardIdsUsedAsMetrics(replacements: IdMap): Card = replacementMayFail(this, "Metric") {
+    _.copy(
+      dataset_query = MBJson.replaceCardIdsUsedAsMetrics(dataset_query, replacements)
+    )
+  }
+
   def replaceDatabaseIds(replacements: IdMap): Card = replacementMayFail(this, "Database") {
     _.copy(dataset_query = MBJson.replaceDatabaseIds(dataset_query, replacements))
   }
@@ -104,5 +110,7 @@ case class Card(
       case Some(description) if description.trim.isEmpty => copy(description = None)
       case _ => this
     }
+
+  def fixHyphens: Card = copy(result_metadata = MBJson.fixHyphens(result_metadata))
 
 }

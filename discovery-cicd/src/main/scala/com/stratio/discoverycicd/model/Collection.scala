@@ -15,7 +15,8 @@ case class CollectionItem(id: BigInt,
                           name: String,
                           model: String)
 
-case class CollectionItemsResponse(data: List[CollectionItem])
+
+case class CollectionItemsResponse(data: List[CollectionItem], total: Option[Long], limit: Option[Long])
 
 object Collection {
 
@@ -27,5 +28,7 @@ object Collection {
     // which are implemented just like saved questions (cards) with a flag { "dataset": true }, and are
     // declared of type "dataset" instead of "card" when retrieving items from a collection
     val DATASET = "dataset"
+    // the same with metrics
+    val METRIC = "metric"
   }
 }
