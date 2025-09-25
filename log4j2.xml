@@ -27,77 +27,16 @@
       %level | %d{dd-MM-yyyy HH:mm:ss,SSS} | %c | %m%n
     </Property>
   </Properties>
-  <Scripts>
-    <Script name="messageSelectorCentralizedLogging" language="javascript"><![CDATA[
-    var result = "Common";
-    try {
-    var originalMessage = logEvent.getMessage().getFormattedMessage();
-    var stringMessage = typeof originalMessage !== "string" ? JSON.stringify(originalMessage) : originalMessage;
-    var message = JSON.parse(stringMessage);
-    if (typeof message === "object" && message !== null) {
-    if (message.hasOwnProperty("@message")) {
-    result = "FormattedJSON";
-    } else {
-    result = "UnformattedJSON";
-    }
-    }
-    } catch (e) {
-    result = "Common";
-    }
-    result;
-    ]]>
-    </Script>
-  </Scripts>
   <Appenders>
     <Console name="stderrCentralizedJSONLogging" target="SYSTEM_ERR">
       <PatternLayout>
-        <ScriptPatternSelector alwaysWriteExceptions="false">
-          <ScriptRef ref="messageSelectorCentralizedLogging"/>
-          <PatternMatch key="FormattedJSON">
-            <Pattern>${formattedJsonPatternCentralizedLogging}</Pattern>
-          </PatternMatch>
-          <PatternMatch key="UnformattedJSON">
-            <Pattern>${unformattedJsonPatternCentralizedLogging}</Pattern>
-          </PatternMatch>
-          <PatternMatch key="Common">
-            <Pattern>${commonPatternCentralizedLogging}</Pattern>
-          </PatternMatch>
-        </ScriptPatternSelector>
+        <Pattern>${commonPatternCentralizedLogging}</Pattern>
       </PatternLayout>
       <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
     </Console>
     <Console name="stdoutCentralizedJSONLogging" target="SYSTEM_OUT">
       <PatternLayout alwaysWriteExceptions="false">
-        <ScriptPatternSelector>
-          <ScriptRef ref="messageSelectorCentralizedLogging"/>
-          <PatternMatch key="FormattedJSON">
-            <Pattern>${formattedJsonPatternCentralizedLogging}</Pattern>
-          </PatternMatch>
-          <PatternMatch key="UnformattedJSON">
-            <Pattern>${unformattedJsonPatternCentralizedLogging}</Pattern>
-          </PatternMatch>
-          <PatternMatch key="Common">
-            <Pattern>${commonPatternCentralizedLogging}</Pattern>
-          </PatternMatch>
-        </ScriptPatternSelector>
-      </PatternLayout>
-      <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
-    </Console>
-    <Console name="stdoutCentralizedLogging" target="SYSTEM_OUT">
-      <PatternLayout alwaysWriteExceptions="false">
-        <Pattern>${formattedJsonPatternCentralizedLogging}</Pattern>
-      </PatternLayout>
-      <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
-    </Console>
-    <Console name="stderrDevelopmentLogging" target="SYSTEM_ERR">
-      <PatternLayout alwaysWriteExceptions="true">
-        <Pattern>${basePattern}</Pattern>
-      </PatternLayout>
-      <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
-    </Console>
-    <Console name="stdoutDevelopmentLogging" target="SYSTEM_OUT">
-      <PatternLayout alwaysWriteExceptions="true">
-        <Pattern>${basePattern}</Pattern>
+        <Pattern>${commonPatternCentralizedLogging}</Pattern>
       </PatternLayout>
       <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
     </Console>
@@ -111,10 +50,10 @@
       <AppenderRef ref="stderrCentralizedJSONLogging"/>
     </Root>
 
-    <Logger name="metabase.plugins" level="${env:DRIVER_LOG_LEVEL:-DEBUG}"/>
-    <Logger name="metabase.driver" level="${env:DRIVER_LOG_LEVEL:-DEBUG}"/>
-    <Logger name="metabase.server.middleware" level="${env:MIDDLEWARE_LOG_LEVEL:-DEBUG}"/>
-    <Logger name="metabase.query-processor.async" level="${env:QUERYPROCESSOR_LOG_LEVEL:-DEBUG}"/>
+    <Logger name="metabase.plugins" level="${env:DRIVER_LOG_LEVEL:-INFO}"/>
+    <Logger name="metabase.driver" level="${env:DRIVER_LOG_LEVEL:-INFO}"/>
+    <Logger name="metabase.server.middleware" level="${env:MIDDLEWARE_LOG_LEVEL:-INFO}"/>
+    <Logger name="metabase.query-processor.async" level="${env:QUERYPROCESSOR_LOG_LEVEL:-INFO}"/>
     <Logger name="metabase.sync" level="${env:SYNC_LOG_LEVEL:-INFO}"/>
     <Logger name="metabase" level="${env:METABASE_LOG_LEVEL:-INFO}"/>
     <Logger name="metabase.api" level="${env:API_LOG_LEVEL:-INFO}"/>

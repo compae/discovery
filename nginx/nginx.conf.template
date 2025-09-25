@@ -8,6 +8,13 @@ events {
 
 http {
 
+    # set uid variable from header "Metabse-User" set in response by stratio metabase middleware
+    # (using "-" instead of "" if no header is prsent) so that we can use it in the access log
+    map $upstream_http_metabase_user $uid {
+        ""      "-";
+        default $upstream_http_metabase_user;
+    }
+
     log_format main '$time_iso8601 AUDIT $uid 1 nginx access_log'
                     ' {"@message":"$remote_addr - $remote_user [$time_local] $request'
                     ' $status $body_bytes_sent $http_referer $http_user_agent $http_x_forwarded_for"}';
@@ -20,13 +27,7 @@ http {
         ssl_certificate_key /etc/pki/proxy.key;
         ssl_protocols       TLSv1.2 TLSv1.3;
 
-        set $uid '-';
-
         location / {
-            # set uid variable from header set in response by stratio metabase middleware
-            header_filter_by_lua_block {
-                ngx.var.uid = ngx.resp.get_headers()["Metabase-User"]
-            }
             proxy_pass http://127.0.0.1:3000;
             proxy_read_timeout ${PROXY_READ_TIMEOUT}s;
         }
@@ -42,8 +43,6 @@ http {
     # This server is needed for health check purposes
     server {
         listen 3009;
-
-        set $uid '-';
 
         location "/api/health" {
             proxy_pass http://127.0.0.1:3000;

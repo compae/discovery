@@ -4,6 +4,7 @@ mkdir -p /etc/sds/crossdata/shell
 
 crossdata_conf_file=/etc/sds/crossdata/shell/driver-application.conf
 
+# TODO: remember to change this to pekko or whatever when we upgrade to jdbc 3
 # KEYSTORE_PASSWORD and TRUSTSTORE_PASSWORD set in secrets.sh
 {
     echo 'crossdata-driver.akka-http.ssl.keystore = "/etc/pki/discovery.jks"';

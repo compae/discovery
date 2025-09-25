@@ -7,7 +7,7 @@ NORMALIZED_INSTANCE_NAME=${DISCOVERY_INSTANCE_NAME//[.-]/_}
 NORMALIZED_INSTANCE_NAME=${NORMALIZED_INSTANCE_NAME^^}
 
 # source kms utils (blog sourced in entrypoint)
-source /usr/local/lib/kms_utils.sh
+source "${STRATIO_UTILS}/kms_utils.sh"
 
 # VAULT_HOSTS variable
 declare -a VAULT_HOSTS
@@ -15,7 +15,63 @@ IFS_OLD=$IFS
 IFS=',' read -r -a VAULT_HOSTS <<< "$VAULT_HOST"
 IFS=$IFS_OLD
 
-# the login in vault has done in the oauth-base rc.local
+# login in vault
+OLD_IFS=${IFS}
+IFS=',' read -r -a VAULT_HOSTS <<< "$VAULT_HOST"
+IFS=${OLD_IFS}
+INFO "Dynamic login with vault"
+if login; then
+    INFO "Vault login successful"
+    export VAULT_TOKEN
+else
+    ERROR "Vault login failed"
+    exit 1
+fi
+
+# Download certs and ca in pem format
+if getCert userland "$DISCOVERY_INSTANCE_NAME" "$DISCOVERY_INSTANCE_NAME" PEM /etc/pki/; then
+    INFO "Discovery certificate in PEM format downloaded successfully"
+else
+    ERROR "Discovery certificate in PEM format download failed"
+    exit 1
+fi
+
+if getCAbundle /etc/pki PEM; then
+    INFO "CA bundle in PEM format downloaded successfully"
+else
+    ERROR "CA bundle in PEM format certificate download failed"
+    exit 1
+fi
+
+# Fold certificates just in case
+for file in "$DISCOVERY_INSTANCE_NAME.pem" "$DISCOVERY_INSTANCE_NAME.key" "ca-bundle.pem"; do
+    src_file_path=/etc/pki/$file.orig
+    dest_file_path=/etc/pki/$file
+    mv "$dest_file_path" "$src_file_path"
+    fold -w 64 "$src_file_path" > "$dest_file_path"
+done
+
+# rename certs to discovery (it's what we use in the drivers connection strings), and also create
+# proxy.pem and proxy.key since we used to have these names and maybe some metabase database is
+# still using these paths in its config
+if [ "$DISCOVERY_INSTANCE_NAME" != "discovery" ]; then
+    mv "/etc/pki/$DISCOVERY_INSTANCE_NAME.pem" /etc/pki/discovery.pem
+    mv "/etc/pki/$DISCOVERY_INSTANCE_NAME.key" /etc/pki/discovery.key
+fi
+cp /etc/pki/discovery.pem /etc/pki/proxy.pem
+cp /etc/pki/discovery.key /etc/pki/proxy.key
+
+# Create pkcs8 cert to use in jdbc postgres connection string.
+if openssl pkcs8 -topk8 -inform pem \
+        -outform der                \
+        -nocrypt                    \
+        -in  /etc/pki/discovery.key \
+        -out /etc/pki/discovery.pk8; then
+    INFO "Discovery certificate converted to pk8"
+else
+    ERROR "Discovery certificate could not be converted to pkcs8"
+    exit 1
+fi
 
 # Download certs in jks format
 if getCert userland "$DISCOVERY_INSTANCE_NAME" "$DISCOVERY_INSTANCE_NAME" JKS /tmp/; then
@@ -39,21 +95,6 @@ else
     exit 1
 fi
 
-# Create pkcs8 cert to use in jdbc postgres connection string. The cert in PEM format
-# has already been downloaded to be used by openresty in the rc.local script and stored
-# in /etc/pki/proxy.pem and /etc/pki/proxy.key (the names that openresty wants...)
-cp /etc/pki/proxy.pem /etc/pki/discovery.pem
-cp /etc/pki/proxy.key /etc/pki/discovery.key
-if openssl pkcs8 -topk8 -inform pem \
-        -outform der                \
-        -nocrypt                    \
-        -in  /etc/pki/discovery.key \
-        -out /etc/pki/discovery.pk8; then
-    INFO "Discovery certificate converted to pk8"
-else
-    ERROR "Discovery certificate could not be converted to pkcs8"
-    exit 1
-fi
 
 # download jwt validation key from vault
 if [ "$AUTHENTICATOR" = "gosec-sso" ]; then
@@ -69,7 +110,7 @@ if [ "$AUTHENTICATOR" = "gosec-sso" ]; then
   fi
 fi
 
-# all in all, between oauth-base rc.local and this, we have the following secrets
+# all in all, we have the following secrets
 # - certs in pem format:   /etc/pki/[proxy|discovery].pem and /etc/pki/[proxy|discovery].key
 # - certs in jks format:   /etc/pki/discovery.jks
 # - certs in pk8 format:   /etc/pki/discovery.pk8
@@ -84,35 +125,3 @@ fi
 #
 
 
-if [[ "$LOG_ACCESS_DATA" = "true" ]]; then
-  INFO "Obtaining passwords to encrypt data audit"
-  INFO "Log data audit enabled, getting encrypt passwords"
-
-  # Get passwords to encrypt logs of data audit as $DATA_AUDIT_ENCRYPTION-KEY_PASS and $DATA_AUDIT_ENCRYPTION-IV_PASS
-  if getPass "userland" "$DISCOVERY_INSTANCE_NAME" "encryption-key"; then
-      INFO "Encryption key pass downloaded successfully"
-      prefix=${DISCOVERY_INSTANCE_NAME//-/_}
-      prefix=${prefix//./_}
-      prefix=${prefix^^}
-      MYVAR_USER=${prefix}_ENCRYPTION_KEY_USER
-      MYVAR_PASS=${prefix}_ENCRYPTION_KEY_PASS
-      echo ${!MYVAR_PASS} > /env_vars/DATA_AUDIT_ENCRYPTION_KEY_PASS
-  else
-      ERROR "Encryption key pass download failed"
-      exit 1
-  fi
-
-  if getPass "userland" "$DISCOVERY_INSTANCE_NAME" "encryption-iv"; then
-      INFO "Encryption IV pass downloaded successfully"
-      prefix=${DISCOVERY_INSTANCE_NAME//-/_}
-      prefix=${prefix//./_}
-      prefix=${prefix^^}
-      MYVAR_USER=${prefix}_ENCRYPTION_IV_USER
-      MYVAR_PASS=${prefix}_ENCRYPTION_IV_PASS
-      echo ${!MYVAR_PASS} > /env_vars/DATA_AUDIT_ENCRYPTION_IV_PASS
-  else
-      ERROR "Encryption IV pass download failed"
-      exit 1
-  fi
-  INFO "Passwords to encrypt data audit: OK"
-fi

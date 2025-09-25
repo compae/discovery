@@ -446,26 +446,13 @@
             "title": "User Authentication",
             "description": "How to authenticate end users",
             "properties": {
-              "enableOauth": {
-                "description": "Whether to activate oauth enable. Must be set to true if the authentication is via 'gosec-sso'",
-                "type": "boolean",
-                "readOnly": false,
-                "application": false,
-                "level": 2,
-                "internalName": "OAUTH_ENABLED",
-                "ui": {
-                  "updatable": true
-                },
-                "title": "Enable OAUTH",
-                "default": true
-              },
               "authenticator": {
                 "description": "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)",
                 "type": "string",
                 "required": true,
                 "readOnly": false,
                 "application": false,
-                "level": 1,
+                "level": 2,
                 "internalName": "AUTHENTICATOR",
                 "title": "Authentication method",
                 "enum": [
@@ -556,32 +543,6 @@
                     },
                     "title": "SERVICE URL ",
                     "default": "https://${haproxyhost}${haproxypath}"
-                  },
-                  "ssoUri": {
-                    "description": "Full external url where the Gosec SSO server is running (including port or subpath, depending on configuration).",
-                    "type": "string",
-                    "readOnly": true,
-                    "application": false,
-                    "level": 2,
-                    "default": "${globals.sso.ssoUri}",
-                    "internalName": "SSO_URI",
-                    "ui": {
-                      "updatable": false
-                    },
-                    "title": "SSO external URI"
-                  },
-                  "ssoUriInternal": {
-                    "description": "Full internal url where the Gosec SSO server is running (including port or subpath, depending on configuration).",
-                    "type": "string",
-                    "readOnly": true,
-                    "application": false,
-                    "level": 2,
-                    "default": "${globals.sso.ssoInternalUri}",
-                    "internalName": "SSO_URI_INTERNAL",
-                    "ui": {
-                      "updatable": false
-                    },
-                    "title": "SSO internal URI"
                   }
                 }
               }
@@ -1440,22 +1401,8 @@
             "title": "Secret Role",
             "default": "${Application.domain}-${Application.name}"
           },
-          "useDynamicAuthentication": {
-            "description": "Enable dynamic authentication.",
-            "type": "boolean",
-            "required": false,
-            "readOnly": true,
-            "application": false,
-            "level": 2,
-            "internalName": "USE_DYNAMIC_AUTHENTICATION",
-            "ui": {
-              "updatable": false
-            },
-            "title": "Dynamic authentication",
-            "default": true
-          },
           "oauth2CookieName": {
-            "description": "Name of the cookie provided by SSO.",
+            "description": "Name of the cookie provided by the oauth2proxy.",
             "type": "string",
             "maxLength": 100,
             "minLength": 3,
@@ -1463,8 +1410,8 @@
             "readOnly": true,
             "application": false,
             "level": 2,
-            "internalName": "OAUTH2_COOKIE_NAME",
-            "title": "OAuth2 cookie name",
+            "internalName": "JWT_COOKIE_NAME",
+            "title": "oauth2proxy cooke name",
             "default": "stratio-cookie"
           },
           "oauth2Proxy2LogoutUrl": {
