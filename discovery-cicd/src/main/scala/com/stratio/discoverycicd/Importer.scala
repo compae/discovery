@@ -15,6 +15,7 @@ import com.stratio.discoverycicd.utils.Identificable.IdentificableOps
 import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 
 import scala.annotation.tailrec
+import org.json4s.JsonAST.JObject
 
 class Importer(api: ApiClient) extends Logging {
 
@@ -64,11 +65,17 @@ class Importer(api: ApiClient) extends Logging {
     log.debug("Importing snippets from export data")
     val snippetMap = createSnippets(exportedCollection.snippets)
 
+    // Since some cards may live in the dashboards directly we need the dashboardIds map before creating the cards,
+    // but we cannot create the "full" dashboards until we have the cardIds map, thus, we need to firtsly create
+    // all dashboards (but without any card) to get the Ids, and then create and populate the them with cards
+    log.debug("Importing dashboards with empty content")
+    val dashboardMap = createEmptyDashboards(exportedCollection.dashboards, collMap, dashboardsByCollection)
+
     log.debug("Importing cards from export data")
-    val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, snippetMap, cardsByCollection)
+    val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, snippetMap, dashboardMap, cardsByCollection)
 
     log.debug("Importing dashboards from export data")
-    val dashboardMap = createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
+    createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
 
     log.debug("Importing subscriptions from export data")
     createSubscriptions(exportedCollection.subscriptions, collMap, dashboardMap, cardMap, dashboardsByCollection)
@@ -96,6 +103,30 @@ class Importer(api: ApiClient) extends Logging {
     api.updateCollectionGraph(collectionGraph)
   }
 
+  // Since some cards may live in the dashboards directly we need the dashboardIds map before creating the cards,
+  // but we cannot create the "full" dashboards until we have the cardIds map, thus, we need to firtsly create
+  // all dashboards (but without any card) to get the Ids, and then create and populate the them with cards
+  private def createEmptyDashboards(
+    dashboards: List[Dashboard],
+    collMap: IdMap,
+    existingDashboards: Map[CollId, List[CollectionItem]]
+  ): IdMap = {
+    dashboards
+      .map(_.copy(dashcards = List.empty, parameters = JObject(), tabs = List.empty))
+      .map(_.replaceCollectionId(collMap))
+      .map { dashboard =>
+        val idInTarget = dashboard
+          .collection_id
+          .flatMap(existingDashboards(_).filter(_.name == dashboard.name).headOption)
+          .map(_.id)
+          .getOrElse(api.createDashboard(dashboard).id)
+        dashboard.id -> idInTarget
+      }
+      .toMap
+  }
+
+  // TODO: now that we create the emtpy dashboards beforehand maybe this could be simplified/refactored
+  //  but for the moment we just leave it as is since it works correctly
   private def createDashboards(
     dashboards: List[Dashboard],
     dbMaps: DbMaps,
@@ -171,6 +202,7 @@ class Importer(api: ApiClient) extends Logging {
     dbMaps: DbMaps,
     collMap: IdMap,
     snippetMap: IdMap,
+    dashboardMap: IdMap,
     existingCards: Map[CollId, List[CollectionItem]]
   ): IdMap = {
     @tailrec
@@ -209,6 +241,7 @@ class Importer(api: ApiClient) extends Logging {
             .replaceCardIdsUsedAsTables(createdCardsMap)
             .replaceCardIdsUsedAsMetrics(createdCardsMap)
             .replaceSnippets(snippetMap)
+            .replaceDashboardId(dashboardMap)
 
           val createdOrUpdatedCard = cardToCreateOrUpdate
             .collection_id

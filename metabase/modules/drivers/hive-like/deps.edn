@@ -1,0 +1,7 @@
+{:paths
+ ["src" "resources"]
+
+ ;; < STRATIO - remove hive-jdbc to remove vulnerability
+ ;; :deps
+ ;; {org.apache.hive/hive-jdbc$standalone {:mvn/version "4.1.0"}}
+ }

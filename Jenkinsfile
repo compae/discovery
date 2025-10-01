@@ -23,7 +23,6 @@ hose {
                        credentials: "CREDENTIALS_ROCKET_SSH",
                        remoteFolder: "rocketqa/CCT/discovery/${config.INTERNAL_VERSION}/rules",
                        remoteServer: "rocketqa.int.stratio.com", activeDelete: true], onPr: false)
-        doDeploy(config)
         doDockers(
             conf : config,
             dockerImages :[

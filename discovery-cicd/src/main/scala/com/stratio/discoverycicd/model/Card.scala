@@ -28,6 +28,7 @@ case class Card(
   enable_embedding: Option[Boolean],
   embedding_params: Option[JValue],
   collection_id: Option[BigInt],
+  dashboard_id: Option[BigInt],
   collection_position: Option[BigInt],
   result_metadata: JValue,
   cache_ttl: Option[String],
@@ -104,6 +105,10 @@ case class Card(
     replacementMayFail(this, "Snippet") {
       _.copy(dataset_query = MBJson.replaceSnippets(dataset_query, replacements))
     }
+
+  def replaceDashboardId(replacements: IdMap): Card = replacementMayFail(this, "Dashboard") {
+    _.copy(dashboard_id = dashboard_id.map(replacements(_)))
+  }
 
   def cleanDescription: Card =
     description match {

@@ -4,7 +4,9 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## 0.56.4-0.1.0 (upcoming)
 
-* TODO
+* [ROCK-13979] Update stratio-metabase to 0.56.0-0.1.0 and virtualizer jdbc to 3.0.0
+* [ROCK-14012] Use ubuntu:24 as runner docker base image
+* [ROCK-XXXXX] Remove databricks and athena drivers since they have some packages with vulnerabilities
 
 ## 0.50.21-0.1.3 (2025-05-12)
 

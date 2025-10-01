@@ -12,9 +12,12 @@ ENV LC_CTYPE en_US.UTF-8
 # Add:
 # - our drivers source code to build them
 # - deps.edn with the stratio mvn repo declared so crossdata-jdbc dependency is resolved when building our drivers
+# (we no longer need it but we leave it just in case in the future we need to access stratio repos from clojure)
 COPY ./metabase/modules                                /home/node/modules
 COPY ./metabase/modules/drivers/stratio-repo.edn       /root/.clojure/deps.edn
 
+# build our custom hive-like driver without vulnerabilities
+RUN bin/build-driver.sh hive-like
 # build our drivers
 RUN bin/build-driver.sh crossdata
 RUN bin/build-driver.sh stratiopostgres
@@ -38,15 +41,16 @@ ENV STRATIO_UTILS /stratio
 ###       DEPENDENCIES       ###
 ################################
 # apt things
-RUN apt-get update &&  apt-get install -y \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+    # openjdk brings libtiff6-4.5.1+git230720-4ubuntu2.4, which has a high vulnerability, but it seems to be a false positive
     openjdk-21-jdk \
     ca-certificates \
     bash \
     nginx \
     # services supervisor
     s6 \
-    # we use wget to download "extra jars" (maybe use curl instead?)
-    wget \
     # we use zip only in the Dockerfile itself - mayber install and remove in the corresponding layer?
     zip \
     # jq, curl for kms-utils
@@ -54,7 +58,7 @@ RUN apt-get update &&  apt-get install -y \
     curl \
     # to substitue environment variables in the nginx.conf file with envsubst
     gettext-base \
-    # these fonts are neede by metabase
+    # these are needed by metabase
     fontconfig \
     fonts-noto-core \
     # kms utils and b-log
@@ -67,8 +71,9 @@ RUN apt-get update &&  apt-get install -y \
     && rm /etc/nginx/nginx.conf \
     && mkdir /etc/pki /env_vars \
     # clean apt caches
+    && apt-get -y autoremove --purge \
     && apt-get -qq clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
 # Set JAVA_HOME environment variable
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
@@ -99,7 +104,15 @@ RUN jar xf /app/target/uberjar/metabase.jar migrations/000_legacy_migrations.yam
    && cat subscription_triggers.sql >> migrations/initialization/metabase_postgres.sql        \
    && zip /app/target/uberjar/metabase.jar migrations/000_legacy_migrations.yaml              \
    && zip /app/target/uberjar/metabase.jar migrations/initialization/metabase_postgres.sql    \
-   && rm -rf migrations/ 100_stratio.yaml subscription_triggers.sql
+   && rm -rf migrations/ 100_stratio.yaml subscription_triggers.sql                           \
+   # delete databricks and athena driver since they have some packages with vulnerabilities
+   && zip -d /app/target/uberjar/metabase.jar modules/databricks.metabase-driver.jar \
+   && zip -d /app/target/uberjar/metabase.jar modules/athena.metabase-driver.jar \
+   # delete hive-like driver and use our repackaging with the vulnerable dependency removed
+   # (spark sql or other hive-like metabase-drivers won't work, but we only need them to be inherited
+   # in our virtualizer driver, which does not use the hive-like code using the dependency)
+   && zip -d /app/target/uberjar/metabase.jar modules/hive-like.metabase-driver.jar
+
 
 
 # create the plugins directory, with writable permissions
@@ -108,13 +121,14 @@ RUN chmod a+rwx /plugins
 
 # add stratio drivers jars to plugins folder
 COPY --from=builder /home/node/resources/modules/* /plugins/
-
+# this is not copied to the plugins folder yet, in case we receive a custom virtualizer jdbc from EXTRA_JARS
+COPY virtualizer-jdbc/target/stratio-crossdata-jdbc4-shaded.jar /
 
 ################################
 ###  PROMETHEUS, LOGS, CICD  ###
 ################################
 # Download prometheus jar
-RUN wget --no-verbose -O /app/target/uberjar/jmx_prometheus_javaagent.jar \
+RUN curl -sL --output /app/target/uberjar/jmx_prometheus_javaagent.jar \
     http://qa.int.stratio.com/repository/central/io/prometheus/jmx/jmx_prometheus_javaagent/0.19.0/jmx_prometheus_javaagent-0.19.0.jar \
     && echo '{}' > /app/target/uberjar/config.yaml
 

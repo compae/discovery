@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.stratio.discovery</groupId>
+  <artifactId>virtualizer-jdbc</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>com.stratio</groupId>
+    <artifactId>discovery-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.stratio.crossdata.driver</groupId>
+      <artifactId>stratio-crossdata-jdbc4</artifactId>
+      <version>3.0.0-d9dbc73</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>stratio-crossdata-jdbc4-shaded</finalName>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+
+              <!-- Only include the JDBC driver and all its dependencies -->
+              <!-- We relocate/remove the dependencies already included in metabase.
+                   You can check which dependencies are in common with Metabase by building the virtualizer metabase
+                   driver declaring the jdbc as dependency. The metabase build scripts list and remove the packages
+                   included in metabase-core as a final step. For the moment there only seems to be problems with
+                   jackson, but we relocate all packages just in case -->
+              <artifactSet>
+                <includes>
+                  <include>com.stratio.crossdata.driver:stratio-crossdata-jdbc4</include>
+                  <include>*:*</include>
+                </includes>
+
+                <!-- shading slf4j and log4j gives errors in runtime... we remove them form the jar
+                     and hope that the version included in metabase does not cause problems -->
+                <excludes>
+                  <exclude>org.slf4j:slf4j-api</exclude>
+                  <exclude>org.apache.logging.log4j:log4j-api</exclude>
+                  <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                </excludes>
+              </artifactSet>
+
+              <relocations>
+                <relocation>
+                  <pattern>com.fasterxml.jackson</pattern>
+                  <shadedPattern>shaded.com.fasterxml.jackson</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>joda-time</pattern>
+                  <shadedPattern>shaded.joda-time</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons</pattern>
+                  <shadedPattern>shaded.org.apache.commons</shadedPattern>
+                </relocation>
+              </relocations>
+
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Built-By>Maven Shade Plugin</Built-By>
+                    <Build-Jdk>${java.version}</Build-Jdk>
+                  </manifestEntries>
+                </transformer>
+
+                <!-- These transformers and filters are used in the virtualizer pom in their repo, so we duplicate them -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>reference.conf</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/services/com.stratio.crossdata.connector.FunctionInventory</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/services/org.apache.spark.sql.sources.DataSourceRegister</resource>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>org.scala-lang:scala-compiler</artifact>
+                  <excludes>
+                    <exclude>META-INF/services/javax.script.ScriptEngineFactory</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,10 +1,14 @@
 {:paths
  ["src" "resources"]
 
- :mvn/repos
- {"stratio"         {:url "https://qa.int.stratio.com:1443/repository/public"}
-  "stratio-staging" {:url "https://qa.int.stratio.com:1443/repository/staging"}}
+ ;; uncomment this below to build the driver including the virtualizer jdbc so that we can see
+ ;; which dependencies does the metabase build scripts remove from the fat-jar
 
- :deps
+ ;; :mvn/repos
+ ;; {"stratio"         {:url "https://qa.int.stratio.com:1443/repository/public"}
+ ;;  "stratio-staging" {:url "https://qa.int.stratio.com:1443/repository/staging"}}
+
+ ;; :deps
  ;; WATCH OUT! when updating the crossdata jdbc update also the reference.conf in resources
- {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "2.32.0-968039a"}}}
+ ;; {com.stratio.crossdata.driver/stratio-crossdata-jdbc4 {:mvn/version "3.0.0-d6d6755"}}
+ }

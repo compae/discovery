@@ -63,6 +63,7 @@
     <Logger name="com.mchange" level="${env:MCHANGE_LOG_LEVEL:-ERROR}"/>
     <Logger name="org.eclipse.jetty" level="${env:JETTY_LOG_LEVEL:-ERROR}"/>
     <Logger name="com.stratio.discoverycicd" level="${env:DISCOVERYCICD_LOG_LEVEL:-INFO}"/>
+    <Logger name="com.stratio.crossdata" level="${env:CROSSDATA_LOG_LEVEL:-INFO}"/>
     <Logger name="org.apache.http" level="${env:HTTP_LOG_LEVEL:-ERROR}"/>
     <Logger name="akka" level="${env:AKKA_LOG_LEVEL:-INFO}"/>
   </Loggers>

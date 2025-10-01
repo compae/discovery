@@ -1024,6 +1024,27 @@
                 ],
                 "default": "DEBUG"
               },
+              "crossdataLogLevel": {
+                "description": "Log level of stratio crossdata jdbc.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 3,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "CROSSDATA_LOG_LEVEL",
+                "title": "Crossdata log level",
+                "enum": [
+                  "TRACE",
+                  "DEBUG",
+                  "INFO",
+                  "WARN",
+                  "ERROR",
+                  "FATAL"
+                ],
+                "default": "INFO"
+              },
               "stratioLogLevel": {
                 "description": "Log level of stratio namespaces.",
                 "type": "string",
@@ -1326,6 +1347,18 @@
                 "internalName": "EXTRA_JARS",
                 "title": "Extra JARs to add to metabase plugins folder",
                 "default": ""
+              },
+              "virtualizerJdbcFromExtraJars": {
+                "description": "Flag to indicate that an external custom JAR for the virtualizer JDBC is being passed in the EXTRA_JARS so that this is the one used instead of the one included in the Discovery image.",
+                "type": "boolean",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "VIRTUALIZER_JDBC_FROM_EXTRA_JARS",
+                "title": "Use virtualizer jdbc from Extra JARs",
+                "default": false
+
               }
             },
             "required": []

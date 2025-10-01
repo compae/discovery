@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
     <parent>
         <groupId>com.stratio</groupId>
-        <artifactId>discoverycicd-parent</artifactId>
+        <artifactId>discovery-parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
     <properties>

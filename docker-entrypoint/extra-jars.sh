@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-WGET_SECURITY_OPTS=${WGET_CUSTOM_SECURITY_OPTS:-} #Example WGET options "--ca-cert=${SSL_CA} --certificate=${SSL_CERT} --private-key=$SSL_KEY"
+CURL_SECURITY_OPTS=${CURL_CUSTOM_SECURITY_OPTS:-} #Example CURL options "--cacert ${SSL_CA} --cert ${SSL_CERT} --key ${SSL_KEY}"
 
 function download_extra_jars() {
   local jars=$1
@@ -10,12 +10,11 @@ function download_extra_jars() {
     INFO "[EXTERNAL-JAR] No required extra jars for $destination, skipping..."
   else
     INFO "[EXTERNAL-JAR] Required extra jars for $destination: $jars"
+
     while IFS=',' read -ra EXTRAJAR; do
       for i in "${EXTRAJAR[@]}"; do
-        # process "$i"
         INFO "[EXTERNAL-JAR] Downloading extra jar: $i to $destination"
-        wget -nv $WGET_SECURITY_OPTS -P $destination $i
-        if [ $? -ne 0 ]; then
+        if ! (cd "$destination" && curl -sLO "$CURL_SECURITY_OPTS" "$i"); then
           WARN "[EXTERNAL-JAR] Failed downloading $i"
         fi
       done
