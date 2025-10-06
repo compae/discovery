@@ -1,18 +1,13 @@
-﻿= New developments
+﻿= What's new
 
-These are the latest changes made in _Stratio Discovery_ version *0.50.21-0.1.x* (initially released in October 2024, with the latest patch 0.50.21-0.1.3 released in May 2025):
+These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.1.x*:
 
-* Metabase update: now using version 0.50.21, although certain features, such as actions, CSV-based models, timelines, and alerts, are not compatible with _discovery-cicd_ collection export/import.
-* Update of the _Stratio Virtualizer_ JDBC driver to version 2.31.0.
-* A new deployment option has been added to _Stratio Command Center_: "Extra JARs to add to metabase plugins folder", which allows you to specify a list of URLs with JAR files to be added to the Metabase plugins folder. This allows adding new drivers or required dependencies, such as the Oracle JDBC driver needed by the Metabase Oracle driver (environment variable: `EXTRA_JARS`).
-* A new deployment option has been added to _Stratio Command Center_: "Hex-encode user-provided parameters in SQL queries", which configures the SQL injection prevention mechanism when interpolating parameters in _Stratio Virtualizer_ SQL queries. Hexadecimal encoding is more secure, but it may cause issues when the query is resolved natively and the datastore cannot decode the parameters (environment variable: `VIRTUALIZER_DRIVER_HEX_ENCODE_SQL_PARAMS`).
-* Support for using questions as values in filters of other questions when exporting and importing collections in _discovery-cicd_.
-* A new deployment option has been added to _Stratio Command Center_ to prevent JDBC connection blocking with _Stratio Virtualizer_ servers prior to version 0.11.0. The new configuration "Skip Metabase’s Statement final cancellation in Virtualizer driver" allows disabling automatic JDBC statement cancellation, which caused this issue (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`).
-* Fixed an issue in the _Stratio Virtualizer_ driver that prevented schema and table names containing hyphens from being synchronized (updated the _Stratio Virtualizer_ JDBC driver to version 2.31.0).
-* Fixed an issue in the _Stratio Virtualizer_ driver where the correct SQL dialect was not being used for SQL query formatting.
+* Metabase update: version 0.56.4 is now used. Certain features introduced in Metabase 0.51, such as actions, models created from CSV, timelines, and alerts, are still not compatible with the export/import of _discovery-cicd_ collections.
+* _Stratio Virtualizer JDBC_ driver updated to version 3.0.0.
+* A deployment option has been added to _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (environment variable `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) to not use the _Stratio Virtualizer_ JDBC driver included in the image, but to obtain it from the "Extra JARs to add to metabase plugins folder" (environment variable `EXTRA_JARS`).
 
 == Breaking changes
 
-* Integration with _Stratio GoSec_ SSO has been updated. The Oauth2 flow is now delegated to _Stratio KEOS_’s oauth2proxy, and the "discovery-oauth-cookie" is no longer used. Instead, the _stratio-cookie_ is set, which contains a JWT token with user information very similar to what was included in the previous cookie, with the added benefit that the rest of Stratio's applications recognize this new token. Additionally, accessing the Metabase API no longer requires including this cookie; only the "metabase.SESSION" cookie is necessary. Integrations with the _discovery-cicd_ API that simulated a login to retrieve the "discovery-oauth-cookie" and then obtain a "metabase.SESSION" cookie must now be adjusted to use the new _stratio-cookie_ instead.
+* The deployment option in _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`) has been removed. This option prevented JDBC connections from being blocked with _Stratio Virtualizer_ servers before version 0.11.0; therefore, it is now necessary to connect to servers with version 0.11.0 or higher.
 
 TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.

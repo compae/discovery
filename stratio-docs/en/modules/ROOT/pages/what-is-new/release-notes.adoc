@@ -2,6 +2,13 @@
 
 These are the highlights of _Stratio Discovery_ in recent releases:
 
+== 0.56.4-0.1.0
+
+* Metabase update: version 0.56.4 is now used. Certain features introduced in Metabase 0.51, such as actions, models created from CSV, timelines, and alerts, are still not compatible with the export/import of _discovery-cicd_ collections.
+* _Stratio Virtualizer JDBC_ driver updated to version 3.0.0.
+* A deployment option has been added to _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (environment variable `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) to not use the _Stratio Virtualizer_ JDBC driver included in the image, but to obtain it from the "Extra JARs to add to metabase plugins folder" (environment variable `EXTRA_JARS`).
+* *Breaking change*: the deployment option in _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`) has been removed. This option prevented JDBC connections from being blocked with _Stratio Virtualizer_ servers before version 0.11.0; therefore, it is now necessary to connect to servers with version 0.11.0 or higher.
+
 == 0.50.21-0.1.3 (May 12, 2025)
 
 * Added a deployment option in _Stratio Command Center_: "Extra JARs to add to metabase plugins folder", to specify a list of URLs with JAR files to be added to Metabase’s plugins folder. This allows adding new drivers or required dependencies, such as the Oracle JDBC required by the Metabase Oracle driver (environment variable: `EXTRA_JARS`).
