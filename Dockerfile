@@ -44,8 +44,7 @@ ENV STRATIO_UTILS /stratio
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
-    # openjdk brings libtiff6-4.5.1+git230720-4ubuntu2.4, which has a high vulnerability, but it seems to be a false positive
-    openjdk-21-jdk \
+    openjdk-21-jdk-headless \
     ca-certificates \
     bash \
     nginx \
