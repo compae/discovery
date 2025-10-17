@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CURL_SECURITY_OPTS=${CURL_CUSTOM_SECURITY_OPTS:-} #Example CURL options "--cacert ${SSL_CA} --cert ${SSL_CERT} --key ${SSL_KEY}"
+CURL_SECURITY_OPTS=${CURL_CUSTOM_SECURITY_OPTS:-"--cacert ${SSL_CA} --cert ${SSL_CERT} --key ${SSL_KEY}"}
 
 function download_extra_jars() {
   local jars=$1
@@ -14,9 +14,13 @@ function download_extra_jars() {
     while IFS=',' read -ra EXTRAJAR; do
       for i in "${EXTRAJAR[@]}"; do
         INFO "[EXTERNAL-JAR] Downloading extra jar: $i to $destination"
-        if ! (cd "$destination" && curl -sLO "$CURL_SECURITY_OPTS" "$i"); then
+        here=$(pwd)
+        # don't put quotes around CURL_SECURITY_OPTS since then it does not work ¯\_(ツ)_/¯
+        if ! (cd "$destination" && curl -sLO $CURL_SECURITY_OPTS "$i"); then
           WARN "[EXTERNAL-JAR] Failed downloading $i"
         fi
+        # shellcheck disable=SC2164
+        cd "$here"
       done
     done <<< "$jars"
   fi
