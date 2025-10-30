@@ -15,7 +15,7 @@ import com.stratio.discoverycicd.utils.Identificable.IdentificableOps
 import com.stratio.discoverycicd.utils.Jsonable.JsonableOps
 
 import scala.annotation.tailrec
-import org.json4s.JsonAST.JObject
+import org.json4s.JsonAST.JArray
 
 class Importer(api: ApiClient) extends Logging {
 
@@ -112,7 +112,7 @@ class Importer(api: ApiClient) extends Logging {
     existingDashboards: Map[CollId, List[CollectionItem]]
   ): IdMap = {
     dashboards
-      .map(_.copy(dashcards = List.empty, parameters = JObject(), tabs = List.empty))
+      .map(_.copy(dashcards = List.empty, parameters = JArray(List.empty), tabs = List.empty))
       .map(_.replaceCollectionId(collMap))
       .map { dashboard =>
         val idInTarget = dashboard
