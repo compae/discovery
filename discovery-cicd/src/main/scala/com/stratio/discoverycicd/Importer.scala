@@ -75,7 +75,8 @@ class Importer(api: ApiClient) extends Logging {
     val cardMap = createCards(exportedCollection.cards, dbMaps, collMap, snippetMap, dashboardMap, cardsByCollection)
 
     log.debug("Importing dashboards from export data")
-    createDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardsByCollection)
+    updateDashboards(exportedCollection.dashboards, dbMaps, collMap, cardMap, dashboardMap)
+    deleteDashboardsNotInExportData(dashboardMap, dashboardsByCollection.values.flatten)
 
     log.debug("Importing subscriptions from export data")
     createSubscriptions(exportedCollection.subscriptions, collMap, dashboardMap, cardMap, dashboardsByCollection)
@@ -117,85 +118,53 @@ class Importer(api: ApiClient) extends Logging {
       .map { dashboard =>
         val idInTarget = dashboard
           .collection_id
-          .flatMap(existingDashboards(_).filter(_.name == dashboard.name).headOption)
-          .map(_.id)
-          .getOrElse(api.createDashboard(dashboard).id)
+          .flatMap(existingDashboards(_).find(_.name == dashboard.name))
+          .map { existingDashboard =>
+            log.debug(s"dashboard with name ${existingDashboard.name} already present in collection. Will remove all its dashcards and tabs")
+            existingDashboard.id   
+          }
+          .getOrElse {
+            log.debug(s"Creating empty dashboard ${dashboard.name}")
+            api.createDashboard(dashboard).id
+          }
         dashboard.id -> idInTarget
       }
       .toMap
   }
 
-  // TODO: now that we create the emtpy dashboards beforehand maybe this could be simplified/refactored
-  //  but for the moment we just leave it as is since it works correctly
-  private def createDashboards(
+  private def updateDashboards(
     dashboards: List[Dashboard],
     dbMaps: DbMaps,
     collMap: IdMap,
     cardMap: IdMap,
-    existingDashboards: Map[CollId, List[CollectionItem]]
-  ): IdMap = {
-    val dashboardSourceToTarget = dashboards.map { dashboard =>
-      log.debug(s"Creating/updating dashboard from exported data: ${dashboard.toJson}")
-      log.debug(s"Replacing collection, database, table and field Ids in dashboard")
-      val dashboardToCreateOrUpdate =
+    dashboardMap: IdMap
+  ): Unit = {
+    dashboards
+      .map { dashboard =>
+        log.debug(s"Updating empty dashboard '${dashboard.name}' using exported data: ${dashboard.toJson}")
+        log.debug(s"Replacing id, collection, database, table and field Ids in dashboard")
         dashboard
+          .replaceId(dashboardMap)
           .replaceCollectionId(collMap)
           .replaceDatabaseIds(dbMaps.db)
           .replaceTableIds(dbMaps.table)
           .replaceFieldIds(dbMaps.field)
           .replaceCardIds(cardMap)
+          .replaceDashboardLinks(dashboardMap)
           .withNegativeDashcardsAndTabs
-
-      val createdOrUpdatedDashboard = dashboardToCreateOrUpdate
-        .collection_id
-        .flatMap {
-          collId =>
-            existingDashboards(collId).filter(_.name == dashboard.name) match {
-              case Nil => None
-              case head :: Nil => Some(head)
-              case head :: tail =>
-                log.warn(s"Found ${tail.length + 1} dashboards in the target collection with the same name as the imported one: '${dashboard.name}'. Will update the one with id ${head.id} and delete the rest (ids: ${tail.map(_.id)}).")
-                tail.foreach(api.deleteCollectionItem)
-                Some(head)
-            }
-        }
-        .map {
-          existingDashboard =>
-            log.debug(s"dashboard with name ${existingDashboard.name} already present in collection. Removing all its dashcards and tabs")
-            // we cannot yet create the dashcards since we need the full dashboardIds mapping to replace dashboardIds in dashcard links.
-            api.updateDashboard(
-              existingDashboard.id,
-              dashboardToCreateOrUpdate.copy(dashcards = List.empty, tabs = List.empty)
-            )
-            dashboardToCreateOrUpdate.copy(id = existingDashboard.id)
-        }
-        .getOrElse {
-          log.debug(s"create (POST) dashboard with name ${dashboardToCreateOrUpdate.name} in Metabase")
-          // we cannot yet create the dashcards since we need the full dashboardIds mapping to replace dashboardIds in dashcard links.
-          api.createDashboard(dashboardToCreateOrUpdate.copy(dashcards = List.empty, tabs = List.empty))
-            .copy(dashcards = dashboardToCreateOrUpdate.dashcards, tabs = dashboardToCreateOrUpdate.tabs)
-        }
-
-      dashboard.id -> createdOrUpdatedDashboard
-
-    }.toMap
-
-    val dashboardIdSourceToTarget = dashboardSourceToTarget.mapValues(_.id)
-
-    // add parameters that cannot be set in the creation post request, including the dashcards and tabs
-    dashboardSourceToTarget.values.foreach { dashboard =>
-      log.debug(s"update (PUT) dashboard with name ${dashboard.name} to add extra parameters, dashcards and tabs")
-      api.updateDashboard(dashboard.id, dashboard.replaceDashboardLinks(dashboardIdSourceToTarget))
-    }
-
-    // Delete dashboards that have not been created or updated (not present in export data)
-    val dashboardsToDelete = existingDashboards.values.flatten.filterNot(dashboardIdSourceToTarget.toMap.values.toSet contains _.id)
-    log.debug(s"Deleting dashboards not present in export data $dashboardsToDelete")
-    dashboardsToDelete.foreach(api.deleteCollectionItem)
-
-    dashboardIdSourceToTarget
+      }
+      .foreach { dashboard =>
+        log.debug(s"update (PUT) dashboard with name ${dashboard.name}")
+        api.updateDashboard(dashboard.id, dashboard)
+      }
   }
 
+  private def deleteDashboardsNotInExportData(dashboardMap: IdMap, existingDashboards: Iterable[CollectionItem]): Unit = {
+    // Delete dashboards that have not been created or updated (not present in export data)
+    val dashboardsToDelete = existingDashboards.filterNot(dashboardMap.values.toSet contains _.id)
+    log.debug(s"Deleting dashboards not present in export data $dashboardsToDelete")
+    dashboardsToDelete.foreach(api.deleteCollectionItem)
+  }
 
   private def createCards(
     cards: List[Card],

@@ -31,6 +31,10 @@ case class Dashboard(
   width: Option[String]
 ) {
 
+  def replaceId(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail(this, "Id") {
+    _.copy(id = replacements(id))
+  }
+
   def replaceFieldIds(replacements: Map[BigInt, BigInt]): Dashboard = replacementMayFail(this, "Field") {
     _.copy(dashcards = dashcards.map(_.replaceFieldIds(replacements)))
       .copy(parameters = MBJson.replaceFieldIds(parameters, replacements))
