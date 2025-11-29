@@ -13,7 +13,7 @@ image::arquitectura2.png[]
 This means that its architecture is based on Metabase's own architecture, but it also provides two fundamental features:
 
 . Uniform secured user access on the platform (through an NGINX HTTP proxy).
-. Access to all of the platform's internal data: _Stratio {modulename}_ (via _Crossdata driver_) and _Stratio PostgreSQL_ (via _JDBC driver_).
+. Access to all the platform's internal data: _Stratio {modulename}_ (via _{modulename} driver_) and _Stratio PostgreSQL_ (via _JDBC driver_).
 
 image::arquitectura3.png[]
 

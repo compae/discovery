@@ -10,60 +10,59 @@ En este punto, se mostrará todo el catálogo de servicios. Aquí debes filtrar 
 
 image::cct_deploy_service_discovery_deployment_0002.png[]
 
-Una vez que hayas configurado todo, selecciona el servicio de "Discovery" y se te redirigirá a una página de confirmación donde podrás elegir una versión _minor_ del servicio en caso de que lo necesites. Cuando hayas elegido qué versión desplegar, puedes confirmarla haciendo clic en "Deploy".
+Una vez que hayas configurado todo, selecciona el servicio de "Discovery" y se te redirigirá a una página de confirmación en la que podrás elegir una versión _minor_ del servicio, si lo necesitas. Cuando hayas elegido la versión que deseas desplegar, puedes confirmarla haciendo clic en "Deploy".
 
 image::cct_confirm_version_discovery_deployment_0003.png[]
 
 La siguiente pantalla muestra una serie de requisitos de configuración básicos ('Pre-deployment').
 
-_Stratio Command Center_ te proporciona un descubrimiento de servicios instalados en el _cluster_ de cara a que puedas configurarlo correctamente.
+_Stratio Command Center_ te permite descubrir los servicios instalados en el _cluster_ para que puedas configurarlo correctamente.
 
 image::cct_predeploy_discovery_deployment_0004.png[]
 
-==== _Namespace_ donde será desplegado el servicio
+=== _Namespace_ donde se desplegará el servicio
 
-Según el inicio de sesión que hayas realizado es posible que debas seleccionar el _namespace_ donde deseas desplegar tu servicio. En el siguiente ejemplo, se establece en `s000001` y se configura el nombre del _namespace_ a partir del tenant en `s000001-discovery`:
+Según el inicio de sesión que hayas realizado, es posible que debas seleccionar el _namespace_ en el que deseas desplegar tu servicio. En el siguiente ejemplo, se establece en `s000001` y se configura el nombre del _namespace_ a partir del tenant en `s000001-discovery`:
 
 image::cct_select_tenant_namespace_discovery_deployment_0005.png[]
 
-==== Almacén de metadatos de la aplicación
+=== Almacén de metadatos de la aplicación
 
-_Stratio Command Center_ te permite elegir el _Stratio PostgreSQL_ disponible en el _cluster_ para conectarte. Hay dos selectores de detección de servicios: el primero se usa para construir la URL y podría ser PostgreSQL® o PgBouncer, el segundo se utiliza para crear las políticas y la base de datos. Ten en cuenta que ambos campos deben ser coherentes.
+_Stratio Command Center_ te permite elegir el _Stratio PostgreSQL_ disponible en el _cluster_ para conectarte. Hay dos selectores de detección de servicios: el primero se usa para construir la URL y puede ser PostgreSQL® o PgBouncer; el segundo se utiliza para crear las políticas y la base de datos. Ten en cuenta que ambos campos deben ser coherentes.
 
-==== Definir _placements_ para _Stratio Discovery_
+=== Definir _placements_ para _Stratio Discovery_
 
-En este punto, _Stratio Command Center_ te permite realizar una búsqueda avanzada de los _placements_ en el que puedes seleccionar las reglas de afinidad para la instancia de _Stratio Discovery_. Estos _placements_ son totalmente opcionales.
+En este punto, _Stratio Command Center_ te permite realizar una búsqueda avanzada de los _placements_ en la que puedes seleccionar las reglas de afinidad para la instancia de _Stratio Discovery_. Estos _placements_ son totalmente opcionales.
 
-==== Prioridad para _Stratio Discovery_ (_priority classes_)
+=== Prioridad para _Stratio Discovery_ (_priority classes_)
 
-_Stratio Command Center_ te proporciona una lista de las _priority classes_ configuradas en el _cluster_. Puedes escoger la prioridad del servicio que será desplegado.
+_Stratio Command Center_ te proporciona una lista de las _priority classes_ configuradas en el _cluster_. Puedes escoger la prioridad del servicio que se desplegará.
 
-WARNING: El nombre de la aplicación debe ser único a nivel de _tenant_. Por lo tanto, no se pueden desplegar dos instancias con el mismo nombre en distintos _namespaces_ si comparten el mismo _tenant_, lo que no quita que se puedan desplegar dos instancias con el mismo nombre en distintos _tenants_.
+WARNING: El nombre de la aplicación debe ser único a nivel de _tenant_. Por lo tanto, no se pueden desplegar dos instancias con el mismo nombre en distintos _namespaces_ si comparten el mismo _tenant_, aunque sí se pueden desplegar dos instancias con el mismo nombre en distintos _tenants_.
 
-Cuando hayas confirmado la configuración de la pantalla de 'Pre-deployment', aparecerá un formulario donde puedes completar la configuración de forma más específica.
+Cuando hayas confirmado la configuración de la pantalla 'Pre-deployment', se abrirá un formulario en el que podrás completarla con mayor detalle.
 
 image::cct_configure_discovery_deployment_0005.png[]
 
-En caso de que necesites establecer una configuración avanzada, haz clic en "Customize deployment" en la barra de menú superior derecha de esta página:
+En caso de que necesites establecer una configuración avanzada, haz clic en "Customize deployment", justo debajo del nombre y versión del servicio que estás instalando:
 
 image::cct_advanced_configuration_discovery_deployment_0006.png[]
 
 La configuración de despliegue se ha dividido en diferentes secciones que se muestran en el menú de la izquierda:
 
-* *General*, donde están todas las configuraciones más importantes.
+* *General*, donde se encuentran las configuraciones más importantes.
 * *Settings*, donde puedes ajustar la instancia según las necesidades del usuario.
-* *Environment*, donde se configuran automáticamente todas las variables de entorno global del _cluster_ (esta es una sección de solo lectura).
-* *Placements*, donde puedes especificar restricciones de Mesos para ubicar la aplicación (solo en _Stratio EOS_).
+* *Environment*, donde se configuran automáticamente todas las variables de entorno globales del _cluster_ (esta sección es de solo lectura).
 
-Entre las configuraciones de la sección *General*, puedes establecer el nombre del grupo con poderes de administrador (`Admin group`) y los grupos que contienen usuarios con poderes limitados (`Allowed groups`) dentro de _Stratio Discovery_.
+Entre las configuraciones de la sección *General*, puedes establecer el nombre del grupo con poderes de administrador (`Admin group`) y los grupos que contienen usuarios con poderes limitados (`Allowed groups`) en _Stratio Discovery_.
 
 image::users_discovery.png[]
 
-Algunas de las configuraciones avanzadas más comunes que se pueden personalizar se encuentran en 'Settings'. En esta sección puedes configurar los parámetros de Java para la exportación e importación de colecciones del servicio así como otros parámetros de Akka HTTP y Nginx. Veamos este apartado con sus valores por defecto.
+Algunas de las configuraciones avanzadas más comunes que pueden personalizarse se encuentran en 'Settings'. En esta sección puedes configurar los parámetros de Java para la exportación e importación de colecciones del servicio, así como otros de Akka HTTP y de Nginx. A continuación, se muestra este apartado con sus valores por defecto.
 
 image::cct_advanced_settings_discovery_deployment_0009.png[]
 
-Dado que hay muchas variables para configurar, es mejor que el operador busque el significado de una variable (cuando su nombre no es autoexplicativo) dentro del icono *Help* (?), para buscar la propiedad deseada dentro de la sección relacionada.
+Dado que hay muchas variables para configurar, es mejor que el operador busque el significado de una variable (cuando su nombre no es autoexplicativo) en el icono *Help* (?), para encontrar la propiedad deseada en la sección correspondiente.
 
 image::cct_help_discovery_deployment_0007.png[]
 
@@ -71,14 +70,14 @@ Por ejemplo, si deseas saber qué es la propiedad `Nginx` y qué hace, simplemen
 
 image::cct_help_tooltip_discovery_deployment_0008.png[]
 
-Por defecto, _Stratio Discovery_ se desplegará integrado con el SSO de _Stratio GoSec_. Eso significa que la instancia desplegada se registrará en el SSO de _Stratio GoSec_ como un servicio y registrará un secreto adicional en Vault, pero no te preocupes por cómo hacerlo porque _Stratio Command Center_ lo realizará por sí mismo.
+Por defecto, _Stratio Discovery_ se desplegará integrado con el SSO de _Stratio GoSec_. Eso significa que la instancia desplegada se registrará en el SSO de _Stratio GoSec_ como un servicio y se registrará un secreto adicional en Vault, pero no te preocupes por cómo hacerlo, porque _Stratio Command Center_ lo hará por sí mismo.
 
 == Despliegue
 
-Ahora que todo está configurado... ¡haz clic en "Deploy"!
+Ahora que todo está configurado… ¡haz clic en "Deploy"!
 
 image::cct_deploy_discovery_0010.png[]
 
-Todo debería funcionar de inmediato y la instancia pronto debería estar en ejecución.
+Todo debería funcionar de inmediato y la instancia debería estar en ejecución pronto.
 
 image::cct_healthy_discovery_0011.png[]

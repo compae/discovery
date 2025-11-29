@@ -68,7 +68,7 @@ You can't import:
 In these cases, each endpoint will respond with its corresponding error.
 ====
 
-Disabling the `FRIENDLY TABLE AND FIELD NAMES` configuration option will speed up the export/import process. This option is in the general section of the Metabase settings:
+Disabling the "FRIENDLY TABLE AND FIELD NAMES" configuration option using the `MB_HUMANIZATION_STRATEGY` environment variable will speed up the export and import process. You can find this option in the 'General' section of the Metabase admin settings:
 
 image::humanize_fields.png[]
 

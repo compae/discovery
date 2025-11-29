@@ -13,7 +13,7 @@ image::arquitectura2.png[]
 Su arquitectura, por tanto, está basada en la propia arquitectura de Metabase, pero además aporta dos características fundamentales:
 
 . Acceso securizado de usuarios, homogeneizado en la plataforma (a través de un proxy HTTP NGINX).
-. Acceso a todos los datos internos a la plataforma: _Stratio {modulename}_ (vía _Crossdata driver_) y _Stratio PostgreSQL_ (vía _JDBC driver_).
+. Acceso a todos los datos internos a la plataforma: _Stratio {modulename}_ (vía _{modulename} driver_) y _Stratio PostgreSQL_ (vía _JDBC driver_).
 
 image::arquitectura3.png[]
 
