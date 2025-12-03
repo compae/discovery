@@ -2,7 +2,7 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
-== 0.56.4-0.1.0
+== 0.56.4-0.1.0 (4 de noviembre de 2025)
 
 * Actualización de Metabase: ahora se utiliza la versión 0.56.4. Ciertas funcionalidades introducidas en Metabase 0.51, como acciones, modelos creados desde CSV, _timelines_ y alertas, siguen sin ser compatibles con la exportación/importación de colecciones de _discovery-cicd_.
 * Actualización del _driver_ JDBC de _Stratio Virtualizer_ a la versión 3.0.0.

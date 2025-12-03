@@ -4,11 +4,10 @@ _Stratio Discovery_ is a simple and powerful analysis tool that allows anyone to
 
 For example:
 
-Settings → HA Proxy host = http://discovery.labs.stratio.com
+* Settings → HA Proxy host = `\http://discovery.labs.stratio.com`
+* Settings → Path HA Proxy = `discovery`
 
-Settings → Path HA Proxy = 'discovery'
-
-The final URL would be: https://discovery.labs.stratio.com/discovery
+The final URL would be: `\https://discovery.labs.stratio.com/discovery`
 
 == Logging in
 

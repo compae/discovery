@@ -10,7 +10,7 @@ Este es un _bug_ de Metabase que se ha resuelto en la versión 0.42.3 y posterio
 
 == Cuando entro a la página principal, las exploraciones _x-ray_ no se cargan automáticamente
 
-NOTE: Arreglado en la versión 0.50.21-0.1.0.
+NOTE: Arreglado en la versión 0.50.21-0.1.X.
 
 Este es un problema menor causado por la capa de autenticación que añade _Stratio Discovery_ a Metabase. Para representar el contenido de la página principal, se deben recuperar algunas configuraciones de usuario sobre si se deben mostrar o no sugerencias _x-ray_ (por ejemplo, hay muchas formas de https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[desactivar la funcionalidad de _x-ray_] ^[English]^. Lamentablemente, esta llamada a _get-properties_ no está autenticada y, debido a una condición de carrera, puede ejecutarse antes que las llamadas que establezcan una cookie válida de `metabase.SESSION` tras el _login_.
 

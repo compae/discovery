@@ -30,9 +30,9 @@ Otherwise, you are more than welcome to contact us.
 
 Your user must belong to an allowed group or administration group, depending on the role. The way in which the administrator can specify the allowed groups is explained in detail in the xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[End user authentication] section.
 
-=== Links to a dashboard are not redirected correctly in a _Stratio Discovery_ deployed with _Governance_ flavour on DC/OS
+=== Links to a dashboard are not correctly redirected in a _Stratio Discovery_ deployment with the _Governance_ flavour
 
-You may notice that in dashboard subscriptions or when there are redirects, the service URL is not generated correctly (for example, it redirects you to https://admin-dev.stratio.com/question/123 instead of https://admin-dev.stratio.com/service/discovery-governance/question/123). If this happens even after modifying the `SITE_URL` configuration (https://github.com/metabase/metabase/issues/13602), check the `SERVICE_URL` environment variable: its value must match the full service URL (for example, https://admin-dev.stratio.com/service/discovery-governance).
+You may notice that, in dashboard subscriptions or redirects, the service URL is not generated correctly (for example, it redirects you to `\https://admin-dev.stratio.com/question/123` instead of `\https://admin-dev.stratio.com/service/discovery-governance/question/123`). If this occurs even after modifying the `SITE_URL` configuration (https://github.com/metabase/metabase/issues/13602), check the `SERVICE_URL` environment variable: its value must be set to the full service URL (for example, `\https://admin-dev.stratio.com/service/discovery-governance`).
 
 === Can't connect _Stratio Discovery_ to a PgBouncer: ERROR: prepared statement "S_2" does not exist
 

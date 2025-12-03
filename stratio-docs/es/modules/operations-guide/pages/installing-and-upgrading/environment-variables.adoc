@@ -11,29 +11,89 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |===
 | Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo
 
-| cpus
-| Cuotas de CPU para asignar a cada instancia de _Stratio Discovery_.
-|
-|
-|
-
-| instances
-| Número de instancias de _Stratio Discovery_ para ejecutar.
-|
-|
-|
-
-| id
+| SERVICE_ID
 | El nombre de la instancia (predeterminado = /discovery).
-|
-|
-|
+| discovery
+| Si
+| String
 
-| mem
-| Memoria (MB) para asignar a cada instancia de _Bootstrap_.
-| 2048
+| KUBERNETES_NAMESPACE
+| El nombre del _namespace_ donde está ubicada la instancia.
+| s000001-apps
+| Si
+| String
+
+| DEPLOYMENT_ENVIRONMENT
+| Entorno de despliegue.
+| keos
+| No
+| String
+
+| TENANT
+| _Tenant_ donde está desplegada la instancia.
+| `${tenantId}`
+| No
+| String
+
+| CPU_RESOURCE_TYPE
+| Tipo de recurso de CPU a utilizar en cuanto al tipo de asignación en Kubernetes: +
+- _Guaranteed_: recurso garantizado (solicitud = límite). +
+- _Hard_: límite establecido, pero la solicitud puede ser menor. +
+- _Soft_: sin límite, solo se establece la solicitud.
+| _Guaranteed_
+| Si
+| String
+
+| CPUs
+| Número de CPU solicitados a cada instancia de _Stratio Discovery_.
+| 2
 | Si
 | Number
+
+| CPU_LIMIT
+| En caso de que `CPU_RESOURCE_TYPE` sea _Hard_, este valor establece el límite de CPU para cada instancia de _Stratio Discovery_.
+|
+|
+| Number
+
+| INSTANCES
+| Número de instancias de _Stratio Discovery_ para ejecutar.
+| 1
+| Si
+| Number
+
+| MEM_RESOURCE_TYPE
+| Tipo de memoria a utilizar en cuanto a tipo de asignación en Kubernetes: +
+- _Guaranteed_: recurso garantizado (solicitud = límite). +
+- _Hard_: límite establecido, pero la solicitud puede ser menor. +
+- _Soft_: sin límite, solo se establece la solicitud.
+| _Guaranteed_
+| Si
+| String
+
+| MEM
+| Memoria (MB) para asignar a cada instancia de _Bootstrap_.
+| 4096
+| Si
+| Number
+
+| MEMORY_LIMIT
+| En caso de que `MEM_RESOURCE_TYPE` sea _Hard_, este valor establece el límite de CPU para cada instancia de _Stratio Discovery_.
+|
+|
+| Number
+
+| JAVA_INITIAL_RAM_PERCENTAGE
+| Porcentaje de memoria inicial de Java en relación con la memoria total asignada a la instancia.
+| `-XX:InitialRAMPercentage=30.0`
+| No
+| String
+
+| JAVA_MAX_RAM_PERCENTAGE
+| Porcentaje de memoria máxima de Java en relación con la memoria total asignada a la instancia.
+| `-XX:MaxRAMPercentage=70.0`
+| No
+| String
 
 | force_pull_image
 | Fuerza la descarga de la imagen de Docker cada vez que se crea una instancia.
@@ -47,17 +107,17 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |===
 | Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
 
-| APPROLE
-| AppRole utilizado para recuperar un token de Vault con una política predefinida. NOTA: solo se usa con la autenticación dinámica habilitada.
-| _open_
+| VAULT_ENABLE
+| Habilita la integración con Vault para recuperar secretos.
+| true
 | No
-| String
+| Boolean
 |
 
 | VAULT_HOST
 | _Host_ de conexión de Vault.
-| vault.service.paas.labs.stratio.com
-| Si
+| vault.keos-core
+| No
 | String
 |
 
@@ -68,9 +128,16 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Number
 |
 
-| VAULT_TOKEN
-| Token de autenticación de Vault. NOTA: Úsalo sólo con la autenticación dinámica deshabilitada.
-| AAAA-BBBB-CCCC-DDDD
+| VAULT_ROLE
+| Rol utilizado para recuperar un _token_ de Vault con una política predefinida. NOTA: solo se usa con la autenticación dinámica habilitada.
+| `${Application.domain}-${Application.name}`
+| No
+| String
+|
+
+| USE_DYNAMIC_AUTHENTICATION
+| Habilita la autenticación dinámica.
+| true
 | No
 | String
 |
@@ -83,25 +150,11 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |
 
 | MB_GROUP_HEADER
-| Cacebcera HTTP con un _array_ de grupos para la autenticación automática.
+| Cabecera HTTP con un _array_ de grupos para la autenticación automática.
 | vnd.bbva.group-id
 | No
 | String
 |
-
-| MB_ADMIN_GROUP_HEADER
-| Array de grupos que se configurarán con privilegios de administrador.
-| admin1,admin2
-| No
-| String
-| Obsoleta desde 0.38.1-0.2
-
-| USE_JWT_AUTHENTICATION
-| Indica si realizar la autenticación automática a través de encabezados o JWT.
-| _false_
-| No
-| String
-| Obsoleta desde 0.38.1-0.2.
 
 | JWT_PUBLIC_KEY_ENDPOINT
 | URL donde encontrar la clave pública para verificar el JWT.
@@ -125,14 +178,14 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |
 
 | JWT_USERNAME_CLAIM
-| Nombre del _claim_ en el token JWT donde se proporciona el nombre de usuario.
+| Nombre del _claim_ en el _token_ JWT donde se proporciona el nombre de usuario.
 | sub
 | No
 | String
 |
 
 | JWT_GROUPS_CLAIM
-| Nombre del _claim_ en el token JWT donde se proporcionan los grupos de usuarios.
+| Nombre del _claim_ en el _token_ JWT donde se proporcionan los grupos de usuarios.
 | grupos
 | No
 | String
@@ -146,28 +199,28 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 |
 
 | AUTHENTICATOR
-| Elige un xref:operations-guide:end-user-authentication.adoc[método de autenticación]. Reemplaza USE_JWT_AUTHENTICATION y USE_GOSEC_SSO_AUTH.
+| Elige un xref:operations-guide:end-user-authentication.adoc[método de autenticación]. Reemplaza `USE_JWT_AUTHENTICATION` y `USE_GOSEC_SSO_AUTH`.
 | gosec-sso
 | Si
 | String
 |
 
-| USE_GOSEC_SSO_AUTH
-| Habilita la autenticación _Stratio GoSec_ SSO. Ten en cuenta que *establecer esta variable a `true` deshabilitará la autenticación mediante cabeceras*. Dirígete a la sección de 'logging' para obtener más información.
-| _True_
-| Si
-| Boolean
-| Obsoleta desde 0.38.1-0.2.
-
-| ipAddress.networkName
-| Nombre de la red de Calico. Utilízalo solo si la segmentación de red está habilitada.
-| stratio
+| SSO_URI
+| URI para instaurar una sesión a través de SSO de _Stratio Gosec_. Esta variable es obligatoria solo si `USE_GOSEC_SSO_AUTH` se establece en `true`.
+| Por ejemplo: `+https://bootstrap.labs.stratio.com:9005/sso+`.
 | No
+| String
+|
+
+| SERVICE_URL
+| La URL de acceso de tu instancia de _Stratio Discovery_. Por lo general, esto se establece automáticamente en `+https://${haproxyhost}${haproxypath}+`, donde `haproxyhost` corresponde a `HAPROXY_1_VHOST` y `haproxypath` a `HAPROXY_1_PATH`.
+| Por ejemplo: `+https://public01.labs.stratio.com/discovery+`.
+| Si
 | String
 |
 |===
 
-*Env*
+*Environment*
 
 |===
 | Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
@@ -177,39 +230,11 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | postgres
 | Si
 | String
-| Obsoleta desde 0.38.1-0.2.
-
-| MB_DB_HOST
-| El _host_ de la base de datos se utiliza como repositorio de metadatos.
-| pg-0001.postgrestls.mesos
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
-
-| MB_DB_PORT
-| El puerto de la base de datos utilizada como repositorio de metadatos.
-| 5432
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
+|
 
 | MB_DB_URL
 | Si se define esta variable, se utilizará para establecer la conexión con la base de datos utilizada para almacenar los metadatos de la instancia. Si no está definido, en su lugar se usarán `MB_DB_HOST` y `MB_DB_PORT`.
-| pg-0001.postgrestls.mesos:5432
-| No
-| String
-|
-
-| SSO_URI
-| URI para instaurar una sesión a través de SSO de _Stratio GoSec_. Esta variable es obligatoria solo si `USE_GOSEC_SSO_AUTH` se establece en `true`.
-| p.ej. `+https://bootstrap.labs.stratio.com:9005/sso+`
-| No
-| String
-|
-
-| SERVICE_URL
-| La URL de acceso de tu instancia de _Stratio Discovery_. Por lo general, esto se establece automáticamente en `+https://${haproxyhost}${haproxypath}+` donde `haproxyhost` corresponde a `HAPROXY_1_VHOST` y `haproxypath` a `HAPROXY_1_PATH`.
-| por ejemplo `+https://public01.labs.stratio.com/discovery+`
+| poolpostgrestls.s000001-datastores:5432
 | Si
 | String
 |
@@ -228,51 +253,23 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 |
 
+| MB_DB_SSL
+| Conexión segura TLS con la base de datos.
+| _true_
+| Si
+| Boolean
+|
+
 | MB_DB_PASS
-| Contraseña para conectarse a la base de datos si se utiliza usuario y contraseña como mecanismo de autenticación.
+| Contraseña para conectarse a la base de datos si se utiliza usuario y contraseña como mecanismo de autenticación. Solo en caso de que no se haya habilitado `MB_DB_SSL`.
 | _password_
 | No
 | String
 |
 
-| MB_DB_SSL
-| Conexión segura TLS con PostgreSQL®.
-| _false_
-| Si
-| Boolean
-|
-
-| MB_INIT_ADMIN_USER
-| El nombre del usuario administrador creado como administrador cuando se despliega _Stratio Discovery_.
-| Demo
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
-
-| MB_INIT_ADMIN_PASSWORD
-| Contraseña del usuario administrador creado como administrador cuando se despliega _Stratio Discovery_.
-| 123456
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
-
-| MB_INIT_ADMIN_MAIL
-| Correo del usuario administrador creado como administrador cuando se despliega _Stratio Discovery_.
-| demo@stratio.com
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
-
-| HAPROXY_1_VHOST
-| Nombre del _host_ utilizado para exponer la instancia en Marathon-LB.
-| discovery.labs.stratio.com
-| Si
-| String
-|
-
 | MB_JDBC_PARAMETERS
 | Una variable opcional para agregar a la cadena de conexión parámetros de configuración de JDBC adicionales.
-| opt1=123&opt2=true
+| prepareThreshold=0
 | No
 | String
 |
@@ -283,13 +280,6 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Si
 | Número
 |
-
-| DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT
-| Tiempo de espera de Akka en segundos para solicitudes al servicio de importación/exportación.
-| 40s
-| No
-| String
-| Obsoleta desde 0.43.4-0.1
 
 | DISCOVERY_CICD_API_IMPORT_TIMEOUT
 | Tiempo de espera de Akka en segundos para solicitudes al servicio de importación.
@@ -314,17 +304,24 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 
 | DISCOVERY_CICD_JAVA_OPTIONS
 | Te permite configurar opciones Java personalizadas cuando ejecuta el servicio de CICD.
-| p.ej. `-Dakka.http.server.request-timeout=120s`
+| Ejemplo: `-Dakka.http.server.request-timeout=120s`.
 | _false_
 | String
 |
 
-| STRATIO_ABSOLUTE_MAX_RESULTS
-| Especifica un límite de descarga (número máximo de registros exportados) en _Stratio Discovery_.
-| p.ej. `1048576`
+| DISCOVERY_CICD_JAVA_INITIAL_RAM_PERCENTAGE
+| Porcentaje de memoria inicial de Java en relación con la memoria total asignada a la instancia.
+| -XX:InitialRAMPercentage=10.0
 | No
 | String
-| Obsoleta desde 0.38.1-0.2.
+|
+
+| DISCOVERY_CICD_JAVA_MAX_RAM_PERCENTAGE
+| Porcentaje de memoria máxima de Java en relación con la memoria total asignada a la instancia.
+| -XX:MaxRAMPercentage=25.0
+| No
+| String
+|
 |===
 
 *Niveles de _log_*
@@ -353,20 +350,6 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 |
 
-| MODELPERMISSIONS_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea `"metabase.models.permissions"`.
-| `INFO`
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
-
-| QUERYPROCESSORPERMISIONS_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea `"metabase.query-processor.permissions"`.
-| `INFO`
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
-
 | QUERYPROCESSOR_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.query-processor"`.
 | `DEBUG`
@@ -380,13 +363,6 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Si
 | String
 |
-
-| FIELDVALUES_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea `"metabase.models.field-values"`.
-| `INFO`
-| Si
-| String
-| Obsoleta desde 0.38.1-0.2.
 
 | METABASE_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase"`.
@@ -402,6 +378,13 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 |
 
+| STRATIO_LOG_LEVEL
+| Aplica a los _logs_ cuyo padre sea `"metabase.stratio"`.
+| `DEBUG`
+| Si
+| String
+|
+
 | MCHANGE_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"com.mchange"`.
 | `ERROR`
@@ -409,9 +392,9 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 |
 
-| STRATIO_LOG_LEVEL
-| Aplica a los _logs_ cuyo padre sea `"metabase.stratio"`.
-| `DEBUG`
+| NGINX_ERROR_LOG_LEVEL
+| Aplica a los _logs_ de Nginx.
+| `error`
 | Si
 | String
 |

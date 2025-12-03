@@ -9,31 +9,91 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 * *Type*: type of value.
 
 |===
-| Property | Description | Possible/default | Required | Type:
+| Property | Description | Possible/default | Required | Type
 
-| cpus
-| CPU quotas to assign to each _Stratio Discovery_ instance.
-|
-|
-|
-
-| instances
-| Number of _Stratio Discovery_ instances to run.
-|
-|
-|
-
-| id
+| SERVICE_ID
 | The name of the instance (default = /discovery).
-|
-|
-|
+| discovery
+| Yes
+| String
 
-| mem
-| Memory (MB) to allocate to each _Bootstrap_ instance.
-| 2048
+| KUBERNETES_NAMESPACE
+| The name of the namespace where the instance is located.
+| s000001-apps
+| Yes
+| String
+
+| DEPLOYMENT_ENVIRONMENT
+| Deployment environment.
+| keos
+| No
+| String
+
+| TENANT
+| Tenant where the instance is deployed.
+| `${tenantId}`
+| No
+| String
+
+| CPU_RESOURCE_TYPE
+| Type of CPU resource allocation in Kubernetes: +
+- _Guaranteed_: guaranteed resource (request = limit). +
+- _Hard_: limit is set, but the request can be lower. +
+- _Soft_: no limit, only the request is set.
+| _Guaranteed_
+| Yes
+| String
+
+| CPUs
+| Number of CPUs requested for each _Stratio Discovery_ instance.
+| 2
 | Yes
 | Number
+
+| CPU_LIMIT
+| If `CPU_RESOURCE_TYPE` is _Hard_, this sets the CPU limit for each _Stratio Discovery_ instance.
+|
+|
+| Number
+
+| INSTANCES
+| Number of _Stratio Discovery_ instances to run.
+| 1
+| Yes
+| Number
+
+| MEM_RESOURCE_TYPE
+| Type of memory allocation in Kubernetes: +
+- _Guaranteed_: guaranteed resource (request = limit). +
+- _Hard_: limit is set, but the request can be lower. +
+- _Soft_: no limit, only the request is set.
+| _Guaranteed_
+| Yes
+| String
+
+| MEM
+| Memory (MB) allocated to each Bootstrap instance.
+| 4096
+| Yes
+| Number
+
+| MEMORY_LIMIT
+| If `MEM_RESOURCE_TYPE` is _Hard_, this sets the memory limit for each _Stratio Discovery_ instance.
+|
+|
+| Number
+
+| JAVA_INITIAL_RAM_PERCENTAGE
+| Initial Java memory percentage in relation to the total memory assigned to the instance.
+| `-XX:InitialRAMPercentage=30.0`
+| No
+| String
+
+| JAVA_MAX_RAM_PERCENTAGE
+| Maximum Java memory percentage in relation to the total memory assigned to the instance.
+| `-XX:MaxRAMPercentage=70.0`
+| No
+| String
 
 | force_pull_image
 | Forces the Docker image to be downloaded each time an instance is created.
@@ -42,22 +102,22 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | Boolean
 |===
 
-*Security*:
+*Security*
 
 |===
 | Property | Description | Possible/default | Required | Type | Deprecated
 
-| APPROLE
-| AppRole used to retrieve a Vault token with a predefined policy. NOTE: only used when dynamic authentication is enabled.
-| _open_
+| VAULT_ENABLE
+| Enables Vault integration to retrieve secrets.
+| true
 | No
-| String
+| Boolean
 |
 
 | VAULT_HOST
 | Vault connection host.
-| vault.service.paas.labs.stratio.com
-| Yes
+| vault.keos-core
+| No
 | String
 |
 
@@ -68,9 +128,16 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | Number
 |
 
-| VAULT_TOKEN
-| Vault authentication token. NOTE: Use only when dynamic authentication is disabled.
-| AAAA-BBBB-CCCC-DDDD
+| VAULT_ROLE
+| Role used to obtain a Vault token with a predefined policy. NOTE: used only when dynamic authentication is enabled.
+| `${Application.domain}-${Application.name}`
+| No
+| String
+|
+
+| USE_DYNAMIC_AUTHENTICATION
+| Enables dynamic authentication.
+| true
 | No
 | String
 |
@@ -88,20 +155,6 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | No
 | String
 |
-
-| MB_ADMIN_GROUP_HEADER
-| Array of groups that will be configured with administrator privileges.
-| admin1,admin2
-| No
-| String
-| Deprecated since 0.38.1-0.2
-
-| USE_JWT_AUTHENTICATION
-| Indicates whether to perform automatic authentication using headers or JWT.
-| _false_
-| No
-| String
-| Deprecated since 0.38.1-0.2.
 
 | JWT_PUBLIC_KEY_ENDPOINT
 | URL where to find the public key to verify the JWT.
@@ -146,28 +199,28 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 |
 
 | AUTHENTICATOR
-| Chooses an xref:operations-guide:end-user-authentication.adoc[authentication method]. Replaces USE_JWT_AUTHENTICATION and USE_GOSEC_SSO_AUTH.
+| Chooses an xref:operations-guide:end-user-authentication.adoc[authentication method]. Replaces `USE_JWT_AUTHENTICATION` and `USE_GOSEC_SSO_AUTH`.
 | gosec-sso
 | Yes
 | String
 |
 
-| USE_GOSEC_SSO_AUTH
-| Enables _Stratio GoSec_ SSO authentication. Note that *setting this variable to `true` will disable header authentication*. Go to the 'logging' section for more information.
-| _true_
-| Yes
-| Boolean
-| Deprecated since 0.38.1-0.2.
-
-| ipAddress.networkName
-| Name of the Calico network. Use only if network segmentation is enabled.
-| stratio
+| SSO_URI
+| URI to establish a session through _Stratio Gosec_ SSO. This variable is required only if `USE_GOSEC_SSO_AUTH` is set to `true`.
+| Example: `+https://bootstrap.labs.stratio.com:9005/sso+`.
 | No
+| String
+|
+
+| SERVICE_URL
+| Access URL of your _Stratio Discovery_ instance. This is usually automatically set to `+https://${haproxyhost}${haproxypath}+` where `haproxyhost` corresponds to `HAPROXY_1_VHOST` and `haproxypath` corresponds to `HAPROXY_1_PATH`.
+| Example: `+https://public01.labs.stratio.com/discovery+`.
+| Yes
 | String
 |
 |===
 
-*Env*
+*Environment*
 
 |===
 | Property | Description | Possible/default | Required | Type | Deprecated
@@ -177,39 +230,11 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | postgres
 | Yes
 | String
-| Deprecated since 0.38.1-0.2.
-
-| MB_DB_HOST
-| The database host is used as the metadata repository.
-| pg-0001.postgrestls.mesos
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
-
-| MB_DB_PORT
-| The database port used as the metadata repository.
-| 5432
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
+|
 
 | MB_DB_URL
-| If this variable is defined, it will be used to establish the connection to the database used to store the instance metadata. If this isn't defined, `MB_DB_HOST` and `MB_DB_PORT` will be used instead.
-| pg-0001.postgrestls.mesos:5432
-| No
-| String
-|
-
-| SSO_URI
-| URI to initiate a session using _Stratio GoSec_ SSO. This variable is required only if `USE_GOSEC_SSO_AUTH` is set to `true`.
-| e.g. `+https://bootstrap.labs.stratio.com:9005/sso+`
-| No
-| String
-|
-
-| SERVICE_URL
-| The login URL for your _Stratio Discovery_ instance. Typically, this is automatically set to `+https://${haproxyhost} ${haproxypath}+` where `haproxyhost` corresponds to `HAPROXY_1_VHOST` and `haproxypath` to `HAPROXY_1_PATH`.
-| e.g. `+https://public01.labs.stratio.com/discovery+`
+| If defined, this variable will be used to establish the connection to the database used to store the instance metadata. If not defined, `MB_DB_HOST` and `MB_DB_PORT` will be used instead.
+| poolpostgrestls.s000001-datastores:5432
 | Yes
 | String
 |
@@ -228,51 +253,23 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | String
 |
 
+| MB_DB_SSL
+| TLS secure connection with the database.
+| _true_
+| Yes
+| Boolean
+|
+
 | MB_DB_PASS
-| Password to connect to the database if user and password are used as the authentication mechanism.
+| Password to connect to the database when using username and password authentication. Only required if `MB_DB_SSL` is not enabled.
 | _password_
 | No
 | String
 |
 
-| MB_DB_SSL
-| Secure TLS connection with PostgreSQL®.
-| _false_
-| Yes
-| Boolean
-|
-
-| MB_INIT_ADMIN_USER
-| The name of the administrator user created as an administrator during _Stratio Discovery_ deployment.
-| Demo
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
-
-| MB_INIT_ADMIN_PASSWORD
-| Password of the administrator user created as an administrator during _Stratio Discovery_ deployment.
-| 123456
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
-
-| MB_INIT_ADMIN_MAIL
-| Email of the administrator user created as administrator during _Stratio Discovery_ deployment.
-| demo@stratio.com
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
-
-| HAPROXY_1_VHOST
-| Name of the host used to expose the instance in Marathon-LB.
-| discovery.labs.stratio.com
-| Yes
-| String
-|
-
 | MB_JDBC_PARAMETERS
 | An optional variable to add additional JDBC configuration parameters to the connection string.
-| opt1=123&opt2=true
+| prepareThreshold=0
 | No
 | String
 |
@@ -283,13 +280,6 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | Yes
 | Number
 |
-
-| DISCOVERY_CICD_AKKA_REQUEST_TIMEOUT
-| Akka timeout in seconds for import/export service requests.
-| 40s
-| No
-| String
-| Deprecated since 0.43.4-0.1
 
 | DISCOVERY_CICD_API_IMPORT_TIMEOUT
 | Akka timeout in seconds for import service requests.
@@ -314,20 +304,27 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 
 | DISCOVERY_CICD_JAVA_OPTIONS
 | Lets you configure custom Java options when running the CICD service.
-| e.g. `-Dakka.http.server.idle-timeout=120s`
+| Example: `-Dakka.http.server.request-timeout=120s`.
 | _false_
 | String
 |
 
-| STRATIO_ABSOLUTE_MAX_RESULTS
-| Specifies a download limit (maximum number of records exported) in _Stratio Discovery_.
-| e.g. `1048576`
+| DISCOVERY_CICD_JAVA_INITIAL_RAM_PERCENTAGE
+| Initial Java memory percentage for CI/CD deployments.
+| -XX:InitialRAMPercentage=10.0
 | No
 | String
-| Deprecated since 0.38.1-0.2.
+|
+
+| DISCOVERY_CICD_JAVA_MAX_RAM_PERCENTAGE
+| Maximum Java memory percentage for CI/CD deployments.
+| -XX:MaxRAMPercentage=25.0
+| No
+| String
+|
 |===
 
-Log levels_*
+*Log levels*
 
 |===
 | Property | Description | Possible/default | Required | Type | Deprecated
@@ -353,20 +350,6 @@ Log levels_*
 | String
 |
 
-| MODELPERMISSIONS_LOG_LEVEL
-| Applies to logs whose parent is `"metabase.models.permissions"`.
-| `INFO`
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
-
-| QUERYPROCESSORPERMISIONS_LOG_LEVEL
-| Applies to logs whose parent is `"metabase.query-processor.permissions"`.
-| `INFO`
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
-
 | QUERYPROCESSOR_LOG_LEVEL
 | Applies to logs whose parent is `"metabase.query-processor"`.
 | `DEBUG`
@@ -375,18 +358,11 @@ Log levels_*
 |
 
 | SYNC_LOG_LEVEL
-| Applies to logs whose parent is `"mebase.sync"`.
+| Applies to logs whose parent is `"metabase.sync"`.
 | `INFO`
 | Yes
 | String
 |
-
-| FIELDVALUES_LOG_LEVEL
-| Applies to logs whose parent is `"metabase.models.field-values"`.
-| `INFO`
-| Yes
-| String
-| Deprecated since 0.38.1-0.2.
 
 | METABASE_LOG_LEVEL
 | Applies to logs whose parent is `"metabase"`.
@@ -402,6 +378,13 @@ Log levels_*
 | String
 |
 
+| STRATIO_LOG_LEVEL
+| Applies to logs whose parent is `"metabase.stratio"`.
+| `DEBUG`
+| Yes
+| String
+|
+
 | MCHANGE_LOG_LEVEL
 | Applies to logs whose parent is `"com.mchange"`.
 | `ERROR`
@@ -409,9 +392,9 @@ Log levels_*
 | String
 |
 
-| STRATIO_LOG_LEVEL
-| Applies to logs whose parent is `"metabase.stratio"`.
-| `DEBUG`
+| NGINX_ERROR_LOG_LEVEL
+| Applies to Nginx logs.
+| `error`
 | Yes
 | String
 |

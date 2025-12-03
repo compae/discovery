@@ -10,7 +10,7 @@ This is a Metabase bug that was fixed in version 0.42.3 and later. If you have a
 
 == When I go to the home page, x-ray scans don't load automatically
 
-NOTE: Fixed in version 0.50.21-0.1.0.
+NOTE: Fixed in version 0.50.21-0.1.X.
 
 This is a minor issue caused by the authentication layer that adds _Stratio Discovery_ to Metabase. To render the content of the homepage, you need to retrieve some user settings about whether or not to display x-ray suggestions (for example, there are many ways to https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[disable x-ray functionality]. Unfortunately, this call to _get-properties_ isn't authenticated and, due to a race condition, can be executed before calls that set a valid `metabase.SESSION` cookie after login.
 
