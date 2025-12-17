@@ -10,4 +10,7 @@ These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.1.X* 
 
 * The deployment option in _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`) has been removed. This option prevented JDBC connections from being blocked with _Stratio Virtualizer_ servers before version 0.11.0; therefore, it is now necessary to connect to servers with version 0.11.0 or higher.
 
+* The deployment option in _Stratio Command Center_ "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)" has been removed. The only allowed authenticator is "gosec-sso".
+
 TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.
+

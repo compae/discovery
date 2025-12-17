@@ -463,73 +463,82 @@
                 ],
                 "default": "gosec-sso"
               },
-              "adminGroup": {
-                "description": "Gosec SSO group that will have Administrator privileges in Discovery.",
-                "type": "string",
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "default": "admin",
-                "internalName": "ADMIN_GROUP",
-                "ui": {
-                  "updatable": true
-                },
-                "title": "Admin group"
-              },
-              "createAndSyncGroups": {
-                "description": "Whether to create in Metabase the received SSO groups of the user and sync them every login.",
-                "type": "boolean",
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "CREATE_AND_SYNC_GROUPS",
-                "ui": {
-                  "updatable": true
-                },
-                "title": "Create and sync user groups in Metabase",
-                "default": true
-              },
-              "useGroupWhitelist": {
-                "description": "whether to filter access to discovery based on a whitelist of user groups.",
-                "type": "boolean",
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "USE_GROUP_WHITELIST",
-                "ui": {
-                  "updatable": true
-                },
-                "title": "Use group whitelist",
-                "default": false
-              },
-              "groupWhitelist": {
-                "description": "comma separated list of groups that will be allowed to access Discovery",
-                "type": "string",
-                "readOnly": false,
-                "application": false,
-                "level": 1,
-                "internalName": "ALLOWED_GROUPS",
-                "ui": {
-                  "updatable": true,
-                  "visible": {
-                    "useGroupWhitelist": true
+              "ssoOptions": {
+                "type": "object",
+                "additionalProperties": false,
+                "name": "ssoOptions",
+                "title": "Gosec SSO Authenticator Settings",
+                "description": "In this section you manage Gosec SSO Authenticator settings.",
+                "properties": {
+                  "adminGroup": {
+                    "description": "Gosec SSO group that will have Administrator privileges in Discovery.",
+                    "type": "string",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "default": "admin",
+                    "internalName": "ADMIN_GROUP",
+                    "ui": {
+                      "updatable": true
+                    },
+                    "title": "Admin group"
+                  },
+                  "createAndSyncGroups": {
+                    "description": "Whether to create in Metabase the received SSO groups of the user and sync them every login.",
+                    "type": "boolean",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "CREATE_AND_SYNC_GROUPS",
+                    "ui": {
+                      "updatable": true
+                    },
+                    "title": "Create and sync user groups in Metabase",
+                    "default": true
+                  },
+                  "useGroupWhitelist": {
+                    "description": "whether to filter access to discovery based on a whitelist of user groups.",
+                    "type": "boolean",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "USE_GROUP_WHITELIST",
+                    "ui": {
+                      "updatable": true
+                    },
+                    "title": "Use group whitelist",
+                    "default": false
+                  },
+                  "groupWhitelist": {
+                    "description": "comma separated list of groups that will be allowed to access Discovery",
+                    "type": "string",
+                    "readOnly": false,
+                    "application": false,
+                    "level": 1,
+                    "internalName": "ALLOWED_GROUPS",
+                    "ui": {
+                      "updatable": true,
+                      "visible": {
+                        "useGroupWhitelist": true
+                      }
+                    },
+                    "title": "Allowed groups",
+                    "example": "group1,group2"
+                  },
+                  "serviceURL": {
+                    "description": "Public facing url of the service",
+                    "type": "string",
+                    "readOnly": true,
+                    "application": false,
+                    "level": 2,
+                    "internalName": "SERVICE_URL",
+                    "ui": {
+                      "updatable": false
+                    },
+                    "title": "SERVICE URL ",
+                    "default": "https://${haproxyhost}${haproxypath}"
                   }
-                },
-                "title": "Allowed groups",
-                "example": "group1,group2"
-              },
-              "serviceURL": {
-                "description": "Public facing url of the service",
-                "type": "string",
-                "readOnly": true,
-                "application": false,
-                "level": 2,
-                "internalName": "SERVICE_URL",
-                "ui": {
-                  "updatable": false
-                },
-                "title": "SERVICE URL ",
-                "default": "https://${haproxyhost}${haproxypath}"
+                }
               }
             },
             "required": []
