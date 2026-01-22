@@ -1,9 +1,9 @@
 ﻿= What's new
 
-These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.1.X* (released in Nov 2025):
+These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.1.X* (released in Dec 2025):
 
 * Metabase update: version 0.56.4 is now used. Certain features introduced in Metabase 0.51, such as actions, models created from CSV, timelines, and alerts, are still not compatible with the export/import of _discovery-cicd_ collections.
-* _Stratio Virtualizer JDBC_ driver updated to version 3.0.0.
+* _Stratio Virtualizer JDBC_ driver updated to version 3.0.1.
 * A deployment option has been added to _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (environment variable `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) to not use the _Stratio Virtualizer_ JDBC driver included in the image, but to obtain it from the "Extra JARs to add to metabase plugins folder" (environment variable `EXTRA_JARS`).
 
 == Breaking changes
