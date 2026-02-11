@@ -2,24 +2,24 @@
 
 En primer lugar, *ayúdanos a ayudarte*.
 
-_Stratio Discovery_ se basa en Metabase, que es un *proyecto de código abierto de rápido desarrollo*, por lo tanto, es posible que algunos problemas conocidos ya se hayan solucionado en una versión más nueva que finalmente se integrará en _Stratio Discovery_.
+_Stratio Discovery_ se basa en Metabase, que es un *proyecto de código abierto de rápido desarrollo*. Por lo tanto, es posible que algunos problemas conocidos ya se hayan solucionado en una versión más reciente que finalmente se integrará en _Stratio Discovery_.
 
-Por ello, te pedimos que *especifiques siempre en qué versión de _Stratio Discovery_ tienes el problema*. Si tienes la aplicación ejecutándose, es tan fácil como hacer clic en "Configuration" y luego en "About Metabase". La versión se indicará en la propiedad `Branch`: la primera etiqueta representa la versión de Metabase mientras que la última la de Stratio.
+Por ello, te pedimos que *especifiques siempre en qué versión de _Stratio Discovery_ tienes el problema*. Si tienes la aplicación ejecutándose, es tan fácil como hacer clic en "Configuration" y luego en "About Metabase". La versión se indicará en la propiedad `Branch`: la primera etiqueta representa la versión de Metabase, mientras que la última la de Stratio.
 
-También puedes conocer la versión recuperando la versión de la imagen de Docker (puede haber diferencias sobre cómo realizar esta verificación con respecto al entorno de despliegue en uso).
+También puedes conocer la versión recuperando la imagen de Docker (puede haber diferencias en cómo realizar esta verificación con respecto al entorno de despliegue en uso).
 
 image::discovery_version.png[]
 
 Esta página de _troubleshooting_ se estructura en las siguientes secciones:
 
 * xref:operations-guide:troubleshooting.adoc#_problemas_de_instalación_y_configuración[Problemas de instalación y configuración], para problemas que impiden la ejecución exitosa del proceso de instalación/actualización.
-* xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Problemas de uso], para todos los demás problemas que puedan surgir durante las operaciones diarias.
+* xref:operations-guide:troubleshooting.adoc#_problemas_de_uso[Problemas de uso] para todos los demás problemas que puedan surgir durante las operaciones diarias.
 
 [IMPORTANT]
 ====
-Si encuentras un error que no se encuentra entre los siguientes, te sugerimos que verifiques si existe un https://github.com/metabase/metabase/issues/[problema similar en Metabase] que ya se haya informado o resuelto.
+Si encuentras un error que no esté entre los siguientes, verifica si existe un https://github.com/metabase/metabase/issues/[problema similar en Metabase] que ya se haya informado o resuelto.
 
-*Si el problema sigue abierto, debes buscar soluciones alternativas* porque dependemos del código abierto de Metabase y de su corrección de errores. Las únicas intervenciones que aplicamos son esencialmente mejoras con respecto a la seguridad y a las integraciones con los otros módulos dentro del ecosistema de Stratio.
+*Si el problema sigue abierto, debes buscar soluciones alternativas* porque _Stratio Discovery_ depende del código abierto de Metabase y de su corrección de errores. Las únicas intervenciones aplicadas son, esencialmente, mejoras en seguridad y en las integraciones con los otros módulos del ecosistema de Stratio.
 
 De lo contrario, eres más que bienvenido/a a comunicarte con nosotros.
 ====
@@ -32,7 +32,7 @@ Tu usuario debe pertenecer a un grupo permitido o al grupo de administración, s
 
 === No redireccionan bien los enlaces a un _dashboard_ en un _Stratio Discovery_ desplegado con _flavour_ _Governance_
 
-Puede que notes que, en las suscripciones de _dashboards_ o en redirecciones, no se genera bien la URL del servicio (por ejemplo, te redirige a `\https://admin-dev.stratio.com/question/123` en lugar de `\https://admin-dev.stratio.com/service/discovery-governance/question/123`). Si esto ocurre incluso después de haber modificado la configuración de `SITE_URL` (https://github.com/metabase/metabase/issues/13602), comprueba la variable de entorno `SERVICE_URL`: su valor debe ajustarse a la URL completa del servicio (por ejemplo, `\https://admin-dev.stratio.com/service/discovery-governance`).
+Puede que notes que, en las suscripciones de _dashboards_ o en redirecciones, no se genera correctamente la URL del servicio (por ejemplo, te redirige a `\https://admin-dev.stratio.com/question/123` en lugar de `\https://admin-dev.stratio.com/service/discovery-governance/question/123`). Si esto ocurre incluso después de haber modificado la configuración de `SITE_URL` (https://github.com/metabase/metabase/issues/13602), comprueba la variable de entorno `SERVICE_URL`: su valor debe ajustarse a la URL completa del servicio (por ejemplo, `\https://admin-dev.stratio.com/service/discovery-governance`).
 
 === No se puede conectar _Stratio Discovery_ a un PgBouncer: ERROR: prepared statement "S_2" does not exist
 
@@ -45,7 +45,7 @@ Si el despliegue se bloquea debido a este error, es porque _Stratio Discovery_ n
 
 == Problemas de uso
 
-Si notas una ralentización de la instancia o problemas con respecto a una base de datos, primero intenta solucionarlos ajustando las bases de datos y Metabase a través de sus https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html[variables de entorno] ^[English]^.
+Si notas una ralentización de la instancia o problemas con una base de datos, primero intenta solucionarlos ajustando las bases de datos y Metabase a través de sus https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html[variables de entorno] ^[English]^.
 
 No des por sentado que "la optimización prematura es la raíz de todos los males", porque el sentido común también dice que "quien está advertido, está prevenido".
 
@@ -60,9 +60,9 @@ Si recibes una respuesta de tiempo máximo de espera excedido (por ejemplo, `504
 
 Además de eso, es posible que desees ajustar el mecanismo de importación/exportación (el llamado descubrimiento CI/CD) de las opciones de Java a través de `DISCOVERY_CICD_JAVA_OPTIONS`. Según dónde se generó el error por tiempo máximo de espera excedido, es probable que el proceso de importación/exportación aún esté en funcionamiento y que se complete con éxito.
 
-Por esta razón, si ves un error de _timeout_ durante un proceso de importación, debes comprobar en la instancia si la colección se importó correctamente o no antes de ejecutar nuevamente la misma solicitud de importación.
+Por esta razón, si ves un error de _timeout_ durante un proceso de importación, debes comprobar en la instancia si la colección se importó correctamente antes de ejecutar nuevamente la misma solicitud de importación.
 
-Para obtener más información, consulta xref:operations-guide:installing-and-upgrading/environment-variables.adoc[la sección de variables de entorno dentro de la guía de instalación y actualización].
+Para obtener más información, consulta xref:operations-guide:installing-and-upgrading/environment-variables.adoc[la sección de variables de entorno en la guía de instalación y actualización].
 
 === Alto consumo de CPU y memoria después de descargar los resultados de la consulta como archivos _.xlsx_
 
@@ -70,15 +70,15 @@ Si ves un aumento en el consumo de memoria y CPU después de descargar los resul
 
 NOTE: Recuerda que la versión con el antiguo mecanismo de versionado (es decir, hasta la 0.40.x sin la segunda versión después del guión) se basa en versiones de Metabase anteriores o iguales a la 0.33.
 
-Afortunadamente, a partir de las versiones 0.38.x, Metabase introdujo mecanismos de _streaming_ de resultados y corrigió las fugas de memoria que determinaban este alto consumo de CPU y memoria.
+Afortunadamente, a partir de la versión 0.38.x, Metabase introdujo mecanismos de _streaming_ de resultados y corrigió las fugas de memoria que provocaban este alto consumo de CPU y memoria.
 
 Si aún no puedes actualizar y tu versión es superior o igual a 0.39.x, puedes limitar el tamaño de descarga de los resultados de la consulta agregando la variable de entorno `STRATIO_ABSOLUTE_MAX_RESULTS`. Si aplicas esta solución alternativa, ten en cuenta que la aplicación de esta restricción no se notificará a los usuarios que pueden sorprenderse cuando descubran que la cantidad de filas de resultados descargadas es inferior a la cantidad real de filas de resultados.
 
 === La consulta nativa a una tabla _Stratio {modulename}_ con líneas nuevas o retornos de carro no se puede analizar correctamente
 
-Ha habido algunos problemas conocidos relacionados con consultas que tienen uno o más caracteres de nueva línea o retornos de carro a través del JDBC de _Stratio {modulename}_, por lo que, dependiendo de tu versión de _Stratio Discovery_, es probable que los experimentes.
+Ha habido algunos problemas conocidos relacionados con consultas que contienen uno o más caracteres de nueva línea o de retorno de carro a través del JDBC de _Stratio {modulename}_, por lo que, dependiendo de tu versión de _Stratio Discovery_, es probable que los experimentes.
 
-Como solución alternativa, quita todas las nuevas líneas o intenta actualizar a otra versión de _Stratio Discovery_ que integre una versión más nueva del JDBC de _Stratio {modulename}_.
+Como solución alternativa, quita todas las nuevas líneas o intenta actualizar a otra versión de _Stratio Discovery_ que integre una versión más reciente del JDBC de _Stratio {modulename}_.
 
 === Detecto una gran cantidad de conexiones hacia las bases de datos, ¿cómo puedo limitarlas?
 
@@ -88,29 +88,29 @@ El tamaño del `max connection pool` solo se puede establecer en aquellas versio
 
 Tan pronto como abras una pregunta, se iniciará una primera consulta que contendrá la pregunta guardada anteriormente o un "select all" de la tabla para la que estás escribiendo la pregunta.
 
-Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar nuevos cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles ("Save" y "Save as new question"), *no se realizará ninguna acción hasta que finalice la consulta*.
+Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles ("Save" y "Save as new question"), *no se realizará ninguna acción hasta que finalice la consulta*.
 
 === No se pueden cancelar consultas en ejecución con tablas _Stratio {modulename}_
 
 Es posible que desees cancelar una consulta cuando te das cuenta de que consume demasiados recursos o si tarda mucho tiempo en completarse.
 
-Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ nuestra integración de _Stratio {modulename}_ no tenía esta función. Si crees que es imprescindible para tu proyecto tenerla, por favor considera instalar una versión de _Stratio Discovery_ superior o igual a la 0.38.1-0.x.x.
+Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ nuestra integración de _Stratio {modulename}_ no tenía esta función. Si crees que es imprescindible tenerla para tu proyecto, por favor, considera instalar una versión de _Stratio Discovery_ superior o igual a la 0.38.1-0.x.x.
 
-Ten en cuenta que la cancelación de una consulta (es decir, la transacción activa en la base de datos) también debe ser compatible con la propia base de datos (consulta uno de los https://github.com/metabase/metabase/issues/2399[problemas de Metabase en GitHub] donde los usuarios se quejan de que las ejecuciones de consultas no terminaron correctamente).
+Ten en cuenta que la cancelación de una consulta (es decir, la transacción activa en la base de datos) también debe ser compatible con la propia base de datos (consulta uno de los https://github.com/metabase/metabase/issues/2399[problemas de Metabase en GitHub], donde los usuarios se quejan de que las ejecuciones de consultas no terminaron correctamente).
 
 === No se pueden ver en la página de inicio las tablas o vistas recién creadas
 
 Te redirigimos a la xref:operations-guide:key-concepts.adoc[guía de conceptos básicos]: ¡Metabase debe usarse para visualizar los datos y no para operar sobre ellos!
 
-Aún así, si lograste crear una tabla en el "Native query editor", es probable que aún no puedas verla en la página de inicio cuando navegues a esa base de datos. Esto sucede porque se debe realizar una sincronización para actualizar los metadatos de campo y tabla almacenados en Metabase que se muestran en la página de inicio.
+Aun así, si lograste crear una tabla en el "Native query editor", es probable que aún no puedas verla en la página de inicio al navegar a esa base de datos. Esto sucede porque se debe realizar una sincronización para actualizar los metadatos de campo y tabla almacenados en Metabase que se muestran en la página de inicio.
 
 Debes leer atentamente la documentación oficial de Metabase con respecto al https://www.metabase.com/docs/v0.42/administration-guide/01-managing-databases.html#database-syncing[mecanismo de sincronización] ^[English]^.
 
-En pocas palabras, si eres un administrador, debes hacer clic en "Sync database schema now" en la pestaña "Database" dentro de la ventana "Settings". Esto activará *una sincronización asíncrona compuesta de dos fases*: la de *recuperación* real de los cambios (fase A) con respecto a la base de datos (que implica una conexión que se puede reutilizar entre las abiertas o creada de nuevo) y la de *análisis* (fase B) de los metadatos recuperados.
+En pocas palabras, si eres administrador, debes hacer clic en "Sync database schema now" en la pestaña "Database" de la ventana "Settings". Esto activará *una sincronización asíncrona compuesta por dos fases*: la de *recuperación* real de los cambios (fase A) con respecto a la base de datos (lo que implica una conexión que puede reutilizarse entre las abiertas o crear de nuevo) y la de *análisis* (fase B) de los metadatos recuperados.
 
-Un `FINISHED: Sync metadata` en los _logs_ puede hacerte creer que todo salió bien, pero debes tener en cuenta que *pueden haber ocurrido algunos errores*. Por ejemplo, se puede generar un error durante la recuperación, pero el análisis aún se ejecutará y se completará con éxito porque, en este caso, el análisis se realizará sobre los metadatos previamente almacenados.
+Un `FINISHED: Sync metadata` en los _logs_ puede hacerte creer que todo salió bien, pero debes tener en cuenta que *puede haber ocurrido algún error*. Por ejemplo, puede generarse un error durante la recuperación, pero el análisis aún se ejecutará y se completará con éxito porque, en este caso, se realizará sobre los metadatos previamente almacenados.
 
-Como advertencia, se proporciona un extracto del _log_ donde el error durante la fase A no impidió la ejecución exitosa de la fase B, pero finalmente no produjo ningún cambio en la página de inicio de Metabase.
+Como advertencia, se proporciona un extracto del _log_ en el que el error durante la fase A no impidió la ejecución exitosa de la fase B, pero finalmente no produjo ningún cambio en la página de inicio de Metabase.
 
 [source,bash]
 ----
@@ -121,9 +121,9 @@ INFO - [FINISHED: Sync metadata for crossdata Base de Datos 45 'crossdata-pro' (
 
 === No se pueden actualizar correctamente las tablas y vistas de _Stratio {modulename}_
 
-Supongamos que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes mirar detenidamente los __logs__. Según el error, es posible que debas solicitar la ayuda del equipo de __Stratio {modulename}__.
+Suponiendo que ya has sincronizado los datos como se explica en la xref:operations-guide:troubleshooting.adoc#_no_se_pueden_ver_en_la_página_de_inicio_las_tablas_o_vistas_recién_creadas[pregunta anterior]. Si aún tienes problemas, debes revisar detenidamente los __logs__. Según el error, es posible que debas solicitar ayuda al equipo de __Stratio {modulename}__.
 
-Supongamos también que has leído la xref:operations-guide:key-concepts.adoc[breve introducción] donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos en el ecosistema de Stratio. Al observar el error dentro de los _logs_, puedes comprender dónde se produjo el error.
+Suponiendo también que has leído la xref:operations-guide:key-concepts.adoc[breve introducción], donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos del ecosistema de Stratio, al observar el error en los _logs_ puedes comprender dónde se produjo.
 
 Centrémonos en el siguiente ejemplo:
 
@@ -145,24 +145,46 @@ Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9
  nil)
 ----
 
-Incluso si el error se propagó a Metabase como resultado de la consulta de sincronización, a partir del _log_ se puede entender que se originó dentro de _Stratio {modulename}_. Por lo tanto, para solucionar el problema, debes resolverlo desde la raíz, es decir, dentro de _Stratio {modulename}_.
+Incluso si el error se propagó a Metabase como resultado de la consulta de sincronización, a partir del _log_ se puede inferir que se originó dentro de _Stratio {modulename}_. Por lo tanto, para solucionar el problema, debes abordarlo desde la raíz, es decir, dentro de _Stratio {modulename}_.
 
 Por ejemplo, una solución para este error "Cannot recover session with sessionId="" fue reiniciar la instancia de _Stratio {modulename}_ para forzar el cierre de las conexiones pendientes.
 
+=== Fallo en la sincronización de metadatos con el error "ResultSet object has been closed"
+
+A partir de la versión 0.50.21-x.y.z de _Stratio Discovery_ se ha introducido una nueva configuración para controlar el _pool_ interno de conexiones JDBC (`c3p0`). Esta configuración permite recuperar automáticamente las conexiones que no se hayan devuelto al _pool_ dentro de un tiempo determinado.
+
+En entornos con bases de datos que contienen un gran número de tablas, este comportamiento puede provocar errores durante la sincronización de metadatos, ya que el _pool_ puede reclamar la conexión de forma prematura antes de que finalice el proceso de sincronización, lo que provoca el fallo de la tarea. Por defecto, este tiempo límite es de 20 minutos, mientras que en versiones anteriores no existía ninguna restricción de este tipo.
+
+Si experimentas este problema, en los _logs_ aparecerá un error similar al siguiente:
+
+[source,text]
+----
+2026-01-22T10:53:15.994+00:00 WARN - 0 - metabase.sync.util {"@message":"Error in sync step Sync metadata for crossdata Database 3 ''my-crossdata-db''","@data":{},"@exception":" java.sql.SQLNonTransientException: [Simba][JDBC](12060) ResultSet object has been closed."}
+----
+
+Para solucionar este error, debes establecer la siguiente variable de entorno a `0` (sin límite de tiempo) en la configuración de tu despliegue:
+
+[source,bash]
+----
+"MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS": 0
+----
+
+Si utilizas las últimas versiones de los descriptores del Universo de Stratio, esta variable de entorno ya estará presente en la configuración de tu despliegue con el valor 0, evitando así la aparición de este error.
+
 === No se puede acceder a algunas tablas almacenadas en _Stratio {modulename}_ o _Stratio PostgreSQL_
 
-Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con los problemas de autorización.
+Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con problemas de autorización.
 
-Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] ^[English]^ y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección] ^[English]^, también puede haber otro nivel de seguridad dependiendo de la base de datos a la que te conectes.
+Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] ^[English]^ y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección] ^[English]^, también puede haber otro nivel de seguridad según la base de datos a la que te conectes.
 
-Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas se pueden definir en _Stratio GoSec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio GoSec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL® que utiliza el mecanismo TLS predeterminado].
+Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas pueden definirse en _Stratio Gosec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio Gosec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL® que utiliza el mecanismo TLS predeterminado].
 
 En las versiones de _Stratio Discovery_ anteriores a la 0.38.1-0.2, *el usuario con el que habías hecho _login_ se usaba también para realizar acciones relacionadas con la actualización interna de metadatos cuando seleccionabas manualmente una sincronización forzada* (`Sync database schema now`, `Re-scan field values now`) si la suplantación de identidad estaba habilitada.
 
-Desafortunadamente, esto podía generar metadatos obsoletos o corruptos si tu usuario no tenía acceso completo a todas las bases de datos, esquemas y tablas de la base de datos a la que estás conectándote.
+Desafortunadamente, esto podía generar metadatos obsoletos o corruptos si tu usuario no tenía acceso completo a todas las bases de datos, esquemas y tablas de la base de datos a la que estabas conectándote.
 
 === Después de actualizar a la 0.43.4.-0.x.x no puedo acceder a las _questions_ y los _dashboards_ que apuntan a la "Sample Database"
 
-Por temas de seguridad, en la versión 0.43.4-0.x.x de _Stratio Discovery_, la base de datos de ejemplo, más conocida como "Sample Database", ha sido borrada. Esto significa que no se podrá consultar nada que apunte a ella (por ejemplo: _dashboards_, _questions_, etc.). Por ello, debes eliminar todas las referencias a esa base de datos.
+Por motivos de seguridad, en la versión 0.43.4-0.x.x de _Stratio Discovery_, la base de datos de ejemplo, más conocida como "Sample Database", ha sido eliminada. Esto significa que no se podrá consultar nada que apunte a ella (por ejemplo: _dashboards_, _questions_, etc.). Por ello, debes eliminar todas las referencias a esa base de datos.
 
 image::error_sample_db_missing.png[]

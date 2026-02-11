@@ -2,11 +2,11 @@
 
 First, *help us help you*.
 
-_Stratio Discovery_ is based on Metabase, which is a *rapidly developing open-source project*, so some known issues may have already been fixed in a newer version that will eventually be integrated into _Stratio Discovery_.
+_Stratio Discovery_ is based on Metabase, a *rapidly developing open-source project*, so some known issues may already have been fixed in a newer version that will eventually be integrated into _Stratio Discovery_.
 
-For this reason we ask you to always *specify the version of _Stratio Discovery_ that you are having the problem with*. If the application is running, it's as easy as clicking "Configuration" and then "About Metabase". The version will be indicated in the `Branch` property: the first tag represents the Metabase version and the last one, the Stratio version.
+For this reason, we ask that you always *specify the version of _Stratio Discovery_ you are experiencing the problem with*. If the application is running, it's as easy as clicking "Configuration" and then "About Metabase". The version will be indicated in the `Branch` property: the first tag represents the Metabase version, and the last tag represents the Stratio version.
 
-You can also find out the version by retrieving the Docker image version (there may be differences as to how to check this depending on the deployment environment that is being used).
+You can also find the version by retrieving the Docker image version (there may be differences in how to check this depending on the deployment environment).
 
 image::discovery_version.png[]
 
@@ -19,7 +19,7 @@ This troubleshooting page is organized into the following sections:
 ====
 If you encounter an error that isn't described here, we suggest that you check to see if there's a https://github.com/metabase/metabase/issues/[similar issue in Metabase] that has already been reported or resolved.
 
-*If the problem is still open, you should look for workarounds* because we depend on Metabase's open source and bug fixes. The only interventions we implement are essentially improvements with respect to security and integrations with the other modules in the Stratio ecosystem.
+*If the problem is still open, you should look for workarounds* because we depend on Metabase's open source and bug fixes. The only interventions we implement are security improvements and integrations with other modules in the Stratio ecosystem.
 
 Otherwise, you are more than welcome to contact us.
 ====
@@ -28,7 +28,7 @@ Otherwise, you are more than welcome to contact us.
 
 === My authentication method is set to `gosec-sso`, but after SSO, I'm redirected to Metabase's user password authentication
 
-Your user must belong to an allowed group or administration group, depending on the role. The way in which the administrator can specify the allowed groups is explained in detail in the xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[End user authentication] section.
+Your user must belong to an allowed group or an administration group, depending on the role. The way the administrator can specify the allowed groups is explained in detail in xref:operations-guide:end-user-authentication.adoc#_stratio_gosec_sso[End user authentication] section.
 
 === Links to a dashboard are not correctly redirected in a _Stratio Discovery_ deployment with the _Governance_ flavour
 
@@ -51,16 +51,16 @@ Don't assume that "premature optimization is the root of all evil", because comm
 
 === Unable to import or export collections due to timeout error
 
-If you receive a timeout exceeded error (e.g. `504 Gateway Time-out`), it means that there was an error in the xref:operations-guide:export-and-import-collections.adoc[import/export mechanism] for exceeding the maximum timeout during processing and that you need to increase any of the following time-out variables, depending on where your problem lies:
+If you receive a timeout exceeded error (e.g. `504 Gateway Time-out`), it means that there was an error in the xref:operations-guide:export-and-import-collections.adoc[import/export mechanism] for exceeding the maximum timeout during processing, and that you need to increase any of the following time-out variables, depending on where your problem lies:
 
 * `PROXY_READ_TIMEOUT`,
 * `DISCOVERY_CICD_API_IMPORT_TIMEOUT`,
 * `DISCOVERY_CICD_API_EXPORT_TIMEOUT`,
 * `DISCOVERY_CICD_API_METABASE_TIMEOUT`.
 
-You might also want to adjust the import/export mechanism (the so-called CI/CD discovery) for the Java options through `DISCOVERY_CICD_JAVA_OPTIONS`. Depending on where the timeout error occurred, it's likely that the import/export process is still running and will be completed successfully.
+You might also want to adjust the import/export mechanism (the so-called CI/CD discovery) for the Java options through `DISCOVERY_CICD_JAVA_OPTIONS`. Depending on where the timeout error occurred, the import/export process is likely still running and will complete successfully.
 
-For this reason, if you see a timeout error during an import process, you should check in the instance whether or not the collection was imported correctly before running the same import request again.
+If you see a timeout error during an import, check the instance to confirm the collection was imported correctly before running the same import request again.
 
 For more information, see the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] section in the installation and upgrades guide.
 
@@ -68,21 +68,21 @@ For more information, see the xref:operations-guide:installing-and-upgrading/env
 
 If you see an increase in memory and CPU usage after downloading the query results as `.xlsx` files, you are *probably running a version older than 0.38.1-0.2*.
 
-NOTE: Remember that the version with the old versioning mechanism (i.e. up to 0.40.x without the second version after the hyphen) is based on Metabase versions earlier than or equal to 0.33.
+NOTE: Remember that the version with the old versioning mechanism (i.e., up to 0.40.x without the second version after the hyphen) is based on Metabase versions earlier than or equal to 0.33.
 
-Fortunately, starting with versions 0.38.x, Metabase introduced mechanisms for streaming results and corrected memory leaks that caused this high CPU and memory usage.
+Fortunately, starting with version 0.38.x, Metabase introduced mechanisms for streaming results and corrected memory leaks that caused this high CPU and memory usage.
 
-If you can't update yet and your version is 0.39.x or higher, you can limit the size of the download of query results by adding the `STRATIO_ABSOLUTE_MAX_RESULTS` environment variable. If you apply this solution, note that users will not be notified that this restriction is being applied and may be surprised when they discover that the number of rows of results downloaded is less than the actual number of rows of results.
+If you can't update yet and your version is 0.39.x or higher, you can limit the size of the query results download by setting the `STRATIO_ABSOLUTE_MAX_RESULTS` environment variable. If you apply this solution, note that users will not be notified that this restriction is in place and may be surprised when they discover that the number of rows downloaded is less than the actual number of rows.
 
 === A native query to a _Stratio {modulename}_ table with new lines or carriage returns cannot be parsed correctly
 
 There are some known issues related to queries that have one or more new line characters or carriage returns via the _Stratio {modulename}_ JDBC, so depending on your version of _Stratio Discovery_, you will probably experience them.
 
-As an alternate solution, remove all new lines or try upgrading to another version of _Stratio Discovery_ that integrates a newer version of the _Stratio {modulename}_ JDBC.
+As an alternative, remove all newlines or upgrade to another version of _Stratio Discovery_ that supports a newer version of the _Stratio {modulename}_ JDBC.
 
 === I'm detecting a lot of connections to databases. How can I limit them?
 
-The size of the `max connection pool` can only be set in versions of _Stratio Discovery_ that incorporate a Metabase version 0.38.0 or higher. Since this is a Metabase setting, we suggest that you refer to the https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[environment variables that can be set] to adjust it.
+The size of the `max connection pool` can only be set in versions of _Stratio Discovery_ that include Metabase 0.38.0 or higher. Since this is a Metabase setting, we suggest that you refer to the https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[environment variables that can be set] to adjust it.
 
 === I can't save changes to a question until I get the answer from the first query
 
@@ -94,7 +94,7 @@ Unfortunately, up to and including version 0.40.x of _Stratio Discovery_, you ha
 
 You might want to cancel a query when you realize it is too resource-intensive or takes a long time to complete.
 
-Unfortunately, until version 0.40.x of _Stratio Discovery_ our _Stratio {modulename}_ integration didn't have this feature. If you think it's essential for your project, consider installing a _Stratio Discovery_ version 0.38.1-0.x.x or higher.
+Unfortunately, until version 0.40.x of _Stratio Discovery_, the _Stratio {modulename}_ integration didn't have this feature. If you think it's essential for your project, consider installing a _Stratio Discovery_ version 0.38.1-0.x.x or higher.
 
 Note that the cancellation of a query (that is, the active transaction in the database) must also be supported by the database itself (see one of the https://github.com/metabase/metabase/issues/2399[Metabase issues in GitHub] where users complain that the query runs did not end correctly).
 
@@ -102,15 +102,15 @@ Note that the cancellation of a query (that is, the active transaction in the da
 
 You should go back to the xref:operations-guide:key-concepts.adoc[basics concepts guide]: You should use Metabase to display data and not carry out actions on it!
 
-Even so, if you did manage to create a table in the Native query editor, you probably won't be able to see it on the home page when you browse to that database. This is because a synchronization must be carried out to update the field and table metadata stored in Metabase that are displayed on the home page.
+Even so, if you did manage to create a table in the Native query editor, you probably won't be able to see it on the home page when you browse to that database. This is because synchronization is required to update the field and table metadata stored in Metabase that are displayed on the home page.
 
 Carefully read the official Metabase documentation in regard to the https://www.metabase.com/docs/v0.42/administration-guide/01-managing-databases.html#database-syncing[synchronization mechanism].
 
-Simply put, if you're an administrator, click on "Sync database schema now" in the "Database" tab in the "Settings" window. This will trigger *an asynchronous synchronization consisting of two phases*: the actual *recovery* of the changes (phase A) with respect to the database (which involves a reusable connection between the open or re-created ones) and the *analysis* (phase B) of the recovered metadata.
+Simply put, if you're an administrator, click on "Sync database schema now" in the "Database" tab in the "Settings" window. This will trigger *an asynchronous synchronization consisting of two phases*: the actual *recovery* of the changes (phase A) with respect to the database (using a reusable connection across open or re-created connections), and the *analysis* (phase B) of the recovered metadata.
 
-A `FINISHED: Sync metadata` in the logs might make you think that everything went well, but keep in mind that *errors might have occurred*. For example, an error may be generated during recovery, but the scan will still run and complete successfully because, in this case, the scan will be carried out on previously stored metadata.
+A `FINISHED: Sync metadata` in the logs might make you think that everything went well, but keep in mind that *errors might have occurred*. For example, an error may occur during recovery, but the scan will still run and complete successfully because it will be performed on previously stored metadata.
 
-As a warning, an excerpt from the log is provided, where the error during phase A didn't prevent the successful execution of phase B, but ultimately didn't make any changes to the Metabase home page.
+As a warning, an excerpt from the log is provided: the error during phase A didn't prevent the successful execution of phase B, but ultimately made no changes to the Metabase home page.
 
 [source,bash]
 ----
@@ -123,7 +123,7 @@ INFO - [FINISHED: Sync metadata for crossdata Database 45 'crossdata-pro' (928.7
 
 Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#_newly_created_tables_or_views_dont_appear_on_the_homepage[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the __Stratio Virtualizer__ team.
 
-Let's suppose that you've also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the error in the logs, you can understand where the error occurred.
+Let's suppose that you've also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the logs, you can determine where the error occurred.
 
 Let's take a look at the following example:
 
@@ -145,9 +145,31 @@ Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9
  nil)
 ----
 
-Even if the error was propagated to Metabase as a result of the synchronization query, from the log you can see that it originated within _Stratio {modulename}_. This means that to solve the problem, you need to solve it from the root, that is, in _Stratio {modulename}_.
+Even if the error was propagated to Metabase by the synchronization query, the log shows that it originated within _Stratio {modulename}_. This means that to solve the problem, you need to solve it from the root, that is, in _Stratio {modulename}_.
 
-For example, one solution for this error "Cannot recover session with sessionId="" was to restart the _Stratio {modulename}_ instance to force the pending connections to close.
+For example, one solution for the error "Cannot recover session with sessionId="" was to restart the _Stratio {modulename}_ instance to force the pending connections to close.
+
+=== Metadata synchronization failure with the error "ResultSet object has been closed"
+
+Starting with version 0.50.21-x.y.z of _Stratio Discovery_, a new configuration has been introduced to control the internal JDBC connection pool (`c3p0`). This configuration allows automatic reclamation of connections that have not been returned to the pool within a specified period.
+
+In environments with large numbers of tables in the database, this behavior can cause errors during metadata synchronization: the pool may reclaim the connection prematurely before the synchronization finishes, causing the task to fail. By default, this timeout is set to 20 minutes, whereas in previous versions, there was no such restriction.
+
+If you experience this issue, an error similar to the following will appear in the logs:
+
+[source,text]
+----
+2026-01-22T10:53:15.994+00:00 WARN - 0 - metabase.sync.util {"@message":"Error in sync step Sync metadata for crossdata Database 3 ''my-crossdata-db''","@data":{},"@exception":"java.sql.SQLNonTransientException: [Simba][JDBC](12060) ResultSet object has been closed."}
+----
+
+To resolve this error, you must set the following environment variable to `0` (no timeout) in your deployment configuration:
+
+[source,bash]
+----
+"MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS": 0
+----
+
+If you are using the latest versions of the Stratio Universe descriptors, this environment variable will already be present in your deployment configuration with a value of `0`, preventing this error.
 
 === Unable to access some tables stored in _Stratio {modulename}_ or _Stratio PostgreSQL_
 
@@ -155,7 +177,7 @@ For example, one solution for this error "Cannot recover session with sessionId=
 
 Briefly, in addition to the https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[native Metabase data access permissions] and https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[collection permissions], there may also be another level of security depending on the database that you connect to.
 
-For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL_ have their own authorization systems* whose policies can be defined in _Stratio GoSec_. If *you enabled impersonation* in your _Stratio {modulename}_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio GoSec_ policy] and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL® connection that uses the default TLS mechanism].
+For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL_ have their own authorization systems* whose policies can be defined in _Stratio Gosec_. If *you enabled impersonation* in your _Stratio {modulename}_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio Gosec_ policy], and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL® connection that uses the default TLS mechanism].
 
 In _Stratio Discovery_ versions prior to 0.38.1-0.2, *the user that you logged in with was also used to perform actions related to updating internal metadata when you manually selected forced synchronization* (`Sync database schema now`, `Re-scan field values now`) if impersonation was enabled.
 
@@ -163,6 +185,6 @@ Unfortunately, this could generate obsolete or corrupt metadata if your user did
 
 === After upgrading to 0.43.4.-0.x.x, I can't access the questions and dashboards that point to the "Sample Database"
 
-For security reasons, the "Sample Database" was deleted in version 0.43.4-0.x.x of _Stratio Discovery_. This means that you won't be able to query anything pointing to it (for example: dashboards, questions, etc.). You should delete all references to that database.
+For security reasons, the "Sample Database" was deleted in version 0.43.4-0.x.x of _Stratio Discovery_. This means you won't be able to query anything that points to it (for example, dashboards, questions, etc.). You should delete all references to that database.
 
 image::error_sample_db_missing.png[]

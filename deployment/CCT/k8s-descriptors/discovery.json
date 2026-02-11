@@ -385,6 +385,18 @@
                 "title": "Additional JDBC configuration parameters",
                 "default": "prepareThreshold=0"
               },
+              "jdbcUnreturnedConnectionTimeoutSeconds": {
+                "title": "JDBC pool unreturned connection timeout (seconds)",
+                "description": "Timeout in seconds for unreturned connections in the Metabase internal JDBC connection pool used for database connections. If a connection is borrowed from the pool and not returned within this time, it will be considered abandoned and eligible for eviction. Set to 0 to disable this feature.",
+                "type": "integer",
+                "internalName": "MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS",
+                "required": true,
+                "readOnly": false,
+                "application": false,
+                "level": 2,
+                "minimum": 0,
+                "default": 0
+              },
               "postgresDatabase": {
                 "description": "The database name which stores Discovery metadata",
                 "type": "string",
