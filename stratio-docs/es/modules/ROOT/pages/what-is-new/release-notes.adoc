@@ -2,6 +2,10 @@
 
 Estos son los aspectos más destacados de _Stratio Discovery_ en los últimos lanzamientos:
 
+== 0.56.4-0.1.2 (4 de marzo de 2026)
+
+* Actualización del _driver_ JDBC de _Stratio Virtualizer_ a la versión 3.1.0.
+
 == 0.56.4-0.1.1 (5 de diciembre de 2025)
 
 * Actualización del _driver_ JDBC de _Stratio Virtualizer_ a la versión 3.0.1.
