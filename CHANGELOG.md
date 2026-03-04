@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.56.4-0.1.2 (upcoming)
+## 0.56.4-0.1.2 (2026-03-04)
 
 * [ROCK-14521] Update virtualizer JDBC to 3.1.0
 
