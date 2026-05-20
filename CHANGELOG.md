@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.56.4-0.1.3 (upcoming)
+
+* [ROCK-14826] Update stratio-metabase to 0.56.0-0.1.1
+
 ## 0.56.4-0.1.2 (2026-03-04)
 
 * [ROCK-14521] Update virtualizer JDBC to 3.1.0
