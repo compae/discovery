@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.56.4-0.1.3 (upcoming)
+## 0.56.4-0.1.3 (2026-05-20)
 
 * [ROCK-14826] Update stratio-metabase to 0.56.0-0.1.1
 
