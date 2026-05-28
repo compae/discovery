@@ -123,6 +123,10 @@ function write_to_file_if_exists() {
     fi
 }
 
+# Timeout for returning connections to the pool. Causes large virtualizer collections syncs to fail.
+# set it to 0 (no tiemout)
+MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS=${MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS:-"0"}
+
 ###################################
 ###   PUT VARIABLES IN FILES    ###
 ###################################
@@ -150,4 +154,5 @@ echo "false"                             > /env_vars/MB_EMOJI_IN_LOGS
 echo "false"                             > /env_vars/MB_COLORIZE_LOGS
 echo "false"                             > /env_vars/MB_ANON_TRACKING_ENABLED
 echo "false"                             > /env_vars/MB_CHECK_FOR_UPDATES
+echo "$MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS" > /env_vars/MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS
 write_to_file_if_exists SERVICE_URL

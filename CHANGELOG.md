@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## 0.56.4-0.1.4 (upcoming)
+
+* Set `MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS` to 0 by default (fix sync errors in large virtualizer collections)
+
 ## 0.56.4-0.1.3 (2026-05-20)
 
 * [ROCK-14826] Update stratio-metabase to 0.56.0-0.1.1
