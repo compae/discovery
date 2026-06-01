@@ -5,6 +5,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 ## 0.56.4-0.1.4 (upcoming)
 
 * Set `MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS` to 0 by default (fix sync errors in large virtualizer collections)
+* [ROCK-14859] Update virtualizer JDBC to 3.1.1
 
 ## 0.56.4-0.1.3 (2026-05-20)
 
