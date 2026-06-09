@@ -2,7 +2,7 @@
 # STAGE 1: stratio drivers builder
 # ###############################################################################################
 
-FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.56.4-0.1.1-77735fa as builder
+FROM qa.int.stratio.com/stratio/stratio-metabase-builder:0.56.4-0.1.2-a5f7317 as builder
 
 WORKDIR /home/node
 
@@ -34,7 +34,6 @@ WORKDIR /app
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
 ENV B_LOG_VERSION 0.6.1-7055620
-ENV KMS_UTILS_VERSION 0.6.1-7055620
 ENV STRATIO_UTILS /stratio
 
 ################################
@@ -52,18 +51,15 @@ RUN apt-get update \
     s6 \
     # we use zip only in the Dockerfile itself - mayber install and remove in the corresponding layer?
     zip \
-    # jq, curl for kms-utils
-    jq \
+    #  curl to download b-log
     curl \
     # to substitue environment variables in the nginx.conf file with envsubst
     gettext-base \
     # these are needed by metabase
     fontconfig \
     fonts-noto-core \
-    # kms utils and b-log
+    # b-log
     && mkdir -p "$STRATIO_UTILS" \
-    && curl -o "$STRATIO_UTILS/kms_utils.sh" "http://qa.int.stratio.com/repository/paas/kms_utils/${KMS_UTILS_VERSION}/kms_utils-${KMS_UTILS_VERSION}.sh" \
-    && chmod +x "$STRATIO_UTILS/kms_utils.sh" \
     && curl -o "$STRATIO_UTILS/b-log.sh" "http://qa.int.stratio.com/repository/paas/log_utils/${B_LOG_VERSION}/b-log-${B_LOG_VERSION}.sh" \
     && chmod +x "$STRATIO_UTILS/b-log.sh" \
     # delete default nginx.conf and create some needed folders

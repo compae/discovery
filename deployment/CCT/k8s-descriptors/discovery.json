@@ -364,7 +364,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 2,
-                "internalName": "DISCOVERY_POSTGRES_SERVICE_ID",
+                "internalName": "NOT_USED",
                 "ui": {
                   "updatable": false
                 },
@@ -419,7 +419,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "POSTGRES_DATABASE_CREATION_TASK",
+                "internalName": "NOT_USED",
                 "title": "Create Postgres database as a pre-deployment task",
                 "default": true
               },
@@ -430,7 +430,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 2,
-                "internalName": "POSTGRES_DB_CREATION",
+                "internalName": "NOT_USED",
                 "title": "PostgresDB cluster name (filled via Service Discovery section)",
                 "default": "${postgresPolicies.host}"
               },
@@ -441,7 +441,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 2,
-                "internalName": "POSTGRES_NAMESPACE_CREATION",
+                "internalName": "NOT_USED",
                 "title": "PostgresDB namespace (filled via Service Discovery section)",
                 "default": "${postgresPolicies.namespace}"
               }
@@ -573,7 +573,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "INSTANCES",
+                "internalName": "NOT_USED",
                 "title": "Instances",
                 "default": 1
               },
@@ -584,7 +584,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "CPU_RESOURCE_TYPE",
+                "internalName": "NOT_USED",
                 "title": "CPU resource type",
                 "enum": [
                   "Guaranteed",
@@ -600,7 +600,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "CPUs",
+                "internalName": "NOT_USED",
                 "title": "CPUs Request",
                 "default": 2
               },
@@ -611,7 +611,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "CPU_LIMIT",
+                "internalName": "NOT_USED",
                 "title": "CPUs Limit",
                 "ui": {
                   "visible": {
@@ -626,7 +626,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "MEM_RESOURCE_TYPE",
+                "internalName": "NOT_USED",
                 "title": "Memory resource type",
                 "enum": [
                   "Guaranteed",
@@ -642,7 +642,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "MEM",
+                "internalName": "NOT_USED",
                 "title": "Memory request (MB)",
                 "default": 4096
               },
@@ -653,7 +653,7 @@
                 "readOnly": false,
                 "application": true,
                 "level": 1,
-                "internalName": "MEMORY_LIMIT",
+                "internalName": "NOT_USED",
                 "title": "Memory limit (MB)",
                 "ui": {
                   "visible": {
@@ -722,7 +722,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "STARTUP_PROBE_PERIOD_SECONDS",
+                "internalName": "NOT_USED",
                 "title": "Startup probe periodSeconds",
                 "default": 5
               },
@@ -737,7 +737,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "STARTUP_PROBE_FAILURE_THRESHOLD",
+                "internalName": "NOT_USED",
                 "title": "Startup probe failureThreshold",
                 "default": 60
               },
@@ -752,7 +752,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "STARTUP_PROBE_TIMEOUT_SECONDS",
+                "internalName": "NOT_USED",
                 "title": "Startup probe timeoutSeconds",
                 "default": 5
               },
@@ -767,7 +767,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "LIVENESS_PROBE_PERIOD_SECONDS",
+                "internalName": "NOT_USED",
                 "title": "Liveness probe periodSeconds",
                 "default": 30
               },
@@ -782,7 +782,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "LIVENESS_PROBE_FAILURE_THRESHOLD",
+                "internalName": "NOT_USED",
                 "title": "Liveness probe failureThreshold",
                 "default": 3
               },
@@ -797,7 +797,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "LIVENESS_PROBE_TIMEOUT_SECONDS",
+                "internalName": "NOT_USED",
                 "title": "Liveness probe timeoutSeconds",
                 "default": 15
               },
@@ -812,7 +812,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "READINESS_PROBE_PERIOD_SECONDS",
+                "internalName": "NOT_USED",
                 "title": "Readiness probe periodSeconds",
                 "default": 30
               },
@@ -827,7 +827,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "READINESS_PROBE_FAILURE_THRESHOLD",
+                "internalName": "NOT_USED",
                 "title": "Readiness probe failureThreshold",
                 "default": 3
               },
@@ -842,7 +842,7 @@
                   "updatable": true,
                   "visible": true
                 },
-                "internalName": "READINESS_PROBE_TIMEOUT_SECONDS",
+                "internalName": "NOT_USED",
                 "title": "Readiness probe timeoutSeconds",
                 "default": 15
               }
@@ -1482,6 +1482,200 @@
             "internalName": "SERVICE_ACCOUNT_NAME",
             "title": "Service account name",
             "default": "fieldRef:spec.serviceAccountName:v1"
+          },
+          "keosCAk8sSecretName": {
+            "description": "Name of the k8s secret holding the cluster CA. To be used by the Vault injector init container",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 1,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "KEOS CA secret name",
+            "default": "keos-ca"
+
+          },
+          "caName": {
+            "description": "Name of the key inside the KEOS CA k8s secret where the cluste CA is stored",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 1,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "KEOS CA name (key inside secret)",
+            "default": "ca.crt"
+          },
+          "jwtPublicKeyVaultPath": {
+            "description": "Path in Vault where the cluster JWT public key is stored",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "JWT public key Vault Path",
+            "default": "/userland/passwords/ingress-nginx-controller.keos-ingress/jwt-keys/public"
+          },
+          "jwtPublicKeyVaultTemplate": {
+            "description": "Template to be used by the Vault injector to read the JWT public key",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "JWT puclic key Vault tamplate",
+            "default": "{{- with secret \\\"${jwtPublicKeyVaultPath}\\\" }}\\n{{ index .Data \\\"user\\\" }}\\n{{- end}}\\n"
+          },
+          "caBundleVaultPath": {
+            "description": "Path in Vault where the cluster CA bundle",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "CA bundle Vault Path",
+            "default": "/ca-trust/bundle"
+          },
+          "caBundleVaultTemplate": {
+            "description": "Template to be used by the Vault injector to read the CA bundle",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "JWT puclic key Vault tamplate",
+            "default": "{{- with secret \\\"${caBundleVaultPath}\\\" }}\\n{{ index .Data \\\"keos-ca-root_crt\\\" }}\\n{{- end}}\\n"
+          },
+          "caBundleVaultCommand": {
+            "description": "Command to execute by the vault injector to finish rendering the cluste rCA Bundle",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "CA Bundle command",
+            "default": "sh -c \\\"cat /vault/secrets/ca-bundle-raw.pem | sed 's/CERTIFICATE-----/CERTIFICATE-----\\\\n/g' | sed 's/-----END/\\\\n-----END/g' | fold -w64 > /vault/secrets/ca-bundle.pem\\\"\\n"
+          },
+          "certsVaultPath": {
+            "description": "Path in Vault where app certificates are stored",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "Certificates Vault Path",
+            "default": "/userland/certificates/${Application.name}.${Application.domain}"
+          },
+          "certVaultTemplate": {
+            "description": "Template to be used by the Vault injector to read the \"_crt\" key of the certs secret",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "CRT Vault tamplate",
+            "_comment": "This value will be interpolated 'as is' in a default value that should be a correct json-formatted string so we need to double escape the quotes and the backslashes",
+            "default": "{{- with secret \\\"${certsVaultPath}\\\" }}\\n{{ index .Data \\\"${Application.name}.${Application.domain}_crt\\\" }}\\n{{- end}}\\n"
+          },
+          "certKeyVaultTemplate": {
+            "description": "Template to be used by the Vault injector to read the \"_key\" key of the certs secret",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "KEY Vault tamplate",
+            "_comment": "This value will be interpolated 'as is' in a default value that should be a correct json-formatted string so we need to double escape the quotes and the backslashes",
+            "default": "{{- with secret \\\"${certsVaultPath}\\\" }}\\n{{ index .Data \\\"${Application.name}.${Application.domain}_key\\\" }}\\n{{- end}}\\n"
+          },
+          "vaultCommandCert": {
+            "description": "Command to execute by the vault injector to finish rendering certificate CRT",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "CRT command",
+            "_comment": "This value will be interpolated 'as is' in a default value that should be a correct json-formatted string so we need to double escape the quotes and the backslashes",
+            "default": "sh -c \\\"cat /vault/secrets/cert-raw.crt | sed 's/CERTIFICATE-----/CERTIFICATE-----\\\\n/g' | sed 's/-----END/\\\\n-----END/g' | fold -w64 > /vault/secrets/cert.crt\\\"\\n"
+          },
+          "vaultCommandKey": {
+            "description": "Command to execute by the vault injector to finish rendering certificate KEY",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "KEY command",
+            "_comment": "This value will be interpolated 'as is' in a default value that should be a correct json-formatted string so we need to double escape the quotes and the backslashes",
+            "default": "sh -c \\\"cat /vault/secrets/cert-raw.key | sed 's/-----BEGIN RSA PRIVATE KEY-----/-----BEGIN RSA PRIVATE KEY-----\\\\n/g' | sed 's/-----END/\\\\n-----END/g' | fold -w64 > /vault/secrets/cert.key\\\"\\n"
+          },
+          "vaultAnnotations": {
+            "description": "Annotations to add to the deployment to make the Vault injector download certificates",
+            "type": "string",
+            "required": true,
+            "readOnly": false,
+            "level": 2,
+            "ui": {
+              "updatable": true
+            },
+            "application": true,
+            "internalName": "NOT_USED",
+            "title": "Vault annotations",
+            "default": "[{\"key\": \"vault.hashicorp.com/agent-init-first\", \"value\": \"true\"}, {\"key\": \"vault.hashicorp.com/agent-pre-populate-only\", \"value\": \"true\"}, {\"key\": \"vault.hashicorp.com/agent-inject\", \"value\": \"true\"}, {\"key\": \"vault.hashicorp.com/role\", \"value\": \"${approlename}\"}, {\"key\": \"vault.hashicorp.com/tls-secret\", \"value\": \"${keosCAk8sSecretName}\"}, {\"key\": \"vault.hashicorp.com/ca-cert\", \"value\": \"/vault/tls/${caName}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-secret-jwt-public-key.pem\", \"value\": \"${jwtPublicKeyVaultPath}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-template-jwt-public-key.pem\", \"value\": \"${jwtPublicKeyVaultTemplate}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-secret-ca-bundle-raw.pem\", \"value\": \"${caBundleVaultPath}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-template-ca-bundle-raw.pem\", \"value\": \"${caBundleVaultTemplate}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-command-ca-bundle-raw.pem\", \"value\": \"${caBundleVaultCommand}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-secret-cert-raw.crt\", \"value\": \"${certsVaultPath}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-secret-cert-raw.key\", \"value\": \"${certsVaultPath}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-template-cert-raw.crt\", \"value\": \"${certVaultTemplate}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-template-cert-raw.key\", \"value\": \"${certKeyVaultTemplate}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-command-cert-raw.crt\", \"value\": \"${vaultCommandCert}\"}, {\"key\": \"vault.hashicorp.com/agent-inject-command-cert-raw.key\", \"value\": \"${vaultCommandKey}\"}]"
+          },
+          "secretsBundleSpec": {
+            "type": "string",
+            "level": 2,
+            "application": true,
+            "internalName": "NOT_USED",
+            "default": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${haproxyhost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"mount\": \"userland\"}"
           }
         },
         "required": []
@@ -1679,7 +1873,7 @@
           "kind": "SecretsBundle",
           "plural": "SecretsBundles",
           "namespace": "${Application.domain}",
-          "spec": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${rocketServerHost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"passwords\": [{\"keyName\": \"pass\", \"name\": \"keystore\", \"length\": 10, \"type\": \"generic\"}], \"mount\": \"userland\"}",
+          "spec": "${secretsBundleSpec}",
           "enabled": "true"
         },
         {
@@ -1701,6 +1895,12 @@
           "label": "=> Wait 10s until everything is configured...",
           "type": "time/sleep",
           "millis": "10000"
+        },
+        {
+          "label": "Add Vault annotations",
+          "type": "annotations/upsert",
+          "scope": "deployment",
+          "annotations": "${vaultAnnotations}"
         }
       ],
       "install/pre": [
@@ -1818,6 +2018,12 @@
           "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
           "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
           "enabled": "true"
+        },
+        {
+          "label": "Add Vault annotations",
+          "type": "annotations/upsert",
+          "scope": "deployment",
+          "annotations": "${vaultAnnotations}"
         }
       ],
       "update/pre": [
@@ -1948,7 +2154,7 @@
           "kind": "SecretsBundle",
           "plural": "SecretsBundles",
           "namespace": "${Application.domain}",
-          "spec": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${rocketServerHost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"passwords\": [{\"keyName\": \"pass\", \"name\": \"keystore\", \"length\": 10, \"type\": \"generic\"}], \"mount\": \"userland\"}",
+          "spec": "${secretsBundleSpec}",
           "enabled": "true"
         },
         {
@@ -1964,6 +2170,12 @@
           "plural": "SecretsIdentities",
           "namespace": "keos-ingress",
           "spec": "{\"bundles\":[{\"name\":\"ingress-nginx-controller\",\"passwords\":[{\"name\":\"jwt-keys\",\"subPath\":\"public\"}]}],\"subject\":{\"kind\":\"ServiceAccount\",\"name\":\"${Application.name}\",\"namespace\":\"${Application.domain}\"}}"
+        },
+        {
+          "label": "Add Vault annotations",
+          "type": "annotations/upsert",
+          "scope": "deployment",
+          "annotations": "${vaultAnnotations}"
         }
       ],
       "upgrade/pre": [
@@ -2077,7 +2289,7 @@
           "kind": "SecretsBundle",
           "plural": "SecretsBundles",
           "namespace": "${Application.domain}",
-          "spec": "{\"certificates\": [{\"commonName\": \"${Application.id}\", \"altNames\": [\"${serviceId}-${k8sNamespace}\", \"${rocketServerHost}\", \"${serviceId}-${k8sNamespace}.${k8sNamespace}\", \"*.${k8sNamespace}\"], \"name\": \"${Application.id}\", \"role\": \"client-server\", \"type\": \"generic\"}], \"passwords\": [{\"keyName\": \"pass\", \"name\": \"keystore\", \"length\": 10, \"type\": \"generic\"}], \"mount\": \"userland\"}",
+          "spec": "${secretsBundleSpec}",
           "enabled": "true"
         },
         {
