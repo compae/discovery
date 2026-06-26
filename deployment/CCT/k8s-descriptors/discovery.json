@@ -2,12 +2,12 @@
   "parentConfiguration": {
     "serviceName": "stratiobase",
     "model": "default",
-    "version": "15.0.0-SNAPSHOT"
+    "version": "15.1.0-SNAPSHOT"
   },
   "data": {
     "serviceName": "discovery",
     "model": "default",
-    "version": "15.0.0-SNAPSHOT",
+    "version": "15.1.0-SNAPSHOT",
     "displayServiceName": "Discovery powered by Metabase",
     "description": "A versatile and powerful data exploration and analysis tool with security that empowers users to intuitively explore, query, and derive insights from diverse datasets.",
     "framework": false,
@@ -1364,7 +1364,6 @@
                 "internalName": "VIRTUALIZER_JDBC_FROM_EXTRA_JARS",
                 "title": "Use virtualizer jdbc from Extra JARs",
                 "default": false
-
               }
             },
             "required": []
