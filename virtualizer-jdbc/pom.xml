@@ -6,12 +6,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.stratio.discovery</groupId>
   <artifactId>virtualizer-jdbc</artifactId>
-  <version>0.1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>com.stratio</groupId>
     <artifactId>discovery-parent</artifactId>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>

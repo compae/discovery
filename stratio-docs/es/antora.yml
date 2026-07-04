@@ -1,6 +1,6 @@
 name: stratio-discovery
 title: Stratio Discovery
-version: '0.56.4-0.1'
+version: '0.56.4-0.2'
 nav:
 - modules/ROOT/nav.adoc
 start_page: introduction.adoc
