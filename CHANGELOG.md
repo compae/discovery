@@ -2,7 +2,7 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
-## 0.56.4-0.2.0 (upcoming)
+## 0.56.4-0.2.0 (2026-07-09)
 
 * Optimize virtualizer sync process
 * Set `MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS` to 0 by default (fix sync errors in large virtualizer collections)
