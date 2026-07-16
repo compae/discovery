@@ -1,14 +1,15 @@
 = Novedades
 
-Estos son los últimos cambios realizados en _Stratio Discovery_ versión *0.56.4-0.1.X* (lanzado en marzo de 2026):
+Estos son los últimos cambios realizados en _Stratio Discovery_ versión *0.56.4-0.2.X* (lanzado en julio de 2026):
 
-* Actualización de Metabase: ahora se utiliza la versión 0.56.4. Ciertas funcionalidades introducidas en Metabase 0.51, como acciones, modelos creados desde CSV, _timelines_ y alertas, siguen sin ser compatibles con la exportación/importación de colecciones de _discovery-cicd_.
-* Actualización del _driver_ JDBC de _Stratio Virtualizer_ a la versión 3.1.0.
+* Mejora del rendimiento de la sincronización de bases de datos de _Stratio Virtualizer_ con numerosos esquemas y tablas.
+* Actualización de Metabase: ahora se utiliza la versión 0.56.4. Ciertas funcionalidades introducidas en Metabase 0.51, como acciones, modelos creados a partir de CSV, _timelines_ y alertas, siguen sin ser compatibles con la exportación e importación de colecciones de _discovery-cicd_.
+* Actualización del _driver_ JDBC de _Stratio Virtualizer_ a la versión 3.1.1.
 * Se ha añadido una opción de despliegue en _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (variable de entorno `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) para no usar el _driver_ JDBC de _Stratio Virtualizer_ incluido en la imagen, sino obtenerlo de los "Extra JARs to add to metabase plugins folder" (variable de entorno `EXTRA_JARS`).
 
 == _Breaking changes_
 
-* Se ha eliminado la opción de despliegue en _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (variable de entorno: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`). Esta opción evitaba el bloqueo de conexiones JDBC con servidores _Stratio Virtualizer_ anteriores a la versión 0.11.0; por tanto, ahora es necesario conectarse a servidores con versión 0.11.0 o superior.
+* Se ha eliminado la opción de despliegue en _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (variable de entorno: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`). Esta opción evitaba el bloqueo de las conexiones JDBC con servidores de _Stratio Virtualizer_ anteriores a la versión 0.11.0; por tanto, ahora es necesario conectarse a servidores con la versión 0.11.0 o superior.
 
 * Se ha eliminado la opción de despliegue en _Stratio Command Center_ "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)". El único autenticador permitido es "gosec-sso".
 

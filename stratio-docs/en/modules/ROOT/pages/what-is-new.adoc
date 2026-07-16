@@ -1,9 +1,10 @@
 ﻿= What's new
 
-These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.1.X* (released in Mar 2026):
+These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.2.X* (released in July 2026):
 
-* Metabase update: version 0.56.4 is now used. Certain features introduced in Metabase 0.51, such as actions, models created from CSV, timelines, and alerts, are still not compatible with the export/import of _discovery-cicd_ collections.
-* _Stratio Virtualizer JDBC_ driver updated to version 3.1.0.
+* Improved performance of _Stratio Virtualizer_ database synchronization with numerous schemas and tables.
+* Metabase update: version 0.56.4 is now used. Certain features introduced in Metabase 0.51, such as actions, models created from CSV, timelines, and alerts, are still not compatible with exporting or importing _discovery-cicd_ collections.
+* _Stratio Virtualizer JDBC_ driver updated to version 3.1.1.
 * A deployment option has been added to _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (environment variable `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) to not use the _Stratio Virtualizer_ JDBC driver included in the image, but to obtain it from the "Extra JARs to add to metabase plugins folder" (environment variable `EXTRA_JARS`).
 
 == Breaking changes
@@ -13,4 +14,3 @@ These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.1.X* 
 * The deployment option in _Stratio Command Center_ "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)" has been removed. The only allowed authenticator is "gosec-sso".
 
 TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.
-

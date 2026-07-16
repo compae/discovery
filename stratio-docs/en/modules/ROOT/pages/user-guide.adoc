@@ -32,7 +32,7 @@ _Stratio Discovery_ lets you perform several operations, such as:
 
 === How do I do it?
 
-There's a lot of information about this in https://www.metabase.com/learn/getting-started/getting-started.html[the official Metabase documentation]:
+There's a lot of information about this in https://www.metabase.com/learn/metabase-basics/getting-started/[the official Metabase documentation]:
 
 * https://www.metabase.com/docs/v0.42/users-guide/04-asking-questions.html[Asking questions in Metabase].
 * https://www.metabase.com/docs/v0.42/users-guide/06-sharing-answers.html[Sharing saved questions].
