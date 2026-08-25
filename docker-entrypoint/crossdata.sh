@@ -14,9 +14,13 @@ crossdata_conf_file=/etc/sds/crossdata/shell/driver-application.conf
     # TODO: this is temporary until we manage to have this propoerty in the fat-jars reference.conf
     echo "crossdata-driver.config.row-deserialization-parallelism = 4";
     echo 'crossdata-driver.config.row-deserialization-parallelism = ${?crossdata_driver_config_row_deserialization_parallelism}';
+
+    # Ceilings for the driver's own loggers; log4j2.xml decides what is actually emitted.
+    echo "crossdata-driver.xdbc.driver.log.level = \"${VIRTUALIZER_DRIVER_LOG_LEVEL:-INFO}\"";
+    echo "crossdata-driver.xdbc.connection.log.level = \"${VIRTUALIZER_DRIVER_LOG_LEVEL:-INFO}\"";
 } > $crossdata_conf_file
 
 VIRTUALIZER_JDBC_FROM_EXTRA_JARS=${VIRTUALIZER_JDBC_FROM_EXTRA_JARS:-false}
 if [[ "$VIRTUALIZER_JDBC_FROM_EXTRA_JARS" = "false" ]]; then
-    cp /stratio-crossdata-jdbc4-shaded.jar /plugins/
+    cp /crossdata-jdbc-shaded.jar /plugins/
 fi

@@ -81,8 +81,8 @@
   (-> (merge {:classname "com.stratio.jdbc.core.jdbc4.StratioDriver"
               :subprotocol "crossdata"
               :subname (if ssl-option
-                         (str "//Server=" host ":" port ";UID=" user ";SSL=true;;LogOutputType=stdout;LogLevel=DEBUG")
-                         (str "//Server=" host ":" port ";UID=" user ";LogOutputType=stdout;LogLevel=DEBUG"))}
+                         (str "//Server=" host ":" port ";UID=" user ";SSL=true")
+                         (str "//Server=" host ":" port ";UID=" user))}
              (dissoc details :host :port :user :ssl :db :ssl-option))
       (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
 

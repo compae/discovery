@@ -13,11 +13,15 @@
     <version>0.2.1-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <virtualizer.jdbc.version>4.1.0-M3</virtualizer.jdbc.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.stratio.crossdata.driver</groupId>
-      <artifactId>stratio-crossdata-jdbc4</artifactId>
-      <version>4.0.1-1753f28</version>
+      <artifactId>crossdata-jdbc-common</artifactId>
+      <version>${virtualizer.jdbc.version}</version>
     </dependency>
   </dependencies>
 
@@ -34,7 +38,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>stratio-crossdata-jdbc4-shaded</finalName>
+              <finalName>crossdata-jdbc-shaded</finalName>
               <createDependencyReducedPom>false</createDependencyReducedPom>
 
               <!-- Only include the JDBC driver and all its dependencies -->
@@ -45,16 +49,13 @@
                    jackson, but we relocate all packages just in case -->
               <artifactSet>
                 <includes>
-                  <include>com.stratio.crossdata.driver:stratio-crossdata-jdbc4</include>
+                  <include>com.stratio.crossdata.driver:crossdata-jdbc-common</include>
                   <include>*:*</include>
                 </includes>
-
-                <!-- shading slf4j and log4j gives errors in runtime... we remove them form the jar
+                <!-- shading slf4j gives errors in runtime... we remove it from the jar
                      and hope that the version included in metabase does not cause problems -->
                 <excludes>
                   <exclude>org.slf4j:slf4j-api</exclude>
-                  <exclude>org.apache.logging.log4j:log4j-api</exclude>
-                  <exclude>org.apache.logging.log4j:log4j-core</exclude>
                 </excludes>
               </artifactSet>
 

@@ -117,7 +117,7 @@ RUN chmod a+rwx /plugins
 # add stratio drivers jars to plugins folder
 COPY --from=builder /home/node/resources/modules/* /plugins/
 # this is not copied to the plugins folder yet, in case we receive a custom virtualizer jdbc from EXTRA_JARS
-COPY virtualizer-jdbc/target/stratio-crossdata-jdbc4-shaded.jar /
+COPY virtualizer-jdbc/target/crossdata-jdbc-shaded.jar /
 
 ################################
 ###  PROMETHEUS, LOGS, CICD  ###

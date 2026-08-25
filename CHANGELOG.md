@@ -2,6 +2,10 @@
 
 Only listing significant user-visible, not internal code cleanups and minor bug fixes.
 
+## Unreleased
+
+* [ROCK-15112] Ship the `crossdata-jdbc-common` variant of the Virtualizer JDBC driver, so its logs are routed and formatted by `log4j2.xml` like every other logger instead of the driver writing its own layout alongside Metabase's
+
 ## 0.56.4-0.2.0 (2026-07-22)
 
 * Optimize virtualizer sync process
