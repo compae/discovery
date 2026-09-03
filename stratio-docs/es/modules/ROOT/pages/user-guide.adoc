@@ -15,7 +15,7 @@ Hay algunos requisitos que se deben cumplir antes de comenzar a usar _Stratio Di
 
 _Stratio Discovery_ es una herramienta sencilla de inteligencia de negocio (BI). Permite hacer preguntas sobre los datos y muestra las respuestas en formatos que tienen sentido, ya sea un gráfico de barras o una tabla detallada.
 
-Las preguntas se pueden guardar para más adelante, lo que permite volver a ellas y/o agruparlas en _dashboards_ con buena apariencia. También es posible compartir preguntas y paneles con el resto del equipo usando *colecciones*.
+Las preguntas se pueden guardar para más adelante, lo que permite volver a ellas y/o agruparlas en _dashboards_ con buena apariencia. También es posible compartir preguntas y _dashboards_ con el resto del equipo usando *colecciones*.
 
 Para entender completamente cómo usar _Stratio Discovery_ es muy útil tener conocimientos de alto nivel de las bases de datos, por lo que a continuación se muestran https://www.metabase.com/learn/databases/database-basics[los conceptos básicos de las bases de datos] ^[English]^ que conviene tener en cuenta.
 

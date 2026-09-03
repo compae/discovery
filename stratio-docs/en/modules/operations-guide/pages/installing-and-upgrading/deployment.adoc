@@ -10,7 +10,7 @@ At this point, the entire service catalog will be displayed. Here, you must filt
 
 image::cct_deploy_service_discovery_deployment_0002.png[]
 
-Once you have configured everything, select the "Discovery" service, and you will be redirected to a confirmation page where you can choose a minor version of the service, if needed. Once you have decided which version to deploy, click on "Deploy" to confirm.
+Once you have configured everything, select the _Stratio Discovery_ service, and a confirmation page opens where you can choose a minor version of the service, if needed. Once you have decided which version to deploy, click on "Deploy" to confirm.
 
 image::cct_confirm_version_discovery_deployment_0003.png[]
 

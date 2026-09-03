@@ -4,7 +4,7 @@ First, *help us help you*.
 
 _Stratio Discovery_ is based on Metabase, a *rapidly developing open-source project*, so some known issues may already have been fixed in a newer version that will eventually be integrated into _Stratio Discovery_.
 
-For this reason, we ask that you always *specify the version of _Stratio Discovery_ you are experiencing the problem with*. If the application is running, it's as easy as clicking "Configuration" and then "About Metabase". The version will be indicated in the `Branch` property: the first tag represents the Metabase version, and the last tag represents the Stratio version.
+For this reason, always *specify the version of _Stratio Discovery_ you are experiencing the problem with*. If the application is running, it's as easy as clicking "Configuration" and then "About Metabase". The version will be indicated in the `Branch` property: the first tag represents the Metabase version, and the last tag represents the Stratio version.
 
 You can also find the version by retrieving the Docker image version (there may be differences in how to check this depending on the deployment environment).
 
@@ -17,7 +17,7 @@ This troubleshooting page is organized into the following sections:
 
 [IMPORTANT]
 ====
-If you encounter an error that isn't described here, we suggest that you check to see if there's a https://github.com/metabase/metabase/issues/[similar issue in Metabase] that has already been reported or resolved.
+If you encounter an error that isn't described here, check whether there is a https://github.com/metabase/metabase/issues/[similar issue in Metabase] that has already been reported or resolved.
 
 *If the problem is still open, you should look for workarounds* because we depend on Metabase's open source and bug fixes. The only interventions we implement are security improvements and integrations with other modules in the Stratio ecosystem.
 
@@ -82,25 +82,25 @@ As an alternative, remove all newlines or upgrade to another version of _Stratio
 
 === I'm detecting a lot of connections to databases. How can I limit them?
 
-The size of the `max connection pool` can only be set in versions of _Stratio Discovery_ that include Metabase 0.38.0 or higher. Since this is a Metabase setting, we suggest that you refer to the https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[environment variables that can be set] to adjust it.
+The size of the `max connection pool` can only be set in versions of _Stratio Discovery_ that include Metabase 0.38.0 or higher. Since this is a Metabase setting, refer to the https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[environment variables that can be set] to adjust it.
 
 === I can't save changes to a question until I get the answer from the first query
 
 As soon as you open a question, a first query will start that will contain the previously saved question or a "select all" from the table for which you are writing the question.
 
-Unfortunately, up to and including version 0.40.x of _Stratio Discovery_, you have to wait for this query to be completed before you can save new changes to the question. *If the query isn't finished yet* (you can see this because the logs are not displayed), *even if you press the save button* and select one of the available save options ("Save" and "Save as new question"), *no action will be carried out until the query is finished*.
+Up to and including version 0.40.x of _Stratio Discovery_, you have to wait for this query to be completed before you can save new changes to the question. *If the query isn't finished yet* (you can see this because the logs are not displayed), *even if you press the save button* and select one of the available save options ("Save" and "Save as new question"), *no action will be carried out until the query is finished*.
 
 === Cannot cancel running queries with _Stratio {modulename}_ tables
 
 You might want to cancel a query when you realize it is too resource-intensive or takes a long time to complete.
 
-Unfortunately, until version 0.40.x of _Stratio Discovery_, the _Stratio {modulename}_ integration didn't have this feature. If you think it's essential for your project, consider installing a _Stratio Discovery_ version 0.38.1-0.x.x or higher.
+Until version 0.40.x of _Stratio Discovery_, the _Stratio {modulename}_ integration did not have this feature. If it is essential for your project, install a _Stratio Discovery_ version 0.38.1-0.x.x or higher.
 
 Note that the cancellation of a query (that is, the active transaction in the database) must also be supported by the database itself (see one of the https://github.com/metabase/metabase/issues/2399[Metabase issues in GitHub] where users complain that the query runs did not end correctly).
 
 === Newly created tables or views don't appear on the homepage
 
-You should go back to the xref:operations-guide:key-concepts.adoc[basics concepts guide]: You should use Metabase to display data and not carry out actions on it!
+See the xref:operations-guide:key-concepts.adoc[basic concepts guide]: Metabase is for displaying data, not for carrying out actions on it.
 
 Even so, if you did manage to create a table in the Native query editor, you probably won't be able to see it on the home page when you browse to that database. This is because synchronization is required to update the field and table metadata stored in Metabase that are displayed on the home page.
 
@@ -125,9 +125,9 @@ INFO - [FINISHED: Sync metadata for crossdata Database 45 'crossdata-pro' (928.7
 
 Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#_newly_created_tables_or_views_dont_appear_on_the_homepage[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the __Stratio {modulename}__ team.
 
-Let's suppose that you've also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the logs, you can determine where the error occurred.
+Assuming you have also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the logs, you can determine where the error occurred.
 
-Let's take a look at the following example:
+Look at the following example:
 
 [source,text]
 ----
@@ -183,7 +183,7 @@ For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL_ have their ow
 
 In _Stratio Discovery_ versions prior to 0.38.1-0.2, *the user that you logged in with was also used to perform actions related to updating internal metadata when you manually selected forced synchronization* (`Sync database schema now`, `Re-scan field values now`) if impersonation was enabled.
 
-Unfortunately, this could generate obsolete or corrupt metadata if your user didn't have full access to all of the databases, schemas, and tables in the database you were connecting to.
+This could generate obsolete or corrupt metadata if your user didn't have full access to all of the databases, schemas, and tables in the database you were connecting to.
 
 === After upgrading to 0.43.4.-0.x.x, I can't access the questions and dashboards that point to the "Sample Database"
 

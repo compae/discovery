@@ -10,7 +10,7 @@ En este punto, se mostrará todo el catálogo de servicios. Aquí debes filtrar 
 
 image::cct_deploy_service_discovery_deployment_0002.png[]
 
-Una vez que hayas configurado todo, selecciona el servicio de "Discovery" y se te redirigirá a una página de confirmación en la que podrás elegir una versión _minor_ del servicio, si lo necesitas. Cuando hayas elegido la versión que deseas desplegar, puedes confirmarla haciendo clic en "Deploy".
+Una vez que hayas configurado todo, selecciona el servicio de _Stratio Discovery_ y se abre una página de confirmación en la que podrás elegir una versión _minor_ del servicio, si lo necesitas. Cuando hayas elegido la versión que deseas desplegar, puedes confirmarla haciendo clic en "Deploy".
 
 image::cct_confirm_version_discovery_deployment_0003.png[]
 
@@ -40,7 +40,7 @@ _Stratio Command Center_ te proporciona una lista de las _priority classes_ conf
 
 WARNING: El nombre de la aplicación debe ser único a nivel de _tenant_. Por lo tanto, no se pueden desplegar dos instancias con el mismo nombre en distintos _namespaces_ si comparten el mismo _tenant_, aunque sí se pueden desplegar dos instancias con el mismo nombre en distintos _tenants_.
 
-Cuando hayas confirmado la configuración de la pantalla 'Pre-deployment', se abrirá un formulario en el que podrás completarla con mayor detalle.
+Cuando hayas confirmado la configuración de la pantalla 'Pre-deployment', se abre un formulario en el que puedes completarla con mayor detalle.
 
 image::cct_configure_discovery_deployment_0005.png[]
 

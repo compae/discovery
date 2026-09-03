@@ -58,7 +58,7 @@ No puedes exportar:
 
 * Cualquier colección personal.
 * Una colección no creada previamente.
-* Colecciones que contienen paneles que usan preguntas que no pertenecen a la colección exportada o una de sus subcolecciones.
+* Colecciones que contienen _dashboards_ que usan preguntas que no pertenecen a la colección exportada o una de sus subcolecciones.
 * Colecciones que contienen dos o más preguntas/tableros/subcolecciones con el mismo nombre.
 
 No puedes importar:

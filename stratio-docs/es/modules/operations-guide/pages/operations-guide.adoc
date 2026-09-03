@@ -1,8 +1,8 @@
 = Guía de operaciones
 
-En esta sección podrás encontrar toda la información relacionada con cómo configurar, instalar y operar una instancia de _Stratio Discovery_.
+En esta sección encuentras toda la información relacionada con cómo configurar, instalar y operar una instancia de _Stratio Discovery_.
 
-Independientemente del motivo por el que estés consultando esta sección, deberás leer primero esta xref:operations-guide:key-concepts.adoc[breve introducción a _Stratio Discovery_]. Conocer la arquitectura te ayudará no solo para solucionar problemas, sino también para realizar ajustes en el despliegue.
+Independientemente del motivo por el que estés consultando esta sección, lee primero esta xref:operations-guide:key-concepts.adoc[breve introducción a _Stratio Discovery_]. Conocer la arquitectura te ayudará no solo para solucionar problemas, sino también para realizar ajustes en el despliegue.
 
 Después, visita xref:operations-guide:installing-and-upgrading.adoc[esta página y sus secciones] para realizar una instalación completa con éxito.
 

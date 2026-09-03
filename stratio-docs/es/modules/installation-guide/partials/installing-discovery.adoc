@@ -19,7 +19,7 @@ image::stratio-discovery:installation-guide:discovery-installation-1.png[]
 +
 image::stratio-discovery:installation-guide:discovery-installation-2.png[]
 
-. A continuación, verás el formulario del predespliegue.
+. A continuación aparece el formulario del predespliegue.
 +
 image::stratio-discovery:installation-guide:discovery-installation-3.png[]
 
@@ -27,7 +27,7 @@ image::stratio-discovery:installation-guide:discovery-installation-3.png[]
 .. En 'PostgreSQL® used for connection', selecciona "pool-psql".
 .. En 'PostgreSQL® used for policy[...]', selecciona "psql.stratio-datastores".
 .. Haz clic en "Continue".
-. A continuación, verás el descriptor.
+. A continuación aparece el descriptor.
 .. En la sección 'User Authentication', ve a 'Gosec SSO Authenticator Settings' → 'Admin group' y añade "stratio-stratio-owners". Para configurar más detalles de tu instalación, consulta la xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuración[sección de configuración del despliegue].
 +
 image::stratio-discovery:installation-guide:discovery-installation-4.png[]
@@ -40,7 +40,7 @@ Para comprobar que lo has instalado correctamente deberías poder acceder a _Str
 
 === Permisos en la política de _Stratio Virtualizer_
 
-Para que _Stratio Discovery_ pueda acceder a _Stratio Virtualizer_ deberás asignarle permisos. Para ello sigue los pasos a continuación:
+Para que _Stratio Discovery_ pueda acceder a _Stratio Virtualizer_ hay que asignarle permisos. Para ello sigue los pasos a continuación:
 
 . Accede a _Stratio Gosec_ a través de `https://${external_domain}/gosec`. Si hace falta, inicia sesión con las credenciales del nuevo _tenant_ (para este ejemplo, usuario "stratio" y _tenant_ "stratio").
 . Ve a "Data Access" en el menú de navegación y selecciona la política "stratio-virtualizer".
@@ -104,7 +104,7 @@ _Username_: "discovery.stratio-apps"
 +
 image::stratio-discovery:installation-guide:discovery-verification-3.png[]
 +
-Haz clic en "Save" y verás una lista de bases de datos incluyendo la que acabas de crear.
+Haz clic en "Save" y aparece una lista de bases de datos incluyendo la que acabas de crear.
 
 . Para ver la información, selecciona "Data Model" en el menú de navegación.
 +

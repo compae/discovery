@@ -34,15 +34,15 @@ WARNING: La última versión liberada con el mecanismo de versionado antiguo (0.
 
 == ¿Qué es un _driver_ y cuál es su relación con los JDBC?
 
-Sabemos que queremos conectar Metabase, nuestra aplicación, con una o más bases de datos. La humanidad, en las últimas décadas, ha creado una plétora de sistemas dispares que necesitan interconectarse e interoperar entre ellos para hacer algo útil.
+Metabase, la aplicación, tiene que conectarse con una o más bases de datos. En las últimas décadas se ha creado una plétora de sistemas dispares que necesitan interconectarse e interoperar entre ellos para hacer algo útil.
 
-Desafortunadamente, creamos mecanismos de intercomunicación que pueden ser tan engorrosos y complejos como las comunicaciones entre humanos de diferentes idiomas.
+Los mecanismos de intercomunicación resultantes pueden ser tan engorrosos y complejos como la comunicación entre personas que hablan idiomas distintos.
 
-Si crees que sabes cómo interactúan un _driver_ y un JDBC, puedes saltarte la siguiente sección y dirigirte directamente a donde se explican los xref:operations-guide:key-concepts.adoc#_jdbc_y_drivers_en_metabase[JDBC y __drivers__ en Metabase]. De lo contrario, ¡abróchate el cinturón de seguridad!
+Si crees que sabes cómo interactúan un _driver_ y un JDBC, puedes saltarte la siguiente sección y dirigirte directamente a donde se explican los xref:operations-guide:key-concepts.adoc#_jdbc_y_drivers_en_metabase[JDBC y __drivers__ en Metabase].
 
 === Una historia de dificultades de intercomunicación
 
-Para explicar el rol de los `drivers` y `JDBC`, vamos a bromear un poco. Imaginemos que estamos en una cumbre internacional y Metabase está hablando español y nuestra base de datos está hablando inglés.
+Para explicar el rol de los _drivers_ y los JDBC, sirve una comparación: en una cumbre internacional, Metabase habla español y la base de datos habla inglés.
 
 [cols=",^,"]
 |===
@@ -53,11 +53,11 @@ Para explicar el rol de los `drivers` y `JDBC`, vamos a bromear un poco. Imagine
 | JDBC ↔ Database
 |===
 
-Imaginemos que queremos ejecutar la acción _sobremesa_ desde Metabase dentro de nuestra base de datos. Metabase habla español y sabe lo que es una _sobremesa_, pero nuestra base de datos quedaría perpleja ante una traducción literal (_sobre la mesa_... ¿qué?). Aún así, nuestra base de datos en inglés tiene todas las acciones respectivas que componen _sobremesa_, solo que las tiene individualmente: 'preparar café después del almuerzo', 'sentarse todos juntos a la mesa', 'hablar mientras toman el café' y, en última instancia, 'terminar el café y dejar la mesa'.
+Supón que quieres ejecutar la acción _sobremesa_ desde Metabase en la base de datos. Metabase habla español y sabe lo que es una _sobremesa_, pero la base de datos quedaría perpleja ante una traducción literal (_sobre la mesa_). Aun así, la base de datos en inglés tiene todas las acciones que componen una _sobremesa_, solo que por separado: 'preparar café después del almuerzo', 'sentarse todos juntos a la mesa', 'hablar mientras toman el café' y, en última instancia, 'terminar el café y dejar la mesa'.
 
 Por lo tanto, el `Driver` (que es el traductor de Metabase), en lugar de enviar al `JDBC` (que es el traductor de la base de datos) la acción _sobremesa_, agrupará todas las acciones individuales y las enviará todas juntas como una acción porque sabe que el `JDBC` puede entenderlas.
 
-Aún así, si la base de datos no tuviera ninguna acción para 'preparar café después del almuerzo', nos quedaríamos atascados: la función que queremos "traducir" debe estar disponible en el otro extremo de la comunicación. Esto significa que incluso si Metabase tiene una acción de "filtrar datos por usuario", si la base de datos con la que estamos hablando no la tiene, no podemos ejecutar esa acción porque no está soportada... ¡en la base de datos!
+Si la base de datos no tuviera ninguna acción para 'preparar café después del almuerzo', no habría forma de continuar: la función que se quiere traducir debe estar disponible en el otro extremo de la comunicación. Así, aunque Metabase tenga una acción de "filtrar datos por usuario", si la base de datos con la que habla no la tiene, esa acción no se puede ejecutar, porque no está soportada en la base de datos.
 
 Ahora pasemos al `JDBC` y al problema duradero de comprender correctamente los datos relacionados con la hora y la fecha de diferentes sistemas que tienen diferentes representaciones para ellos. Metabase quiere saber todos los registros de la base de datos que se modificaron en las últimas veinticuatro horas. Pero ¿cuándo hace veinticuatro horas? _¿Cuándo_ significa "hace un día"?
 
@@ -65,7 +65,7 @@ El mundo es grande y Metabase y la base de datos se pueden configurar en diferen
 
 Este intercambio de información solo puede ocurrir si se establece un formato de intercambio estándar entre los dos mundos y, por lo general, para ello se usa el formato UTC con ISO 8601... por lo que ahora tanto el 'JDBC' como el 'Driver' deben traducir sus fechas a 2021-01-30T13:00:00Z.
 
-¡Ahora hemos aprendido que el _driver_ y el JDBC *deben estar de acuerdo* en el formato de los datos intercambiados! ¿Por qué dedicamos tanto tiempo a explicar esto?
+De aquí se sigue que el _driver_ y el JDBC *deben estar de acuerdo* en el formato de los datos intercambiados. ¿Por qué merece la pena detenerse tanto en esto?
 
 === JDBC y _drivers_ en Metabase
 
@@ -75,9 +75,9 @@ Aunque en alguna integración nativa de base de datos en Metabase las funcionali
 
 Si hay un problema al ejecutar una consulta porque se generó un error en la base de datos, está claro que el culpable es la base de datos o tu consulta (por ejemplo, una consulta que se refiere a tablas o columnas inexistentes).
 
-Si hay un problema al ejecutar una consulta porque en el JDBC surgió un error, *el JDBC generalmente se desarrolla por la base de datos relacionada, así que nuestro trabajo no es corregir ese error*, sino integrar la nueva versión de JDBC que contiene esa corrección de errores.
+Si una consulta falla porque surgió un error en el JDBC, *el JDBC suele desarrollarlo el fabricante de la base de datos, así que la corrección no corresponde a Stratio*, sino la integración de la versión del JDBC que ya la incluya.
 
-Si hay un error en uno de los _drivers_ desarrollados en Stratio, un error de "traducciones ausentes" entre Metabase y un JDBC en particular, es nuestra responsabilidad corregir ese error. Si pertenece a otros _drivers_ desarrollados por la comunidad, no es tan sencillo entender quién debe solucionarlo, pero debes informarnos de todos modos junto con el problema de Metabase relacionado, si lo hay.
+Si el error está en uno de los _drivers_ desarrollados en Stratio, un error de "traducciones ausentes" entre Metabase y un JDBC concreto, la corrección sí corresponde a Stratio. Si pertenece a otros _drivers_ desarrollados por la comunidad, no es tan sencillo determinar a quién corresponde, pero repórtalo igualmente junto con el problema de Metabase relacionado, si lo hay.
 
 Para comprender en cuál de estos casos se encuentra tu situación, no hojees las trazas: estúdialas con cuidado y ellas te lo aclararán (o a nosotros, si las adjuntas a la incidencia).
 

@@ -105,339 +105,293 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 *Seguridad*
 
 |===
-| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
+| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo
 
 | VAULT_ENABLE
 | Habilita la integración con Vault para recuperar secretos.
 | true
 | No
 | Boolean
-|
 
 | VAULT_HOST
 | _Host_ de conexión de Vault.
 | vault.keos-core
 | No
 | String
-|
 
 | VAULT_PORT
 | Puerto de conexión de Vault.
 | 8200
 | Sí
 | Number
-|
 
 | VAULT_ROLE
 | Rol utilizado para recuperar un _token_ de Vault con una política predefinida. NOTA: solo se usa con la autenticación dinámica habilitada.
 | `${Application.domain}-${Application.name}`
 | No
 | String
-|
 
 | USE_DYNAMIC_AUTHENTICATION
-| Habilita la autenticación dinámica.
+| Habilita la autenticación dinámica. En desuso desde la versión 0.56.4-0.2.x.
 | true
 | No
 | String
-| Sí, desde 0.56.4-0.2.x
 
 | MB_USER_HEADER
 | Cabecera HTTP con el usuario para el inicio de sesión utilizado para realizar una autenticación automática.
 | vnd.bbva.user-id
 | No
 | String
-|
 
 | MB_GROUP_HEADER
 | Cabecera HTTP con un _array_ de grupos para la autenticación automática.
 | vnd.bbva.group-id
 | No
 | String
-|
 
 | JWT_PUBLIC_KEY_ENDPOINT
 | URL donde encontrar la clave pública para verificar el JWT.
 | https://public-key-endpoint/key
 | No (obligatorio si se usa JWT)
 | String
-|
 
 | JWT_INSECURE_REQUEST_PKEY
 | Indicador para establecer si verificar la conexión TLS mientras se obtiene la clave pública en `JWT_PUBLIC_KEY_ENDPOINT`.
 | _false_
 | No
 | String
-|
 
 | JWT_HEADER_NAME
 | Cabecera HTTP donde encontrar el _token_ JWT si está seleccionada la autenticación a través de JWT.
 | X-USER-TOKEN
 | No
 | String
-|
 
 | JWT_USERNAME_CLAIM
 | Nombre del _claim_ en el _token_ JWT donde se proporciona el nombre de usuario.
 | sub
 | No
 | String
-|
 
 | JWT_GROUPS_CLAIM
 | Nombre del _claim_ en el _token_ JWT donde se proporcionan los grupos de usuarios.
 | `groups`
 | No
 | String
-|
 
 | DISCOVERY_INSTANCE_NAME
 | El nombre utilizado en Vault para almacenar los secretos de esta instancia. En _clusters_ _multi-tenant_ estará compuesto por el ID del _tenant_ y el nombre del servicio, por ejemplo, _tenant1-discovery_.
 | discovery
 | Sí
 | String
-|
 
 | AUTHENTICATOR
 | Elige un xref:operations-guide:end-user-authentication.adoc[método de autenticación]. Reemplaza `USE_JWT_AUTHENTICATION` y `USE_GOSEC_SSO_AUTH`, que ya no existen. El único valor para el que el despliegue está conectado de principio a fin es `gosec-sso`, que es también el predeterminado.
 | gosec-sso
 | Sí
 | String
-|
 
 | SSO_URI
-| URI para instaurar una sesión a través del SSO de _Stratio Gosec_. La autenticación la resuelve el `oauth2proxy` de _Stratio KEOS_, así que la instancia ya no necesita esta dirección.
+| URI para instaurar una sesión a través del SSO de _Stratio Gosec_. La autenticación la resuelve el `oauth2proxy` de _Stratio KEOS_, así que la instancia ya no necesita esta dirección. En desuso desde la versión 0.56.4-0.2.x.
 | Por ejemplo: `+https://bootstrap.labs.stratio.com:9005/sso+`.
 | No
 | String
-| Sí, desde 0.56.4-0.2.x
 
 | JWT_COOKIE_NAME
 | Nombre de la _cookie_ que emite el `oauth2proxy` de _Stratio KEOS_ y que transporta el _token_ JWT con la información del usuario. Se llamaba `OAUTH2_COOKIE_NAME` hasta la 0.50.21-0.2.x; se renombró en la 0.56.4-0.1.0.
 | stratio-cookie
 | No
 | String
-|
 
 | VIRTUALIZER_JDBC_FROM_EXTRA_JARS
 | Indica si se debe usar el _driver_ JDBC de _Stratio {modulename}_ aportado en `EXTRA_JARS` en lugar del incluido en la imagen.
 | false
 | No
 | Boolean
-|
 
 | SERVICE_URL
 | La URL de acceso de tu instancia de _Stratio Discovery_. Se compone automáticamente como `+https://${haproxyhost}${haproxypath}+` a partir de las opciones "URI host…" y "URL path to access your Discovery service" de la sección 'General' → 'Networking'.
 | Por ejemplo: `+https://public01.labs.stratio.com/discovery+`.
 | Sí
 | String
-|
 |===
 
 *Environment*
 
 |===
-| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
+| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo
 
 | MB_DB_TYPE
 | El tipo de base de datos utilizada como repositorio de metadatos.
 | postgres
 | Sí
 | String
-|
 
 | MB_DB_URL
 | Si se define esta variable, se utilizará para establecer la conexión con la base de datos utilizada para almacenar los metadatos de la instancia. Si no está definido, en su lugar se usarán `MB_DB_HOST` y `MB_DB_PORT`.
 | poolpostgrestls.s000001-datastores:5432
 | Sí
 | String
-|
 
 | MB_DB_DBNAME
 | Nombre de la base de datos utilizada para guardar los metadatos de _Stratio Discovery_.
 | discovery
 | Sí
 | String
-|
 
 | MB_DB_USER
 | Nombre de usuario utilizado para conectarse a la base de datos en la que se guardan los metadatos de _Stratio Discovery_.
 | postgres
 | No
 | String
-|
 
 | MB_DB_SSL
 | Conexión segura TLS con la base de datos.
 | _true_
 | Sí
 | Boolean
-|
 
 | MB_DB_PASS
 | Contraseña para conectarse a la base de datos si se utiliza usuario y contraseña como mecanismo de autenticación. Solo en caso de que no se haya habilitado `MB_DB_SSL`.
 | _password_
 | No
 | String
-|
 
 | MB_JDBC_PARAMETERS
 | Una variable opcional para agregar a la cadena de conexión parámetros de configuración de JDBC adicionales.
 | prepareThreshold=0
 | No
 | String
-|
 
 | PROXY_READ_TIMEOUT
 | Tiempo de espera de lectura de proxy en segundos aplicado tanto al proxy interno como al externo.
 | 300
 | Sí
 | Número
-|
 
 | DISCOVERY_CICD_API_IMPORT_TIMEOUT
 | Tiempo de espera de Akka en segundos para solicitudes al servicio de importación.
 | 300s
 | No
 | String
-|
 
 | DISCOVERY_CICD_API_EXPORT_TIMEOUT
 | Tiempo de espera de Akka en segundos para solicitudes al servicio de exportación.
 | 60s
 | No
 | String
-|
 
 | DISCOVERY_CICD_API_METABASE_TIMEOUT
 | Tiempo de espera de la API de Metabase para solicitudes internas.
 | 20s
 | No
 | String
-|
 
 | DISCOVERY_CICD_JAVA_OPTIONS
 | Te permite configurar opciones Java personalizadas cuando ejecuta el servicio de CICD.
 | Ejemplo: `-Dakka.http.server.request-timeout=120s`.
 | _false_
 | String
-|
 
 | DISCOVERY_CICD_JAVA_INITIAL_RAM_PERCENTAGE
 | Porcentaje de memoria inicial de Java en relación con la memoria total asignada a la instancia.
 | -XX:InitialRAMPercentage=10.0
 | No
 | String
-|
 
 | DISCOVERY_CICD_JAVA_MAX_RAM_PERCENTAGE
 | Porcentaje de memoria máxima de Java en relación con la memoria total asignada a la instancia.
 | -XX:MaxRAMPercentage=25.0
 | No
 | String
-|
 
 | EXTRA_JARS
 | Lista de ficheros JAR externos que se descargan en el directorio de _plugins_ de Metabase durante el arranque. Corresponde a la opción "Extra JARs to add to metabase plugins folder".
 | Vacío
 | No
 | String
-|
 
 | CURL_CUSTOM_SECURITY_OPTS
 | Opciones que se pasan a `curl` para descargar los ficheros de `EXTRA_JARS`. Se llamaba `WGET_CUSTOM_SECURITY_OPTS` hasta la versión 0.56.4-0.1.0, cuando la descarga pasó de `wget` a `curl`.
 | Vacío. Si no se define, la imagen usa los certificados de la instancia, a partir de las variables que inyecta la plataforma.
 | No
 | String
-|
 |===
 
 *Niveles de _log_*
 
 |===
-| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo | Obsoleto
+| Propiedad | Descripción | Posible/por defecto | Obligatorio | Tipo
 
 | SERVICE_LOG_LEVEL
 | Aplica a los _logs_ del servicio.
 | `ERROR`
 | No
 | String
-|
 
 | DRIVER_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.driver"`.
 | `ERROR`
 | No
 | String
-|
 
 | MIDDLEWARE_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.server.middleware"`.
 | `INFO`
 | No
 | String
-|
 
 | QUERYPROCESSOR_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.query-processor.async"`.
 | `DEBUG`
 | No
 | String
-|
 
 | SYNC_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.sync"`.
 | `INFO`
 | No
 | String
-|
 
 | METABASE_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase"`.
 | `ERROR`
 | No
 | String
-|
 
 | API_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.api"`.
 | `DEBUG`
 | No
 | String
-|
 
 | STRATIO_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"metabase.stratio"`.
 | `DEBUG`
 | No
 | String
-|
 
 | MCHANGE_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"com.mchange"`.
 | `ERROR`
 | No
 | String
-|
 
 | NGINX_ERROR_LOG_LEVEL
 | Aplica a los _logs_ de Nginx.
 | `error`
 | No
 | String
-|
 
 | DISCOVERYCICD_LOG_LEVEL
 | Aplica a los _logs_ cuyo padre sea `"com.stratio.discoverycicd"`.
 | `INFO`
 | No
 | String
-|
 
 | CROSSDATA_LOG_LEVEL
 | Nivel de _log_ del _driver_ JDBC de _Stratio {modulename}_.
 | INFO
 | No
 | String
-|
 |===

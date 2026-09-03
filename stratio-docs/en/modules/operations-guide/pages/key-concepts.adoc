@@ -34,15 +34,15 @@ WARNING: The last version released with the old versioning mechanism (0.40.0) is
 
 == What is a driver and what is its relationship with the JDBCs?
 
-We know that we want to connect Metabase, our application, to one or more databases. In recent decades, humanity has created a plethora of disparate systems that need to interconnect and interoperate with each other to make something useful.
+Metabase, the application, has to connect to one or more databases. In recent decades a plethora of disparate systems has been created that need to interconnect and interoperate to do anything useful.
 
-Unfortunately, we create intercommunication mechanisms that are sometimes just as cumbersome and complex as communications between humans of different languages.
+The resulting intercommunication mechanisms can be just as cumbersome and complex as communication between people who speak different languages.
 
-If you think you know how a driver and a JDBC interact, you can skip the next section and head straight to the section explaining xref:operations-guide:key-concepts.adoc#_jdbc_and_drivers_in_metabase[JDBCs and drivers in Metabase]. Otherwise, buckle up!
+If you think you know how a driver and a JDBC interact, you can skip the next section and head straight to the section explaining xref:operations-guide:key-concepts.adoc#_jdbc_and_drivers_in_metabase[JDBCs and drivers in Metabase].
 
 === A history of intercommunication difficulties
 
-To explain the role of drivers and `JDBCs`, we're going to have a bit of fun. Let's imagine that we're at an international summit and Metabase is speaking Spanish and our database is speaking English.
+To explain the role of drivers and JDBCs, a comparison helps: at an international summit, Metabase speaks Spanish and the database speaks English.
 
 [cols=",^,"]
 |===
@@ -53,19 +53,19 @@ To explain the role of drivers and `JDBCs`, we're going to have a bit of fun. Le
 | JDBC ↔ Database
 |===
 
-Let's imagine that we want to execute the _sobremesa_ (after-dinner conversation) action from Metabase in our database. Metabase speaks Spanish and knows what a _sobremesa_ is, but our database would be perplexed by a literal translation (_table top_… Huh?). Even so, our database in English has all of the respective actions that make up the _sobremesa_, but it has them individually: 'make coffee after lunch', 'sit down together at the table', 'talk over coffee' and, ultimately, 'finish coffee and get up from the table'.
+Suppose you want to run the _sobremesa_ (after-dinner conversation) action from Metabase on the database. Metabase speaks Spanish and knows what a _sobremesa_ is, but the database would be baffled by a literal translation (_on the table_). Even so, the English-speaking database has all the actions that make up a _sobremesa_, only separately: 'make coffee after lunch', 'all sit together at the table', 'talk while drinking the coffee' and, finally, 'finish the coffee and leave the table'.
 
 This means that the `Driver` (which is the Metabase translator), instead of sending the _sobremesa_ action to the `JDBC` (which is the database translator), it will group all of the individual actions and send them all together as an action because it knows that the `JDBC` can understand them.
 
-Still, if the database had no action to 'make coffee after lunch', we would be stuck: the function we want to "translate" has to be available at the other end of the communication. This means that even if Metabase has a "filter data by user" action, if the database you're talking to doesn't have it, you can't execute that action because it's not supported… by the database!
+If the database had no action to 'make coffee after lunch', there would be no way to continue: the function to be translated has to be available at the other end of the communication. So even if Metabase has a "filter data by user" action, if the database it is talking to does not have it, that action cannot be run, because the database does not support it.
 
-Now let's move on to the `JDBC` and the enduring problem of correctly understanding the time and date data of different systems that have different representations for them. Metabase wants to know all the records in the database that were modified in the last twenty-four hours. But when was it 24 hours ago? _When_ does it mean "one day ago"?
+Now to the `JDBC` and the enduring problem of correctly understanding the time and date data of different systems that have different representations for them. Metabase wants to know all the records in the database that were modified in the last twenty-four hours. But when was it 24 hours ago? _When_ does it mean "one day ago"?
 
 The world is a big place and Metabase and the database can be configured in different time zones, and they can also represent time in different formats. Suppose Metabase uses the US format and the database uses a format with the month translated according to its local configuration. So, if we have "30-01-2021 1:00 PM" in Metabase, somehow it needs to be translated to "30-JAN-2021 13:00:00", which is the date that can be understood by the database and used for comparisons.
 
 This exchange of information can only occur if a standard exchange format is established between the two worlds. Generally, the UTC format with ISO 8601 is used… so now both the 'JDBC' and the 'Driver' have to translate their dates to 2021-01-30T13:00:00Z.
 
-We've now learned that the driver and the JDBC *must agree* on the format of the exchanged data! Why are we spending so much time explaining this?
+It follows that the driver and the JDBC *have to agree* on the format of the data they exchange. Why is it worth dwelling on this?
 
 === JDBC and drivers in Metabase
 
@@ -75,9 +75,9 @@ Although in some native database integrations in Metabase, the driver and JDBC f
 
 If there's a problem executing a query because of an error generated in the database, it's clear that the culprit is the database or your query (for example, a query that refers to non-existent tables or columns).
 
-If there's a problem executing a query because an error occurred in the JDBC, *the JDBC is usually developed by the related database, so it's not our job to correct that error*, but to integrate the new version of JDBC that contains the correction for that error.
+If a query fails because an error arose in the JDBC, *the JDBC is usually developed by the database vendor, so the fix is not Stratio's to make*, but rather the integration of the JDBC version that already includes it.
 
-If there's an error in one of the drivers developed by Stratio, a "translations absent" error between Metabase and a particular JDBC, it's our responsibility to correct that error. If the error lies with other drivers developed by the community, it isn't so easy to understand who should fix it, but you should inform us anyway along with the related Metabase problem, if there is one.
+If the error is in one of the drivers developed at Stratio, a "translations absent" error between Metabase and a particular JDBC, the fix is Stratio's. If it belongs to other community-developed drivers, determining whose it is is not so simple, but report it anyway along with the related Metabase issue, if there is one.
 
 To understand which of these cases applies to your situation, don't just skim over the traces: study them carefully and they'll clarify it for you (or us, if you attach the traces to the ticket).
 

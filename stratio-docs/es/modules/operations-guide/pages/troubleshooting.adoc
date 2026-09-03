@@ -4,7 +4,7 @@ En primer lugar, *ayúdanos a ayudarte*.
 
 _Stratio Discovery_ se basa en Metabase, que es un *proyecto de código abierto de rápido desarrollo*. Por lo tanto, es posible que algunos problemas conocidos ya se hayan solucionado en una versión más reciente que finalmente se integrará en _Stratio Discovery_.
 
-Por ello, te pedimos que *especifiques siempre en qué versión de _Stratio Discovery_ tienes el problema*. Si tienes la aplicación ejecutándose, es tan fácil como hacer clic en "Configuration" y luego en "About Metabase". La versión se indicará en la propiedad `Branch`: la primera etiqueta representa la versión de Metabase, mientras que la última la de Stratio.
+Por ello, *especifica siempre en qué versión de _Stratio Discovery_ tienes el problema*. Si tienes la aplicación ejecutándose, es tan fácil como hacer clic en "Configuration" y luego en "About Metabase". La versión se indicará en la propiedad `Branch`: la primera etiqueta representa la versión de Metabase, mientras que la última la de Stratio.
 
 También puedes conocer la versión recuperando la imagen de Docker (puede haber diferencias en cómo realizar esta verificación con respecto al entorno de despliegue en uso).
 
@@ -82,25 +82,25 @@ Como solución alternativa, quita todas las nuevas líneas o intenta actualizar 
 
 === Detecto una gran cantidad de conexiones hacia las bases de datos, ¿cómo puedo limitarlas?
 
-El tamaño del `max connection pool` solo se puede establecer en aquellas versiones de _Stratio Discovery_ que incorporen un Metabase más reciente o igual a 0.38.0. Dado que es una configuración de Metabase, te sugerimos que consultes las https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[posibles variables de entorno que se pueden configurar para el ajuste] ^[English]^.
+El tamaño del `max connection pool` solo se puede establecer en aquellas versiones de _Stratio Discovery_ que incorporen un Metabase más reciente o igual a 0.38.0. Dado que es una configuración de Metabase, consulta las https://www.metabase.com/docs/v0.42/operations-guide/environment-variables.html#mb_jdbc_data_warehouse_max_connection_pool_size[posibles variables de entorno que se pueden configurar para el ajuste] ^[English]^.
 
 === No puedo guardar los cambios de una pregunta hasta que recibo la respuesta de la primera consulta
 
 Tan pronto como abras una pregunta, se iniciará una primera consulta que contendrá la pregunta guardada anteriormente o un "select all" de la tabla para la que estás escribiendo la pregunta.
 
-Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles ("Save" y "Save as new question"), *no se realizará ninguna acción hasta que finalice la consulta*.
+Hasta la versión 0.40.x de _Stratio Discovery_ (incluida), debes esperar a que se complete esta consulta antes de poder guardar cambios en la pregunta. *Si la consulta aún no ha finalizado* (puedes darte cuenta porque no se muestran los _logs_), *incluso si presionas el botón de guardar* y seleccionas una de las opciones de guardado disponibles ("Save" y "Save as new question"), *no se realizará ninguna acción hasta que finalice la consulta*.
 
 === No se pueden cancelar consultas en ejecución con tablas _Stratio {modulename}_
 
 Es posible que desees cancelar una consulta cuando te das cuenta de que consume demasiados recursos o si tarda mucho tiempo en completarse.
 
-Desafortunadamente, hasta la versión 0.40.x de _Stratio Discovery_ nuestra integración de _Stratio {modulename}_ no tenía esta función. Si crees que es imprescindible tenerla para tu proyecto, por favor, considera instalar una versión de _Stratio Discovery_ superior o igual a la 0.38.1-0.x.x.
+Hasta la versión 0.40.x de _Stratio Discovery_, la integración con _Stratio {modulename}_ no tenía esta función. Si es imprescindible para tu proyecto, instala una versión de _Stratio Discovery_ superior o igual a la 0.38.1-0.x.x.
 
 Ten en cuenta que la cancelación de una consulta (es decir, la transacción activa en la base de datos) también debe ser compatible con la propia base de datos (consulta uno de los https://github.com/metabase/metabase/issues/2399[problemas de Metabase en GitHub], donde los usuarios se quejan de que las ejecuciones de consultas no terminaron correctamente).
 
 === No se pueden ver en la página de inicio las tablas o vistas recién creadas
 
-Te redirigimos a la xref:operations-guide:key-concepts.adoc[guía de conceptos básicos]: ¡Metabase debe usarse para visualizar los datos y no para operar sobre ellos!
+Consulta la xref:operations-guide:key-concepts.adoc[guía de conceptos básicos]: Metabase se usa para visualizar los datos, no para operar sobre ellos.
 
 Aun así, si lograste crear una tabla en el "Native query editor", es probable que aún no puedas verla en la página de inicio al navegar a esa base de datos. Esto sucede porque se debe realizar una sincronización para actualizar los metadatos de campo y tabla almacenados en Metabase que se muestran en la página de inicio.
 
@@ -127,7 +127,7 @@ Suponiendo que ya has sincronizado los datos como se explica en la xref:operatio
 
 Suponiendo también que has leído la xref:operations-guide:key-concepts.adoc[breve introducción], donde se explica cómo funciona _Stratio Discovery_ y cómo se conecta con los otros módulos del ecosistema de Stratio, al observar el error en los _logs_ puedes comprender dónde se produjo.
 
-Centrémonos en el siguiente ejemplo:
+Fíjate en el siguiente ejemplo:
 
 [source,text]
 ----
@@ -183,7 +183,7 @@ Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus 
 
 En las versiones de _Stratio Discovery_ anteriores a la 0.38.1-0.2, *el usuario con el que habías hecho _login_ se usaba también para realizar acciones relacionadas con la actualización interna de metadatos cuando seleccionabas manualmente una sincronización forzada* (`Sync database schema now`, `Re-scan field values now`) si la suplantación de identidad estaba habilitada.
 
-Desafortunadamente, esto podía generar metadatos obsoletos o corruptos si tu usuario no tenía acceso completo a todas las bases de datos, esquemas y tablas de la base de datos a la que estabas conectándote.
+Esto podía generar metadatos obsoletos o corruptos si tu usuario no tenía acceso completo a todas las bases de datos, esquemas y tablas de la base de datos a la que estabas conectándote.
 
 === Después de actualizar a la 0.43.4.-0.x.x no puedo acceder a las _questions_ y los _dashboards_ que apuntan a la "Sample Database"
 

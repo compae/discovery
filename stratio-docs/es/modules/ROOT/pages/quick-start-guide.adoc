@@ -11,7 +11,7 @@ La URL final sería `\https://discovery.labs.stratio.com/discovery`.
 
 == Iniciando sesión
 
-La manera de iniciar sesión en _Stratio Discovery_ dependerá de cómo se haya configurado. Después de eso, podrás ver la página de inicio:
+La manera de iniciar sesión en _Stratio Discovery_ depende de cómo se haya configurado. Después de eso, ves la página de inicio:
 
 image::home_page.png[]
 

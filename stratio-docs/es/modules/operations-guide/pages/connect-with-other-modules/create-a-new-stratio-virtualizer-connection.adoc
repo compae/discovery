@@ -16,7 +16,7 @@ La siguiente información explica cómo puedes conectarte a _Stratio {modulename
 
 image::crossdata_configuration.png[]
 
-Si sale un error "Connection refused" cuando intentas guardar la configuración, deberás revisar los valores de *Host* y *Port* y hablar con un administrador para reestablecerlos si los anteriores no funcionan. Este error aparecerá en los _logs_ cuando haya un error en la cadena de conexión JDBC:
+Si sale un error "Connection refused" cuando intentas guardar la configuración, revisa los valores de *Host* y *Port* y hablar con un administrador para reestablecerlos si los anteriores no funcionan. Este error aparecerá en los _logs_ cuando haya un error en la cadena de conexión JDBC:
 
 [source,text]
 ----

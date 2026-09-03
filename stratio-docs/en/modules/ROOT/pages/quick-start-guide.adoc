@@ -11,7 +11,7 @@ The final URL would be `\https://discovery.labs.stratio.com/discovery`.
 
 == Logging in
 
-How you sign into _Stratio Discovery_ will depend on how it has been configured. After that, you'll be able to see the home page:
+How you sign into _Stratio Discovery_ depends on how it has been configured. After that, you see the home page:
 
 image::home_page.png[]
 
