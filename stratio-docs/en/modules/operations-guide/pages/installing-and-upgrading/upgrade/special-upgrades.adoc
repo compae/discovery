@@ -1,0 +1,41 @@
+= Special upgrades
+
+This page keeps the upgrade paths that start from _Stratio Discovery_ versions that are no longer in any supported Universe. They are kept for very outdated installations, and they are not part of the usual upgrade path.
+
+IMPORTANT: If your instance is on a version prior to 0.50.21-0.2.x, confirm the path with the _Stratio Discovery_ team before planning the intervention. The considerations on this page were written for the Universes of their time and may not cover everything that is needed today.
+
+== Upgrade from Universe 12.2
+
+In the Universe 12.2 descriptor, backward compatibility was broken, because the way the host address used to access the instance is generated changed. The problem is in the registration of that host within the SSO of _Stratio Gosec_: the upgrade processes do not modify that record again, so you have to uninstall and reinstall _Stratio Discovery_.
+
+== Upgrade to 0.43.4-0.1.x from 0.42.x or lower
+
+In this version, in order to guarantee the xref:operations-guide:export-and-import-collections.adoc[export and import] of dashboard subscriptions, a Stratio migration mechanism was added on top of the internal Metabase migration. That mechanism generates two triggers in the _Stratio Discovery_ database, `stratio_insert_subscriptions` and `stratio_update_subscriptions`, which run two functions so that each subscription has a unique name, different from the name of the dashboard it is associated with. Pulses, whose names can be edited, and existing promotions are not affected, as long as the promotions have a name different from the name of the dashboard.
+
+IMPORTANT: Because of a security vulnerability in the H2 drivers, version 0.43.4-0.1.0 removed the sample database, known as the "Sample Database". If that database already exists when you upgrade, delete it along with all the dashboards and questions associated with it.
+
+== Upgrade to 0.40.5-0.1.0 from 0.38.1-x.y.z
+
+In this version, the behavior of the internal proxy in charge of the authentication can be configured explicitly, with the `OAUTH_ENABLED` environment variable. It is not mandatory: if it does not exist, the behavior is inferred from other environment variables.
+
+NOTE: If you upgrade from a version prior to the xref:operations-guide:key-concepts.adoc[double version] scheme, that is 0.40.0 or earlier, take the next section into account as well.
+
+== Upgrade to 0.38.1-0.1.1 from earlier versions
+
+This is the version in which the version control scheme of the module changed: from it onwards, the version consists of two parts, the first with the bundled Metabase version and the second with the version of the changes that Stratio adds to the Metabase core.
+
+The most notable change is the *update of Metabase from version 0.33.2 to 0.38.1*. Although it is a big jump, it requires no manual intervention to migrate the data of the internal Metabase database. With it come the streaming responses, which make the maximum row limit of the earlier versions unnecessary.
+
+The way the module integrates with the SSO of _Stratio Gosec_ also changed, and it is explained in the xref:operations-guide:end-user-authentication.adoc[end user authentication]. The most notable part is that a double login is no longer needed, first with the SSO and then with an administrator email, to configure Metabase before the rest of the users can access it: the _Stratio Gosec_ groups are synchronized automatically with the Metabase ones and a group whitelist controls who accesses.
+
+Lastly, the paths of the certificates with which it connects to the _Stratio PostgreSQL_ databases through mutual TLS changed, so they have to be updated in the _Additional JDBC connection string options_ field of the database definition. The required options, with the correct paths, are these: `ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem&prepareThreshold=0`.
+
+This jump adds, changes, and removes several environment variables. See the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] for the ones in force.
+
+== Upgrade to 0.39.3 and to 0.38.2 from earlier versions
+
+Version 0.39.3 added the `PROXY_READ_TIMEOUT` environment variable, for the read timeout of the internal proxy, and `STRATIO_ABSOLUTE_MAX_RESULTS`, for the limit of rows delivered through the API. The second one was left without effect in 0.38.1-0.1.1, with the arrival of the streaming responses.
+
+Version 0.38.2 renamed the variables that carried hyphens to replace them with underscores, and added the per-component log level options that are still in force today.
+
+In that same version, the *health check procedure* moved to `HTTP` instead of `TCP`, checking the `/api/health` endpoint on port `3009`.

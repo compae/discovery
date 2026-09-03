@@ -1,19 +1,20 @@
-﻿= Release notes
+= Release notes
 
 These are the highlights of _Stratio Discovery_ in recent releases:
 
-== 0.56.4-0.2.0 (July, 2026)
+== 0.56.4-0.2.0 (July 22, 2026)
 
 * Improved performance of _Stratio Virtualizer_ database synchronization with numerous schemas and tables.
 * Fixed synchronization errors in large _Stratio Virtualizer_ collections (the timeout for unreturned JDBC connections is now disabled by default).
-* _Stratio Virtualizer_ JDBC driver upgraded to version 3.1.1.
+* _Stratio Virtualizer_ JDBC driver upgraded to version 4.0.1.
 * Fixed medium-severity vulnerabilities.
+* *Breaking change*: the secrets move to the Vault injector of _Stratio KEOS_, so the platform must be on Universe 15.1 before upgrading and the descriptor requests the "KEOS CA secret name" and "KEOS CA name (key inside secret)" fields.
 
 == 0.56.4-0.1.3 (May 20, 2026)
 
 * Fixed high and critical vulnerabilities.
 
-== 0.56.4-0.1.2 (March 4, 2025)
+== 0.56.4-0.1.2 (March 4, 2026)
 
 * _Stratio Virtualizer JDBC_ driver updated to version 3.1.0.
 
@@ -27,10 +28,22 @@ These are the highlights of _Stratio Discovery_ in recent releases:
 * _Stratio Virtualizer JDBC_ driver updated to version 3.0.0.
 * A deployment option has been added to _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (environment variable `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) to not use the _Stratio Virtualizer_ JDBC driver included in the image, but to obtain it from the "Extra JARs to add to metabase plugins folder" (environment variable `EXTRA_JARS`).
 * *Breaking change*: the deployment option in _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`) has been removed. This option prevented JDBC connections from being blocked with _Stratio Virtualizer_ servers before version 0.11.0; therefore, it is now necessary to connect to servers with version 0.11.0 or higher.
+* *Breaking change*: the image moves to Java 21 and changes its base, its process supervisor, and its web server; the Amazon Athena driver is removed; the audit of the content of the API responses disappears; and several environment variables are removed or renamed. See the complete list in the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-01x[breaking changes of 0.56.4-0.1.0].
+
+== 0.50.21-0.2.0 (July 22, 2026)
+
+Maintenance version of the 0.50.21 line, included in Universes 14.8, 14.9 and 14.10.
+
+* Improved performance of _Stratio {modulename}_ database synchronization with numerous schemas and tables.
+* _Stratio {modulename}_ JDBC driver updated to version 2.32.3.
+
+== 0.50.21-0.1.4 (June 30, 2026)
+
+* The "portal "C_X" does not exist" error in the _Stratio PostgreSQL_ driver has been solved again.
 
 == 0.50.21-0.1.3 (May 12, 2025)
 
-* Added a deployment option in _Stratio Command Center_: "Extra JARs to add to Metabase plugins folder", to specify a list of URLs with JAR files to be added to Metabase’s plugins folder. This allows adding new drivers or required dependencies, such as the Oracle JDBC required by the Metabase Oracle driver (environment variable: `EXTRA_JARS`).
+* Added a deployment option in _Stratio Command Center_: "Extra JARs to add to metabase plugins folder", to specify a list of URLs with JAR files to be added to Metabase's plugins folder. This allows adding new drivers or required dependencies, such as the Oracle JDBC required by the Metabase Oracle driver (environment variable: `EXTRA_JARS`).
 * Added a deployment option in _Stratio Command Center_, "Hex-encode user-provided parameters in SQL queries", to configure the SQL injection prevention mechanism when interpolating parameters in SQL queries in _Stratio Virtualizer_. Hexadecimal encoding is safer but may cause issues when the query is resolved natively, and the datastore cannot decode the parameters (environment variable: `VIRTUALIZER_DRIVER_HEX_ENCODE_SQL_PARAMS`).
 * Support for using questions as values in filters of other questions when exporting and importing collections in _discovery-cicd_.
 * Fixed an issue in the _Stratio Virtualizer_ driver that prevented schema and table names containing dashes from synchronizing (updated _Stratio Virtualizer_ JDBC to version 2.31.0).
@@ -38,22 +51,22 @@ These are the highlights of _Stratio Discovery_ in recent releases:
 
 == 0.50.21-0.1.2 (November 13, 2024)
 
-The _Stratio Virtualizer_ JDBC version was downgraded to 2.27.0 to avoid an issue present in later versions that caused a memory overflow.
+* The _Stratio Virtualizer_ JDBC version was downgraded to 2.27.0 to avoid an issue present in later versions that caused a memory overflow.
 
-== 0.51.21-0.1.1 (November 8, 2024)
+== 0.50.21-0.1.1 (November 7, 2024)
 
 * Added a deployment option in _Stratio Command Center_ to prevent blocking JDBC connections with the _Stratio Virtualizer_ servers earlier than version 0.11.0. The new setting "Skip Metabase's Statement final cancellation in Virtualizer driver" allows you to disable the automatic cancellation of JDBC statements that caused this issue (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`).
 
-== 0.51.21-0.1.0 (October 21, 2024)
+== 0.50.21-0.1.0 (October 7, 2024)
 
 * Metabase update: version 0.50.21 is now in use; however, certain features, such as actions, models created from CSV files, timelines, and alerts, are not compatible with exporting/importing _discovery-cicd_ collections.
-* Breaking change: The integration with _Stratio Gosec_ SSO has been updated. The OAuth2 flow is now delegated to _Stratio KEOS_’s oauth2proxy, and the "discovery-oauth-cookie" is no longer used. Instead, the _stratio-cookie_ is set, containing a JWT token with user information very similar to that in the previous cookie, with the added benefit that other Stratio applications recognize this new token. Additionally, accessing the Metabase API no longer requires this cookie; only the "metabase.SESSION" cookie is necessary. Integrations with the _discovery-cicd_ API that simulate a login to retrieve the "discovery-oauth-cookie" and then obtain the "metabase.SESSION" cookie must now use the new _stratio-cookie_ instead.
+* Breaking change: The integration with _Stratio Gosec_ SSO has been updated. The OAuth2 flow is now delegated to the oauth2proxy of _Stratio KEOS_, and the "discovery-oauth-cookie" is no longer used. Instead, the _stratio-cookie_ is set, containing a JWT token with user information very similar to that in the previous cookie, with the added benefit that other Stratio applications recognize this new token. Additionally, accessing the Metabase API no longer requires this cookie; only the "metabase.SESSION" cookie is necessary. Integrations with the _discovery-cicd_ API that simulate a login to retrieve the "discovery-oauth-cookie" and then obtain the "metabase.SESSION" cookie must now use the new _stratio-cookie_ instead.
 
-== 0.43.4-0.3.0 (February 9th, 2024)
+== 0.43.4-0.3.0 (February 6, 2024)
 
 * Fixed an issue where the subject of dashboard subscription emails showed a UUID instead of the dashboard name.
 
-== 0.43.4-0.2.0 (September 18th, 2023)
+== 0.43.4-0.2.0 (July 21, 2023)
 
 * Import and export snippets of SQL code in _discovery-cicd_.
 * Correct handling of questions that have links to other questions or dashboards in _discovery-cicd_.
@@ -63,10 +76,10 @@ The _Stratio Virtualizer_ JDBC version was downgraded to 2.27.0 to avoid an issu
 * Vulnerability fix: Prometheus Java agent update to 0.19.0 (SnakeYAML package vulnerability GHSA-mjmj-j48q-9wg2).
 * Vulnerability fix: session cookies are no longer displayed in the Metabase Jetty server `DEBUG` level logs.
 
-== 0.43.4-0.1.4 (April 25th, 2023)
+== 0.43.4-0.1.4 (April 20, 2023)
 
-* Fix: solves an import problem with a collection of questions using other saved questions.
+* Cards using other cards as input data are taken into account in _discovery-cicd_.
 
-== 0.43.4-0.1.3 (February 21st, 2023)
+== 0.43.4-0.1.3 (February 16, 2023)
 
 * Fix: bump Crossdata JDBC to 2.24.0-7394c02 (fix sync of Delta tables)

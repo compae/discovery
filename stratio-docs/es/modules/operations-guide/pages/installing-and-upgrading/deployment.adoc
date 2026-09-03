@@ -22,7 +22,7 @@ image::cct_predeploy_discovery_deployment_0004.png[]
 
 === _Namespace_ donde se desplegará el servicio
 
-Según el inicio de sesión que hayas realizado, es posible que debas seleccionar el _namespace_ en el que deseas desplegar tu servicio. En el siguiente ejemplo, se establece en `s000001` y se configura el nombre del _namespace_ a partir del tenant en `s000001-discovery`:
+Según el inicio de sesión que hayas realizado, es posible que debas seleccionar el _namespace_ en el que deseas desplegar tu servicio. En el siguiente ejemplo, se establece en `s000001` y se configura el nombre del _namespace_ a partir del _tenant_ en `s000001-discovery`:
 
 image::cct_select_tenant_namespace_discovery_deployment_0005.png[]
 
@@ -66,18 +66,18 @@ Dado que hay muchas variables para configurar, es mejor que el operador busque e
 
 image::cct_help_discovery_deployment_0007.png[]
 
-Por ejemplo, si deseas saber qué es la propiedad `Nginx` y qué hace, simplemente ve a 'Help' -> 'Administration Panel' -> 'Settings', desplázate hacia abajo y ve a *Nginx* o usa el cuadro de búsqueda para encontrar la información sobre "Nginx".
+Por ejemplo, si deseas saber qué es la propiedad `Nginx` y qué hace, simplemente ve a 'Help' → 'Administration Panel' → 'Settings', desplázate hacia abajo y ve a *Nginx* o usa el cuadro de búsqueda para encontrar la información sobre "Nginx".
 
 image::cct_help_tooltip_discovery_deployment_0008.png[]
 
-Por defecto, _Stratio Discovery_ se desplegará integrado con el SSO de _Stratio GoSec_. Eso significa que la instancia desplegada se registrará en el SSO de _Stratio GoSec_ como un servicio y se registrará un secreto adicional en Vault, pero no te preocupes por cómo hacerlo, porque _Stratio Command Center_ lo hará por sí mismo.
+Por defecto, _Stratio Discovery_ se desplegará integrado con el SSO de _Stratio Gosec_. Eso significa que la instancia desplegada se registrará en el SSO de _Stratio Gosec_ como un servicio y se registrará un secreto adicional en Vault, pero no te preocupes por cómo hacerlo, porque _Stratio Command Center_ lo hará por sí mismo.
 
 == Despliegue
 
-Ahora que todo está configurado… ¡haz clic en "Deploy"!
+Cuando todo esté configurado, haz clic en "Deploy".
 
 image::cct_deploy_discovery_0010.png[]
 
-Todo debería funcionar de inmediato y la instancia debería estar en ejecución pronto.
+La instancia se despliega y pasa a estado saludable en unos minutos.
 
 image::cct_healthy_discovery_0011.png[]

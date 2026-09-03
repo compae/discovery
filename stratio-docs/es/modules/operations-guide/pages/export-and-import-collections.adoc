@@ -68,8 +68,8 @@ No puedes importar:
 En estos casos, cada _endpoint_ responderá con su correspondiente error.
 ====
 
-Deshabilitar la opción de configuración "FRIENDLY TABLE AND FIELD NAMES" mediante la variable de entorno `MB_HUMANIZATION_STRATEGY` acelerará el proceso de exportación e importación. Esta opción se encuentra en la sección 'General' de la configuración de administración de Metabase:
+La opción de configuración "FRIENDLY TABLE AND FIELD NAMES", en la sección 'General' de la configuración de administración de Metabase, viene deshabilitada en _Stratio Discovery_ y no hace falta que la toques: la imagen la fija así en cada arranque, precisamente porque acelera la exportación e importación.
 
 image::humanize_fields.png[]
 
-Esta opción de configuración debe estar deshabilitada tanto en la instancia de _Stratio Discovery_ de origen como en la de destino, si deseas aprovecharla.
+La opción está deshabilitada tanto en la instancia de origen como en la de destino, así que la ventaja se aplica en las dos.

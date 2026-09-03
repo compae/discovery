@@ -1,4 +1,4 @@
-﻿= Environment variables
+= Environment variables
 
 This section covers all of the possible properties of _Stratio Discovery_ to deploy an instance:
 
@@ -72,7 +72,7 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | String
 
 | MEM
-| Memory (MB) allocated to each Bootstrap instance.
+| Memory (MB) allocated to each _Stratio Discovery_ instance.
 | 4096
 | Yes
 | Number
@@ -140,7 +140,7 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | true
 | No
 | String
-|
+| Yes, as of 0.56.4-0.2.x
 
 | MB_USER_HEADER
 | HTTP header with user for login used for automatic authentication.
@@ -199,21 +199,35 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 |
 
 | AUTHENTICATOR
-| Chooses an xref:operations-guide:end-user-authentication.adoc[authentication method]. Replaces `USE_JWT_AUTHENTICATION` and `USE_GOSEC_SSO_AUTH`.
+| Chooses an xref:operations-guide:end-user-authentication.adoc[authentication method]. Replaces `USE_JWT_AUTHENTICATION` and `USE_GOSEC_SSO_AUTH`, which no longer exist. The only value the deployment is wired for end to end is `gosec-sso`, which is also the default.
 | gosec-sso
 | Yes
 | String
 |
 
 | SSO_URI
-| URI to establish a session through _Stratio Gosec_ SSO. This variable is required only if `USE_GOSEC_SSO_AUTH` is set to `true`.
+| URI to establish a session through _Stratio Gosec_ SSO. The authentication is resolved by the `oauth2proxy` of _Stratio KEOS_, so the instance no longer needs this address.
 | Example: `+https://bootstrap.labs.stratio.com:9005/sso+`.
+| No
+| String
+| Yes, as of 0.56.4-0.2.x
+
+| JWT_COOKIE_NAME
+| Name of the cookie issued by the `oauth2proxy` of _Stratio KEOS_, which carries the JWT token with the user information. It was called `OAUTH2_COOKIE_NAME` up to 0.50.21-0.2.x; it was renamed in 0.56.4-0.1.0.
+| stratio-cookie
 | No
 | String
 |
 
+| VIRTUALIZER_JDBC_FROM_EXTRA_JARS
+| Whether to use the _Stratio {modulename}_ JDBC driver provided in `EXTRA_JARS` instead of the one included in the image.
+| false
+| No
+| Boolean
+|
+
 | SERVICE_URL
-| Access URL of your _Stratio Discovery_ instance. This is usually automatically set to `+https://${haproxyhost}${haproxypath}+` where `haproxyhost` corresponds to `HAPROXY_1_VHOST` and `haproxypath` corresponds to `HAPROXY_1_PATH`.
+| Access URL of your _Stratio Discovery_ instance. It is composed automatically as `+https://${haproxyhost}${haproxypath}+` from the "URI host…" and "URL path to access your Discovery service" options of the 'General' → 'Networking' section.
 | Example: `+https://public01.labs.stratio.com/discovery+`.
 | Yes
 | String
@@ -322,6 +336,20 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | No
 | String
 |
+
+| EXTRA_JARS
+| List of external JAR files that are downloaded into the Metabase plugins directory during the start-up. It corresponds to the "Extra JARs to add to metabase plugins folder" option.
+| Empty
+| No
+| String
+|
+
+| CURL_CUSTOM_SECURITY_OPTS
+| Options passed to `curl` to download the `EXTRA_JARS` files. It was called `WGET_CUSTOM_SECURITY_OPTS` up to version 0.56.4-0.1.0, when the download moved from `wget` to `curl`.
+| Empty. If unset, the image uses the certificates of the instance, from the variables the platform injects.
+| No
+| String
+|
 |===
 
 *Log levels*
@@ -332,77 +360,84 @@ This section covers all of the possible properties of _Stratio Discovery_ to dep
 | SERVICE_LOG_LEVEL
 | Applies to service logs.
 | `ERROR`
-| Yes
+| No
 | String
 |
 
 | DRIVER_LOG_LEVEL
 | Applies to logs whose parent is `"metabase.driver"`.
 | `ERROR`
-| Yes
+| No
 | String
 |
 
 | MIDDLEWARE_LOG_LEVEL
-| Applies to logs whose parent is `"metabase.middleware"`.
-| `DEBUG`
-| Yes
+| Applies to logs whose parent is `"metabase.server.middleware"`.
+| `INFO`
+| No
 | String
 |
 
 | QUERYPROCESSOR_LOG_LEVEL
-| Applies to logs whose parent is `"metabase.query-processor"`.
+| Applies to logs whose parent is `"metabase.query-processor.async"`.
 | `DEBUG`
-| Yes
+| No
 | String
 |
 
 | SYNC_LOG_LEVEL
 | Applies to logs whose parent is `"metabase.sync"`.
 | `INFO`
-| Yes
+| No
 | String
 |
 
 | METABASE_LOG_LEVEL
 | Applies to logs whose parent is `"metabase"`.
 | `ERROR`
-| Yes
+| No
 | String
 |
 
 | API_LOG_LEVEL
 | Applies to logs whose parent is `"metabase.api"`.
 | `DEBUG`
-| Yes
+| No
 | String
 |
 
 | STRATIO_LOG_LEVEL
 | Applies to logs whose parent is `"metabase.stratio"`.
 | `DEBUG`
-| Yes
+| No
 | String
 |
 
 | MCHANGE_LOG_LEVEL
 | Applies to logs whose parent is `"com.mchange"`.
 | `ERROR`
-| Yes
+| No
 | String
 |
 
 | NGINX_ERROR_LOG_LEVEL
 | Applies to Nginx logs.
 | `error`
-| Yes
+| No
 | String
 |
 
 | DISCOVERYCICD_LOG_LEVEL
 | Applies to logs whose parent is `"com.stratio.discoverycicd"`.
 | `INFO`
-| Yes
+| No
+| String
+|
+
+| CROSSDATA_LOG_LEVEL
+| Log level of the _Stratio {modulename}_ JDBC driver.
+| INFO
+| No
 | String
 |
 |===

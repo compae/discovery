@@ -1,0 +1,41 @@
+= Actualizaciones especiales
+
+Esta página conserva las rutas de actualización que parten de versiones de _Stratio Discovery_ que ya no están en ningún Universo con soporte. Se mantienen para instalaciones muy retrasadas, y no forman parte del camino de actualización habitual.
+
+IMPORTANT: Si tu instancia está en una versión anterior a 0.50.21-0.2.x, confirma la ruta con el equipo de _Stratio Discovery_ antes de planificar la intervención. Las consideraciones de esta página se escribieron para los Universos de su época y pueden no cubrir todo lo que hace falta hoy.
+
+== Actualización desde el Universo 12.2
+
+En el descriptor del Universo 12.2 se rompió la retrocompatibilidad, porque cambió la manera de generar la dirección _host_ con la que se accede a la instancia. El problema está en el registro de ese _host_ dentro del SSO de _Stratio Gosec_: los procesos de actualización no vuelven a modificar ese registro, así que hay que desinstalar y volver a instalar _Stratio Discovery_.
+
+== Actualización a 0.43.4-0.1.x desde 0.42.x o inferiores
+
+En esta versión, para poder garantizar la xref:operations-guide:export-and-import-collections.adoc[exportación e importación] de suscripciones de _dashboards_, se añadió un mecanismo de migración de Stratio por encima de la migración interna de Metabase. Ese mecanismo genera dos _triggers_ en la base de datos de _Stratio Discovery_, `stratio_insert_subscriptions` y `stratio_update_subscriptions`, que ejecutan dos funciones para que cada suscripción tenga un nombre unívoco y distinto del nombre del _dashboard_ al que está asociada. Los pulsos, cuyos nombres se pueden editar, y las promociones ya existentes no se ven afectados, siempre que las promociones tengan un nombre distinto del nombre del _dashboard_.
+
+IMPORTANT: Por una vulnerabilidad de seguridad en los _drivers_ de H2, la versión 0.43.4-0.1.0 retiró la base de datos de ejemplo, conocida como la "Sample Database". Si al actualizar esa base de datos ya existe, bórrala junto con todos los _dashboards_ y las preguntas asociadas.
+
+== Actualización a 0.40.5-0.1.0 desde 0.38.1-x.y.z
+
+En esta versión se puede configurar explícitamente el comportamiento del proxy interno que se encarga de la autenticación, con la variable de entorno `OAUTH_ENABLED`. No es obligatoria: si no existe, el comportamiento se infiere a partir de otras variables de entorno.
+
+NOTE: Si actualizas desde una versión anterior al esquema de xref:operations-guide:key-concepts.adoc[doble versión], es decir 0.40.0 o anterior, ten en cuenta también la sección siguiente.
+
+== Actualización a 0.38.1-0.1.1 desde versiones anteriores
+
+Esta es la versión en la que cambió el esquema de control de versiones del módulo: desde ella, la versión consta de dos partes, la primera con la versión de Metabase incluida y la segunda con la versión de los cambios que Stratio añade al núcleo de Metabase.
+
+El cambio más destacable es la *actualización de Metabase de la versión 0.33.2 a la 0.38.1*. Aunque es un salto grande, no requiere intervención manual para migrar los datos de la base de datos interna de Metabase. Con él llegan las respuestas en _streaming_, que hacen innecesario el límite máximo de filas de las versiones anteriores.
+
+También cambió la forma en que el módulo se integra con el SSO de _Stratio Gosec_, que se explica en la xref:operations-guide:end-user-authentication.adoc[autenticación del usuario final]. Lo más destacado es que ya no hace falta un doble inicio de sesión, primero con el SSO y luego con un correo de administrador, para configurar Metabase antes de que el resto de usuarios pueda acceder: los grupos de _Stratio Gosec_ se sincronizan automáticamente con los de Metabase y una _whitelist_ de grupos controla quién accede.
+
+Por último, cambiaron las rutas de los certificados con los que se conecta a las bases de datos de _Stratio PostgreSQL_ mediante TLS mutuo, así que hay que actualizarlas en el campo _Additional JDBC connection string options_ de la definición de la base de datos. Las opciones necesarias, con las rutas correctas, quedan así: `ssl=true&sslmode=verify-full&sslcert=/etc/pki/discovery.pem&sslkey=/etc/pki/discovery.pk8&sslrootcert=/etc/pki/ca-bundle.pem&prepareThreshold=0`.
+
+Este salto añade, cambia y elimina varias variables de entorno. Consulta las xref:operations-guide:installing-and-upgrading/environment-variables.adoc[variables de entorno] para ver las que están vigentes.
+
+== Actualización a 0.39.3 y a 0.38.2 desde versiones anteriores
+
+La versión 0.39.3 añadió las variables de entorno `PROXY_READ_TIMEOUT`, para el tiempo de espera de lectura del proxy interno, y `STRATIO_ABSOLUTE_MAX_RESULTS`, para el límite de filas que se entregan a través de la API. La segunda quedó sin efecto en la 0.38.1-0.1.1, con la llegada de las respuestas en _streaming_.
+
+La versión 0.38.2 renombró las variables que llevaban guiones para sustituirlos por guiones bajos, y añadió las opciones de nivel de _log_ por componente que siguen vigentes hoy.
+
+En esa misma versión, el *procedimiento de _health check_* pasó a ejecutarse por `HTTP` en lugar de `TCP`, comprobando el _endpoint_ `/api/health` en el puerto `3009`.

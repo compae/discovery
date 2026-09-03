@@ -6,19 +6,19 @@ En caso de experimentar algún problema al usar _Stratio Discovery_, consulta la
 
 == Problema al especificar la clave privada para la conexión SSL con PostgreSQL®
 
-Este es un _bug_ de Metabase que se ha resuelto en la versión 0.42.3 y posteriores. Si tienes una versión anterior y quieres establecer una conexión SSL con PostgreSQL®, ten en cuenta que `File Path` de `SSL Client Key (PKCS-8/DER o PKCS-12)` podría no parsearse correctamente y tendrías que indicar la configuración asociada (`sslkey`) en el campo `Additional JDBC connection string options`. Esta incidencia no aplica si utilizas la base de datos _Stratio PostgresSQL_.
+Este es un _bug_ de Metabase que se ha resuelto en la versión 0.42.3 y posteriores. Si tienes una versión anterior y quieres establecer una conexión SSL con PostgreSQL®, ten en cuenta que `File Path` de `SSL Client Key (PKCS-8/DER o PKCS-12)` podría no parsearse correctamente y tendrías que indicar la configuración asociada (`sslkey`) en el campo `Additional JDBC connection string options`. Esta incidencia no aplica si utilizas la base de datos _Stratio PostgreSQL_.
 
 == Cuando entro a la página principal, las exploraciones _x-ray_ no se cargan automáticamente
 
 NOTE: Arreglado en la versión 0.50.21-0.1.X.
 
-Este es un problema menor causado por la capa de autenticación que añade _Stratio Discovery_ a Metabase. Para representar el contenido de la página principal, se deben recuperar algunas configuraciones de usuario sobre si se deben mostrar o no sugerencias _x-ray_ (por ejemplo, hay muchas formas de https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[desactivar la funcionalidad de _x-ray_] ^[English]^. Lamentablemente, esta llamada a _get-properties_ no está autenticada y, debido a una condición de carrera, puede ejecutarse antes que las llamadas que establezcan una cookie válida de `metabase.SESSION` tras el _login_.
+Este es un problema menor causado por la capa de autenticación que añade _Stratio Discovery_ a Metabase. Para representar el contenido de la página principal, se deben recuperar algunas configuraciones de usuario sobre si se deben mostrar o no sugerencias _x-ray_ (por ejemplo, hay muchas formas de https://www.metabase.com/docs/latest/users-guide/14-x-rays.html#disabling-x-rays[desactivar la funcionalidad de _x-ray_] ^[English]^. Lamentablemente, esta llamada a _get-properties_ no está autenticada y, debido a una condición de carrera, puede ejecutarse antes que las llamadas que establezcan una _cookie_ válida de `metabase.SESSION` tras el _login_.
 
 Dado que se devolverán estas propiedades si y solo si el usuario es de confianza después de haber comprobado que se ha completado la autenticación, si la segunda llamada se ejecuta antes que la primera, todo funcionará correctamente, pero si es al contrario, se devolverá un valor `undefined` o vacío que no se representará en la página principal.
 
 La solución para este problema es refrescar la página principal una vez que se ha realizado el _login_. Dado que ya se habrá escrito la _cookie_ de autenticación, a partir de ahí ya no importará el orden de ejecución.
 
-== Aparición momentánea de la página "You are not allowed to access Metabase" en el primer acceso a Stratio Discovery
+== Aparición momentánea de la página "You are not allowed to access Metabase" en el primer acceso a _Stratio Discovery_
 
 Este problema menor se debe a la capa de autenticación que _Stratio Discovery_ añade a Metabase. Para resolver la condición de carrera descrita en el punto anterior, se ha modificado el _endpoint_ que recupera las configuraciones de usuario para que también autentique a los usuarios y les establezca la _cookie_ "metabase.SESSION".
 

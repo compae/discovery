@@ -20,7 +20,7 @@ Completa los siguientes parámetros como se muestra a continuación:
 * *Set ROLE in PostgreSQL® with the current logged user?* (solo _Stratio PostgreSQL_): usa el usuario registrado actualmente como el rol para conectarse.
 * *Set a variable containing the current logged user in all queries?* (solo _Stratio PostgreSQL_): indica si hay que establecer la variable personalizada con el usuario registrado en las consultas a la base de datos o no.
 * *Name of the variable to be set with the current logged user (must contain a dot .)* (solo _Stratio PostgreSQL_): nombre de la variable PostgreSQL® que contendrá al usuario registrado.
-* *Host*: dirección _host_ de PostgreSQL®. ej.: pg-0001.marathon.mesos.
+* *Host*: dirección _host_ de PostgreSQL®. Por ejemplo, `postgres.stratio-datastores`.
 * *Port*: puerto PostgreSQL®.
 * *Database name*: nombre de la base de datos a la que deseas conectarte.
 * *Username*: igual que el parámetro `DISCOVERY_INSTANCE_NAME` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
@@ -34,9 +34,9 @@ image::discovery_connection_example.png[]
 
 Sigue estos pasos para aprender cómo crear un usuario y establecer permisos para una base de datos en _Stratio PostgreSQL_:
 
-. Ve a _Stratio GoSec_.
+. Ve a _Stratio Gosec_.
 . Busca una política existente de la instancia de _Stratio PostgreSQL_ a la que quieres conectarte o crea una nueva.
 . Agrega el usuario de descubrimiento (nombre de usuario de la instancia _Stratio Discovery_) a esta política.
 . Guarda la política.
 
-TIP: Para obtener más información, consulta la xref:stratio-gosec:ROOT:introduction.adoc[documentación de _Stratio GoSec_].
+TIP: Para obtener más información, consulta la xref:stratio-gosec:ROOT:introduction.adoc[documentación de _Stratio Gosec_].

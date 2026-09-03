@@ -1,7 +1,12 @@
-﻿= Checking the installation
+= Checking the installation
 
-Follow these steps to confirm that the installation of _Stratio Discovery_ was successful:
+Follow these steps to confirm that the installation or the upgrade of _Stratio Discovery_ was successful:
 
-. Access the _Stratio Discovery_ user interface.
-. Log in if you haven't already.
-. Go to 'new question' and run a custom question about any data.
+. Check in _Stratio Command Center_ that the service reports the expected version and that its status is healthy. While the instance starts up, the `/api/health` endpoint responds "503" with the body `{"status":"initializing"}`; when it finishes, it responds "200".
+. Access the user interface and log in. If the "Use group whitelist" option is disabled, which is the default, any user that the _Stratio Gosec_ SSO authenticates has access; if you enabled it, use a user of the groups in the "Allowed groups" option.
+. Check that a user of the group configured in the "Admin group" option has administration permissions, which confirms that the group synchronization with _Stratio Gosec_ works.
+. Go to 'New question' and run a question on a _Stratio {modulename}_ database.
+. Repeat the question on a _Stratio PostgreSQL_ database, if you have one connected.
+. Launch the catalog synchronization of one of those databases and check that it finishes without errors.
+
+TIP: After an upgrade, check also that the collections, questions, and dashboards that already existed open and run, and that the dashboard subscriptions keep their name.

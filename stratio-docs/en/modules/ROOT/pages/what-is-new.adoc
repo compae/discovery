@@ -1,16 +1,19 @@
-﻿= What's new
+= What's new
 
-These are the latest changes made in _Stratio Discovery_ version *0.56.4-0.2.X* (released in July 2026):
+Discover the main improvements of _Stratio Discovery_ 0.56.4-0.2.X, the version of Universe 15.1, released on July 22, 2026. Since the upgrade is performed directly from Universe 14.10, this page also gathers the novelties introduced in the 0.56.4-0.1.X line. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes], as they may affect compatibility. To plan the intervention, see the xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[upgrade planning].
 
-* Improved performance of _Stratio Virtualizer_ database synchronization with numerous schemas and tables.
-* Metabase update: version 0.56.4 is now used. Certain features introduced in Metabase 0.51, such as actions, models created from CSV, timelines, and alerts, are still not compatible with exporting or importing _discovery-cicd_ collections.
-* _Stratio Virtualizer JDBC_ driver updated to version 3.1.1.
-* A deployment option has been added to _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (environment variable `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) to not use the _Stratio Virtualizer_ JDBC driver included in the image, but to obtain it from the "Extra JARs to add to metabase plugins folder" (environment variable `EXTRA_JARS`).
+TIP: See the complete detail per version in the xref:ROOT:what-is-new/release-notes.adoc[release notes].
 
-== Breaking changes
+== Novelties of 0.56.4-0.2.X
 
-* The deployment option in _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (environment variable: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`) has been removed. This option prevented JDBC connections from being blocked with _Stratio Virtualizer_ servers before version 0.11.0; therefore, it is now necessary to connect to servers with version 0.11.0 or higher.
+* *Faster synchronization with _Stratio {modulename}_*: it improves the performance of the synchronization of databases with numerous schemas and tables. It is also available in 0.50.21-0.2.0, the version of Universes 14.8, 14.9 and 14.10.
+* *Update of the _Stratio {modulename}_ JDBC driver* to version 4.0.1.
+* *End of the synchronization errors in large _Stratio {modulename}_ collections*.
+* *The secrets are obtained from the Vault injector of _Stratio KEOS_*, instead of being downloaded during the start-up.
 
-* The deployment option in _Stratio Command Center_ "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)" has been removed. The only allowed authenticator is "gosec-sso".
+== Novelties introduced since 0.56.4-0.1.X
 
-TIP: See the previous xref:ROOT:what-is-new/release-notes.adoc[release notes] for more information.
+* *Update of Metabase to version 0.56.4*, from 0.50.21. See the https://www.metabase.com/releases[Metabase release notes] for the detail of the product novelties in those six versions.
+* *New "Use virtualizer jdbc from Extra JARs" deployment option*: it allows you not to use the _Stratio {modulename}_ JDBC driver included in the image and to obtain it from the "Extra JARs to add to metabase plugins folder" option.
+* *New "Crossdata log level" deployment option*: it controls the log level of the _Stratio {modulename}_ JDBC driver, with "INFO" as the default value.
+* *Renewed image*: the image moves to Java 21 and to a new base, process supervisor, and internal web server, which solves the vulnerabilities the previous one carried.

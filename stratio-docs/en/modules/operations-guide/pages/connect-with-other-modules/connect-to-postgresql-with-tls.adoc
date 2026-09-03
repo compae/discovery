@@ -1,4 +1,4 @@
-﻿= Connecting to PostgreSQL® with TLS
+= Connecting to PostgreSQL® with TLS
 
 This section provides information on the configuration needed to enable a TLS connection with a PostgreSQL® database. To do this, access _Stratio Discovery_.
 
@@ -20,7 +20,7 @@ Fill in the following parameters as shown below:
 * *Set ROLE in PostgreSQL® with the current logged user?* (_Stratio PostgreSQL_ only): uses the currently logged in user as the role to connect.
 * *Set a variable containing the current logged user in all queries?* (_Stratio PostgreSQL_ only): indicates whether to set the custom variable with the logged in user in the database queries or not.
 * *Name of the variable to be set with the current logged user (must contain a dot .)* (_Stratio PostgreSQL_ only): name of the PostgreSQL® variable that will contain the logged in user.
-* *Host*: PostgreSQL® host address. e.g.: pg-0001.marathon.mesos.
+* *Host*: PostgreSQL® host address. For example, `postgres.stratio-datastores`.
 * *Port*: PostgreSQL® port.
 * *Database name*: name of the database you want to connect to.
 * *Username*: same as the `DISCOVERY_INSTANCE_NAME` parameter in the xref:operations-guide:installing-and-upgrading/deployment.adoc[_Stratio Discovery_ deployment].
@@ -34,9 +34,9 @@ image::discovery_connection_example.png[]
 
 Follow these steps to learn how to create a user and set permissions for a database in _Stratio PostgreSQL_:
 
-. Go to _Stratio GoSec_.
+. Go to _Stratio Gosec_.
 . Find an existing policy for the _Stratio PostgreSQL_ instance you want to connect to, or create a new one.
 . Add the discovery user (username of the _Stratio Discovery_ instance) to this policy.
 . Save the policy.
 
-TIP: For more information, read the xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_ documentation].
+TIP: For more information, read the xref:stratio-gosec:ROOT:introduction.adoc[_Stratio Gosec_ documentation].

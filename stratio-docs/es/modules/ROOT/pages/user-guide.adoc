@@ -28,7 +28,7 @@ _Stratio Discovery_ permite realizar varias operaciones como:
 * Compartir preguntas.
 * Crear _dashboards_.
 * Realizar colecciones colaborativas.
-* Perfilar los datos con _X-ray_.
+* Perfilar los datos con _x-ray_.
 
 === ¿Cómo puedo hacerlo?
 

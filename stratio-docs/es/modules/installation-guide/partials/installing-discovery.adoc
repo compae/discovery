@@ -28,7 +28,7 @@ image::stratio-discovery:installation-guide:discovery-installation-3.png[]
 .. En 'PostgreSQL® used for policy[...]', selecciona "psql.stratio-datastores".
 .. Haz clic en "Continue".
 . A continuación, verás el descriptor.
-.. En la sección 'User Authentication', ve a 'Gosec SSO Authenticator Settings' -> 'Admin group' y añade "stratio-stratio-owners". Para configurar más detalles de tu instalación, consulta la xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuraciones_especificas[sección de configuraciones específicas].
+.. En la sección 'User Authentication', ve a 'Gosec SSO Authenticator Settings' → 'Admin group' y añade "stratio-stratio-owners". Para configurar más detalles de tu instalación, consulta la xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuración[sección de configuración del despliegue].
 +
 image::stratio-discovery:installation-guide:discovery-installation-4.png[]
 
@@ -42,7 +42,7 @@ Para comprobar que lo has instalado correctamente deberías poder acceder a _Str
 
 Para que _Stratio Discovery_ pueda acceder a _Stratio Virtualizer_ deberás asignarle permisos. Para ello sigue los pasos a continuación:
 
-. Accede a _Stratio GoSec_ a través de `https://${external_domain}/gosec`. Si es necesario, inicia sesión con las credenciales del nuevo _tenant_ (para este ejemplo, usuario "stratio" y _tenant_ "stratio").
+. Accede a _Stratio Gosec_ a través de `https://${external_domain}/gosec`. Si hace falta, inicia sesión con las credenciales del nuevo _tenant_ (para este ejemplo, usuario "stratio" y _tenant_ "stratio").
 . Ve a "Data Access" en el menú de navegación y selecciona la política "stratio-virtualizer".
 +
 image::stratio-discovery:installation-guide:discovery-policy-1.png[]
@@ -61,7 +61,7 @@ Ahora _Stratio Discovery_ tiene permisos para acceder a _Stratio Virtualizer_.
 
 Para ello, sigue estos pasos:
 
-. Accede a _Stratio Command Center_ a través de `https://${dominio_externo}/cct` e inicia sesión con las credenciales del nuevo _tenant_ (para este ejemplo, usuario "stratio" y _tenant_ "stratio").
+. Accede a _Stratio Command Center_ a través de `https://${external_domain}/cct` e inicia sesión con las credenciales del nuevo _tenant_ (para este ejemplo, usuario "stratio" y _tenant_ "stratio").
 . Ve a la carpeta de _namespaces_ `stratio-apps` y haz clic en "virtualizer".
 +
 image::stratio-discovery:installation-guide:discovery-access-1.png[]
@@ -80,7 +80,7 @@ image::stratio-discovery:installation-guide:discovery-access-4.png[]
 +
 image::stratio-discovery:installation-guide:discovery-access-5.png[]
 
-Ahora podrás acceder a _Stratio Discovery_ y crear una base de datos de _Stratio Virtualizer. Para ello, sigue estos pasos:
+Ahora puedes acceder a _Stratio Discovery_ y crear una base de datos de _Stratio {modulename}_. Para ello, sigue estos pasos:
 
 . Accede a _Stratio Discovery_ con el menú Stratio (en el icono de la esquina superior izquierda).
 +

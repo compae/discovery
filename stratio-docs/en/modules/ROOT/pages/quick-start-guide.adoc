@@ -1,13 +1,13 @@
-﻿= Quick start guide
+= Quick start guide
 
-_Stratio Discovery_ is a simple and powerful analysis tool that allows anyone to learn and make decisions from those of their company. Just put the same values into your browser as your properties in _Stratio Command Center_: *Settings → HA Proxy host + Settings → Path HA Proxy*.
+_Stratio Discovery_ is a simple and powerful analysis tool that allows anyone to learn and make decisions from the data of their company. To access it, build the address in the browser with the two values you configured in _Stratio Command Center_, in the 'General' → 'Networking' section: the one of the "URI host…" option and the one of the "URL path to access your Discovery service" option.
 
 For example:
 
-* Settings → HA Proxy host = `\http://discovery.labs.stratio.com`
-* Settings → Path HA Proxy = `discovery`
+* "URI host…" = `discovery.labs.stratio.com`
+* "URL path to access your Discovery service" = `/discovery`
 
-The final URL would be: `\https://discovery.labs.stratio.com/discovery`
+The final URL would be `\https://discovery.labs.stratio.com/discovery`.
 
 == Logging in
 

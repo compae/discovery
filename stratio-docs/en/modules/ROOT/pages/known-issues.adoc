@@ -1,4 +1,4 @@
-﻿= Known issues
+= Known issues
 
 == Metabase troubleshooting
 
@@ -6,7 +6,7 @@ If you experience any issues using _Stratio Discovery_, please refer to the http
 
 == Problem specifying the private key for SSL connection to PostgreSQL®
 
-This is a Metabase bug that was fixed in version 0.42.3 and later. If you have an older version and want to establish an SSL connection with PostgreSQL®, please note that `SSL Client Key (PKCS-8/DER or PKCS-12)` `File Path` may not be parsed correctly, and you would have to indicate the associated configuration (`sslkey`) in the `Additional JDBC connection string options` field. This doesn't apply if you use the _Stratio PostgresSQL_ database.
+This is a Metabase bug that was fixed in version 0.42.3 and later. If you have an older version and want to establish an SSL connection with PostgreSQL®, note that `SSL Client Key (PKCS-8/DER or PKCS-12)` `File Path` may not be parsed correctly, and you would have to indicate the associated configuration (`sslkey`) in the `Additional JDBC connection string options` field. This doesn't apply if you use the _Stratio PostgreSQL_ database.
 
 == When I go to the home page, x-ray scans don't load automatically
 

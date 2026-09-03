@@ -38,7 +38,7 @@ Puede que notes que, en las suscripciones de _dashboards_ o en redirecciones, no
 
 Si el despliegue se bloquea debido a este error, es porque _Stratio Discovery_ no puede conectarse a PostgreSQL® para almacenar sus metadatos. Para arreglar este error solo necesitas agregar la siguiente variable de entorno (si aún no está presente):
 
-[source,bash]
+[source,json]
 ----
 "MB_JDBC_PARAMETERS": "prepareThreshold=0"
 ----
@@ -64,7 +64,7 @@ Por esta razón, si ves un error de _timeout_ durante un proceso de importación
 
 Para obtener más información, consulta xref:operations-guide:installing-and-upgrading/environment-variables.adoc[la sección de variables de entorno en la guía de instalación y actualización].
 
-=== Alto consumo de CPU y memoria después de descargar los resultados de la consulta como archivos _.xlsx_
+=== Alto consumo de CPU y memoria después de descargar los resultados de la consulta como archivos `.xlsx`
 
 Si ves un aumento en el consumo de memoria y CPU después de descargar los resultados de la consulta como archivos `.xlsx`, *seguramente tu versión sea anterior a la 0.38.1-0.2*.
 
@@ -112,12 +112,14 @@ Un `FINISHED: Sync metadata` en los _logs_ puede hacerte creer que todo salió b
 
 Como advertencia, se proporciona un extracto del _log_ en el que el error durante la fase A no impidió la ejecución exitosa de la fase B, pero finalmente no produjo ningún cambio en la página de inicio de Metabase.
 
-[source,bash]
+[source,text]
 ----
 INFO - [STARTING: Sync metadata for crossdata Base de Datos 45 'crossdata-pro']
 ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10c29adb-90a3-435b-b62f-63f564a5ee9d. Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9d\n(\"com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:330)\"\n \"com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:329)\"\n \"scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:253)\"\n \"scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:251)\"\n \"scala.concurrent.impl.CallbackRunnable.run(Promise.scala:32)\"\n \"scala.concurrent.impl.ExecutionContextImpl$AdaptedForkJoinTask.exec(ExecutionContextImpl.scala:121)\"\n \"scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)\"\n \"scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.pollAndExecAll(ForkJoinPool.java:1253)\"\n \"scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1346)\"\n \"scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)\"\n \"scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)\"\n nil)\n\u001B
 INFO - [FINISHED: Sync metadata for crossdata Base de Datos 45 'crossdata-pro' (928,7 ms)]
 ----
+
+[#virtualizer-sync-issues]
 
 === No se pueden actualizar correctamente las tablas y vistas de _Stratio {modulename}_
 
@@ -127,7 +129,7 @@ Suponiendo también que has leído la xref:operations-guide:key-concepts.adoc[br
 
 Centrémonos en el siguiente ejemplo:
 
-[source,bash]
+[source,text]
 ----
 ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10c29adb-90a3-435b-b62f-63f564a5ee9d.
 Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9d
@@ -151,7 +153,7 @@ Por ejemplo, una solución para este error "Cannot recover session with sessionI
 
 === Fallo en la sincronización de metadatos con el error "ResultSet object has been closed"
 
-A partir de la versión 0.50.21-x.y.z de _Stratio Discovery_ se ha introducido una nueva configuración para controlar el _pool_ interno de conexiones JDBC (`c3p0`). Esta configuración permite recuperar automáticamente las conexiones que no se hayan devuelto al _pool_ dentro de un tiempo determinado.
+A partir de la versión 0.50.21-x.y.z de _Stratio Discovery_ se ha introducido una nueva configuración para controlar el _pool_ interno de conexiones JDBC (`c3p0`). Esta configuración permite recuperar automáticamente las conexiones que no se hayan devuelto al _pool_ dentro de un tiempo determinado.
 
 En entornos con bases de datos que contienen un gran número de tablas, este comportamiento puede provocar errores durante la sincronización de metadatos, ya que el _pool_ puede reclamar la conexión de forma prematura antes de que finalice el proceso de sincronización, lo que provoca el fallo de la tarea. Por defecto, este tiempo límite es de 20 minutos, mientras que en versiones anteriores no existía ninguna restricción de este tipo.
 
@@ -164,7 +166,7 @@ Si experimentas este problema, en los _logs_ aparecerá un error similar al sigu
 
 Para solucionar este error, debes establecer la siguiente variable de entorno a `0` (sin límite de tiempo) en la configuración de tu despliegue:
 
-[source,bash]
+[source,json]
 ----
 "MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS": 0
 ----
@@ -173,7 +175,7 @@ Si utilizas las últimas versiones de los descriptores del Universo de Stratio, 
 
 === No se puede acceder a algunas tablas almacenadas en _Stratio {modulename}_ o _Stratio PostgreSQL_
 
-Otros problemas en los que <<_no_se_pueden_actualizar_correctamente_las_tablas_y_vistas_de_stratio_virtualizer, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con problemas de autorización.
+Otros problemas en los que <<virtualizer-sync-issues,la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con problemas de autorización.
 
 Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] ^[English]^ y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección] ^[English]^, también puede haber otro nivel de seguridad según la base de datos a la que te conectes.
 

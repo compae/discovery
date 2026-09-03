@@ -1,10 +1,10 @@
-﻿= Creating a new connection with _Stratio {modulename}_
+= Creating a new connection with _Stratio {modulename}_
 
 The following information explains how you can connect to _Stratio {modulename}_ with or without TLS. To do this, complete the following parameters:
 
 * *Display name*: choose a name for your database.
 * *Host*: host address of _Stratio {modulename}_. In a Kubernetes environment, the host is composed of `${serviceName}.${Namespace}`. For example: _virtualizer.stratio-datastore_.
-* *Port*: if the _Stratio {modulename}_ service was deployed through _Stratio Command Center_ in a Kubernetes environment, the default port is `13422` (in Mesos, the default port was `8000`).
+* *Port*: if the _Stratio {modulename}_ service was deployed through _Stratio Command Center_, the default port is `13422`.
 * *Username*: is the _Stratio {modulename}_ user and its value has to be equal to the `DISCOVERY_INSTANCE_NAME` parameter in the xref:operations-guide:installing-and-upgrading/deployment.adoc[_Stratio Discovery_ deployment].
 * *Collections to sync*: allows you to define the collections (databases) that will be synchronized from _Stratio {modulename}_. Options:
 ** "All": synchronizes all available collections in _Stratio {modulename}_.
@@ -12,27 +12,27 @@ The following information explains how you can connect to _Stratio {modulename}_
 ** "All except": synchronizes all collections except those you specify. If you choose this option, you must write the collection names separated by commas.
 * *Connect with Discovery login user?*: enable it to activate impersonation.
 * *Use a secure connection (SSL)?*: if you enable this option the connection will be established with TLS. Otherwise, the connection will be without TLS.
-* *Additional JDBC connection string options*: read carefully xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes [the _Stratio {modulename}_ documentation] if you want to add parameters to the JDBC connection URL.
+* *Additional JDBC connection string options*: read carefully xref:stratio-virtualizer:user-guide:using-jdbc-odbc-drivers/jdbc.adoc#configuration-attributes[the _Stratio {modulename}_ documentation] if you want to add parameters to the JDBC connection URL.
 
 image::crossdata_configuration.png[]
 
 If you get a "Connection refused" error when you try to save the configuration, you should check the *Host* and *Port* values and talk to an administrator to reset them if the previous ones do not work. This error will appear in the logs when there is an error in the JDBC connection string:
 
-[source,bash]
+[source,text]
 ----
 Impossible to obtain session from server:
 Tcp command [Connect(virtualizer.tmcdev-apps:8000,None,List(),Some(10 seconds),true)]
 failed because of java.net.ConnectException: Connection refused
 ----
 
-== Configuring _Stratio GoSec_ permission settings for _Stratio Discovery_ on _Stratio {modulename}_
+== Configuring _Stratio Gosec_ permission settings for _Stratio Discovery_ on _Stratio {modulename}_
 
-. Go to _Stratio GoSec_.
-. In _policies_, look for an existing policy of the _Stratio {modulename}_ instance you want to connect to or create a new one.
+. Go to _Stratio Gosec_.
+. In policies, look for an existing policy of the _Stratio {modulename}_ instance you want to connect to or create a new one.
 . Add the discovery user (username of the discovery instance) to this policy.
 . Save the policy.
 
-TIP: For more information, see the xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_ documentation].
+TIP: For more information, see the xref:stratio-gosec:ROOT:introduction.adoc[_Stratio Gosec_ documentation].
 
 == Impersonation in _Stratio {modulename}_
 
@@ -44,7 +44,7 @@ Please note that once you enable impersonation, *all of the queries you can run 
 
 If you want to make sure that impersonation is actually turned on, you can set the `DRIVER_LOG_LEVEL` environment variable to `DEBUG`, so you can make sure that the query starts with `EXECUTE AS` AS by checking the `stdout` traces.
 
-[source,bash]
+[source,text]
 ----
 Impersonation as user ${yourUser} for DB set to true [|false].
 Current query:  {:query EXECUTE AS ${yourUser} create table default.mytest
@@ -57,7 +57,7 @@ image::discovery_exception.png[]
 
 This means, that you can't access that table, as the following log clearly shows.
 
-[source,logs]
+[source,text]
 ----
 SQLSyntaxErrorException:
  Message: Operation not authorized

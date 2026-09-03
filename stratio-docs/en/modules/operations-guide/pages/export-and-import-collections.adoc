@@ -1,4 +1,4 @@
-﻿= Importing and exporting collections
+= Importing and exporting collections
 
 _Stratio Discovery_ lets you export collections along with all their dashboards, questions and sub-collections in JSON format, which can then be imported into another instance of _Stratio Discovery_ as long as both have the same version. This feature is useful for moving collections between environments and can be easily integrated into a CI/CD tool.
 
@@ -12,7 +12,7 @@ While pulses could be set for questions or collections, subscriptions are linked
 
 In promotions, _SQL snippets_ are treated as high-level objects that do not depend on collections. Therefore, https://www.metabase.com/learn/sql-questions/sql-snippets[must have a globally unique name].
 
-In the export, it has been chosen to include the _SQL snippets_ that are being used in the collection to be exported. Therefore, at the time of importing that collection, only that subset of _SQL snippets_ will be created. 
+In the export, it has been chosen to include the _SQL snippets_ that are being used in the collection to be exported. Therefore, at the time of importing that collection, only that subset of _SQL snippets_ will be created.
 
 NOTE: In case a _SQL snippet_ with the same name already exists, instead of creating a new one, the current one will be modified.
 
@@ -68,8 +68,8 @@ You can't import:
 In these cases, each endpoint will respond with its corresponding error.
 ====
 
-Disabling the "FRIENDLY TABLE AND FIELD NAMES" configuration option using the `MB_HUMANIZATION_STRATEGY` environment variable will speed up the export and import process. You can find this option in the 'General' section of the Metabase admin settings:
+The "FRIENDLY TABLE AND FIELD NAMES" configuration option, in the 'General' section of the Metabase admin settings, comes disabled in _Stratio Discovery_ and you do not need to touch it: the image sets it that way at each start-up, precisely because it speeds up the export and import process.
 
 image::humanize_fields.png[]
 
-This setting must be disabled on both the source and target _Stratio Discovery_ instances if you want to use it.
+The option is disabled on both the source and the target instance, so the benefit applies to both.

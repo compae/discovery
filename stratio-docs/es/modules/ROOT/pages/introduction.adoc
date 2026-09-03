@@ -18,7 +18,7 @@ Proporciona un entorno para crear tu propio conjunto de datos a través de la na
 Estas son las principales ventajas de usar _Stratio Discovery_:
 
 * Despliegue y escalado sencillo.
-* Tolerancia a fallos y alta disponibilidad.
+* Recuperación automática del servicio ante un fallo del contenedor.
 * Conexiones a múltiples bases de datos.
 * *Seguridad* con autorización de datos y auditoría de datos.
 * *Metadatos y descubrimiento*: asistencia para consultas, recopilación de preguntas y uso compartido de preguntas.

@@ -28,7 +28,7 @@ image::stratio-discovery:installation-guide:discovery-installation-3.png[]
 .. In 'PostgreSQL® used for policy[...]', select "psql.stratio-datastores".
 .. Click on "Continue".
 . Now, you will see the descriptor.
-.. In the 'User Authentication' section, go to 'Gosec SSO Authenticator Settings' -> 'Admin group' and add "stratio-stratio-owners". To configure more details of your installation, see the xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_specific_configurations[specific configurations section].
+.. In the 'User Authentication' section, go to 'Gosec SSO Authenticator Settings' → 'Admin group' and add "stratio-stratio-owners". To configure more details of your installation, see the xref:stratio-discovery:operations-guide:installing-and-upgrading/deployment.adoc#_configuration[deployment configuration section].
 +
 image::stratio-discovery:installation-guide:discovery-installation-4.png[]
 
@@ -42,7 +42,7 @@ To check that you have installed it correctly, you should be able to access _Str
 
 In order for _Stratio Discovery_ to access _Stratio Virtualizer_ you will need to assign permissions to it. To do this, you will need to follow these steps:
 
-. Access _Stratio GoSec_ via `https://${external_domain}/gosec`. If necessary, log in with the new tenant’s credentials (for this example, "stratio" user and "stratio" tenant).
+. Access _Stratio Gosec_ via `https://${external_domain}/gosec`. If necessary, log in with the new tenant's credentials (for this example, "stratio" user and "stratio" tenant).
 . Go to 'Data Access' in the navigation menu and select the "stratio-virtualizer" policy.
 +
 image::stratio-discovery:installation-guide:discovery-policy-1.png[]
@@ -80,7 +80,7 @@ image::stratio-discovery:installation-guide:discovery-access-4.png[]
 +
 image::stratio-discovery:installation-guide:discovery-access-5.png[]
 
-Now you will be able to access _Stratio Discovery_ and create a _Stratio Virtualizer_ database. To do that, follow these steps:
+Now you can access _Stratio Discovery_ and create a _Stratio Virtualizer_ database. To do that, follow these steps:
 
 . Access _Stratio Discovery_ using the Stratio menu.
 +

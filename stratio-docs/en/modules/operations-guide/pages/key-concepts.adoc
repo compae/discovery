@@ -1,6 +1,6 @@
-﻿= Important concepts
+= Important concepts
 
-TIP: Please read this brief guide before deploying and/or using _Stratio Discovery_.
+TIP: Read this brief guide before deploying or using _Stratio Discovery_.
 
 If you understand correctly the (at first glance only) complex interaction between Metabase, _Stratio Discovery_ and the other components of the Stratio ecosystem (_Stratio {modulename}_, _Stratio PostgreSQL_…), you can:
 
@@ -10,7 +10,7 @@ If you understand correctly the (at first glance only) complex interaction betwe
 
 The last step is the most important because, even following the xref:operations-guide:troubleshooting.adoc[troubleshooting guide], many of the reported problems are not due to the incorrect functioning of _Stratio Discovery_ but to the databases that it's connected to.
 
-We're not reinventing the wheel: there's a detailed step-by-step guide provided in the https://www.metabase.com/learn/[official Metabase documentation] that will show you how to use and fine tune Metabase and its configuration.
+There is no need to reinvent the wheel: there is a detailed step-by-step guide in the https://www.metabase.com/learn/[official Metabase documentation] that will show you how to use and fine tune Metabase and its configuration.
 
 Since Metabase is an *open source BI tool*, its goal is to *display data and not carry out actions on it*. This is why you can't carry out insertions or other write operations, and why *you only have read access to their databases*.
 
@@ -22,15 +22,15 @@ It should now be clear that if your query takes a long time to complete, you can
 
 == So just what is _Stratio Discovery_?
 
-_Stratio Discovery_ is Metabase integrated into the _Stratio_ ecosystem:
+_Stratio Discovery_ is Metabase integrated into the Stratio ecosystem:
 
-* it has added or modified security layers (for example, the _Stratio GoSec_ SSO, along with Metabase's simple default user/password authentication),
+* it has added or modified security layers (for example, the _Stratio Gosec_ SSO, along with Metabase's simple default user/password authentication),
 * it has added new drivers (for example, _Stratio {modulename}_, _Stratio PostgreSQL_), and
 * the new CI/CD features now live independently together with Metabase in the same container (for example, the ability to export a `Y` collection from instance `A` and import it into another instance `B`, provided you've already configured the database referenced in collection `Y` in `B`).
 
-The latest versions of _Stratio Discovery_ have a new versioning mechanism that uses the following tag syntax: `${Metabase version}-${Stratio version}`. The first version with this new label was 0.38.1-0.1. This change from the past when we used only the Stratio version is especially helpful because the new labeling lets you know immediately which version of Metabase is integrated in a _Stratio Discovery_.
+The latest versions of _Stratio Discovery_ have a new versioning mechanism that uses the following tag syntax: `${Metabase version}-${Stratio version}`. The first version with this new label was 0.38.1-0.1. This scheme improves on the previous one, which indicated only the Stratio version, because it lets you know immediately which version of Metabase is integrated in each version of _Stratio Discovery_.
 
-CAUTION: The last version released with the old versioning mechanism (0.40.0) is *"higher"* in the lexicographic order than the latest version (0.38.1-0.2), even though the latter is actually newer. We regret the possible inconvenience that this change in the versioning mechanism may cause: it's better to make these changes that break backward compatibility but add value in the long run sooner rather than later.
+WARNING: The last version released with the old versioning mechanism (0.40.0) is *"higher"* in the lexicographic order than the latest version (0.38.1-0.2), even though the latter is actually newer. Take this peculiarity into account when comparing versions: the change breaks the backward compatibility of the ordering, but it adds value in the long run.
 
 == What is a driver and what is its relationship with the JDBCs?
 
@@ -69,7 +69,7 @@ We've now learned that the driver and the JDBC *must agree* on the format of the
 
 === JDBC and drivers in Metabase
 
-While the *drivers are part of Metabase* and are community-based or developed by us in Stratio (for example, the _Stratio {modulename}_ driver), *JDBCs are usually added to the container as black boxes* and have not been developed by either our team or Metabase.
+While the *drivers are part of Metabase* and are community-based or developed at Stratio (for example, the _Stratio {modulename}_ driver), *JDBCs are usually added to the container as black boxes* and are developed by neither Stratio nor Metabase.
 
 Although in some native database integrations in Metabase, the driver and JDBC functionalities can be merged into a single part, many layers are usually required for interconnection: for example, *connecting _Stratio Discovery_ to a _Stratio {modulename}_ server requires a _Stratio {modulename}_ JDBC and a _Stratio {modulename}_ driver for Metabase*.
 

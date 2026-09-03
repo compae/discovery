@@ -1,4 +1,4 @@
-﻿= Operations guide
+= Operations guide
 
 This section gives you all of the information on how to configure, install and operate a _Stratio Discovery_ instance.
 
@@ -16,7 +16,10 @@ If you're ready to operate with _Stratio Discovery_, see the following subsectio
 *** xref:operations-guide:installing-and-upgrading/deployment.adoc[Installation]
 *** xref:operations-guide:installing-and-upgrading/environment-variables.adoc[Environment variables]
 *** xref:operations-guide:installing-and-upgrading/verify-installation.adoc[Checking the installation]
+*** xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[Upgrade planning]
 *** xref:operations-guide:installing-and-upgrading/upgrade.adoc[Version upgrade]
+**** xref:operations-guide:installing-and-upgrading/upgrade/details-upgrade.adoc[Detailed upgrade guides per version]
+**** xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[Special upgrades]
 ** xref:operations-guide:basic-operations.adoc[Basic operations]
 ** xref:operations-guide:configure-postgresql-acl.adoc[Configuring ACL for PostgreSQL®]
 ** xref:operations-guide:end-user-authentication.adoc[End user authentication]

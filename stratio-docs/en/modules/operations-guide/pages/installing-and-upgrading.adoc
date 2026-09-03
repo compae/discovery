@@ -1,12 +1,18 @@
-﻿= Installation and upgrades
+= Installation and upgrades
 
-WARNING: We strongly recommend installing _Stratio Discovery_ using _Stratio Command Center_ because it takes care of generating the required secrets, registering the service and automatically populating the variables for the entire environment during deployment.
+WARNING: Install _Stratio Discovery_ using _Stratio Command Center_, which takes care of generating the required secrets, registering the service and automatically populating the variables for the entire environment during deployment.
 
-Please refer to the following step-by-step guides to start the process:
+Refer to the following step-by-step guides to start the process:
 
 * xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerequisites]
 * xref:operations-guide:installing-and-upgrading/deployment.adoc[Deployment]
-* xref:operations-guide:installing-and-upgrading/verify-installation.adoc[Verify installation]
+* xref:operations-guide:installing-and-upgrading/verify-installation.adoc[Checking the installation]
+* xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[Upgrade planning]
+** xref:operations-guide:installing-and-upgrading/upgrade-overview/from-0-50-21-to-0-56-4.adoc[From Universe 14.10 to 15.1]
 * xref:operations-guide:installing-and-upgrading/upgrade.adoc[Version upgrade]
+** xref:operations-guide:installing-and-upgrading/upgrade/details-upgrade.adoc[Detailed upgrade guides per version]
+** xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[Special upgrades]
+** xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[Recovery from a failed migration]
+** xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[Rollback to the previous version]
 
 For troubleshooting, refer to the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[list of environment variables of the instance]: note that most of them are independent of the deployment environment used.

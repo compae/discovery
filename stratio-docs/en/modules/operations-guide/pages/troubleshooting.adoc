@@ -1,4 +1,4 @@
-﻿= Troubleshooting
+= Troubleshooting
 
 First, *help us help you*.
 
@@ -38,7 +38,7 @@ You may notice that, in dashboard subscriptions or redirects, the service URL is
 
 If the deployment crashes due to this error, it's because _Stratio Discovery_ can't connect to PostgreSQL® to store its metadata. To fix this error, you just need to add the following environment variable (if it's not already present):
 
-[source,bash]
+[source,json]
 ----
 "MB_JDBC_PARAMETERS": "prepareThreshold=0"
 ----
@@ -64,7 +64,7 @@ If you see a timeout error during an import, check the instance to confirm the c
 
 For more information, see the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] section in the installation and upgrades guide.
 
-=== High CPU and memory usage after downloading query results as _.xlsx_ files
+=== High CPU and memory usage after downloading query results as `.xlsx` files
 
 If you see an increase in memory and CPU usage after downloading the query results as `.xlsx` files, you are *probably running a version older than 0.38.1-0.2*.
 
@@ -112,22 +112,24 @@ A `FINISHED: Sync metadata` in the logs might make you think that everything wen
 
 As a warning, an excerpt from the log is provided: the error during phase A didn't prevent the successful execution of phase B, but ultimately made no changes to the Metabase home page.
 
-[source,bash]
+[source,text]
 ----
 INFO - [STARTING: Sync metadata for crossdata Database 45 'crossdata-pro']
 ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10c29adb-90a3-435b-b62f-63f564a5ee9d. Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9d\n(\"com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:330)\"\n \"com.stratio.crossdata.driver.HttpSession$$anonfun$handleQueryResponse$1$$anonfun$apply$14.apply(HttpSession.scala:329)\"\n \"scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:253)\"\n \"scala.concurrent.Future$$anonfun$flatMap$1.apply(Future.scala:251)\"\n \"scala.concurrent.impl.CallbackRunnable.run(Promise.scala:32)\"\n \"scala.concurrent.impl.ExecutionContextImpl$AdaptedForkJoinTask.exec(ExecutionContextImpl.scala:121)\"\n \"scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)\"\n \"scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.pollAndExecAll(ForkJoinPool.java:1253)\"\n \"scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1346)\"\n \"scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)\"\n \"scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)\"\n nil)\n\u001B
 INFO - [FINISHED: Sync metadata for crossdata Database 45 'crossdata-pro' (928.7 ms)]
 ----
 
+[#virtualizer-sync-issues]
+
 === Unable to update _Stratio {modulename}_ tables and views correctly
 
-Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#_newly_created_tables_or_views_dont_appear_on_the_homepage[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the __Stratio Virtualizer__ team.
+Suppose you've already synced the data as explained in the xref:operations-guide:troubleshooting.adoc#_newly_created_tables_or_views_dont_appear_on_the_homepage[previous question]. If you're still having problems, take a close look at the logs: depending on the error, you may need to request help from the __Stratio {modulename}__ team.
 
 Let's suppose that you've also read the xref:operations-guide:key-concepts.adoc[short introduction], which explains how _Stratio Discovery_ works and how it connects with the other modules in the Stratio ecosystem. By looking at the logs, you can determine where the error occurred.
 
 Let's take a look at the following example:
 
-[source,bash]
+[source,text]
 ----
 ERROR - [Error running sync step: [JDBC Driver] Unable to recover the session 10c29adb-90a3-435b-b62f-63f564a5ee9d.
 Cause: Cannot recover session with sessionId=10c29adb-90a3-435b-b62f-63f564a5ee9d
@@ -164,7 +166,7 @@ If you experience this issue, an error similar to the following will appear in t
 
 To resolve this error, you must set the following environment variable to `0` (no timeout) in your deployment configuration:
 
-[source,bash]
+[source,json]
 ----
 "MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS": 0
 ----
@@ -173,7 +175,7 @@ If you are using the latest versions of the Stratio Universe descriptors, this e
 
 === Unable to access some tables stored in _Stratio {modulename}_ or _Stratio PostgreSQL_
 
-<<_unable_to_update_stratio_virtualizer_tables_and_views_correctly, The newly acquired ability to read logs>> can also be useful in solving authorization-related problems.
+<<virtualizer-sync-issues,The newly acquired ability to read logs>> can also be useful in solving authorization-related problems.
 
 Briefly, in addition to the https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[native Metabase data access permissions] and https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[collection permissions], there may also be another level of security depending on the database that you connect to.
 

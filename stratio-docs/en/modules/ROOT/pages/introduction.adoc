@@ -1,4 +1,4 @@
-﻿= Introduction
+= Introduction
 
 _Stratio Discovery_ is a data discovery and dashbooarding tool that is part of _Stratio Generative AI Data Fabric_. It is a simple and powerful *analytical tool* that lets you learn and make decisions based on company data without requiring any technical knowledge (not even SQL).
 
@@ -18,7 +18,7 @@ It provides an environment to create your own data sets by visually browsing dat
 The main advantages of using _Stratio Discovery_ include:
 
 * Easy deployment and scaling.
-* Fault tolerance and high availability.
+* Automatic recovery of the service after a container failure.
 * Connections to multiple databases.
 * *Security* with data authorization and data auditing.
 * *Metadata and discovery*: assistance for consulting, collecting and shared use of questions.

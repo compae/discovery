@@ -2,34 +2,34 @@
 
 Encuentra aquí las principales formas en que puedes configurar _Stratio Discovery_ para autenticar y autorizar a los usuarios finales.
 
-== _Stratio GoSec_ SSO
+== _Stratio Gosec_ SSO
 
 Este es el método de autenticación recomendado para usar en _Stratio Discovery_, y se usará cuando se establezca `gosec-sso` como el valor del parámetro `Authentication Method` durante el despliegue de la aplicación (variable de entorno `AUTHENTICATOR`). Se solicitará a los usuarios que inicien sesión con su cuenta de Stratio y la autorización se realizará comprobando los grupos de usuarios en una _whitelist_. Esta _whitelist_ se puede configurar al desplegar la aplicación con la propiedad `Allowed groups` en la sección `User Authentication` de la configuración de despliegue (variable de entorno `ALLOWED_GROUPS`).
 
 Si el usuario puede acceder, el usuario y los grupos se crean en la base de datos interna de _Stratio Discovery_ si no existen y el usuario se asigna a estos grupos. Además, si los usuarios pertenecen al grupo marcado como `Admin group` en la configuración de despliegue (variable de entorno `ADMIN_GROUP`), serán administradores de _Stratio Discovery_. Ten en cuenta que este 'Admin group' no se incluye automáticamente en la _whitelist_, por lo que debe agregarse explícitamente a la lista de 'Allowed groups'.
 
-Cada vez que los usuarios inician sesión, esta información (los grupos a los que pertenecen y su estado de administrador) se sincroniza. De esta manera, una vez que los administradores de _Stratio Discovery_ hayan configurado un esquema de permisos para las colecciones y bases de datos de _Stratio Discovery_ basados en grupos, pueden administrar los permisos de los diferentes usuarios simplemente cambiando sus grupos en _Stratio GoSec_, ya que saben que los grupos a los que pertenece cada usuario en _Stratio Discovery_ estarán sincronizados con los de _Stratio GoSec_.
+Cada vez que los usuarios inician sesión, esta información (los grupos a los que pertenecen y su estado de administrador) se sincroniza. De esta manera, una vez que los administradores de _Stratio Discovery_ hayan configurado un esquema de permisos para las colecciones y bases de datos de _Stratio Discovery_ basados en grupos, pueden administrar los permisos de los diferentes usuarios simplemente cambiando sus grupos en _Stratio Gosec_, ya que saben que los grupos a los que pertenece cada usuario en _Stratio Discovery_ estarán sincronizados con los de _Stratio Gosec_.
 
 Ten en cuenta que el uso de una _whitelist_ y la sincronización de grupos se pueden deshabilitar al desplegar _Stratio Discovery_ configurando las siguientes opciones en la sección "User Authentication" de la configuración de despliegue:
 
-* `Use group whitelist` (variable de entorno `USE_GROUP_WHITELIST`): parámetro booleano para activar la autorización basada en _whitelist_. Si se establece a falso, cualquier persona que pueda iniciar sesión con _Stratio GoSec_ SSO podrá acceder a _Stratio Discovery_.
+* `Use group whitelist` (variable de entorno `USE_GROUP_WHITELIST`): parámetro booleano para activar la autorización basada en _whitelist_. Si se establece a falso, cualquier persona que pueda iniciar sesión con _Stratio Gosec_ SSO podrá acceder a _Stratio Discovery_.
 * `Create and sync user groups in Metabase` (variable de entorno `CREATE_AND_SYNC_GROUPS`): parámetro booleano para activar la creación y sincronización entre los grupos de SSO y los grupos de _Stratio Discovery_. Si la _whitelist_ está activada, solo se sincronizarán los grupos incluidos en ella.
 
 == Autenticación a través de cabeceras HTTP
 
-Puede haber escenarios en los que la autenticación del usuario no se pueda realizar con _Stratio GoSec_ SSO y un proxy externo sea responsable de la autenticación de los usuarios. Este proxy luego debería propagar la información sobre el usuario registrado al _backend_ de _Stratio Discovery_.
+Puede haber escenarios en los que la autenticación del usuario no se pueda realizar con _Stratio Gosec_ SSO y un proxy externo sea responsable de la autenticación de los usuarios. Este proxy luego debería propagar la información sobre el usuario registrado al _backend_ de _Stratio Discovery_.
 
-_Stratio Discovery_ proporciona dos formas de recibir la información del usuario a través de cabeceras HTTP, ya sea leyendo directamente el usuario y los grupos de dos cabeceras HTTP o leyendo un token JWT con la información del usuario. Las cabeceras de usuario/grupo y las propiedades de JWT que se usarán en cada caso se pueden configurar con las siguientes variables de entorno (esta configuración no se expone en el descriptor _Stratio Command Center_ y debe establecerse directamente en el entorno de la aplicación).
+_Stratio Discovery_ proporciona dos formas de recibir la información del usuario a través de cabeceras HTTP, ya sea leyendo directamente el usuario y los grupos de dos cabeceras HTTP o leyendo un _token_ JWT con la información del usuario. Las cabeceras de usuario/grupo y las propiedades de JWT que se usarán en cada caso se pueden configurar con las siguientes variables de entorno (esta configuración no se expone en el descriptor _Stratio Command Center_ y debe establecerse directamente en el entorno de la aplicación).
 
-* `AUTHENTICATOR`: ya sea para usar cabeceras de usuario/grupo o un JWT para recibir la información del usuario. Establece el valor en `headers` para decirle a _Stratio Discovery_ que lea dos cabeceras, una con el nombre de usuario y la otra con la lista de grupos a los que pertenece el usuario; o configúralo en `jwt` para decirle a _Stratio Discovery_ que lea el token JWT de una cabecera HTTP.
+* `AUTHENTICATOR`: ya sea para usar cabeceras de usuario/grupo o un JWT para recibir la información del usuario. Establece el valor en `headers` para decirle a _Stratio Discovery_ que lea dos cabeceras, una con el nombre de usuario y la otra con la lista de grupos a los que pertenece el usuario; o configúralo en `jwt` para decirle a _Stratio Discovery_ que lea el _token_ JWT de una cabecera HTTP.
 * `MB_USER_HEADER`: nombre de la cabecera HTTP donde encontrar el nombre de usuario.
 * `MB_GROUP_HEADER`: nombre de la cabecera HTTP donde encontrar los grupos de usuarios como una lista de valores separados por comas.
-* `JWT_HEADER_NAME`: nombre de la cabecera HTTP donde encontrar el token JWT con la información del usuario.
+* `JWT_HEADER_NAME`: nombre de la cabecera HTTP donde encontrar el _token_ JWT con la información del usuario.
 * `JWT_USERNAME_CLAIM`: _claim_ del JWT donde encontrar el nombre de usuario.
 * `JWT_GROUPS_CLAIM`: _claim_ del JWT donde encontrar los grupos de usuarios.
 * `JWT_PUBLIC_KEY_ENDPOINT`: _endpoint_ desde donde se puede descargar la clave pública necesaria para validar el JWT.
 
-Ten en cuenta que la _whitelist_, el grupo de administración y la sincronización de grupos funcionan de la misma manera que se describe en el caso de _Stratio GoSec_ SSO. En realidad, el autenticador de SSO de Stratio funciona exactamente de esta manera, con un proxy que autentica a los usuarios a través de OAuth con el SSO que vive y se ejecuta dentro del mismo contenedor que el _backend_ de Metabase.
+Ten en cuenta que la _whitelist_, el grupo de administración y la sincronización de grupos funcionan de la misma manera que se describe en el caso de _Stratio Gosec_ SSO. En realidad, el autenticador de SSO de Stratio funciona exactamente de esta manera, con un proxy que autentica a los usuarios a través de OAuth con el SSO que vive y se ejecuta dentro del mismo contenedor que el _backend_ de Metabase.
 
 == Autenticación nativa de Metabase
 

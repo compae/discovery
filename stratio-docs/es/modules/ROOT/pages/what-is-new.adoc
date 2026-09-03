@@ -1,16 +1,19 @@
 = Novedades
 
-Estos son los últimos cambios realizados en _Stratio Discovery_ versión *0.56.4-0.2.X* (lanzado en julio de 2026):
+Descubre las principales mejoras de _Stratio Discovery_ 0.56.4-0.2.X, la versión del Universo 15.1, lanzada el 22 de julio de 2026. Como la actualización se realiza directamente desde el Universo 14.10, esta página recoge también las novedades incorporadas en la línea 0.56.4-0.1.X. Antes de actualizar, revisa los xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[_breaking changes_], ya que pueden afectar a la compatibilidad. Para planificar la intervención, consulta la xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[planificación de la actualización].
 
-* Mejora del rendimiento de la sincronización de bases de datos de _Stratio Virtualizer_ con numerosos esquemas y tablas.
-* Actualización de Metabase: ahora se utiliza la versión 0.56.4. Ciertas funcionalidades introducidas en Metabase 0.51, como acciones, modelos creados a partir de CSV, _timelines_ y alertas, siguen sin ser compatibles con la exportación e importación de colecciones de _discovery-cicd_.
-* Actualización del _driver_ JDBC de _Stratio Virtualizer_ a la versión 3.1.1.
-* Se ha añadido una opción de despliegue en _Stratio Command Center_: "Use virtualizer jdbc from Extra JARs" (variable de entorno `VIRTUALIZER_JDBC_FROM_EXTRA_JARS`) para no usar el _driver_ JDBC de _Stratio Virtualizer_ incluido en la imagen, sino obtenerlo de los "Extra JARs to add to metabase plugins folder" (variable de entorno `EXTRA_JARS`).
+TIP: Consulta el detalle completo por versión en las xref:ROOT:what-is-new/release-notes.adoc[notas de _release_].
 
-== _Breaking changes_
+== Novedades de 0.56.4-0.2.X
 
-* Se ha eliminado la opción de despliegue en _Stratio Command Center_ "Skip Metabase's Statement final cancellation in Virtualizer driver" (variable de entorno: `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`). Esta opción evitaba el bloqueo de las conexiones JDBC con servidores de _Stratio Virtualizer_ anteriores a la versión 0.11.0; por tanto, ahora es necesario conectarse a servidores con la versión 0.11.0 o superior.
+* *Sincronización más rápida con _Stratio {modulename}_*: mejora el rendimiento de la sincronización de bases de datos con numerosos esquemas y tablas. También está disponible en la 0.50.21-0.2.0, la versión de los Universos 14.8, 14.9 y 14.10.
+* *Actualización del _driver_ JDBC de _Stratio {modulename}_* a la versión 4.0.1.
+* *Fin de los errores de sincronización en colecciones grandes* de _Stratio {modulename}_.
+* *Los secretos se obtienen del inyector de Vault de _Stratio KEOS_*, en lugar de descargarse durante el arranque.
 
-* Se ha eliminado la opción de despliegue en _Stratio Command Center_ "Authenticator method to use (gosec-sso, headers, jwt, metabase-native)". El único autenticador permitido es "gosec-sso".
+== Novedades incorporadas desde 0.56.4-0.1.X
 
-TIP: Consulta las xref:ROOT:what-is-new/release-notes.adoc[notas de _release_] anteriores para obtener más información.
+* *Actualización de Metabase a la versión 0.56.4*, desde la 0.50.21. Consulta las https://www.metabase.com/releases[notas de versión de Metabase] ^[English]^ para conocer en detalle las novedades del producto en esas seis versiones.
+* *Nueva opción de despliegue "Use virtualizer jdbc from Extra JARs"*: permite no usar el _driver_ JDBC de _Stratio {modulename}_ incluido en la imagen y obtenerlo de la opción "Extra JARs to add to metabase plugins folder".
+* *Nueva opción de despliegue "Crossdata log level"*: controla el nivel de _log_ del _driver_ JDBC de _Stratio {modulename}_, con "INFO" como valor por defecto.
+* *Imagen renovada*: la imagen pasa a Java 21 y a una base, un supervisor de procesos y un servidor web interno nuevos, lo que resuelve las vulnerabilidades que arrastraba la anterior.

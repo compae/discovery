@@ -1,23 +1,23 @@
-﻿= End user authentication
+= End user authentication
 
 This section covers the main ways to configure _Stratio Discovery_ to authenticate and authorize end users.
 
-== _Stratio GoSec_ SSO
+== _Stratio Gosec_ SSO
 
 This is the recommended authentication method to use in _Stratio Discovery_, and it will be used when `gosec-sso` is set as the value of the `Authentication Method` parameter during application deployment (`AUTHENTICATOR` environment variable). Users will be prompted to log in with their Stratio account and authorization will be done by checking the user groups in a whitelist. This whitelist can be configured when the application is deployed using the `Allowed groups` property in the `User Authentication` section of the deployment configuration (`ALLOWED_GROUPS` environment variable).
 
 If the user can access, the user and groups are created in the internal _Stratio Discovery_ database if they don't exist, and the user is assigned to these groups. Also, if users belong to the group marked as `Admin group` in the deployment configuration (`ADMIN_GROUP` environment variable), they will be _Stratio Discovery_ administrators. Note that this 'Admin group' isn't automatically included in the whitelist, so it should be added explicitly to the 'Allowed groups' list.
 
-Each time users log in, this information (the groups to which they belong and their administrator status) is synchronized. This means that after the _Stratio Discovery_ administrators have configured a permission scheme for the group-based _Stratio Discovery_ collections and databases, they can manage the permissions of different users by simply changing their groups in _Stratio GoSec_, because they know that the groups that each user belongs to in _Stratio Discovery_ will be synchronized with the groups in _Stratio GoSec_.
+Each time users log in, this information (the groups to which they belong and their administrator status) is synchronized. This means that after the _Stratio Discovery_ administrators have configured a permission scheme for the group-based _Stratio Discovery_ collections and databases, they can manage the permissions of different users by simply changing their groups in _Stratio Gosec_, because they know that the groups that each user belongs to in _Stratio Discovery_ will be synchronized with the groups in _Stratio Gosec_.
 
 Note that the use of a whitelist and group synchronization can be disabled when deploying _Stratio Discovery_ by configuring the following options in the "User Authentication" section of the deployment settings:
 
-* `Use group whitelist` (`USE_GROUP_WHITELIST` environment variable): boolean parameter to enable whitelist-based authorization. If set to false, anyone who can log in with _Stratio GoSec_ SSO will be able to access _Stratio Discovery_.
+* `Use group whitelist` (`USE_GROUP_WHITELIST` environment variable): boolean parameter to enable whitelist-based authorization. If set to false, anyone who can log in with _Stratio Gosec_ SSO will be able to access _Stratio Discovery_.
 * `Create and sync user groups in Metabase` (`CREATE_AND_SYNC_GROUPS` environment variable): boolean parameter to enable creation and synchronization between SSO groups and _Stratio Discovery_ groups. If the whitelist is enabled, only the groups included in the whitelist will be synchronized.
 
 == Authentication using HTTP headers
 
-There may be scenarios where user authentication cannot be done with _Stratio GoSec_ SSO and an external proxy is responsible for user authentication. This proxy should then propagate the information about the logged in user to the _Stratio Discovery_ backend.
+There may be scenarios where user authentication cannot be done with _Stratio Gosec_ SSO and an external proxy is responsible for user authentication. This proxy should then propagate the information about the logged in user to the _Stratio Discovery_ backend.
 
 _Stratio Discovery_ provides two ways to receive user information via HTTP headers, either by directly reading the user and groups of two HTTP headers or by reading a JWT token with the user information. The user/group headers and JWT properties that will be used in each case can be configured with the following environment variables (this setting isn't exposed in the _Stratio Command Center_ descriptor and must be set directly in the application environment).
 
@@ -29,7 +29,7 @@ _Stratio Discovery_ provides two ways to receive user information via HTTP heade
 * `JWT_GROUPS_CLAIM`: JWT claim where to find the user groups.
 * `JWT_PUBLIC_KEY_ENDPOINT`: endpoint from which the public key needed to validate the JWT can be downloaded.
 
-Note that the whitelist, administration group, and group synchronization work in the same way as described in the case of _Stratio GoSec_ SSO. The Stratio SSO authenticator actually works exactly this way, with a proxy that authenticates users through OAuth with the SSO that lives and runs in the same container as the Metabase backend.
+Note that the whitelist, administration group, and group synchronization work in the same way as described in the case of _Stratio Gosec_ SSO. The Stratio SSO authenticator actually works exactly this way, with a proxy that authenticates users through OAuth with the SSO that lives and runs in the same container as the Metabase backend.
 
 == Metabase native authentication
 

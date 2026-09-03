@@ -1,4 +1,4 @@
-﻿= Installation
+= Installation
 
 == Configuration
 
@@ -22,7 +22,7 @@ image::cct_predeploy_discovery_deployment_0004.png[]
 
 === Namespace where the service will be deployed
 
-Depending on your login, you may need to select the namespace where you want to deploy your service. In the following example, it is set to `s000001,` and the namespace name is set from the tenant to `s000001-discovery`:
+Depending on your login, you may need to select the namespace where you want to deploy your service. In the following example, it is set to `s000001`, and the namespace name is set from the tenant to `s000001-discovery`:
 
 image::cct_select_tenant_namespace_discovery_deployment_0005.png[]
 
@@ -66,18 +66,18 @@ Since there are many variables to configure, the operator should look up the mea
 
 image::cct_help_discovery_deployment_0007.png[]
 
-For example, if you want to know what the `Nginx` property is and what it does, just go to 'Help' -> 'Administration Panel' -> 'Settings', scroll down, and go to *Nginx* or use the search box to find the information about 'Nginx'.
+For example, if you want to know what the `Nginx` property is and what it does, just go to 'Help' → 'Administration Panel' → 'Settings', scroll down, and go to *Nginx* or use the search box to find the information about 'Nginx'.
 
 image::cct_help_tooltip_discovery_deployment_0008.png[]
 
-By default, _Stratio Discovery_ will be deployed integrated with the _Stratio GoSec_ SSO. This means the deployed instance will be registered in the _Stratio GoSec_ SSO as a service, and an additional secret will be registered in Vault, but don't worry about how to do this because _Stratio Command Center_ will do it on its own.
+By default, _Stratio Discovery_ will be deployed integrated with the _Stratio Gosec_ SSO. This means the deployed instance will be registered in the _Stratio Gosec_ SSO as a service, and an additional secret will be registered in Vault, but don't worry about how to do this because _Stratio Command Center_ will do it on its own.
 
 == Deployment
 
-Now that everything is set up… click on "Deploy"!
+When everything is configured, click on "Deploy".
 
 image::cct_deploy_discovery_0010.png[]
 
-Everything should work immediately, and the instance should start running soon.
+The instance is deployed and becomes healthy in a few minutes.
 
 image::cct_healthy_discovery_0011.png[]

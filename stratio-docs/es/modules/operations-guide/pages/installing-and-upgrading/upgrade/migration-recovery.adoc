@@ -1,0 +1,49 @@
+= Recuperación ante un fallo de la migración
+
+La migración del esquema forma parte del arranque de la versión nueva, así que un fallo se manifiesta como una instancia que no llega a estar disponible. Esta página explica cómo se ejecuta la migración, cómo saber en qué punto se ha quedado y qué hacer según el fallo. Para volver a la versión anterior, consulta el xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[_rollback_ a la versión anterior].
+
+== Cómo se ejecuta la migración
+
+Metabase aplica los cambios de esquema pendientes durante su arranque, antes de aceptar peticiones. Mientras lo hace, el _endpoint_ `/api/health` responde "503" con un cuerpo cuyo campo `status` vale `initializing`.
+
+IMPORTANT: *La migración no es atómica.* Liquibase confirma cada cambio de esquema por separado, así que una migración interrumpida deja la base de datos en un punto intermedio entre las dos versiones. No hay ninguna transacción que la revierta entera, y por eso la copia de seguridad previa es obligatoria.
+
+La ejecuta una sola instancia: cada una intenta tomar el bloqueo de migración de Liquibase sobre la base de datos de metadatos, y las que no lo consiguen abortan el arranque. En una base de datos PostgreSQL® ese bloqueo es un _advisory lock_ ligado a la sesión, así que desaparece con la conexión y no hay nada que liberar a mano.
+
+== Cómo saber en qué punto se ha quedado
+
+Dos señales lo responden:
+
+* *La tabla `databasechangelog` de la base de datos de metadatos.* Liquibase añade una fila por cada cambio que confirma, así que basta comparar su número de filas, o el valor máximo de su columna `dateexecuted`, con los de la copia de seguridad.
+* *Los _logs_ de la instancia*, si subiste la opción "Metabase log level" a "INFO" antes de la ventana. Con su valor por defecto, "ERROR", la migración no deja ninguna traza.
+
+== Cómo distinguir el tipo de fallo
+
+[cols="2,2,3", options="header"]
+|===
+| Síntoma | Causa | Qué hacer
+
+| El _pod_ se reinicia una y otra vez y `/api/health` nunca pasa de "503"
+| El plazo del _startup probe_ se agota antes de que la migración termine. El riesgo crece con el tamaño del catálogo sincronizado.
+| Restaura la copia de seguridad y vuelve a intentarlo con un plazo mayor, que se sube en la sección 'General' → 'Probes' durante la propia actualización.
+
+| Los _logs_ registran "Database has migration lock; cannot run migrations." y el arranque termina con "Metabase Initialization FAILED"
+| El despliegue tiene más de una réplica y otra instancia se ha quedado con el bloqueo de migración.
+| Baja la opción "Instances" a `1` y deja que termine la instancia que migra. No hay nada que reparar en la base de datos.
+
+| Los _logs_ registran "Downgrade detected"
+| Se ha arrancado una versión anterior sobre un esquema que ya migró.
+| Restaura la copia de seguridad, o vuelve a la versión nueva si no querías retroceder.
+
+| El _pod_ falla y la tabla `databasechangelog` no ha cambiado
+| El arranque falla antes de llegar a la migración: los certificados, la configuración o la conexión con la base de datos de metadatos.
+| Corrige la causa que indiquen los _logs_. La base de datos está intacta, así que no hace falta restaurar el volcado.
+
+| Un cambio de esquema falla y el _log_ registra el error de Liquibase que lo provoca
+| Un dato preexistente no cumple lo que ese cambio exige.
+| Restaura la copia de seguridad y consulta el error con el equipo de _Stratio Discovery_ antes de reintentar.
+|===
+
+== Después de recuperar
+
+Cuando la instancia vuelva a arrancar, sigue la xref:operations-guide:installing-and-upgrading/verify-installation.adoc[comprobación de la instalación] y devuelve a su valor de producción las opciones que cambiaras para la ventana, "Metabase log level" y el plazo del _startup probe_.

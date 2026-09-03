@@ -1,7 +1,12 @@
 = Comprobar la instalación
 
-Puedes seguir estos pasos para comprobar si la instalación de _Stratio Discovery_ se ha realizado correctamente:
+Sigue estos pasos para comprobar que la instalación o la actualización de _Stratio Discovery_ se ha realizado correctamente:
 
-. Accede a la interfaz de usuario de _Stratio Discovery_.
-. Inicia sesión si aún no lo has hecho.
-. Ve a 'new question' y ejecuta una pregunta personalizada sobre cualquier dato.
+. Comprueba en _Stratio Command Center_ que el servicio informa de la versión esperada y que su estado es saludable. Mientras la instancia arranca, el _endpoint_ `/api/health` responde "503" con el cuerpo `{"status":"initializing"}`; cuando termina, responde "200".
+. Accede a la interfaz de usuario e inicia sesión. Si la opción "Use group whitelist" está desactivada, que es lo predeterminado, accede cualquier usuario que el SSO de _Stratio Gosec_ autentique; si la activaste, usa un usuario de los grupos de la opción "Allowed groups".
+. Comprueba que un usuario del grupo configurado en la opción "Admin group" tiene permisos de administración, lo que confirma que la sincronización de grupos con _Stratio Gosec_ funciona.
+. Ve a 'New question' y ejecuta una pregunta sobre una base de datos de _Stratio {modulename}_.
+. Repite la pregunta sobre una base de datos de _Stratio PostgreSQL_, si tienes alguna conectada.
+. Lanza la sincronización del catálogo de una de esas bases de datos y comprueba que termina sin errores.
+
+TIP: Tras una actualización, comprueba además que las colecciones, las preguntas y los _dashboards_ que ya existían se abren y se ejecutan, y que las suscripciones a _dashboards_ conservan su nombre.

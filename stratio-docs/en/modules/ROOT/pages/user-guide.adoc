@@ -1,4 +1,4 @@
-﻿= User guide
+= User guide
 
 This guide gives you more information about _Stratio Discovery_ and how to query the data store. It's aimed at an audience that doesn't need to have technical knowledge, although this is desirable. Its main objective is *to create questions and learn from company data*.
 
@@ -28,7 +28,7 @@ _Stratio Discovery_ lets you perform several operations, such as:
 * Share questions.
 * Create dashboards.
 * Make collaborative collections.
-* Data profiling with _X-ray_.
+* Data profiling with x-ray.
 
 === How do I do it?
 

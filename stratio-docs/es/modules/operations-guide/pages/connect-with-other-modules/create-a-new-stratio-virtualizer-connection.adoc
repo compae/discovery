@@ -4,7 +4,7 @@ La siguiente información explica cómo puedes conectarte a _Stratio {modulename
 
 * *Display name*: elige un nombre para tu base de datos.
 * *Host*: dirección _host_ de _Stratio {modulename}_. En un entorno de Kubernetes, el _host_ está compuesto por `${serviceName}.${Namespace}`. Por ejemplo: _virtualizer.stratio-datastore_.
-* *Port*: si el servicio de _Stratio {modulename}_ se desplegó a través de _Stratio Command Center_ en un entorno de Kubernetes, el puerto por defecto es el `13422` (en Mesos, el puerto por defecto era el `8000`).
+* *Port*: si el servicio de _Stratio {modulename}_ se desplegó a través de _Stratio Command Center_, el puerto por defecto es el `13422`.
 * *Username*: es el usuario de _Stratio {modulename}_ y su valor tiene que ser igual al parámetro `DISCOVERY_INSTANCE_NAME` en el xref:operations-guide:installing-and-upgrading/deployment.adoc[despliegue de _Stratio Discovery_].
 * *Collections to sync*: permite definir las colecciones (bases de datos) que se sincronizarán desde _Stratio {modulename}_. Opciones:
 ** "All": sincroniza todas las colecciones disponibles en _Stratio {modulename}_.
@@ -18,21 +18,21 @@ image::crossdata_configuration.png[]
 
 Si sale un error "Connection refused" cuando intentas guardar la configuración, deberás revisar los valores de *Host* y *Port* y hablar con un administrador para reestablecerlos si los anteriores no funcionan. Este error aparecerá en los _logs_ cuando haya un error en la cadena de conexión JDBC:
 
-[source,bash]
+[source,text]
 ----
 Impossible to obtain session from server:
 Tcp command [Connect(virtualizer.tmcdev-apps:8000,None,List(),Some(10 seconds),true)]
 failed because of java.net.ConnectException: Connection refused
 ----
 
-== Configuración de permisos de _Stratio GoSec_ para _Stratio Discovery_ sobre _Stratio {modulename}_
+== Configuración de permisos de _Stratio Gosec_ para _Stratio Discovery_ sobre _Stratio {modulename}_
 
-. Ve a _Stratio GoSec_.
+. Ve a _Stratio Gosec_.
 . Busca en _policies_ una política existente de la instancia de _Stratio {modulename}_ a la que quieres conectarte o crea una nueva.
 . Agrega el usuario de descubrimiento (nombre de usuario de la instancia de descubrimiento) a esta política.
 . Guarda la política.
 
-TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:ROOT:introduction.adoc[_Stratio GoSec_].
+TIP: Para obtener más información, visita la documentación de xref:stratio-gosec:ROOT:introduction.adoc[_Stratio Gosec_].
 
 == Suplantación de identidad en _Stratio {modulename}_
 
@@ -44,7 +44,7 @@ Ten en cuenta que, una vez que habilites la suplantación de identidad, *todas l
 
 Si deseas asegurarte de que la suplantación de identidad esté realmente activada, puedes establecer la variable de entorno `DRIVER_LOG_LEVEL` a `DEBUG`, de modo que puedas asegurarte de que la consulta comience con `EXECUTE AS` comprobando las trazas de `stdout`.
 
-[source,bash]
+[source,text]
 ----
 Impersonation as user ${yourUser} for DB set to true [|false].
 Current query:  {:query EXECUTE AS ${yourUser} create table default.mytest
@@ -57,7 +57,7 @@ image::discovery_exception.png[]
 
 Esto significa, como muestra claramente el siguiente _log_, que no puedes acceder a esa tabla.
 
-[source,logs]
+[source,text]
 ----
 SQLSyntaxErrorException:
  Message: Operation not authorized
