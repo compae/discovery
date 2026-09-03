@@ -1,0 +1,88 @@
+{
+  "skill_name": "write-stratio-docs",
+  "note": "Fixtures under files/ are sample documents to be corrected. The ES samples are in Spanish on purpose (they exercise Spanish-only rules such as anglicism italics, the tu-form and the Metabase object-name split). The EN sample exercises the English-language rules and the per-language italics recalibration. All fixtures use Stratio Discovery scenarios (Metabase, collections, questions, dashboards, drivers, JDBC, Stratio Command Center deployment options). Prompts and assertions are in English.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review the file .claude/skills/write-stratio-docs/evals/files/test-naming-italics.adoc (a Spanish-language sample page) and return the corrected text. Report the corrections you would make, without editing the file.",
+      "expected_output": "The file corrected with: product names in italics and full form, Gosec not GoSec, the {modulename} attribute preferred over a hardcoded Virtualizer, PostgreSQL with its trademark symbol, generic jargon in italics, first person plural and 'Por favor' removed, em-dash aside turned into parentheses, temporal formula fixed, the anaphoric 'Dicha' replaced, ASCII arrow turned into U+2192, source language corrected and the link text made descriptive. The example URL inside the code block stays as it is: the backslash escape applies to example URLs in prose, not inside a listing.",
+      "files": [
+        "evals/files/test-naming-italics.adoc"
+      ],
+      "assertions": [
+        "The bare product name 'Discovery' has been corrected to '_Stratio Discovery_' (italics + full name) everywhere, including the page title",
+        "'Stratio GoSec' and the bare 'GoSec' have been corrected to '_Stratio Gosec_' (Gosec, not GoSec)",
+        "'Stratio Virtualizer' and the bare 'Crossdata' have been written as '_Stratio {modulename}_' (the Antora attribute is preferred over a hardcoded name)",
+        "The third party 'PostgreSQL' carries the registered trademark symbol: 'PostgreSQL®'",
+        "'_Metabase®_' has been corrected to plain 'Metabase': it is a third party, so it takes neither italics nor a trademark symbol",
+        "The first person plural has been removed: 'vamos a explicar' and 'Recomendamos' have become impersonal forms such as 'se explica' / 'se recomienda'",
+        "'Por favor' has been removed from the sentence that carried it",
+        "The generic anglicisms 'driver', 'pool', 'endpoint' and 'logs' appear in italics in this Spanish document: '_driver_', '_pool_', '_endpoint_', '_logs_'",
+        "The em-dash aside '—si el operador tiene permisos—' has been turned into parentheses: '(si el operador tiene permisos)'",
+        "The temporal formula 'En el momento del despliegue' has been replaced with 'Durante el despliegue', and 'con posterioridad' with 'tras él'",
+        "The anaphoric 'Dicha configuración' has been replaced with 'Esta configuración' or an equivalent",
+        "The ASCII arrow in \"'Admin settings' -> 'Databases'\" has been replaced with the Unicode arrow '→'",
+        "'pulsa el botón \"Add database\"' has been rewritten as 'haz clic en \"Add database\"'",
+        "The environment variable 'VIRTUALIZER_JDBC_FROM_EXTRA_JARS' and the value 'false' appear in backticks",
+        "The block '[source,ruby]' has been corrected to '[source,bash]'",
+        "The example URL 'https://mi-instancia.example.com' inside the command is left as is inside the code block (no escaping is needed there)",
+        "The link text 'aquí' has been replaced with a descriptive text naming the destination",
+        "The Spanish link to English-only documentation carries the '^[English]^' marker",
+        "The option `VIRTUALIZER_JDBC_FROM_EXTRA_JARS` is reported or rewritten as its descriptor title, \"Use virtualizer jdbc from Extra JARs\", in double quotes, with the variable in backticks in parentheses (R28)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review the file .claude/skills/write-stratio-docs/evals/files/test-versions-facts.adoc (a Spanish-language release-notes excerpt). Check every version number and date against CHANGELOG.md and the git tags of this repository, and report the errors. Report only, do not modify the file.",
+      "expected_output": "A report identifying: the invented 0.51.21 version line, the wrong JDBC driver version, the dates that disagree with CHANGELOG.md, the date format, the naming defects and the 'soporte' anglicism.",
+      "files": [
+        "evals/files/test-versions-facts.adoc"
+      ],
+      "assertions": [
+        "The version '0.51.21-0.1.1' is reported as non-existent: the real release line is 0.50.21, and the CHANGELOG dates it 2024-11-07, not November 8",
+        "The JDBC driver version '3.1.1' is reported as wrong for release 0.56.4-0.2.0: CHANGELOG.md states 4.0.1",
+        "The date '(julio 2026)' is reported as incomplete and badly formatted: it must be '(22 de julio de 2026)', matching CHANGELOG.md",
+        "The date '18 de septiembre de 2023' is reported as disagreeing with CHANGELOG.md, which dates 0.43.4-0.2.0 on 2023-07-21",
+        "The bare 'Stratio Discovery', 'Stratio Virtualizer' and 'Stratio Command Center' are reported as needing italics and, for Virtualizer, the '_Stratio {modulename}_' attribute",
+        "'Soporte para placements' is reported as an anglicism to be replaced with 'Compatibilidad con'",
+        "The generic terms 'driver', 'placements', 'priority classes' and 'snippets' are reported as needing italics in this Spanish page"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review the file .claude/skills/write-stratio-docs/evals/files/test-mirror-en.adoc (an English-language sample page) and return the corrected text. Report only, do not modify the file.",
+      "expected_output": "Report with: the italics removed from generic terms in the English page, the first person plural removed, the '^[English]^' marker removed (it is Spanish-only), the source block retagged as json, the .xlsx literal in backticks, the trademark symbol added to PostgreSQL, and the non-descriptive link text fixed.",
+      "files": [
+        "evals/files/test-mirror-en.adoc"
+      ],
+      "assertions": [
+        "The italics on the generic terms 'client-server certificate', 'policies', 'driver', 'endpoint' and 'pod' are reported as wrong in an English page: they must be roman (R13)",
+        "The italics on '_Stratio PostgreSQL_' are reported as CORRECT and must be kept (product names stay italic in both languages)",
+        "The first person plural 'We recommend that you check' is reported and rewritten impersonally or as a direct imperative",
+        "The '^[English]^' marker is reported as Spanish-only and must be removed from the English page",
+        "The block '[source,bash]' is reported as wrong for a JSON snippet and must be '[source,json]'",
+        "'.xlsx' is reported as a literal that needs backticks: `.xlsx`",
+        "The third party 'PostgreSQL' is reported as needing its registered trademark symbol: 'PostgreSQL®'",
+        "The link text 'here' is reported as non-descriptive and replaced with a text naming the destination"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review the file .claude/skills/write-stratio-docs/evals/files/test-upgrade-claims.adoc (a Spanish-language upgrade page). Verify every factual claim against the code of this repository and against the Stratio Discovery descriptor of Universe 15.1 in the Stratio/kubernetes-universe repository. Report only, do not modify the file.",
+      "expected_output": "A report identifying four false claims (the removed authenticator option, the absence of downtime, high availability, and the rollback without restoring a backup), the incomplete version, and the broken cross-reference anchor.",
+      "files": [
+        "evals/files/test-upgrade-claims.adoc"
+      ],
+      "assertions": [
+        "The version '0.56.4' is reported as incomplete: the version of _Stratio Discovery_ has two halves and must be written in full (for example 0.56.4-0.2.0), because a bare 0.56.4 reads as the Metabase version",
+        "The claim that the \"Authentication method\" deployment option was removed is reported as FALSE: the Universe 15.1 descriptor still declares it with its four values; what changed is that it moved from level 1 to level 2, the advanced view. The image only special-cases `gosec-sso` (with any other value it does not copy the JWT public key, does not set `JWT_PUBLIC_KEY_LOCATION` and drops the `uid` default of `JWT_USERNAME_CLAIM`), but `headers`, `jwt` and `metabase-native` remain supported and documented in `end-user-authentication.adoc`",
+        "The claim that the upgrade does not require downtime is reported as FALSE: the descriptor declares highAvailability false with a single replica",
+        "The claim that _Stratio Discovery_ supports high availability with several replicas is reported as FALSE",
+        "The claim that reverting the version is enough to go back is reported as FALSE or incomplete once the schema migration has been applied: the metadata database dump has to be restored",
+        "The duration 'unos 5 minutos' is reported as an unqualified figure: it must state whether it is measured or estimated",
+        "The cross-reference anchor '#_configuraciones_especificas' is reported as broken: deployment.adoc has no such section (the real id is '#_configuración')",
+        "The environment variable `AUTHENTICATOR` is reported as needing to be named by its descriptor title, \"Authentication method\", in double quotes, with the variable in backticks only if the reader needs it outside _Stratio Command Center_ (R28)"
+      ]
+    }
+  ]
+}

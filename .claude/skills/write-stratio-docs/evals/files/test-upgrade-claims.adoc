@@ -1,0 +1,11 @@
+= Actualización de versión
+
+_Stratio Discovery_ 0.56.4 se despliega desde _Stratio Command Center_.
+
+Se ha eliminado la opción de despliegue "Authenticator method to use". El único autenticador permitido es "gosec-sso".
+
+La actualización tarda unos 5 minutos y no requiere parada del servicio, ya que _Stratio Discovery_ admite alta disponibilidad con varias réplicas.
+
+Si la migración falla, se puede volver a la versión anterior revirtiendo la versión en _Stratio Command Center_, sin más.
+
+Consulta la xref:operations-guide:installing-and-upgrading/deployment.adoc#_configuraciones_especificas[sección de configuraciones específicas] para más detalle.

@@ -1,0 +1,194 @@
+---
+name: write-stratio-docs
+description: Style, conventions, and self-review checklist for Stratio Discovery's product documentation under stratio-docs/ (AsciiDoc, Antora). ALWAYS load this skill when the user wants to document, write, draft, edit, translate, or review anything under stratio-docs/ — a feature, release note, breaking change, how-to, troubleshooting entry, environment variable, upgrade guide or fact sheet, or any .adoc page — or asks to "document X", "write the docs", "update the guide", or mirror content between Spanish and English. The Antora component is `stratio-discovery`, and the product is Metabase integrated into the Stratio ecosystem. It defines person/tone, product and concept naming, trademark symbols, the per-language italics rule, the quote/backtick system, admonitions, cross-references, per-language anchors, the mandatory ES+EN mirror, structural rules, the two-part version scheme, the approved-term and translation glossaries, and a final self-review checklist so new content matches the existing docs and passes the documentation team's editorial review on the first pass.
+---
+
+# Writing Stratio Discovery documentation (stratio-docs)
+
+Product documentation lives under `stratio-docs/` and is built with **Antora** from **AsciiDoc** (`.adoc`). The Antora component is **`stratio-discovery`**. Follow these conventions so new content is indistinguishable from what is already there **and passes the documentation team's editorial review on the first pass**.
+
+## Single source of editorial truth (read first)
+
+The detailed rules below live in four reference files — the documentation team's own doctrine, extended with what has been verified in this repo (29 content pages per language, 31 `.adoc` files counting `nav.adoc` and the installation-guide partial). Load them before writing or reviewing; do not restate them from memory:
+
+- [`references/decalogue.md`](references/decalogue.md) — 10 style principles + formatting rules R1–R33 (per-language italics, literal taxonomy, bold, anchor spacing, xref scope, the two-part version format, images, source-language inventory, UI option labels, config set in _Stratio Command Center_, per-language anchors…).
+- [`references/term-glossary.md`](references/term-glossary.md) — approved term spellings vs. incorrect forms (products, third parties, technologies). **Never filtered**: it covers the whole Stratio ecosystem because these docs cross-reference other tools and dozens of third-party data sources. The appendix carries the Discovery-specific nomenclature.
+- [`references/translation-glossary.md`](references/translation-glossary.md) — words that stay in English (and go in italics in ES), the ES→EN table, canonical lexical preferences, and the per-language italics split for Discovery jargon.
+- [`references/page-templates.md`](references/page-templates.md) — page anatomy, the module map, who owns each fact, file/folder placement, how to register a page in `nav.adoc`, Antora mechanics (`antora.yml`, `{modulename}`, the installation-guide partial), and ready-to-paste skeletons per page type (hub, configuration, environment-variable reference, troubleshooting, what-is-new, release notes, upgrade-planning hub, upgrade fact sheet). Load it when creating, moving or renaming a page.
+
+The sections below are the operational index; the references carry the exhaustive lists and examples.
+
+## One product, two codebases
+
+_Stratio Discovery_ is the data-exploration and visualization tool of the _Stratio Generative AI Data Fabric_. It is **Metabase integrated into the Stratio ecosystem** — a single container that bundles:
+
+- **Metabase** (the open-source product; a third party, roman, no symbol), listening on `127.0.0.1:3000`.
+- **nginx**, the only public entry point, terminating TLS on `443` and serving the health endpoint on `3009`.
+- **`discovery-cicd`**, a second JVM process that exports and imports collections on `8087`, exposed by nginx under `/discovery-cicd` (`GET /discovery-cicd/export/<id>`, `POST /discovery-cicd/import`).
+- Stratio's own Metabase drivers, **`crossdata`** (display name "Stratio Virtualizer") and **`stratiopostgres`**, plus the bundled JDBC driver of _Stratio {modulename}_.
+
+**Source of truth for behavior is the code, and the code is split across repositories.** Metabase behavior, the authentication middleware and the schema migrations live in the **`Stratio/stratio-metabase`** fork (this repo is `Stratio/discovery`, a different one); the deployment options an operator sees live in **`Stratio/kubernetes-universe`**. `page-templates.md` carries the table of who owns which fact — consult it before writing a behavioral claim, and if you cannot confirm a claim, leave it out or mark it `// REVISAR:` rather than guess.
+
+## Mandatory ES + EN mirror
+
+Every page exists twice, in mirrored trees:
+
+```
+stratio-docs/es/modules/<module>/pages/...   ← Spanish
+stratio-docs/en/modules/<module>/pages/...   ← English
+```
+
+**Any content change must be applied to BOTH languages**, at the same structural location, **with the same line count**. Modules: `ROOT`, `operations-guide`, and `installation-guide` (partial-only). Images live under `<module>/assets/images/`, duplicated per tree with the same file name.
+
+The mirror is **not a literal copy**: person, terminology and especially italics are recalibrated per language (see below). Write Spanish with full orthographic correctness (accents, `ñ`, `¿`/`¡`). Never strip diacritics.
+
+⚠️ **`^[English]^` is an ES-only marker and the most easily lost convention here.** Every link in the Spanish tree that points at documentation available only in English carries it right after the link text: `https://www.metabase.com/docs/…[documentación de Metabase] ^[English]^`. Count them with `grep -ro '\^\[English\]\^' es --include='*.adoc' | wc -l` (a line can carry two, so `grep -c` under-counts); there are **zero in `en/`**, where the marker would be meaningless. When you add a link to Metabase's documentation in ES, add the marker; when you mirror that line into EN, drop it. It is a deliberate ES/EN divergence, so it does not break the line-count parity — but forgetting it in ES, or copying it into EN, breaks the convention in either direction.
+
+## Person and tone
+
+- **Address the reader in the second person, informal (tú)**, in the active voice and imperative: `puedes`, `debes`, `haz clic`, `consulta`, `asegúrate`. English uses the direct second person ("you can", "you must", "make sure"). Prefer `Puedes configurarlo` over `Se puede configurar`, `Hay que` over `Es necesario`, `debes` over `deberás` (present, not future), and a direct imperative (`configura el _driver_`) over a nominalized obligation (`es necesario configurar el _driver_`). See decalogue principle 3 — it is the docs team's most frequent correction.
+- **Describe system behavior impersonally** (passive/reflexive): `se ha eliminado…`, `los grupos se sincronizan…` / "has been removed", "the groups are synchronized".
+- **Never the first person plural**: not `recomendamos` → `se recomienda`.
+- ⚠️ **This repo leaks a narrative, jokey voice** that the docs team removes on sight: `no vamos a reinventar la rueda`, `vamos a bromear un poco`, `¡abróchate el cinturón de seguridad!`, `te pedimos que la borres`, `Lamentamos las molestias`, `Por favor, lee esta breve guía`, `¡haz clic en "Deploy"!`. Rewrite them impersonally when you touch the paragraph, and never add new ones.
+
+## Naming (most important)
+
+- **Stratio products: italics, full name, every time.** `_Stratio Discovery_` (never "Discovery" alone), `_Stratio Command Center_`, `_Stratio Gosec_`, `_Stratio KEOS_`, `_Stratio PostgreSQL_`, `_Stratio Generative AI Data Fabric_`. The word "Stratio" alone is **not** italicized (`el ecosistema Stratio`, not `el ecosistema _Stratio_`).
+- **`Gosec`, not `GoSec`** — this was the repo's most frequent naming defect, normalized across both trees; `grep -rc GoSec es en` must return nothing. Keep it that way, in prose only: never touch the `GOSEC_*` variables, the `gosec-sso` value, the `gosec/users/create` task names, or the `'Gosec SSO Authenticator Settings'` UI label.
+- **Prefer the `{modulename}` attribute for Crossdata/Virtualizer.** Write `_Stratio {modulename}_`; it resolves at site build time. The tree still hardcodes `_Stratio Virtualizer_` in a few places (`grep -rc '_Stratio Virtualizer_' es en --include='*.adoc'`) — acceptable in the frozen release-notes history, but not in pages describing the current version.
+- **Metabase is a third party**: roman, no italics, no trademark symbol. So are Kubernetes, Vault, Docker, Java, Oracle, MySQL, MongoDB, BigQuery, Amazon Redshift, PgBouncer, Prometheus, Jetty, nginx. **`PostgreSQL®` carries the `®` on every mention** — but `_Stratio PostgreSQL_`, the Stratio service, does not. Watch the recurring typo `PostgresSQL` (and `_Stratio PostgresSQL Framework_`, which does not exist).
+- **`discovery-cicd` is a component id, not a product**: backticks, `` `discovery-cicd` ``. The tree mixes bare and italic forms — normalize to backticks.
+- **Metabase object names split in two groups, and the split is not intuitive.** The ES tree **translates** `collection` → `colección`, `question` → `pregunta`, `subscription` → `suscripción`, `pulse` → `pulso` and `model` → `modelo`; it **keeps in English**, in italics, `_dashboard_`, `_snippet_` and `_x-ray_`. Follow that split — writing «la collection» in Spanish contradicts every one of the dozens of occurrences of «colección». Never `panel` for a `_dashboard_`, never `consulta guardada` for a `pregunta`.
+- **Source labels are NOT authoritative for naming.** Descriptor field titles and UI labels use bare or non-compliant names. When you surface one in prose, normalize the product name — but keep the *label itself* verbatim and in English when you are quoting what the operator reads on screen (`"Use virtualizer jdbc from Extra JARs"`, `'Gosec SSO Authenticator Settings'`).
+- **A deployment option is named by its descriptor `title`, not by its environment variable** (R28). The operator sees a labelled field, not a variable: `la opción "Allowed groups"`, not `la variable `ALLOWED_GROUPS``. Add the variable in backticks and in parentheses only when the reader needs it outside _Stratio Command Center_. Use the `title`, never the `description` — the `title` of `AUTHENTICATOR` is "Authentication method". A variable with no option behind it (`LOG_ACCESS_DATA`, `TENANT_NAME`, `CURL_CUSTOM_SECURITY_OPTS`) is cited by name in backticks.
+- **Literals: use the right marker, not always backticks** — see the literal taxonomy (R14). Config/env/property/endpoint path/JDBC connection string → backticks (`` `ALLOWED_GROUPS` ``, `` `/api/health` ``, `` `ssl=true&sslmode=verify-full` ``); file names and filesystem paths → italics (_log4j2.xml_, _/etc/pki/discovery.pem_); execution states → italics (`_Running_`); strings the system emits → double quotes (`"error 503"`, `"You are not allowed to access Metabase"`).
+
+## Versions: two halves, and they are not interchangeable (R21)
+
+The version of _Stratio Discovery_ is `${Metabase version}-${Stratio version}`: in `0.56.4-0.2.0`, `0.56.4` is the bundled **Metabase** version and `0.2.0` is Stratio's own. **Always write both halves** — a bare `0.56.4` reads as the Metabase version.
+
+- Series (all patches): `0.56.4-0.2.X`. Exact version: `0.56.4-0.2.0`.
+- **There is no one-to-one correlation with the Universe**, unlike other Stratio modules: `0.50.21-0.2.0` ships in Universes 14.8, 14.9 and 14.10; `0.56.4-0.1.3` in 15.0; `0.56.4-0.2.0` in 15.1. Cite the Universe wherever it matters.
+- **Lexicographic order is misleading**: `0.40.0` (old scheme) sorts above `0.38.1-0.2` though it is older, and two release lines are maintained in parallel from different branches.
+- The `version: '0.56.4-0.2'` of `antora.yml` is the **docs-portal** segment. Do not change it when documenting a feature.
+
+## Italics recalibrate per language — EN ≠ ES (R13)
+
+The single most common silent mismatch. In the **ES** page, generic infrastructure anglicisms go in italics; in the **EN** page they drop the italics — but products and object-type names keep them in both.
+
+- **In ES**, italic: `_driver_`, `_dashboard_`, `_cookie_`, `_token_`, `_whitelist_`, `_timeout_`, `_plugin_`, `_snippet_`, `_trigger_`, `_placement_`, `_troubleshooting_`, `_streaming_`, `_login_`, `_backend_`, `_pool_`, `_endpoint_`, `_cluster_`, `_namespace_`, `_pod_`, `_tenant_`, `_x-ray_`.
+- **In EN**, those same terms are **roman**: `driver`, `dashboard`, `cookie`, `token`, `whitelist`, `timeout`, `plugin`…
+- **Italic in BOTH languages**: every `_Stratio X_` product name; Metabase object *types* named as types (`_Collection_`, `_Question_`, `_Dashboard_`); file names and paths.
+
+⚠️ **`driver` is the trap in this repo.** It is the most frequent generic term (Metabase drivers, the JDBC driver, the _Stratio {modulename}_ driver), and `key-concepts.adoc` marks it three different ways on the same page — `` `drivers` ``, `'Driver'` and `_drivers_`. It is a common noun, not a literal: italic in ES, roman in EN.
+
+## Quotes, backticks and italics (R1 + R14)
+
+The quote system is intentional — each marker tells the reader what kind of element it is:
+
+- **Single quotes** `'…'`: navigation paths, tabs, descriptor sections — `'Services' → 'Deploy service'`, `'General' → 'User Authentication'`.
+- **Double quotes** `"…"`: clickable buttons, values the user must type, quoted messages, and **the exact English label of a _Stratio Command Center_ deployment option** — `"Deploy"`, `"Customize deployment"`, `"Use virtualizer jdbc from Extra JARs"`. Use **straight** quotes, never curly `“…”` — and no typographic apostrophes `’`, which the EN tree carried in three places until the upgrade-documentation change fixed them.
+- **Backticks** `` `…` ``: commands, attributes, parameters, env vars, config values, endpoint paths, JDBC connection strings, component ids — `` `ALLOWED_GROUPS` ``, `` `gosec-sso` ``, `` `discovery-cicd` ``.
+- **Italics** `_…_`: form fields and data structures, file names and paths, execution states, plus all naming italics above.
+- **Field vs. listed option:** a field named in running prose is italic (`el campo _Admin group_`). For a deployment option, **R28 is the rule for all new content**: the descriptor `title` in double quotes, with the variable in backticks only when the reader needs it outside _Stratio Command Center_. `end-user-authentication.adoc` predates R28 and puts both the label and the variable in backticks (`` * `Use group whitelist` (variable de entorno `USE_GROUP_WHITELIST`): … ``); match that file only if you add a bullet to its existing list. That page is itself inconsistent — it backticks `` `User Authentication` `` on one line and double-quotes it on another — so never take it as the model for anything else. There is not a single bold label in it: do not invent one.
+
+## Dashes, bold, acronyms
+
+- **Em-dash asides `—…—` → parentheses** (R4/R18), and take the chance to shorten. Preventive here: there is not a single `—` in either tree, so the rule exists to keep it that way.
+- **Bold uses a single asterisk and covers the whole phrase** (R15). The one accepted bold+italic combination is `*_Breaking change_*` as a release-notes bullet label; do not extend it.
+- **Acronym expansion** (R6): in ES the expansion is a foreign-language phrase → italics: `SSO (_Single Sign-On_)`. In EN it is not italicized. **Acronyms are invariable in the ES plural** (`las API`, `los ID`, `los JDBC`), but take `s` in EN (`APIs`, `IDs`).
+
+## Cross-references and anchors (R16 + R17 + R30)
+
+- **Within these docs** (same `stratio-discovery` component): `xref:<module>:<path>.adoc[text]` — **2 parts**, module prefix **always** written, including `ROOT`. Both trees together carry a few hundred (`grep -rho 'xref:[a-z-]*:' es en --include='*.adoc' | sort | uniq -c`). There is **no `user-guide` module** — `user-guide.adoc` is a page of `ROOT`.
+- **To another component**: `xref:<component>:<module>:<path>.adoc[text]` — **3 parts**. In use: `stratio-gosec`, `stratio-virtualizer`, plus the self-reference `stratio-discovery` from the installation-guide partial (an intentional exception; do not "fix" it).
+- **Anchors are PER LANGUAGE in this repo** — the opposite of the `intelligence` repo, so do not copy that rule here. Every legacy page relies on the id Antora generates from the heading text, and headings are translated: `#_jdbc_y_drivers_en_metabase` (ES) vs `#_jdbc_and_drivers_in_metabase` (EN). Never copy an anchor across trees. Accents survive in the id; `™`/`®` are dropped.
+- **New sections that another page links to must declare an explicit `[#slug]`**, identical in both trees, with **one blank line** after it (R16). The pages that declare them today are the upgrade fact sheet (18 `[#slug]`, at the same lines in both trees), `what-is-new/breaking-changes.adoc` (`[#v0564-02x]`, `[#v0564-01x]`), `upgrade.adoc` (`[#cct-steps]`, `[#downtime]`, `[#upgrade-failure]`, `[#post-check]`), `upgrade/details-upgrade.adoc` and `troubleshooting.adoc` (`[#virtualizer-sync-issues]`); every other page still relies on the id Antora generates from the heading, so grep for `[#` before you assume a page has none. Do not retrofit anchors onto old pages as a standalone change — it would touch one tree only and fail `LanguageCheck`.
+- **Renaming a heading silently breaks every inbound link to it**, in that language only. Grep both trees for the old id before renaming.
+- **External links:** URL macro `https://host/path[descriptive text]` — not `xref:`, and the `link:` macro is not used. Descriptive text, never "aquí"/"here"/"más información".
+- **Verify every `xref` target and anchor exists** before finishing. Two were broken until the upgrade-documentation change fixed them (`deployment.adoc#_configuraciones_especificas` / `#_specific_configurations`, ids that never existed — the real ones are `#_configuración` / `#_configuration` — and an EN `xref` with a space before its `[`); none is broken today, and a resolver script over both trees is the way to keep it that way.
+
+## Admonitions (R9)
+
+**Inline is the default** — one paragraph on one line: `NOTE: Texto del aviso.` Use the delimited block form **only** when the admonition contains several paragraphs, an image, or a code block. All four are in use, `NOTE` and `WARNING` most often; count them with `grep -rc '^NOTE:\|^\[NOTE\]' es --include='*.adoc'` if you need the current figure. **`CAUTION` is not used — do not introduce it.** It survived in `key-concepts.adoc` until it was normalized to `WARNING`, and it is the one admonition the rest of the Stratio docs repos do not use either.
+
+## Structure and elements
+
+- **Page header:** line 1 is `= Title` (naming italics, sentence case, no trailing period), then one blank line and an intro paragraph (general → specific). Add **no** document attributes (`:toc:`, `:description:`, `:page-*:`) — zero pages in the repo use them.
+- **Headings:** `=` (page title) → `==` → `===` → `====`. Section titles carry product italics and are sentence case.
+- **Lists:** ordered `.`, nested `..`/`...`; unordered `*`/`**`/`***`. Each item starts uppercase and ends with a period; lowercase after a colon unless a proper noun. Use a **continuation line `+`** to attach a code block, image or admonition to a numbered step.
+- **Code blocks:** `[source,<lang>]` then `----` … `----`. Languages present today: `json` and `text`. `bash` is the right tag for an actual shell command, but no block in the tree uses it any more — all six per tree held a log excerpt or a JSON snippet and were retagged. **`logs` is not a language** (Rouge does not know it) — it was used twice, in `create-a-new-stratio-virtualizer-connection.adoc`, and is now `text`. Never leave an empty `[source,]` nor a placeholder `[source,ruby]`, and **do not tag a log excerpt or a JSON snippet as `bash`**: that was the single most frequent block defect here.
+- **Tables:** `|===` … `|===`, one `|` per cell. **No old page declares `options="header"`, and only one declares `[cols]`** — `key-concepts.adoc:47` carries a bare `[cols=",^,"]` for column alignment, with no header option; every other old table simply writes its first row as the header and lets the widths be automatic. Only the upgrade-planning pages use `[cols="…", options="header"]`. Use the explicit form in new content, and do not "fix" an old table by adding it, because that changes the line count. In-cell line breaks with ` +`. `a|` cells are not used anywhere. **Every column declared in the header must carry data** — the environment-variable page declares an `Obsoleto`/`Deprecated` column that is empty in 44 of its 46 rows.
+- **Images:** always the block form `image::file.png[]` (51 per tree; the inline `image:icon.png[]` is not used here). Assets under `<module>/assets/images/`, one copy per tree with the same name. **No videos, no attachments** exist in this repo — do not introduce `video::` or `attachment$` without a real asset. ⚠️ Inside the installation-guide partial, `image::` is **fully qualified with three parts** (`image::stratio-discovery:installation-guide:discovery-installation-1.png[]`), like its `xref`s — do not "fix" that to a bare file name.
+- **Passthrough:** wrap a URL containing `${…}` as `+https://${host}/path+`, **with no space inside the `+…+`** (two EN pages got this wrong and rendered the marker literally until the upgrade-documentation change fixed them; none does today).
+- **Escape an example URL you do not want turned into a link** with a leading backslash: `\https://mi-instancia.example.com`. The repo does it four times per tree.
+- **Navigation arrows are `→` (U+2192), never the ASCII `->`.** Any `->` inside a navigation path is a defect: grep both trees (`grep -rn '\->' es en --include='*.adoc'`) before claiming the tree is clean. The three that survived until the upgrade-documentation change were on `installing-and-upgrading/deployment.adoc` (two) and `installation-guide/partials/installing-discovery.adoc` (one).
+- One — and only one — blank line between block elements. No trailing whitespace; no BOM; no non-breaking spaces (U+00A0). The EN tree used to carry a BOM on 23 of its 25 `.adoc` files; the upgrade-documentation change removed every one of them. There is no BOM in either tree today — never add one.
+
+Elements the repo does **not** use (don't introduce them): code callouts `<1>`, `[%collapsible]`, UI macros `kbd:`/`btn:`/`menu:`, the `link:` macro, definition lists (`term::`), `ifdef`/`ifeval` conditionals, and document attributes in the header.
+
+## Page structure, placement and Antora mechanics
+
+When creating, moving or renaming a page, follow `references/page-templates.md`. The essentials most often forgotten:
+
+- **Register the page in `nav.adoc`** — a new page is invisible until it is added to BOTH `es/` and `en/` `modules/ROOT/nav.adoc`, at the same position and keeping both files at the same line count. The ES nav writes explicit Spanish labels; the EN nav leaves `[]` to reuse the title. Follow the style of the file you are editing.
+- **Placement:** kebab-case filenames; module landing = `<module>.adoc`; a page with children is `X.adoc` beside a folder `X/`.
+- **Do not change `version`** in `antora.yml` (`'0.56.4-0.2'` — the portal version).
+- **`{modulename}` is defined by the site playbook, outside this repo.** Write `_Stratio {modulename}_`; do not define the attribute here. Escape a literal `{` in prose as `$\{…}` (R24).
+
+## What-is-new, breaking changes, release notes and upgrades
+
+Five complementary pieces, the same split the other Stratio products use — keep them consistent:
+
+- **`ROOT/pages/what-is-new.adoc`** — novelties only, grouped by version, plus the pointers to the breaking changes and to the upgrade planning. Because the upgrade jumps straight from Universe 14.10 to 15.1, it carries two sections: `== Novedades de <current>` and `== Novedades incorporadas desde <previous>`.
+- **`ROOT/pages/what-is-new/breaking-changes.adoc`** — the canonical list, grouped by version with an explicit anchor and the release date per section (`[#v0564-02x]` + `== 0.56.4-0.2.0 (22 de julio de 2026)`). Each entry is one bullet: **bold title**, then `Impacto:` and `Acción:`, and what happens to existing objects. The newest section opens with a `NOTE` saying that the direct path also receives the breaking changes of the previous version, linking them with `<<v0564-01x,…>>`. Never inline this list anywhere else — `what-is-new`, the release notes, `details-upgrade.adoc` and the fact sheet all **link** to it by anchor.
+- **`ROOT/pages/what-is-new/release-notes.adoc`** — history, newest first, one `== X.Y.Z-A.B.C (fecha)` per version. **The version number and the date must match `CHANGELOG.md` and the `git tag`.** Both were wrong until the upgrade-documentation change fixed them (two invented `0.51.21` entries and seven dates that disagreed with the CHANGELOG); every version this branch's `CHANGELOG.md` carries now matches it to the day. The `0.50.21-0.2.x` entries belong to the other release line — read their dates with `git show upstream/branch-0.50.21-0.2:CHANGELOG.md`.
+- **`operations-guide/pages/installing-and-upgrading/upgrade.adoc`** — the version-agnostic procedure, plus `upgrade/details-upgrade.adoc` for the adjustments of each reachable target version, `upgrade/special-upgrades.adoc` for the paths that no supported Universe can take, `upgrade/rollback.adoc` for the way back and `upgrade/migration-recovery.adoc` for diagnosing a failed migration. See the seven-homes table in `page-templates.md`.
+- **`operations-guide/pages/installing-and-upgrading/upgrade-overview.adoc`** + `upgrade-overview/from-<x>-to-<y>.adoc` — the planning index and one fact sheet per upgrade path. Same page title and same section order as every other Stratio module, so an operator recognizes the structure. See the skeleton in `page-templates.md`.
+
+**Every deprecation must tell the user three things**, not just "X was removed":
+
+1. **Impact** — what stops working / what they will notice.
+2. **Action or alternative** — what to do instead. If there is no 1:1 replacement, say so and give the closest path.
+3. **What happens to existing objects** — collections, questions, dashboards, subscriptions, database connections: preserved, migrated, or left broken?
+
+If the removed item was backend-only or removed only from the descriptor, say which; otherwise "removed" reads as a contradiction. **Check the claim against the released descriptor of the target Universe**, not against a report: an option that moved to the advanced view (`level: 2`) has not been removed, and documenting it as removed is a real defect this repo already carries.
+
+**Attribute a feature or deprecation to the release, not to the CHANGELOG section of the branch you happen to be on.** Two release lines are maintained in parallel (`branch-0.50.21-0.2` for Universes 14.8–14.10, `branch-0.56.4-0.2` for 15.1), so a change can exist in one and not the other. Read the other branch with `git show upstream/branch-0.50.21-0.2:CHANGELOG.md` before claiming a version is the latest.
+
+## Canonical branch for docs
+
+Documentation lives in the same repo across the release branches (`branch-0.56.4-0.2`, `branch-0.50.21-0.2`, …). A fix often needs to be applied to the current branch **and** forward-ported/back-ported. Before writing something "new", check whether it already exists in another branch — it may only need a port. To confirm whether a feature actually shipped in a Universe, read the descriptor of that Universe's branch in `Stratio/kubernetes-universe`, not the local `deployment/CCT/k8s-descriptors/discovery.json`, which is the development copy.
+
+## Final step: self-review before finishing (do not skip)
+
+Before you consider any `.adoc` change done, run this checklist — it is the same rubric the documentation team applies in editorial review:
+
+0. **Diff before sending** — run `git diff` on every page you touched and confirm that each changed line is one you meant to change.
+1. **Mirror** — the change exists in BOTH `es/` and `en/` at the same location, **with the same line count**, with italics recalibrated per language (R13) and `^[English]^` present in ES / absent in EN on every link to English-only documentation.
+2. **Naming** — every product term matches `term-glossary.md`; Stratio products in italics + full name; `Gosec` not `GoSec`; `PostgreSQL®` for the third party but no `®` on `_Stratio PostgreSQL_`; `PostgresSQL` never; Metabase roman and unmarked; `Stratio` alone roman; `_Stratio {modulename}_` preferred over a hardcoded name in current-version pages; every deployment option named by its descriptor `title` in double quotes, not by its environment variable (R28).
+3. **Untranslated terms** — English jargon in italics in ES per `translation-glossary.md`; canonical lexical choices applied (`compatibilidad` not `soporte`, `Desde la versión` not `A partir de la versión`); Metabase object names follow the split (translate `colección`, `pregunta`, `suscripción`, `pulso`, `modelo`; keep `_dashboard_`, `_snippet_`, `_x-ray_`).
+4. **Literals** — backticks / double quotes / single quotes / italics assigned per the R1+R14 taxonomy; no `[source,logs]`, no log excerpt tagged `bash`, no JSON tagged `bash`.
+5. **Dashes & bold** — no `—…—` asides (→ parentheses); bold with a single `*` covering the whole phrase; `*_Breaking change_*` the only bold+italic.
+6. **Cross-refs & anchors** — `xref` scope correct (2 vs 3 parts, module prefix always); the target file exists; the anchor exists **in that language's tree**; no anchor copied across trees; a blank line after every new `[#slug]`; descriptive link text; no space between `]` and `[`.
+7. **Admonitions** — inline unless multi-paragraph/with a block; no new `CAUTION`.
+8. **ES grammar & orthography** — accents and agreement, lowercase after `:`, "solo" without accent, no anaphoric "dicho", no `Por favor`, no first person plural; **acronyms invariable in the ES plural** (`las API`, not "APIs"); trademark + noun takes `de` (`el _driver_ de Metabase`). EN: Oxford comma, `Month DD, YYYY` with no ordinals, sentence-case headings.
+9. **Hygiene** — single blank lines between blocks, no trailing whitespace, no BOM added, straight quotes and straight apostrophes, no space inside a `+…+` passthrough, `→` and not `->`, and a backslash before an example URL that must not become a link.
+10. **Facts** — versions carry both halves and match `CHANGELOG.md` and `git tag`; dates match `CHANGELOG.md`; environment variables and logger names match `log4j2.xml` and `docker-entrypoint/`; deployment options match the descriptor of the target Universe in `Stratio/kubernetes-universe`; every deprecation states impact + action + fate of existing objects.
+11. **Navigation & placement** (new/renamed pages) — registered in BOTH `nav.adoc` files at the same position; correct module and kebab-case name; no page attributes; `antora.yml` `version` untouched.
+12. **EN register (R29)** — reread every English sentence against its Spanish pair: same order, same voice, same articles, same segmentation. Check `upgrade` (product version) vs `update` (image, driver, dependency).
+13. **Syntax render (objective check)** — render every changed page with Asciidoctor to catch what the manual checklist misses (unterminated `----`/`====`/`|===` blocks, malformed tables, dropped cells): `npm exec --yes -- asciidoctor <file> -o /dev/null` (the `npx --yes asciidoctor` form fails with an npm "Unknown command" error and looks like Asciidoctor is missing when it is not). Render **one file per call**. Clean stderr = no structural errors. Standalone rendering does NOT resolve Antora `xref:`/`image::` targets, so ignore those warnings and use it only for block/table/list structure.
+14. **Docs CI gate (`doStratioDocsChecks`, invoked from the `DOC` stage of the `Jenkinsfile`)** — Asciidoctor does NOT catch these, so verify before pushing:
+    - **LanguageCheck** — every page the PR touches must be modified in BOTH `es/` and `en/` **with equal line counts AND matching structure** (same heading levels, same number of bullets and table rows). A same-line-count edit that changes a heading level in only one language still breaks structural parity — compare the per-level heading profile with `grep -nE '^=+ '` (ASCII space required, so a stray U+00A0 after `===` surfaces as a missing heading). A single-language-only fix FAILS the gate, so pair every edit across the two trees or drop it from the PR.
+    - **EmptyLines** — a blank line must precede every block, including `[source]`, must **follow a closing `----` when the next line is a list item**, and must **follow a block anchor** before its heading. Never glue a `.Title` caption directly onto a `[source]` block.
+    - **OrphanAssets** — every image under `<module>/assets/images/` must be referenced by some page; when you remove content that used an image, delete the now-unreferenced file in **both** trees.
+    - **AssetsLinks** — a modified page must not reference a missing `image::`/`image:` asset; confirm the target exists, and beware a pre-existing broken reference surfacing merely because you touched the page.
+
+## Reviewing existing docs (batch / PR)
+
+The same references drive review, not just authoring. To review a branch or PR:
+
+1. List the changed pages: `git diff --name-only <base> | grep '\.adoc$'`, or `gh pr diff --name-only <PR>`.
+2. Read each `.adoc` in full and apply the self-review checklist above, term by term against `term-glossary.md` and `translation-glossary.md`, per language.
+3. Report findings grouped per file and category (facts, naming, per-language italics, quotes/backticks, dashes/bold, cross-refs, structure, ES/EN grammar, hygiene). Do not justify each change unless asked.
+4. When a technical detail cannot be confirmed from the docs alone (an `xref` path, a version, an environment variable, a deployment option), add an inline `// REVISAR: <reason>` comment instead of guessing — and verify it against the repository that owns the fact (see the ownership table in `page-templates.md`).

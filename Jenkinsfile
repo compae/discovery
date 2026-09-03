@@ -9,6 +9,8 @@ hose {
     VERSIONING_TYPE = "stratioVersion-3-3"
     GRYPE_TEST = true
 
+    ABORT_BUILD_IF_ONLY_MODIFIED = "CLAUDE.md,Readme.md,.claude/skills/write-stratio-docs/SKILL.md,.claude/skills/write-stratio-docs/references/decalogue.md,.claude/skills/write-stratio-docs/references/page-templates.md,.claude/skills/write-stratio-docs/references/term-glossary.md,.claude/skills/write-stratio-docs/references/translation-glossary.md,.claude/skills/write-stratio-docs/evals/evals.json,.claude/skills/write-stratio-docs/evals/files/test-mirror-en.adoc,.claude/skills/write-stratio-docs/evals/files/test-naming-italics.adoc,.claude/skills/write-stratio-docs/evals/files/test-upgrade-claims.adoc,.claude/skills/write-stratio-docs/evals/files/test-versions-facts.adoc"
+
     DEV = { config ->
         doPackage(config)
         doSsh(conf: config, sshConf: [files: "deployment/CCT/descriptors/*",

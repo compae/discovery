@@ -1,0 +1,25 @@
+= Conectar Discovery con una base de datos de Crossdata
+
+En esta sección vamos a explicar cómo conectar Discovery con un servidor de Stratio Virtualizer. Recomendamos leer antes la guía de conceptos importantes.
+
+Por favor, ten en cuenta que Discovery necesita un driver específico para cada base de datos. El driver de Stratio GoSec no interviene aquí, pero sí lo hace la política que se configura en GoSec.
+
+Para conectar con PostgreSQL, ve a 'Admin settings' -> 'Databases' y pulsa el botón "Add database". En el momento del despliegue, la instancia ya tiene configurado el pool de conexiones.
+
+Dicha configuración se puede cambiar con posterioridad —si el operador tiene permisos— desde Stratio Command Center.
+
+|===
+| Nombre | Descripción
+
+| VIRTUALIZER_JDBC_FROM_EXTRA_JARS
+| Indica si se debe usar el driver JDBC de las Extra JARs. El valor predeterminado es false.
+|===
+
+Las CAs de la plataforma se almacenan en el fichero /etc/pki/ca-bundle.pem. Si el endpoint no responde, revisa los logs del contenedor.
+
+[source,ruby]
+----
+curl -k https://mi-instancia.example.com/api/health
+----
+
+Consulta https://www.metabase.com/docs/latest/[aquí] la documentación oficial de _Metabase®_.

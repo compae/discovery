@@ -1,0 +1,17 @@
+= Notas de release
+
+Estos son los aspectos más destacados de Stratio Discovery en los últimos lanzamientos:
+
+== 0.56.4-0.2.0 (julio 2026)
+
+* Mejora del rendimiento de la sincronización de bases de datos de Stratio Virtualizer.
+* Actualización del driver JDBC de Stratio Virtualizer a la versión 3.1.1.
+
+== 0.51.21-0.1.1 (8 de noviembre de 2024)
+
+* Se ha añadido una opción de despliegue en Stratio Command Center para evitar el bloqueo de conexiones JDBC.
+
+== 0.43.4-0.2.0 (18 de septiembre de 2023)
+
+* Soporte para placements y priority classes en el despliegue de Stratio Discovery.
+* Importación y exportación de snippets de código SQL en discovery-cicd.

@@ -1,0 +1,20 @@
+= Verifying the installation
+
+You can follow these steps to check that the installation of _Stratio Discovery_ has completed correctly.
+
+The _client-server certificate_ used to connect to _Stratio PostgreSQL_ is stored in Vault. In _policies_, look for the one that matches your instance. The _driver_ reads it at start-up, and the _endpoint_ `/api/health` reports the status of the _pod_.
+
+We recommend that you check the following:
+
+. The login works and a user can access the application. ^[English]^
+. A question against a PostgreSQL database returns results.
+. The collection export works. Note that the .xlsx export is not affected.
+
+[source,bash]
+----
+{
+  "MB_JDBC_PARAMETERS": "prepareThreshold=0"
+}
+----
+
+For more information, see the Metabase documentation https://www.metabase.com/docs/latest/[here].
