@@ -17,7 +17,7 @@ La tabla responde, con una fila por decisión, a lo que necesitas para dimension
 | Pregunta | Respuesta | Detalle
 
 | ¿Cuánta parada hay en el peor caso?
-| Toda la actualización. _Stratio Discovery_ no admite alta disponibilidad, así que el servicio deja de estar disponible desde que se cambia la versión hasta que el _pod_ nuevo responde. Lo habitual son *unos minutos* (estimado). El plazo del _startup probe_, 300 segundos con los valores por defecto, no lo acota: cuando se agota, Kubernetes reinicia el _pod_ y la migración queda a medias, así que hay que restaurar la copia de seguridad y volver a intentarlo.
+| Toda la actualización. _Stratio Discovery_ no admite alta disponibilidad, así que el servicio deja de estar disponible desde que se cambia la versión hasta que el _pod_ nuevo responde. Lo habitual son *unos minutos* (estimada). El plazo del _startup probe_, 300 segundos con los valores por defecto, no lo acota: cuando se agota, Kubernetes reinicia el _pod_ y la migración queda a medias, así que hay que restaurar la copia de seguridad y volver a intentarlo.
 | <<outage,Parada>>
 
 | ¿De qué depende esa duración?
@@ -45,7 +45,7 @@ La tabla responde, con una fila por decisión, a lo que necesitas para dimension
 | <<rollback,_Rollback_>>
 
 | ¿La versión anterior funciona sobre el Universo 15.1?
-| *No está validada.* Cada Universo declara la versión de _Stratio Discovery_ que se ha probado con él, y 0.50.21-0.2.x no forma parte del Universo 15.1.
+| *No.* No está validada: cada Universo declara la versión de _Stratio Discovery_ que se ha probado con él, y 0.50.21-0.2.x no forma parte del Universo 15.1.
 | <<coexistence,Convivencia>>
 
 | ¿Cuál es el riesgo global?
@@ -144,7 +144,7 @@ Actualiza los módulos en este orden: _Stratio KEOS_ primero, en su propia venta
 | Escenario | ¿Admitido? | Limitaciones
 
 | La versión anterior de _Stratio Discovery_ sobre el Universo 15.1
-| No está validada
+| No
 | Cada Universo declara la versión de _Stratio Discovery_ probada con él, y 0.50.21-0.2.x no forma parte del Universo 15.1. La versión nueva sí depende de la plataforma nueva, porque obtiene sus certificados del inyector de Vault del Universo 15.1.
 
 | El módulo actualizado con sus consumidores todavía sin actualizar
@@ -212,9 +212,13 @@ Actualiza los módulos en este orden: _Stratio KEOS_ primero, en su propia venta
 | Recomendado, con la antelación que fije tu política de cambios
 | El aviso se ha enviado y recoge el rango estimado de la parada.
 
-| Decidido qué se cambia en el descriptor durante la propia actualización: la opción "Instances" a `1` si tienes más de una réplica, que es lo único obligatorio, y, si quieres seguir la migración, "Metabase log level" a "INFO". El plazo del _startup probe_ no hay que tocarlo.
-| Lo primero es obligatorio; lo demás, opcional, en el mismo cambio de versión
-| La pantalla de actualización muestra esos valores antes de confirmar. Los dos opcionales hay que devolverlos a su valor de producción al terminar, con otra actualización del servicio, así que cuenta ese reinicio adicional en la ventana.
+| La opción "Instances" a `1` en el descriptor, si tienes más de una réplica, decidida antes de la propia actualización. El plazo del _startup probe_ no hay que tocarlo.
+| Obligatorio, en el mismo cambio de versión
+| La pantalla de actualización muestra ese valor antes de confirmar.
+
+| La opción "Metabase log level" a "INFO", si quieres seguir la migración.
+| Opcional, en el mismo cambio de versión
+| La pantalla de actualización muestra ese valor antes de confirmar. Hay que devolverlo a su valor de producción al terminar, con otra actualización del servicio, así que cuenta ese reinicio adicional en la ventana.
 |===
 
 [#phases]
@@ -512,17 +516,17 @@ El procedimiento de actualización resume qué hacer si la xref:operations-guide
 | La actualización se aborta antes de cambiar la versión, en los pasos 1 o 2
 | Sí
 | Nada: no se ha modificado el despliegue. Retoma la preparación cuando decidas una fecha nueva.
-| Inmediato. No se pierden datos.
+| Inmediato (estimada). No se pierden datos.
 
 | La versión se ha cambiado, pero el arranque falla antes de llegar a la migración
 | Sí
 | Revierte la versión del servicio en _Stratio Command Center_. La base de datos no se ha tocado, así que no hace falta restaurar el volcado. Es el caso de un fallo al preparar los certificados o la configuración.
-| Unos minutos (estimado). No se pierden datos.
+| Unos minutos (estimada). No se pierden datos.
 
 | La migración ha empezado, se haya completado o no
 | Sí, solo restaurando
 | Revierte la versión del servicio, restaura el volcado de la base de datos de metadatos y, si cambiaste el descriptor, restaura también su copia. No hay atajo: aunque la migración se quedara a medias, el esquema ya no es válido para la versión anterior.
-| Depende del tamaño de la copia (estimado). Sí: se pierde todo lo creado tras la actualización.
+| Depende del tamaño de la copia (estimada). Sí: se pierde todo lo creado tras la actualización.
 |===
 
 WARNING: Restaurar el volcado devuelve la base de datos al momento en que se hizo la copia. Todo lo que se haya creado o modificado después (preguntas, _dashboards_, colecciones, suscripciones y conexiones a bases de datos) se pierde, incluidas las ediciones hechas durante la propia ventana.

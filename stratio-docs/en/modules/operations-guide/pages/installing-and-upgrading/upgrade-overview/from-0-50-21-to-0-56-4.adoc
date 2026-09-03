@@ -45,7 +45,7 @@ The table answers, with one row per decision, what you need to size the window:
 | <<rollback,Rollback>>
 
 | Does the previous version work on Universe 15.1?
-| *It is not validated.* Each Universe declares the version of _Stratio Discovery_ that has been tested with it, and 0.50.21-0.2.x is not part of Universe 15.1.
+| *No.* It is not validated: each Universe declares the version of _Stratio Discovery_ that has been tested with it, and 0.50.21-0.2.x is not part of Universe 15.1.
 | <<coexistence,Coexistence>>
 
 | What is the overall risk?
@@ -144,7 +144,7 @@ Upgrade the modules in this order: _Stratio KEOS_ first, in its own window, and 
 | Scenario | Supported? | Limitations
 
 | The previous version of _Stratio Discovery_ on Universe 15.1
-| Not validated
+| No
 | Each Universe declares the version of _Stratio Discovery_ tested with it, and 0.50.21-0.2.x is not part of Universe 15.1. The new version does depend on the new platform, because it obtains its certificates from the Universe 15.1 Vault injector.
 
 | The upgraded module with its consumers still not upgraded
@@ -212,9 +212,13 @@ Upgrade the modules in this order: _Stratio KEOS_ first, in its own window, and 
 | Recommended, with the notice set by your change policy
 | The notice has been sent and gathers the estimated range of the downtime.
 
-| Decided what to change in the descriptor during the upgrade itself: the "Instances" option to `1` if you have more than one replica, which is the only mandatory one, and, if you want to follow the migration, "Metabase log level" to "INFO". The startup probe deadline does not need to be touched.
-| The first is mandatory; the rest optional, in the same version change
-| The upgrade screen shows those values before you confirm. The two optional ones have to be set back to their production values afterwards, with another service update, so count that additional restart in the window.
+| The "Instances" option set to `1` in the descriptor, if you have more than one replica, decided before the upgrade itself. The startup probe deadline does not need to be touched.
+| Mandatory, in the same version change
+| The upgrade screen shows that value before you confirm.
+
+| The "Metabase log level" option set to "INFO", if you want to follow the migration.
+| Optional, in the same version change
+| The upgrade screen shows that value before you confirm. It has to be set back to its production value afterwards, with another service update, so count that additional restart in the window.
 |===
 
 [#phases]
@@ -512,7 +516,7 @@ The upgrade procedure summarizes what to do if the xref:operations-guide:install
 | The upgrade is aborted before changing the version, in steps 1 or 2
 | Yes
 | Nothing: the deployment has not been modified. Resume the preparation when you decide on a new date.
-| Immediate. No data is lost.
+| Immediate (estimated). No data is lost.
 
 | The version has been changed, but the start-up fails before reaching the migration
 | Yes
