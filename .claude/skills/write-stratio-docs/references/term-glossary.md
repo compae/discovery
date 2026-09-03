@@ -533,10 +533,9 @@ ZIP
 
 ---
 
-
 # Appendix: Stratio Discovery additions and nuances
 
-These entries **extend** the glossary with nomenclature verified in the `stratio-docs/` tree of the `discovery-cicd` repository (29 content pages per language) and in its code. They do not remove any previous entry. The counts below are real occurrences in the Spanish tree.
+These entries **extend** the glossary with nomenclature verified in the `stratio-docs/` tree of the `discovery-cicd` repository (30 content pages per language, 32 `.adoc` per tree) and in its code. They do not remove any previous entry. The counts below are real occurrences measured at the baseline declared at the top of `SKILL.md` — `upstream/branch-0.56.4-0.2` at `fe149fe`, 2026-09-03 — and in the Spanish tree unless the entry says otherwise. **Remeasure before acting on one**, and mind the direction: an entry that names a form as a defect is telling you what NOT to write, and if the tree no longer contains it, there is nothing to sweep.
 
 ## The product and what it is built on
 
@@ -548,13 +547,13 @@ Discovery, Stratio discovery, discovery
 **Metabase** *(the open-source product _Stratio Discovery_ is built on). A **third party**: roman, no italics, no trademark symbol. Never `_Metabase_`, never `Stratio Metabase` in prose — `stratio-metabase` is the name of Stratio's Metabase fork repository (`Stratio/stratio-metabase`) and of the `stratio-metabase-builder` image, not a product name.*
 metabase, Meta Base, _Metabase_
 
-**discovery-cicd** *(the collection export/import service: a second JVM process inside the same container, exposed by nginx under `/discovery-cicd`, so its routes are `GET /discovery-cicd/export/<id>` and `POST /discovery-cicd/import`). It is a **component identifier, not a product name**: write it in backticks, `` `discovery-cicd` ``. The ES tree writes it in italics 10 times and inside a backticked path twice — normalize the prose mentions to backticks when you touch a page, in both trees at once.*
+**discovery-cicd** *(the collection export/import service: a second JVM process inside the same container, exposed by nginx under `/discovery-cicd`, so its routes are `GET /discovery-cicd/export/<id>` and `POST /discovery-cicd/import`). It is a **component identifier, not a product name**: write it in backticks, `` `discovery-cicd` ``. Measured at the baseline: **9 italic prose mentions in ES and 9 in EN** (all nine in historical `what-is-new/release-notes.adoc` entries, which is why the sweep has never been worth its own PR), against **4 backticked occurrences** — two of them the routes `` `/discovery-cicd/export/'collection_id'` `` and `` `/discovery-cicd/import?parentId='parent_collection'` `` in `export-and-import-collections.adoc`, two the bare identifier in `breaking-changes.adoc:34` and in the upgrade fact sheet. Normalize a prose mention to backticks when you already touch its page, in both trees at once; do not open a PR just for the sweep.*
 Discovery CICD, Discovery CI/CD, discovery cicd
 
 ## Stratio products referenced in these docs
 
 **Stratio Gosec** *(`_Stratio Gosec_`; provides identities, SSO and the authorization policies)*
-**`GoSec` was this repo's most frequent naming defect**: 58 occurrences across both trees, now normalized to `Gosec`. Keep it that way whenever you touch a page. The replacement is safe in prose but must NOT touch the `GOSEC_*` environment variables, the `gosec-sso` value of `AUTHENTICATOR`, the `gosec/users/create` descriptor task names, or the `com.stratio.gosec` packages — restrict it to `GoSec` followed by a non-letter.
+**`GoSec` was this repo's most frequent naming defect**: 58 occurrences across both trees at `ea8434b^`, all normalized to `Gosec` by the upgrade-documentation change. **Measured at the baseline, per tree: 0 `GoSec`, 35 `Gosec` in prose, 5 `GOSEC` (variable names) and 16 `gosec` (the `gosec-sso` value, the `gosec/users/create` task names and the `com.stratio.gosec` packages) — so this defect is closed** — the entry stays as a rule for new content, not as a task. Keep it that way whenever you touch a page. The replacement is safe in prose but must NOT touch the `GOSEC_*` environment variables, the `gosec-sso` value of `AUTHENTICATOR`, the `gosec/users/create` descriptor task names, or the `com.stratio.gosec` packages — restrict it to `GoSec` followed by a non-letter.
 The SSO mechanism itself is **Gosec SSO** (`_Stratio Gosec_ SSO` in prose); the descriptor group is `'Gosec SSO Authenticator Settings'`, cited verbatim in single quotes.
 
 **Stratio {modulename}** *(the Antora attribute that resolves to Crossdata/Virtualizer at site build time). **Prefer it over hardcoding**: the tree still has a few hardcoded `_Stratio Virtualizer_`, which is an inconsistency, not a style choice.*
@@ -584,11 +583,11 @@ Trademark symbol on **every** mention for those that carry one; never italicized
 
 Third-party proper nouns written **as-is, WITHOUT any trademark symbol and WITHOUT italics**, verified in the documentation tree: Metabase, Kubernetes, Vault, Docker, Java, Oracle, MySQL, MongoDB, BigQuery, Amazon Redshift, Google Analytics, PgBouncer, Prometheus, Jetty, Akka. None of these takes a symbol — do not add one. (Ubuntu, s6, curl and OpenSSL appear in the `Dockerfile` but not in the docs; if you introduce them, they follow the same rule.)
 
-**NGINX (commercial product) / nginx (open-source technology)** — the ES tree mixes `Nginx`, `NGINX` and `nginx` (the uppercase form also appears inside `NGINX_ERROR_LOG_LEVEL`, which is a variable and must not be touched). The reverse proxy inside the container is the open-source technology, so it is **`nginx`**, lowercase. `Nginx` capitalized is correct only when quoting the `'Nginx'` descriptor section label.
+**NGINX (commercial product) / nginx (open-source technology)** — the reverse proxy inside the container is the open-source technology, so it is **`nginx`**, lowercase. `Nginx` capitalized is correct only when quoting a descriptor label verbatim: the `'Nginx'` accordion of `'Settings'`, and the `"Nginx log level"` title of `NGINX_ERROR_LOG_LEVEL` (R28 — copy a `title` as it is). Measured in the ES tree at the baseline: **5 `Nginx`, 4 `NGINX`, 5 `nginx`**, and the mix is not all defect. Of the four `NGINX`, three are untouchable because they are inside variable names (`NGINX_ERROR_LOG_LEVEL` in `environment-variables.adoc:380`, and `EXTRA_NGINX_LOG_PROPERTIES` in `breaking-changes.adoc:26` and in the fact sheet at `:371`), and **exactly one is a genuine slip in prose — `architecture.adoc:15`, `un proxy HTTP NGINX`**. Of the five `Nginx`, two quote the descriptor label correctly (`deployment.adoc:61` and `:69`) and one is a slip — `environment-variables.adoc:381`, `Aplica a los _logs_ de Nginx`. Fix those two when you touch their pages, in both trees, and leave the rest alone.
 
-**h2 / H2** — the sample database removed in 0.43.4-0.1.0 for a security vulnerability. Write the engine as `H2`; the tree spells it that way everywhere, and its single lowercase `h2` was corrected when the admonition moved from `upgrade.adoc` to `upgrade/special-upgrades.adoc`. Keep it uppercase.
+**h2 / H2** — the sample database removed in 0.43.4-0.1.0 for a security vulnerability. Write the engine as `H2`; the tree spells it that way everywhere, and its single lowercase `h2` was corrected when the admonition moved from `upgrade.adoc` to `upgrade/special-upgrades.adoc`. Measured at the baseline: **0 lowercase `h2` in either tree**, so this one is closed too. Keep it uppercase.
 
-**Marathon-LB, Mesos** — legacy of the pre-Kubernetes era (`DC/OS` never appears). The upgrade-documentation change removed every mention from both trees, prose and literals alike (`Marathon-LB`, `Mesos`, `${MESOS_DNS}`, `pg-0001.marathon.mesos`); a case-insensitive grep for `marathon|mesos` now returns nothing. Do not reintroduce them: no supported Universe uses that orchestrator.
+**Marathon-LB, Mesos** — legacy of the pre-Kubernetes era (`DC/OS` never appears). The upgrade-documentation change removed every mention from both trees, prose and literals alike (`Marathon-LB`, `Mesos`, `${MESOS_DNS}`, `pg-0001.marathon.mesos`); a case-insensitive grep for `marathon|mesos` returns nothing at the baseline (0 in both trees). Do not reintroduce them: no supported Universe uses that orchestrator.
 
 ## Metabase object names: half are translated in ES, half are not
 

@@ -18,7 +18,7 @@ Intro paragraph that places the reader in the product/context BEFORE any detail
 
 The `= Title` carries naming italics (`= Actualización de _Stratio Discovery_`), sentence case, no trailing period.
 
-The EN tree used to carry a UTF-8 BOM on all 23 of its content pages (`nav.adoc` and the partial never did); the upgrade-documentation change stripped every one of them, so there is none left in either tree. Never add one to a new page. It used to be a defect that could not be fixed on its own, because stripping it is a one-language-only change on 23 files, which fails the `LanguageCheck` CI gate. Remove it only on the pages you are already editing in **both** trees, never as a standalone sweep. Never add one to a new page.
+The EN tree used to carry a UTF-8 BOM on all 23 of the content pages it had then (`nav.adoc` and the partial never did); `ea8434b`, the upgrade-documentation change, stripped every one of them. **Measured at the baseline: 0 BOM in either tree**, out of 32 `.adoc` per tree. Never add one to a new page. It used to be a defect that could not be fixed on its own, because stripping a BOM is a one-language-only change, which fails the `LanguageCheck` CI gate. If one ever reappears, remove it only on the pages you are already editing in **both** trees, never as a standalone sweep.
 
 ## Owns the truth (verify against the code)
 
@@ -93,6 +93,7 @@ start_page: introduction.adoc
 - `name: stratio-discovery` is the component that feeds the 3-part cross-component `xref`.
 - **Do not change `version` when documenting a feature.** It is the docs-portal version segment, not a claim about the code.
 - Note `start_page: introduction.adoc` has **no module prefix** here, unlike the `xref`s in the pages. Leave it as it is.
+- ⚠️ **The block above is byte-for-byte what both `es/antora.yml` and `en/antora.yml` contain at the baseline** — `version: '0.56.4-0.2'` (quoted, two halves, no patch segment) and `start_page: introduction.adoc`. It is reproduced here so nobody "corrects" the real file to match a wrong example: a wrong `start_page` breaks the component's landing page, and a wrong `version` moves the whole component to another segment of the docs portal. If you edit this snippet, diff it against both real files first.
 
 ## Attribute references `{…}` and literal braces
 
@@ -141,7 +142,7 @@ There is **no** `== Prerequisites` section inside a procedure page: prerequisite
 
 ## Reference page (environment variables)
 
-`installing-and-upgrading/environment-variables.adoc` holds four `|===` tables, one per area. **Its shape is not the one this guide would choose, but match it anyway** — a row written differently from its 40 siblings is worse than a consistent one:
+`installing-and-upgrading/environment-variables.adoc` holds four `|===` tables, one per area, **59 variable rows per tree**. **Its shape is not the one this guide would choose, but match it anyway** — a row written differently from its 58 siblings is worse than a consistent one:
 
 ```
 = Variables de entorno
@@ -161,7 +162,9 @@ There is **no** `== Prerequisites` section inside a procedure page: prerequisite
 |===
 ```
 
-Note what it does **not** do: no `[cols=…]`, no `options="header"` (the first row is simply written as the header), and **the variable name carries no backticks** in the first cell. Three of the four tables add a sixth column, `Obsoleto`, which is empty in 44 of its 46 rows (only `USE_DYNAMIC_AUTHENTICATION` and `SSO_URI` carry a value) — do not add rows to it, and do not remove the column as a drive-by (it changes the line count).
+Note what it does **not** do: no `[cols=…]`, no `options="header"` (the first row is simply written as the header), and **the variable name carries no backticks** in the first cell.
+
+⚠️ **The `Obsoleto` / `Deprecated` column is gone — do not put it back.** Three of the four tables used to declare a sixth column that was empty in 44 of its 46 rows, and `fe149fe` removed it: **measured at the baseline, `Obsoleto` has 0 occurrences in the ES tree**, the four header rows are the five-column form above, and the two variables that carried a value state it inside the description cell instead (`Deprecated as of version 0.56.4-0.2.x.` on `USE_DYNAMIC_AUTHENTICATION`, EN line 135, and on `SSO_URI`, EN line 195). That is the pattern to follow for a new deprecation: a sentence in `Descripción`, mirrored in both trees, not a column that is blank for everyone else.
 
 **Every new environment variable goes here**, not only in a release note. When you add one, add it in both trees at the same position.
 
@@ -268,63 +271,162 @@ To know which source versions are still live, read the descriptor of each Univer
 
 ## Upgrade planning hub — `operations-guide/pages/installing-and-upgrading/upgrade-overview.adoc`
 
-A **decision index, not a procedure**: it lists the available upgrade paths in a table and sends the reader to one fact sheet. Every Stratio module uses the same page title (`Planificación de la actualización` / `Upgrade planning`) and the same three sections, so an operator recognizes the structure across modules:
+A **decision index, not a procedure**: it lists the available upgrade paths in a table and sends the reader to one fact sheet. Every Stratio module uses the same page title (`Planificación de la actualización` / `Upgrade planning`) and the same three sections, so an operator recognizes the structure across modules. Measured at the baseline: **34 lines in each tree**.
 
 ```
-= Planificación de la actualización
+= Planificación de la actualización          |  = Upgrade planning
 
-<Two paragraphs: this is a decision index; each path has its own sheet.>
+<párrafo: es un índice de decisión, no un procedimiento; enlaza a upgrade.adoc>
+<párrafo: qué contiene cada ficha y para quién está escrita>
 
-TIP: <Where to start reading.>
+TIP: Empieza por el <resumen de la ficha>. Responde, de un vistazo, a todo lo
+     que necesitas para decidir la ventana de mantenimiento.
 
 == Rutas de actualización disponibles
 
 [cols="1,1,1,2", options="header"]
 |===
 | Universo de origen | Versión de origen | Versión de destino | Ficha
+…una fila por ruta; la última columna enlaza la ficha o la guía que la cubre…
 |===
+
+NOTE: <lo que queda fuera de alcance y por qué>
 
 == Cómo se lee una ficha
 
-* *<Convention 1>.*
+* *Las respuestas son breves.* …
+* *Ningún campo queda vacío.* …
+* *El detalle se queda en las páginas de procedimiento.* …
 ```
+
+The `TIP` and the three closing bullets are meant to be **shared verbatim across the implementing modules**, and they are the first thing that drifts. This repo's wording is the one to keep: ES «ventana de mantenimiento» and EN *maintenance window* (the glossary forbids *intervention window*), and the third ES bullet in the feminine concordance — «la ficha **las** enlaza en lugar de reproducir**las**». Do not paraphrase them when you add a route; only the table grows.
 
 ## Upgrade fact sheet — `…/upgrade-overview/from-<x>-to-<y>.adoc`
 
-One page per upgrade path, with a fixed section order and an explicit `[#slug]` anchor above every section, so the "Detalle" column of the summary table can link into it with `<<slug,text>>``. The order is the same in every Stratio module:
+One page per upgrade path, named by product version in kebab-case so new paths stack without renaming anything: `from-0-50-21-to-0-56-4.adoc` today, and there is exactly one live route (see the Universe correlation above).
+
+This is **not a page type this repo invented, and not free text.** It is a **cross-product standard** implemented in `rocket-core` (which shipped it first and set it), `genai-core`, `intelligence-multiuser-environment`, `dlc-entity` and here, so that an operator who opens any module's sheet finds the same answer in the same place. What is fixed: the page title, the anchors, the section order, the table headers, the **closed vocabularies of the answer cells** and four conventions. Do not restructure it, do not rename its sections and do not drop a section because it would be short — what standardizes the sheets is the structure, not the length.
+
+Measured at the baseline, in each tree: **569 lines, 18 `[#slug]` anchors at identical line numbers, 13 `[cols="…", options="header"]` tables, 3 `====` headings and 1 `====` example block.**
+
+### Section order
+
+Fixed, each section preceded by its explicit anchor and one blank line (R16). The line numbers are this sheet's, identical in both trees:
 
 ```
-= Actualización de <origen> a <destino>
-
-[#summary]      == Resumen                              (IMPORTANT + Q/A table + "Mensaje para transmitir" block)
-[#scope]        == Alcance de la actualización
-[#components]     === Componentes y orden de actualización
-[#modules]        === Relación con otros módulos
-[#coexistence]    === Convivencia de versiones
-[#execution]    == Ejecución de la actualización
-[#before]         === Antes de la ventana
-[#phases]         === Pasos de principio a fin
-[#data]           === Datos y consistencia
-[#no-return]      === Punto de no retorno
-[#outage]         === Parada y disponibilidad
-[#work-in-flight] === Trabajo en curso durante la ventana
-[#post-upgrade] == Después de la actualización
-[#regressions]    === Regresiones que hay que esperar
-                  ==== Bloqueantes o de acción obligatoria antes de la ventana
-                  ==== Requieren acción tras la actualización
-                  ==== Cambios de comportamiento a tener en cuenta
-[#checks]         === Comprobaciones posteriores
-[#problems]      == Si algo va mal
-[#rollback]       === _Rollback_
-[#known-issues]   === Avisos e incidencias conocidas
+= Actualización de 0.50.21-0.2.x a 0.56.4-0.2.x     (1)
+[#summary]         == Resumen                                    (7/9)    IMPORTANT + tabla de 9 filas + bloque `[caption=]`
+[#scope]           == Alcance de la actualización                (62/64)
+[#components]      === Componentes y orden de actualización      (72/74)
+[#modules]         === Relación con otros módulos                (100/102)
+[#coexistence]     === Convivencia de versiones                  (138/140)
+[#execution]       == Ejecución de la actualización              (163/165)
+[#before]          === Antes de la ventana                       (167/169)
+[#phases]          === Pasos de principio a fin                  (220/222)
+[#data]            === Datos y consistencia                      (266/268)
+[#no-return]       === Punto de no retorno                       (276/278)
+[#outage]          === Parada y disponibilidad                   (284/286)
+[#work-in-flight]  === Trabajo en curso durante la ventana       (294/296)
+[#post-upgrade]    == Después de la actualización                (335/337)
+[#regressions]     === Regresiones que hay que esperar           (339/341)
+                   ==== Bloqueantes o de acción obligatoria antes de la ventana  (349)
+                   ==== Requieren acción tras la actualización                   (396)
+                   ==== Cambios de comportamiento a tener en cuenta              (433)
+[#checks]          === Comprobaciones posteriores                (462/464)
+[#problems]        == Si algo va mal                             (498/500)
+[#rollback]        === _Rollback_                                (502/504)   ES italic; EN `=== Rollback`, roman
+[#known-issues]    === Avisos e incidencias conocidas            (530/532)
 ```
 
-Rules that a fact sheet breaks easily:
+Notes on the order, all verified here:
 
-- **The sheet summarizes and links; it does not become the only home.** When a topic has an auxiliary page of its own (`upgrade/rollback.adoc` today), the sheet keeps its summary — the table of what can be done at each moment of the process — and links to that page for the case-by-case detail, exactly as rocket does. The reverse also holds: the auxiliary page links back to `#known-issues` for the diagnosis.
+- **The three `====` subheadings of `[#regressions]`** are the standard's grouping-by-priority form, used once the section passes about eight rows. Keep the three of them and the order (blocking → action afterwards → behaviour change), because the reader budgets the window from the first group.
+- **`[#sizes]` (`==== Parada por <magnitud>`) is part of the standard but optional**, and this sheet does not carry it: the downtime here is not dimensionable, it is capped by the `startup probe` deadline. Do not add an empty one. `[#data]`, `[#no-return]` and `[#work-in-flight]` are conditional in the standard and all three apply here, because the module keeps a metadata database, applies a schema migration and can be running queries when the window opens.
+- **The anchors are identical across the six published sheets** — measured: all six carry the same 18, in the same order, and `rocket-core` adds one more (`[#sizes]`) that the rest omit. So nothing external depends on the heading wording. That matters because **the EN heading text is not standardized and has drifted between modules**; this repo uses `Known issues` and `Post-upgrade checks`, which is what `rocket-core` uses. Mirror the Spanish heading rather than picking a favourite, and never change an anchor.
+- ⚠️ **The anchors of this sheet are the one place in the repo where an anchor is NOT per language** in effect: they are explicit `[#slug]`, in English, identical in both trees. That does not contradict R30 — R30 is about the ids Antora *generates* from translated headings. Explicit slugs are exactly the way out of that problem, and the direction new content should take.
 
-- **Every duration says whether it is measured or estimated**, and in which environment. `_Stratio Discovery_ has no measured migration figures, so every duration on its sheet is `(estimada)`.
-- **No cell is left empty.** "No aplica: …" with its reason is an answer; a blank cell reads as an oversight.
-- **Two link patterns.** In the "Detalle" column, internal `<<slug,text>>` (no space after the comma, per R30) to another section of the same sheet. Everywhere else, `xref:…[descriptive text]`.
-- **Closed vocabularies**, so two modules can be compared: yes/no answers are "Sí"/"No"/"Parcialmente" (with the part that does apply); requirement levels are "Obligatorio"/"Recomendado"/"Opcional"; overall risk is "Bajo"/"Medio"/"Alto" with a one-line justification.
-- **Detail stays on the procedure pages.** When a cell needs more than three lines, link instead of explaining; if the target has no anchor for it, add one.
+### The 14 table headers
+
+**They are part of the standard, not free text**: an operator comparing two modules has to be comparing the same columns. Fourteen header rows across the two pages of the implementation — thirteen in the sheet, one in the hub. Reproduce them exactly rather than rewriting, and mirror each into EN as the sheet already does:
+
+| Section | `[cols=…]` | ES header row |
+|---|---|---|
+| hub, `== Rutas…` | `1,1,1,2` | `\| Universo de origen \| Versión de origen \| Versión de destino \| Ficha` |
+| `[#summary]` | `2,3,1` | `\| Pregunta \| Respuesta \| Detalle` |
+| `[#components]` | `1,2,2,3` | `\| # \| Proceso \| Dónde guarda el estado \| Por qué no necesita ventana propia` |
+| `[#modules]` | `2,2,4,4` | `\| Módulo relacionado \| Qué relación hay \| Al actualizar _Stratio Discovery_ \| Al actualizar el módulo relacionado` |
+| `[#coexistence]` | `2,1,3` | `\| Escenario \| ¿Admitido? \| Limitaciones` |
+| `[#before]` | `3,1,3` | `\| Qué tiene que estar listo \| Cuándo \| Cómo se comprueba que está hecho` |
+| `[#phases]` | `4%,17%,49%,30%` | `\| # \| Paso \| Qué ocurre y qué deja de funcionar \| Duración y parada` |
+| `[#work-in-flight]` | `2,4,2,4` | `\| Qué puede estar ejecutándose \| Qué le ocurre \| Qué hacer antes \| Cómo se recupera después` |
+| `[#regressions]` ×3 | `1,1,2,1` | `\| Qué deja de funcionar o cambia \| Causa \| Cómo resolverlo \| Mientras tanto` |
+| `[#checks]` | `2,3,2` | `\| Tarea \| Qué hay que hacer \| Qué no funciona hasta que se haga` |
+| `[#rollback]` | `2,1,4,2` | `\| Momento del proceso \| ¿Se puede? \| Qué se hace \| Cuánto tarda y si se pierden datos` |
+| `[#known-issues]` | `2,2,3,2` | `\| Aviso o incidencia \| Cuándo se manifiesta \| Qué hacer \| Referencia` |
+
+Two of them are **this repo's own divergence from the shared wording**, and both are deliberate: `[#components]` says `Proceso` and drops the `¿Ventana propia?` column because _Stratio Discovery_ is a single container with three supervised processes and no internal upgrade order, so the answer would be "no" in every row; and `[#modules]` names the module (`Al actualizar _Stratio Discovery_`) where the shared form says `Al actualizar este módulo`. Leave both as they are — realigning them is a one-language-per-cell churn with no reader benefit — but know that they are divergences, not the spec.
+
+The `[#phases]` table uses the **four-column** form with `| Duración y parada` fused, and carries no `TOTAL` row. Any empty fact-sheet template that asks for five columns (`Duración` and `Parada` split) plus a `TOTAL` row is out of date: **where a template and the published sheets disagree, the sheets win**, unanimously across the five implementations.
+
+### Closed vocabularies (the part that drifts first)
+
+An answer cell is not prose. It opens with a value from a closed list, and only then explains. This is what makes two modules comparable, and it is exactly what `Stratio/discovery` #384 had to repair in this sheet:
+
+| Campo | Valores admitidos |
+|---|---|
+| Respuestas de sí o no | `Sí`, `No` o `Parcialmente` — y siempre con la parte que sí aplica detrás |
+| Nivel de exigencia | `Obligatorio`, `Recomendado` u `Opcional`, **uno solo por celda** |
+| Duraciones | Seguidas de `(medida)` o `(estimada)`, nunca una cifra a secas; si es medida, en qué entorno |
+| Riesgo global | `Bajo` (reversible sin coste y sin cambios en el modelo de datos), `Medio` (reversible mediante acción manual o de configuración) o `Alto` (irreversible tras un punto de no retorno o con riesgo de pérdida de datos), con una justificación de una línea |
+| Pérdida de datos | `Ninguna` o la cosa concreta que se pierde |
+
+This sheet answers `Alto` for the overall risk and marks every duration `(estimada)`: _Stratio Discovery_ has no measured migration figures, so `(medida)` is a value of the vocabulary that this repo cannot yet use. `Medio` and `Opcional` were likewise unused until #384 introduced the first `Opcional` row.
+
+⚠️ **The four defects #384 fixed, so nobody writes them again.** Every one of them is a cell that read perfectly well as Spanish and still broke the standard:
+
+| Defecto | Corrección |
+|---|---|
+| `\| *No está validada.* Cada Universo declara…` — an explanation where the vocabulary wants a value | `\| *No.* No está validada: cada Universo declara…`. The value comes first, in bold; the reason follows after a colon. Same in the `[#coexistence]` cell, `\| No está validada` → `\| No` |
+| Three `(estimado)` in the masculine | `(estimada)`. The mark agrees with *duración*, feminine, not with *tiempo* or with the number: `unos minutos (estimada)`, `Depende del tamaño de la copia (estimada)`. EN uses `(estimated)`, which hides the slip |
+| `\| Inmediato. No se pierden datos.` — a duration with no mark at all | `\| Inmediato (estimada). No se pierden datos.` **`Inmediato` is a duration.** So is `Unos minutos`, and so is `Días o semanas`. If a cell of a duration column says how long something takes in any words at all, it carries the mark |
+| `\| Lo primero es obligatorio; lo demás, opcional, en el mismo cambio de versión` — two requirement levels in one cell, over a row that bundled two unrelated decisions | Split into **two rows**, one `Obligatorio` (`"Instances"` to `1`) and one `Opcional` (`"Metabase log level"` to `"INFO"`). When a cell needs two levels, the row is really two rows |
+
+### Four conventions a sheet breaks with ease
+
+- **Ninguna celda queda vacía.** Un `No aplica` con su motivo se lee como una respuesta; una celda vacía, como un descuido. This is one of the hub's own three bullets, so a blank cell contradicts the page that sent the reader here.
+- **La columna `Detalle` del resumen enlaza a una sección de la propia ficha** con `<<ancla,texto>>`, nunca a una página externa: all nine rows of `[#summary]` do, pointing at eight distinct sections of the sheet — `<<outage>>`, `<<data>>` (twice), `<<phases>>`, `<<before>>`, `<<modules>>`, `<<rollback>>`, `<<coexistence>>` and `<<known-issues>>`. The rest of the sheet uses `xref:…[texto descriptivo]`. **No space after the comma** (R30): measured 26 internal references in the ES tree, 0 of them spaced. `rocket-core` agrees; `intelligence` and `genai` lean on the spaced form, so do not copy an internal reference across repos.
+- **El detalle se queda en las páginas de procedimiento.** When a cell needs more than three lines, link instead of explaining; if the target page has no anchor for it, add one **in both trees**. The sheet summarizes and links, it never becomes the only home: `[#rollback]` keeps the table of what can be done at each moment and sends the case-by-case detail to `upgrade/rollback.adoc`, which links back to `#known-issues` for the diagnosis.
+- **Toda duración indica si es medida o estimada**, and in which environment when it is measured. A figure measured on a local disk with no load does not transfer to network storage. Grep the sheet for a bare number in a duration column before you push.
+
+⚠️ **The relay-message block: copy this shape exactly.** It lives at the end of `[#summary]`, right after the closing `|===` of the question table — lines 56–60 of both trees:
+
+```
+|===
+
+.Mensaje para transmitir
+[caption=]
+====
+Mensaje breve, sin terminología interna, que se pueda copiar y transmitir tal cual.
+====
+```
+
+Three things about it, all learned the hard way in `rocket-core` after its sheet had already been merged:
+
+1. **The `[caption=]` attribute is mandatory.** Without it Asciidoctor numbers the example block and it renders as *"Example 1. Mensaje para transmitir"*. The `rocket-core` sheet shipped without it and had to be fixed after merge.
+2. **The order is `.Título` first, then `[caption=]`.** This is the form the documentation lead settled on after checking the published Antora output, and it is what four of the five published sheets carry. `crossdata-spark2` is the exception: it puts `[caption=]` **above** the title. **Both orders render identically** — verified by rendering each with Asciidoctor 2.x: what suppresses the numbering is the presence of the attribute, not its position, and the same block without `[caption=]` renders as *"Example 1. Mensaje para transmitir"*. So write a new sheet in the canonical order, but do **not** reorder a published sheet to converge, and do not read `crossdata-spark2`'s as defective. **It makes the `EmptyLines` sub-check report `- <line> - a line break is missing before this line` on the caption line** — line 57 here, in both trees. That report is a **false positive on a correct document**: the sub-check reads the caption as a block attribute needing a blank line in front, when it belongs to the block the title above already opened. `Docs Checks` concludes `neutral` for it, so it does not block the merge. `crossdata-spark2`'s order is, incidentally, the only one the sub-check does not flag — which is precisely what makes reordering tempting. Take the `neutral` instead: consistency across the sheets is worth more than a clean linter line, and the render is the same either way. **Do not "fix" it by moving the attribute above the title, and do not insert a blank line between the two** — either change alters what the documentation team validated in the portal.
+3. **In English the title is `.Message to communicate`**, following `rocket-core`, the repo that set the standard. **This sheet says `.Message to convey`** (line 56 of the EN tree) and it is not alone: three of the five sheets diverge the same way. The label is what an operator copies and pastes, so it should be one thing across the modules — but **do not change it here as a drive-by**: it is a pending unification for the documentation team to settle, and flipping it in one repo only makes the divergence harder to see. Raise it; do not patch it.
+
+### Read the post-merge fixes of the repo that shipped the standard first
+
+`rocket-core` merged its sheet in PR #5274 and then needed six more PRs to settle it. **None of those defects is Rocket's fault — they are the standard's blind spots**, and each is a mistake the next module repeats unless it reads them first. This is a precedent to learn from, not this repo's history:
+
+| Fix in `rocket-core` | The lesson |
+|---|---|
+| #5294 — the missing `[caption=]` | An example block without it renders as *"Example 1. …"*. See the relay-message note above. |
+| #5288 — cite the **full** descriptor path | `'Probes'` became `'General' → 'Probes'`, in 10 files. A section name alone is not enough: the operator navigates a tab *and* an accordion, so chain both (R28). The same chain exists in this repo's descriptor and goes one level deeper in places. |
+| #5294 — the summary `IMPORTANT` rewritten | The first version said what set the date of the upgrade in the abstract ("the calendar, not the migration"). The rewrite says which concrete work takes weeks and links `<<before>>`. If the `IMPORTANT` does not tell the reader what to go and do, it is not finished. |
+| #5294 — a checklist row marked conditional | `Obligatorio, semanas antes` became `Obligatorio si has extendido <el módulo>. Semanas antes.` A row that only applies to some deployments must say so, or every reader budgets weeks they may not need. This sheet already does it in three of its ten `[#before]` rows (`Obligatorio si utilizas…`, `Obligatorio si aplica…`, `Obligatorio si has personalizado…`) — keep that habit. |
+| #5295 — the template extracted, then deleted | An empty fact-sheet template does not belong in a product's published docs. The standard is kept **here**, in this skill, not as an `.adoc` under `stratio-docs/`. |
+| 53 files — a per-module lexical asymmetry in EN | Rocket had to rename its workflow nodes. That entry belongs to the module that owns the concept; **it does not apply here**, because this repo documents no _Stratio Rocket_ workflow (a case-insensitive grep for `rocket` over both trees returns nothing). Do not import another module's glossary rows into `translation-glossary.md`. |
+
+**Before publishing or reviewing a sheet, read those, then re-read the four conventions above.** All six of those follow-up PRs would have been unnecessary if the standard had been written down anywhere; that is what this section is for. When you change the standard, change it here first, and re-measure every figure in this section against the tree you are in — several statements above are measurements of *these* trees, not properties of the standard.

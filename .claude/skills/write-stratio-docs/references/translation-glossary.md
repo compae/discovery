@@ -293,3 +293,8 @@ The EN page mirrors the ES one (decalogue R29), so these pairs are fixed even wh
 | sincronizar (el catálogo, los grupos) | synchronize | sync (in prose; `sync` is fine in a log excerpt) |
 
 **`support` as a capability**: the ES noun is `compatibilidad con`; in EN the noun is `compatibility with` but the verb `does not support` is accepted and preferred. This overrides the blanket entry in the canonical-preferences table above.
+
+⚠️ **Do not import a lexical rule from another module's copy of this skill.** Five Stratio repos carry a `write-stratio-docs` skill, and their glossaries have diverged because each one owns different concepts. Two guards before you copy a row across:
+
+- **A row that renames a concept belongs to the module that owns the concept.** `rocket-core` had to rename its workflow nodes across 53 English files; that row is Rocket's, and it does not apply here, because this repo documents no _Stratio Rocket_ workflow at all (a case-insensitive grep for `rocket` over both trees returns 0 at the baseline). Adding it here would only invite someone to "fix" a word this product does not use.
+- **A row that renames a common word can break a literal.** `probe` is the example to keep in mind: it is the `'Probes'` accordion of the descriptor (R28 — copy a `title` verbatim) and it is also Kubernetes' own liveness/readiness/startup probe, so a blanket ES→EN substitution on it would corrupt both. If a term is simultaneously a UI label, a platform concept and a common noun, the entry needs an explicit scope note or it does not belong in the table.

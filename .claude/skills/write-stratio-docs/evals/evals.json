@@ -28,7 +28,7 @@
         "The example URL 'https://mi-instancia.example.com' inside the command is left as is inside the code block (no escaping is needed there)",
         "The link text 'aquí' has been replaced with a descriptive text naming the destination",
         "The Spanish link to English-only documentation carries the '^[English]^' marker",
-        "The option `VIRTUALIZER_JDBC_FROM_EXTRA_JARS` is reported or rewritten as its descriptor title, \"Use virtualizer jdbc from Extra JARs\", in double quotes, with the variable in backticks in parentheses (R28)"
+        "The option `VIRTUALIZER_JDBC_FROM_EXTRA_JARS` is reported or rewritten as its descriptor title, \"Use virtualizer jdbc from Extra JARs\", in double quotes, and with its FULL descriptor path, 'Settings' \u2192 'Metabase', in single quotes chained with an arrow; the variable stays in backticks in parentheses. Giving the title without the path, or only the accordion ('Metabase'), is itself a defect (R28)"
       ]
     },
     {
@@ -79,9 +79,9 @@
         "The claim that the upgrade does not require downtime is reported as FALSE: the descriptor declares highAvailability false with a single replica",
         "The claim that _Stratio Discovery_ supports high availability with several replicas is reported as FALSE",
         "The claim that reverting the version is enough to go back is reported as FALSE or incomplete once the schema migration has been applied: the metadata database dump has to be restored",
-        "The duration 'unos 5 minutos' is reported as an unqualified figure: it must state whether it is measured or estimated",
+        "The duration 'unos 5 minutos' is reported as an unqualified figure: it must carry '(medida)' or '(estimada)' \u2014 feminine, agreeing with 'duraci\u00f3n' \u2014 and here it can only be '(estimada)', because this repo has no measured migration figures",
         "The cross-reference anchor '#_configuraciones_especificas' is reported as broken: deployment.adoc has no such section (the real id is '#_configuración')",
-        "The environment variable `AUTHENTICATOR` is reported as needing to be named by its descriptor title, \"Authentication method\", in double quotes, with the variable in backticks only if the reader needs it outside _Stratio Command Center_ (R28)"
+        "The environment variable `AUTHENTICATOR` is reported as needing to be named by its descriptor title, \"Authentication method\", in double quotes, together with its full descriptor path 'General' \u2192 'User Authentication'; the variable goes in backticks only if the reader needs it outside _Stratio Command Center_ (R28)"
       ]
     }
   ]
