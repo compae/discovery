@@ -430,3 +430,147 @@ Three things about it, all learned the hard way in `rocket-core` after its sheet
 | 53 files — a per-module lexical asymmetry in EN | Rocket had to rename its workflow nodes. That entry belongs to the module that owns the concept; **it does not apply here**, because this repo documents no _Stratio Rocket_ workflow (a case-insensitive grep for `rocket` over both trees returns nothing). Do not import another module's glossary rows into `translation-glossary.md`. |
 
 **Before publishing or reviewing a sheet, read those, then re-read the four conventions above.** All six of those follow-up PRs would have been unnecessary if the standard had been written down anywhere; that is what this section is for. When you change the standard, change it here first, and re-measure every figure in this section against the tree you are in — several statements above are measurements of *these* trees, not properties of the standard.
+
+## Anatomy of a CCT descriptor (read this before documenting any configuration)
+
+**The module owns the descriptor of its version and uploads it to `Stratio/kubernetes-universe` to be published across the whole Universe** — so the copy in the module's repository is the authoritative one, versioned with the product, and the Universe one is the published copy, versioned with the platform. **Look in the repo first, at the product tag.**
+
+Measured across the clones here, September 2026 — it is the usual arrangement but not universal, so check rather than assume:
+
+| Repo | Its own descriptor |
+|---|---|
+| `rocket-core` | `deployment/CCT/k8s-descriptors/{rocket,rocketbase,rocket-catalog,mlmodel-server,rockets3}.json` |
+| `intelligence-multiuser-environment` | `deployment/CCT/kubernetes/intelligence-k8s-default.json` |
+| `discovery-cicd` | `deployment/CCT/k8s-descriptors/discovery.json` |
+| `dlc-entity` | `saas-universe/k8s/dlc-entity.json` (the sibling `dlc-entity-external-mtls.json` declares no parameters) |
+| `eureka-bdl` | `bdl-agent/cct-definition/{bdl-default,bdl-operational}.json` |
+| `virtualizer` | `kubernetes-universe/virtualizer-default.json` — a directory of that name **inside the repo**; `virtualizer-monitor` and `virtualizer-ui` carry theirs at `cct-k8s-descriptor/` |
+| `genai-api` / `genai-litellm` / `genai-ui` / `genai-gateway` | `saas-universe/<piece>-default.json`, one per piece (`genai-api` also carries `genai-developer-proxy-default.json`) |
+| `stratio-spark` | **not found**: no such directory and no JSON carrying `internalName` on any `upstream` branch |
+
+⚠️ **Two traps in that table.** The repo that holds the docs is not always the repo that holds the descriptor: `genai-core` carries the documentation of a suite whose descriptors live in the **piece repos**, and `crossdata-spark2` is the engine while the product descriptor lives in `virtualizer`. And the directory names are all different — `deployment/CCT/`, `saas-universe/`, `cct-definition/`, `cct-k8s-descriptor/`, even one literally called `kubernetes-universe/` — so **search by content, not by path**: `grep -rl '"internalName"' --include='*.json'` finds it whatever it is called.
+
+Where the repo has none, the published copy is what you have, and **say so in the page or the skill instead of sending the reader to a path that does not exist**. Either way, **read it at a tag, never at a branch head** (`git show <tag>:<path>`); for the Universe copy take the most recent tag by date (`git tag --list '15.1*' --sort=-creatordate | head -1`), because a platform version carries several `<version>-<sha>` tags that do not all agree.
+
+For **this** repo the descriptor is `deployment/CCT/k8s-descriptors/discovery.json`, read at the product tag — and mind the two-part numbering, `<product>-<packaging>`, as in `0.50.21-0.2.0`. **Measured for the 0.50.21 → 0.56.4 path**: 83 keys → 94, only **5 removed** (one of them level 1, *Skip Metabase's Statement final cancellation*) and 21 same-key renames; measuring from `0.50.21-0.1.4` or from `0.50.21-0.2.0` gives the identical answer, so the packaging suffix does not affect it.
+
+⚠️ **This repo has the clearest case of "live key, dead effect".** Three of the renames point the `internalName` at **`NOT_USED`**: `postgresDatabaseCreation`, `cpuResourceType` and `startupProbePeriodSeconds`. The key survives, so the value is carried, but it no longer does anything — the field is still on the form and has stopped mattering. That is neither "the value is lost" nor "nothing changes": for the operator it means **a setting they had in place has silently stopped applying**, and a probe period or a resource type is visible enough that somebody may have set it. Document it when the setting was visible; and note that this is the one case where the reassuring reading is the false one, so the habit of preferring the answer that gives the reader less work does not apply.
+
+Everything an operator sets in _Stratio Command Center_ comes from there, so the descriptor — not the code, not the previous version of the page — is the authority for how a configuration page is written.
+
+### The four names of one property, and what each is for
+
+A property is a leaf of the `parameters.properties` tree, and it carries four identifiers that are routinely confused:
+
+| | What it is | What it is for | In the docs |
+|---|---|---|---|
+| **JSON key** | The property's name in the tree (`virtualizerStoragePath`, `historyServerLogDir`) | The **identity**: it is what _Stratio Command Center_ matches a stored value against across an upgrade | Never written. Used only when reasoning about what survives an upgrade |
+| **`internalName`** | The environment variable injected into the container (`HISTORY_SERVER_LOG_DIR`) | Runtime plumbing | In backticks, **beside** the title, only where the reader needs it to script or verify |
+| **`title`** | The label the operator reads on screen (_Logs path_) | The form | **This is how you name the property**: in italics, verbatim, including its capitalization (R28) |
+| **`description`** | The help text under the field | The form | Not quoted; write your own prose |
+
+The consequence that matters most: **a release can rename the `internalName` without the operator noticing anything, and can keep the `title` identical while changing the JSON key.** The first is invisible; the second costs them the value. Only a diff of the **keys** tells them apart.
+
+### The fields that change what you write
+
+- **`level`** — `1` is what the operator sees by default, `2` is advanced. A `level: 2` property is usually computed or plumbing: **document level 1 and leave level 2 alone** unless the reader has to touch it. When two properties share a `title`, the level almost always disambiguates them.
+- **`required`** — required *of the form*, not of the operator: a `required: true` with a `default` needs no action, and saying otherwise sends people looking for a field to fill in.
+- **`default`** — quote it as the value the operator will see (`"true"`, `"/tmp/logs/history"`). A default that interpolates (`${...}`) marks a computed field.
+  ⚠️ **The descriptor's `default` is not the code's default, and confusing them misinforms the reader about a deployment nobody touched.** In this repo `_Files to retain after compaction_` carries `default: 5` while the property it drives, `spark.history.fs.eventLog.rolling.maxFilesToRetain`, is `createWithDefault(Integer.MAX_VALUE)` in `History.scala` — "all event log files will be retained". And the descriptor only injects its 5 when `_History Server v2 compaction enable_` is `"true"`, which itself defaults to `False`. So out of the box the **code** default governs, and writing "the default is 5" is wrong. `eureka-bdl` has the same shape with `'Force table recreation on partition schema changes'`: `default: true` in the descriptor against `false` in `env.scala`. When the two disagree, say which one applies and under what condition.
+- **`enum`** — the selectable values. Copy them **verbatim**, in double quotes, including odd casing (R27): the operator has to match them on screen.
+- **`ui.visible`** — the condition under which the field appears, usually another boolean's key. This is what makes a branch of the form conditional, and it is why "the field is not there" is often correct rather than a defect.
+- **`ui.updatable: false`** / **`readOnly`** — set once, or computed. Do not tell the reader to change it.
+- **`${...}` interpolation** — a value that references another property's key or a platform variable (`${Application.id}`). Treat it as a computed field.
+
+### Tabs, accordions and the path you must cite
+
+The first level of `parameters.properties` are the **tabs**; a nested object with a `title` is an **accordion**; the leaves are the properties. Cite the whole chain in single quotes with ` → ` — `'General' → 'Datastores for Event Logs'` — because an accordion name alone does not tell the operator where to click (R28). Two traps recur: **sibling branches share accordion and property titles**, so disambiguate by the selector value that governs them; and **an accordion's title can be a leftover** that no longer describes what it holds.
+
+### Lifecycles: read them across versions before writing what the upgrade does
+
+Below the parameters, `lifecycles` declares `install`, `update`, `upgrade`, `restart` and `uninstall`, each a list of steps with a `type`, often an `enabled` expression and sometimes `continueOnFail`. **Two symmetric mistakes are easy here, and both produce false documentation.**
+
+**Mistake 1 — treating an `install`-only step as an upgrade behaviour.** A step declared only under `install` never runs on an upgrade. In `stratio-spark`, `gosec/policies/create` (the HDFS ACL on the event-log path) is in `install` and in **no** other lifecycle, at 14.10.1 and at 15.1 alike. The fact sheet said the default flip of _Execute HDFS prerequisites_ meant "the upgrade no longer creates that policy" — describing a behaviour change that never existed, because the upgrade never created it.
+
+**Mistake 2 — treating a permanent safety net as something this jump does.** Most of what an `upgrade` block declares is there **on every operation**, to re-create or refresh registrations that may have drifted, not because this version changes them. Three signals identify one, and any of them is enough:
+
+- the same step also appears in `install` and/or `update`;
+- it carries **`continueOnFail: true`**, i.e. it is allowed to fail because it is a best-effort net;
+- **its `lifecycles` block is unchanged between the two versions you are documenting.**
+
+Measured, so you can calibrate: `rocket-core`'s upgrade registers the CN of `${Application.id}` and of `${executionIdentity}` in a GoSec group and registers the application in _Stratio Data Governance_ — all three with `continueOnFail: true`, all three present at **3.6.13 and 4.1.0 alike**, and the Governance one also in `install` and `update`. `dlc-entity`'s upgrade creates the Rocket API ACL policies and registers the CN, and its `lifecycles` are **byte-identical across 4.0.0, 4.0.1, 4.0.2 and 4.0.3**. `eureka-bdl`'s four upgrade steps are all in `install` or `update` too, and its lifecycles do not change between 14.10 and 15.1. **None of that belongs in a fact sheet as something the upgrade does to the operator**, and the sheets of those repos are right to answer "ningún impacto".
+
+So: **diff the `lifecycles` block between the two versions first.** If it is unchanged, the upgrade steps are the same ones that always ran and there is nothing to report. If it changed, look at what changed and only then decide whether the operator needs to know — `rocket-core` 4.1.0 does add one step to its upgrade (`gosec/policies/create`, "Updating Rocket Metadata policy"), and even that carries `continueOnFail: true`. Say what the operator must *do*, never what the machinery *runs*.
+
+**Cite the step, not the step type.** A descriptor can declare several steps of the same `type` acting on different objects, and matching by `type` alone is how you end up contradicting a sentence that was right. `dlc-entity`'s `upgrade` does run a `gosec/policies/create` — but it creates the Rocket API ACL policy (`${Application.id}-rocketacl`), while the PostgreSQL® one (`${...}-pgacl`), which is the policy its fact sheet's Gosec row actually describes, is created **only in `install`**. So its "las políticas ya existen y no se vuelven a crear" is correct, and a PR to "fix" it would have broken working documentation. Before contradicting a sentence, check that the step you found is the one that sentence describes — by its `label` and the object it names, never by its `type`.
+
+Three questions cover every case of this kind, and all three are cheap:
+
+1. **Who does it affect?** Is there anyone downstream who consumes this? Sometimes the answer is nobody, and then there is nothing to write.
+2. **Is it new?** Was it already there in the version you are coming from? The three signals above answer this.
+3. **Is it exactly this?** Is the thing you found the same thing the sentence is about? This is the one that catches the rest.
+
+### What survives an upgrade
+
+**Reverting to the previous descriptor is native to _Stratio Command Center_, and it preserves a service's configuration across an upgrade**, matching each stored value by its JSON key. *(Source: confirmed by the platform team. It has **not** been read from the _Stratio Command Center_ source, which is not in these repositories; it is consistent with every key diff measured below. If you ever get to confirm it against that code, record the source here.)* So:
+
+| What changed between the two tags | What the operator has to do |
+|---|---|
+| Same JSON key, `internalName` renamed | **Nothing.** The value is carried; the rename is invisible in the form. |
+| Same JSON key, moved to another tab or accordion | **Nothing**, beyond knowing where to look. |
+| JSON key removed or renamed | **Note the value down before the upgrade**, because there is no key for it to land on. |
+| Key gone with no replacement | The setting no longer exists: document the withdrawal, not a workaround. |
+
+**A key disappears because a feature was withdrawn, and the withdrawal is documented at the feature level — not key by key.** Searching the docs for the property name will find nothing, and that is correct: nobody writes an entry for a descriptor knob. The right question is *which feature owned this knob, and is that feature's withdrawal documented?* Worked example, verified in `rocket-core` 3.6.13 → 4.1.0, where 24 level-1 keys vanish and **every one of them maps to a documented removal**:
+
+| Keys that disappear | The feature that owned them | Where it is documented |
+|---|---|---|
+| `GIT_API_PROXY_*` (6: proxy host, port, domains, SSH auth, credentials path) | `MLProject` assets of type *Git Clone* | "Eliminación de los _assets_ de tipo _GitClone_ asociados a _MLProject_", plus a regressions row in the sheet |
+| `INTELLIGENCE_MLMODELS_DEFAULT_MLEAP_DOCKER_IMAGE` | MLeap packaging and serving | "Eliminación completa de la compatibilidad con MLeap" |
+| `ENABLE_CONNECTOR_TFRECORD` | The internally packaged connectors | "Se han eliminado varios conectores que _Stratio Rocket_ empaquetaba internamente" |
+| `SPARTA_CONFIG_…_AUTOML_ENABLED` | AutoML on TransmogrifAI | "Eliminación completa de la funcionalidad de _AutoML_", with its own regressions row and a rollback warning |
+| 18 × `GENAI_CHAIN_*` / `GENAI_GATEWAY_*` | The GenAI chain stack moving to 0.8 | The sheet's GenAI coverage (14 mentions) |
+
+So the sequence is: diff the keys → for each removed key find the feature → check that feature's withdrawal is documented. Stopping at "the property is not mentioned anywhere" produces a false gap, which is the same error as every other row of the table below.
+
+Never ask for a blanket "configuration inventory", never write that values "revert to their defaults", and never describe a rollback as requiring the configuration to be re-entered by hand. **Measure the key diff** instead of inferring it:
+
+```python
+def keys(path):
+    d, out = json.load(open(path)), {}
+    def w(n, k=None):
+        if isinstance(n, dict):
+            if n.get('internalName') and k: out[k] = n['internalName']
+            for kk, v in n.items(): w(v, kk)
+        elif isinstance(n, list):
+            for v in n: w(v, k)
+    w(d); return out
+# same key, different internalName -> carried    |    key only in the old one -> note it down
+```
+
+⚠️ **With more than one descriptor, diff the union and enumerate the directory at both tags.** Per-file counting inflates the removals for **two different reasons**, and the same aggregate fixes both: a key that **moves** from one descriptor to another is counted as gone from the first — in `rocket-core` 58 file-level disappearances collapse to **32** real ones, 11 of them movements — and a key that lives in **several descriptors at once** is counted once per file, as in `eureka-bdl`, where the same key sits in both installables and 2 becomes 1. The set of files is not stable either: `rocket-core` gains a whole descriptor (`mlmodel-server.json`) between 3.6.13 and 4.1.0, and `kubernetes-universe` **stopped publishing** `genai-gateway-default.json` partway through the 15.1 series, so a measurement against an intermediate tag reproduces a catalog that no longer exists. List the directory at both tags first, and take the totals over the union: for `rocket-core` that is 557 → 594 keys, not the 537 → 548 of its largest file.
+
+
+⚠️ **The answer is per module, and it is not the intuitive one.** In `stratio-spark`, 14.10.1 → 15.1 removes or renames **zero** of 44 keys, so there is nothing to note down. In `crossdata-spark2`, the same diff over `virtualizer-default.json` (0.11.7 → 1.1.0) removes **24 of 311**, eleven of them level-1 LDAP and HTTP transport fields whose keys change with the Akka → Apache Pekko™ move — while _Default storage path_ and _Default provider_, whose `internalName` is renamed, keep their key and are carried. Its docs had the two halves the wrong way round.
+
+## Verify the datum, and then verify the consequence
+
+Every false claim this family of skills has had to remove followed the same shape: **a correct fact, an invented consequence.** Both sessions writing these docs hit it repeatedly in one day, and the failure is not sloppiness about facts — it is stopping one step too early.
+
+| The datum, correct | The consequence, invented | What it cost the reader |
+|---|---|---|
+| The streaming plugin was removed in 3.5.7 | "So the `/streaming/…` REST endpoints stopped answering" | A 404 blamed on an upgrade it predates |
+| `Java` goes from 8 to 17 | "So everything has to be recompiled" | Work that was not needed |
+| The `lifecycles` block does not change between the two versions | "So it has nothing to tell the reader" | An upgrade whose real steps went undocumented |
+| The `upgrade` block declares four steps | "So this jump performs them" | Machinery presented as the operator's job |
+| A default flips from `true` to `false` | "So the upgrade stops doing what the step did" | A behaviour change that never existed |
+| A property is renamed in the descriptor | "So its value is lost and must be re-entered" | An inventory ritual against a tool that carries the value |
+
+The datum is cheap to check and everyone checks it. **The consequence is where the work is**, and it needs its own evidence: read the deleted code rather than assuming its reach, read the consumer rather than the declaration, read the other lifecycles rather than the one in front of you, diff the keys rather than the names.
+
+Two habits catch almost all of it:
+
+- **Ask what would have to be true.** "The endpoints stopped answering" requires that the removed code served them — so go and look at what it constructed. "The value is lost" requires that nothing matches it on the other side — so go and diff the keys.
+- **Prefer the answer that gives the reader less work.** Not because it is nicer, but because the alarming answer is the one that needs the stronger evidence: it is the one that will make somebody spend an afternoon. If the evidence is not there, the honest answer is usually "nothing to do", and in every row above it was.
+
+And the formulation that decides the fact-sheet cases: **say what the operator has to do, never what the machinery runs.**
