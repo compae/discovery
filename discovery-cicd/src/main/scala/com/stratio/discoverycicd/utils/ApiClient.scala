@@ -15,24 +15,12 @@ import org.json4s.DefaultFormats
 import org.json4s.native.Serialization.write
 import scalaj.http._
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import scala.concurrent.duration.Duration
 import scala.util.Try
 
 object ApiClient {
   val DefaultTimeout = 10000
   val Limit = 9999L
-
-  // The schema goes in the path of 'GET database/:id/schema/:schema', so it has to be percent-encoded.
-  // 'URLEncoder' on its own does not do: it encodes a space as '+', which in a path segment is a
-  // literal '+' and not a space. Metabase has a separate endpoint, 'GET database/:id/schema/', for the
-  // tables whose schema is null or the empty string
-  def tablesInSchemaPath(dbId: BigInt, schema: Option[String]): String = {
-    val encodedSchema =
-      schema.filter(_.nonEmpty).fold("")(URLEncoder.encode(_, StandardCharsets.UTF_8.name).replace("+", "%20"))
-    s"database/$dbId/schema/$encodedSchema?include_hidden=true"
-  }
 }
 
 class ApiClient(metabaseUrl: String,
@@ -86,32 +74,23 @@ class ApiClient(metabaseUrl: String,
   def getDashboard(dashboardId: BigInt): Dashboard =
     request(s"dashboard/$dashboardId").as[Dashboard].body
 
-  // Metabase answers a write with the whole object it just wrote, 'result_metadata' and all, and
-  // building a 'Card' out of that costs about what building the one we sent cost. An import of a
-  // collection with sixty thousand questions paid that sixty thousand times over for a 'BigInt',
-  // which is the only thing it does with the answer, so the four writes below read an 'Id' like the
-  // pulse and the snippet ones already did. json4s ignores the fields it was not asked for, and it
-  // still fails when the answer is an error and not the object we asked for, which is what tells a
-  // failed write from a good one
+  def createDashboard(dashboard: Dashboard): Dashboard =
+    request("dashboard").postData(write(dashboard)).as[Dashboard].body
 
-  def createDashboard(dashboard: Dashboard): BigInt =
-    request("dashboard").postData(write(dashboard)).as[Id].body.id
-
-  def updateDashboard(id: BigInt, dashboard: Dashboard): BigInt =
+  def updateDashboard(id: BigInt, dashboard: Dashboard): Dashboard =
     request(s"dashboard/$id")
       .put(write(dashboard.copy(id = id))(formats.preservingEmptyValues))
-      .as[Id]
+      .as[Dashboard]
       .body
-      .id
 
   def getCard(cardId: BigInt): Card =
     request(s"card/$cardId").as[Card].body.fixHyphens
 
-  def createCard(card: Card): BigInt =
-    request("card").postData(write(card)).as[Id].body.id
+  def createCard(card: Card): Card =
+    request("card").postData(write(card)).as[Card].body
 
-  def updateCard(card: Card): BigInt =
-    request(s"card/${card.id}").put(write(card)).as[Id].body.id
+  def updateCard(card: Card): Card =
+    request(s"card/${card.id}").put(write(card)).as[Card].body
 
   def getDatabase(databaseId: BigInt): Database =
     request(s"database/$databaseId").as[Database].body
@@ -119,52 +98,11 @@ class ApiClient(metabaseUrl: String,
   def getAllDatabases: List[Database] =
     request("database").as[ListDatabasesResponse].body.data
 
-  // Only the tables of one schema of one database, so a big catalog does not have to be brought into
-  // memory to resolve the few tables an import needs. Asking for the whole catalog of the instance
-  // ('GET table') did not work with big catalogs: metabase hydrates the whole database object in every
-  // one of the tables it returns, so the response of an instance with tens of thousands of tables is
-  // hundreds of MB and does not fit in the heap (see ROCK-15286).
-  // 'include_hidden' is needed to match what 'GET table' returned: that endpoint did not filter the
-  // tables by visibility type. Metabase answers 404 instead of an empty list when the schema has no
-  // table we can read, which here only means that none of the tables we are looking for lives there.
-  // Both checked against Metabase 0.56.4: without 'include_hidden' the tables whose visibility type is
-  // set are missing, and with it the answer is exactly the one 'GET table' gave for that schema. The
-  // 404 of this endpoint is a 'text/plain' 'Not found.', while a url metabase does not route at all
-  // answers 'application/json' with '"API endpoint does not exist."' (see 'ImplicitExtensions.asIfFound')
-  def getTablesInSchema(dbId: BigInt, schema: Option[String]): List[TableInSchemaDto] =
-    request(tablesInSchemaPath(dbId, schema)).asIfFound[List[TableInSchemaDto]].getOrElse(List.empty)
+  def getFieldsInDb(dbId: BigInt): List[FieldDto] =
+    request(s"database/$dbId/fields").as[List[FieldDto]].body
 
-  // Returns a single table with all its fields. This is how the tables and fields a collection needs
-  // must be resolved: asking metabase for every field of a database ('GET database/:id/fields') does
-  // not work with big catalogs, as metabase resolves it with a single query enumerating every table of
-  // the database and PostgreSQL cannot bind more than 65535 parameters in a statement (see ROCK-15286).
-  // 'include_sensitive_fields' and 'include_hidden_fields' are needed because this endpoint filters out
-  // the fields whose visibility type is sensitive or hidden, while 'GET field/:id' does return them:
-  // without them the exporter would put such a field in the export and the importer would not be able
-  // to find it in the target metabase. Checked against Metabase 0.56.4, and neither parameter covers
-  // what the other one does: 'include_sensitive_fields' brings back only the sensitive fields and
-  // 'include_hidden_fields' only the hidden ones, so dropping either would make a whole class of field
-  // disappear from the export in silence. The 'details-only' fields come back without either of them.
-  // Beware that no parameter makes this endpoint return the fields metabase has marked as inactive (the
-  // columns that are no longer in the table) or retired: the inactive ones are resolved with
-  // 'getFieldsInDb' as a last resort (see 'Importer.fieldsHiddenInTableMetadata') and the retired ones
-  // cannot be resolved at all, as no endpoint that answers by table or by database returns them
-  def getTableMetadata(tableId: BigInt): TableMetadataDto =
-    request(s"table/$tableId/query_metadata?include_sensitive_fields=true&include_hidden_fields=true")
-      .as[TableMetadataDto]
-      .body
-
-  def getFieldWithTable(fieldId: BigInt): FieldWithTableDto =
-    request(s"field/$fieldId").as[FieldWithTableDto].body
-
-  // The only endpoint that returns the fields metabase has marked as inactive (the columns that are no
-  // longer in the table), but it is also the one that does not work with big catalogs (see the comment
-  // in 'getTableMetadata' and ROCK-15286), so it must be asked only when 'getTableMetadata' left some
-  // needed field unresolved, and only for the databases of those fields.
-  // It does filter out the fields whose visibility type is sensitive or retired, so it is not a way of
-  // resolving those: the sensitive ones come in 'getTableMetadata' and the retired ones nowhere
-  def getFieldsInDb(dbId: BigInt): List[FieldInDbDto] =
-    request(s"database/$dbId/fields").as[List[FieldInDbDto]].body
+  def getAllTables: List[Table] =
+    request("table").as[List[Table]].body
 
   def getCollectionGraph: CollectionGraph =
     request("collection/graph").as[CollectionGraph].body

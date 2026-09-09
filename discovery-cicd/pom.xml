@@ -15,10 +15,6 @@
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.15</scala.version>
         <json4s.version>3.6.7</json4s.version>
-        <!-- json4s-jackson 3.6.7 asks for jackson-databind 2.9.8, a line that is out of support and
-             has known CVEs. Everything json4s uses of it is stable across the whole 2.x, so it is
-             pinned here to a maintained one -->
-        <jackson.version>2.17.2</jackson.version>
         <scalaj.version>2.4.2</scalaj.version>
         <scopt.version>3.7.1</scopt.version>
         <slf4j.api.version>1.7.30</slf4j.api.version>
@@ -43,26 +39,6 @@
             <groupId>org.json4s</groupId>
             <artifactId>json4s-native_${scala.binary.version}</artifactId>
             <version>${json4s.version}</version>
-        </dependency>
-        <!-- Only to read: an import is parsed one question at a time out of a file of hundreds of
-             MB, and that needs a pull parser, which json4s-native does not have (its
-             'Serialization.read' builds the whole AST of the document first). Everything that is
-             written still goes through json4s-native, which does stream -->
-        <dependency>
-            <groupId>org.json4s</groupId>
-            <artifactId>json4s-jackson_${scala.binary.version}</artifactId>
-            <version>${json4s.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.scalaj</groupId>

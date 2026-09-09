@@ -307,9 +307,7 @@ object MBJson extends {
           val updatedKey = replaceFieldRefs(replacements, key)
           (updatedKey, value)
 
-        // the guard the key already had: almost no string of a card holds a field reference, and
-        // running the regex over every one of them is work with nothing to show for it
-        case (key, JString(value)) if hasFieldRefs(value) =>
+        case (key, JString(value)) =>
           val updatedValue = replaceFieldRefs(replacements, value)
           (key, JString(updatedValue))
 
@@ -462,12 +460,10 @@ object MBJson extends {
   private def getReferencedFieldIds(s: String): Set[BigInt] =
     fieldRefRegex.findAllIn(s).map(BigInt(_)).toSet
 
-  // The id is looked up as the number it is, and not by turning the whole map into a map of strings
-  // first: this is called for every string of every card, and 'replacements' holds one entry per
-  // field the collection uses, so rebuilding it here made importing a collection with 60000
-  // questions and 300000 fields take about 19s per question, or 13 days for the collection
-  private def replaceFieldRefs(replacements: IdMap, value: String) =
-    fieldRefRegex.replaceAllIn(value, m => replacements.getTargetField(BigInt(m.matched)).toString)
+  private def replaceFieldRefs(replacements: IdMap, value: String) = {
+    val stringReplacements = replacements.map { case (k, v) => (k.toString, v.toString) }
+    fieldRefRegex.replaceAllIn(value, m => stringReplacements.getTargetField(m.matched))
+  }
 
   private def isDatabase(jsonKey: String) = Set("database", "database_id") contains jsonKey
 

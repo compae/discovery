@@ -12,9 +12,8 @@ import akka.http.scaladsl.settings.ServerSettings
 import akka.stream.TLSClientAuth
 import com.stratio.discoverycicd.config.ConfigFacade
 import com.stratio.discoverycicd.config.ConfigFacade.AuthMode.{MutualTLS, NoAuth}
-import com.stratio.discoverycicd.jobs.{JobManager, JobRegistry}
 import com.stratio.discoverycicd.routes.ServerRoutes
-import com.stratio.discoverycicd.utils.{Concurrently, Logging}
+import com.stratio.discoverycicd.utils.Logging
 import javax.net.ssl.SSLContext
 import org.apache.http.ssl.SSLContextBuilder
 
@@ -30,53 +29,12 @@ object ServerRunner extends Logging {
     apiClientConfig.getTimeoutExport.max(apiClientConfig.getTimeoutImport)
 
   def run(args: Array[String]): Unit = {
-    allowMetabaseConnectionsToBeReused()
-    val jobs = buildJobManager()
-    // the jvm is stopped by s6, not by this process, so this is the only chance to take the result
-    // files with us. They are ephemeral anyway: the work directory is emptied again on start up
-    sys.addShutdownHook(jobs.close())
-
     val rootBehavior = Behaviors.setup[Nothing] { context =>
-      val routes = new ServerRoutes(jobs)(context.system)
+      val routes = new ServerRoutes()(context.system)
       startHttpServer(routes.apiRoutes, context.system)
       Behaviors.empty
     }
     ActorSystem[Nothing](rootBehavior, "DiscoveryServer")
-  }
-
-  /**
-   * Keeps the connections to metabase alive across the requests an export or an import makes in
-   * parallel.
-   *
-   * `scalaj-http` is `HttpURLConnection` underneath, and its keep-alive cache holds five
-   * connections per destination by default. An export already asks for metadata eight at a time
-   * (see [[Concurrently.MetadataRequests]]) and an import now writes several at a time on top of
-   * that, so past five every extra request pays a TCP and a TLS handshake it did not need to, and
-   * a good part of what the parallelism buys is spent there.
-   *
-   * Set here and not in the `java` command line of the service so that it follows whatever the
-   * parallelism is configured to be. An explicit `-Dhttp.maxConnections` in
-   * `DISCOVERY_CICD_JAVA_OPTIONS` still wins: whoever put it there meant it.
-   */
-  private def allowMetabaseConnectionsToBeReused(): Unit = {
-    val Property = "http.maxConnections"
-    val needed = Concurrently.MetadataRequests max apiClientConfig.getParallelWrites
-    Option(System.getProperty(Property)) match {
-      case Some(configured) =>
-        log.info(s"Leaving '$Property' at the configured $configured; this import and export need $needed")
-      case None =>
-        val _ = System.setProperty(Property, needed.toString)
-        log.debug(s"'$Property' set to $needed, so that the requests going to metabase at the same " +
-          s"time reuse their connections instead of opening one each")
-    }
-  }
-
-  private def buildJobManager(): JobManager = {
-    val config = jobsConfig
-    log.info(s"Asynchronous exports and imports: up to ${config.maxConcurrent} at a time with " +
-      s"${config.maxQueued} waiting, results in '${config.workDir}' for ${config.retention}, " +
-      s"keeping the last ${config.maxStoredResults}")
-    JobManager(new JobRegistry(config), config.maxConcurrent, config.maxQueued)
   }
 
   private def startHttpServer(routes: Route, system: ActorSystem[_]): Unit = {
