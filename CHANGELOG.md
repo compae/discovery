@@ -4,7 +4,10 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 
 ## Unreleased
 
-* [ROCK-15112] Ship the `crossdata-jdbc-common` variant of the Virtualizer JDBC driver, so its logs are routed and formatted by `log4j2.xml` like every other logger instead of the driver writing its own layout alongside Metabase's
+* [ROCK-15286] Add asynchronous export and import endpoints, with progress reporting, cancellation and settings for the jobs (concurrency, queue and retention). A job and its result live in one process only, so a restart loses them, and cookie affinity on the ingress keeps every request of a promotion on the pod that runs it
+* [ROCK-15286] Fix: the export and the import of a big collection being unusable so the exported document is read and written in streaming, so its size no longer depends on the heap, and metabase is read from and written to several requests at a time (`DISCOVERY_CICD_IMPORT_PARALLEL_WRITES`, 4 by default)
+* [ROCK-15286] Fix: the export and import timeouts and body size limits disagreeing between layers so they are now 300s and 512MB, with one setting per layer (`NGINX_CLIENT_MAX_BODY_SIZE` and the new `DISCOVERY_CICD_API_MAX_BODY_SIZE`)
+* [ROCK-15112] Fix: ship the `crossdata-jdbc-common` variant of the Virtualizer JDBC driver, so its logs are routed and formatted by `log4j2.xml` like every other logger instead of the driver writing its own layout alongside Metabase's
 
 ## 0.56.4-0.2.0 (2026-07-22)
 

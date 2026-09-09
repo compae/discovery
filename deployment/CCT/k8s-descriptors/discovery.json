@@ -1182,6 +1182,68 @@
             "title": "Import/Export service",
             "description": "Configure import/export service. This feature can be used for promote collections, dashboards, questions ... over environments.",
             "properties": {
+              "jobsMaxConcurrent": {
+                "description": "How many asynchronous exports or imports run at the same time. One by default: an export of a big collection already uses almost the two cores of the pod, so a second one at the same time makes both slower and neither finishes any sooner.",
+                "type": "integer",
+                "minimum": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_JOBS_MAX_CONCURRENT",
+                "title": "Asynchronous jobs running at the same time",
+                "default": 1
+              },
+              "jobsMaxQueued": {
+                "description": "How many asynchronous exports or imports may wait for their turn. Beyond this the request is answered with 429.",
+                "type": "integer",
+                "minimum": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_JOBS_MAX_QUEUED",
+                "title": "Asynchronous jobs waiting for their turn",
+                "default": 8
+              },
+              "jobsWorkDir": {
+                "description": "Where the results of the asynchronous exports are written. It is on the ephemeral filesystem of the pod and it is emptied on start up: neither the jobs nor their results survive a restart.",
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_JOBS_WORK_DIR",
+                "title": "Directory for the results of asynchronous exports",
+                "default": "/tmp/discovery-cicd-jobs"
+              },
+              "jobsRetention": {
+                "description": "How long a finished asynchronous job and its result are kept before being deleted.",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_JOBS_RETENTION",
+                "title": "Retention of finished asynchronous jobs",
+                "default": "24h"
+              },
+              "jobsMaxStoredResults": {
+                "description": "How many finished asynchronous jobs are kept, whatever their age. An export of a big collection is hundreds of MB and the filesystem of the pod is ephemeral, so the oldest ones are deleted beyond this.",
+                "type": "integer",
+                "minimum": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_JOBS_MAX_STORED_RESULTS",
+                "title": "Finished asynchronous jobs kept",
+                "default": 10
+              },
               "akkaRequestTimeoutImport": {
                 "description": "Akka request timeout for Discovery-cicd api. Specific to Import operation.",
                 "type": "string",
@@ -1206,7 +1268,7 @@
                 "level": 1,
                 "internalName": "DISCOVERY_CICD_API_EXPORT_TIMEOUT",
                 "title": "Akka request timeout. Export operation.",
-                "default": "60s"
+                "default": "300s"
               },
               "cicdJavaInitialRamPercentage": {
                 "description": "Initial size of the Java heap as a percentage (0 - 100) of the total memory available to the VM (relevant to server and workers). Corresponding to '-XX:InitialRAMPercentage'. Default 10.0",
@@ -1255,6 +1317,41 @@
                 "internalName": "DISCOVERY_CICD_API_METABASE_TIMEOUT",
                 "title": "Akka http client timeout used in Metabase API requests",
                 "default": "20s"
+              },
+              "cicdApiMaxBodySize": {
+                "description": "Sets the maximum size of the body that the Import/Export collections service accepts for an import (this value corresponds to the Akka parameter akka.http.server.parsing.max-content-length). Keep it equal to NGINX_CLIENT_MAX_BODY_SIZE, which caps the same body one layer earlier, so that neither of the two cuts before the other. Default 512M",
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_API_MAX_BODY_SIZE",
+                "title": "Max Body Size for the Import/Export collections service",
+                "default": "512M"
+              },
+              "cicdApiMaxReportedBodyChars": {
+                "description": "Maximum number of characters of a Metabase response that the Import/Export collections service reports when it cannot read that response. A longer body is truncated in the error message and in the log. Default 1048576",
+                "type": "integer",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_API_MAX_REPORTED_BODY_CHARS",
+                "title": "Maximum reported characters of an unreadable Metabase response",
+                "default": 1048576
+              },
+              "cicdImportParallelWrites": {
+                "description": "How many questions, dashboards and subscriptions an import creates in Metabase at the same time. Set it to 1 to create them one after another. Raising it above the default only pays off if Metabase can take the extra load: past the point where it saturates, the import gets slower and not faster. Default 4",
+                "type": "integer",
+                "required": false,
+                "readOnly": false,
+                "application": false,
+                "level": 1,
+                "internalName": "DISCOVERY_CICD_IMPORT_PARALLEL_WRITES",
+                "title": "Questions created at the same time by an import",
+                "default": 4
               }
             },
             "required": []
@@ -1306,7 +1403,7 @@
                 "level": 1,
                 "internalName": "NGINX_CLIENT_MAX_BODY_SIZE",
                 "title": "Max Body Size for CI/CD endpoint",
-                "default": "2M"
+                "default": "512M"
               }
             },
             "required": []
@@ -1842,7 +1939,7 @@
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
           "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
-          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-body-size\": \"0\", \"nginx.ingress.kubernetes.io/affinity\": \"cookie\", \"nginx.ingress.kubernetes.io/affinity-mode\": \"persistent\", \"nginx.ingress.kubernetes.io/session-cookie-name\": \"discovery-affinity\", \"nginx.ingress.kubernetes.io/session-cookie-path\": \"${haproxypath}\", \"nginx.ingress.kubernetes.io/session-cookie-max-age\": \"86400\", \"nginx.ingress.kubernetes.io/session-cookie-expires\": \"86400\"}",
           "enabled": "true"
         },
         {
@@ -2015,7 +2112,7 @@
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
           "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
-          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-body-size\": \"0\", \"nginx.ingress.kubernetes.io/affinity\": \"cookie\", \"nginx.ingress.kubernetes.io/affinity-mode\": \"persistent\", \"nginx.ingress.kubernetes.io/session-cookie-name\": \"discovery-affinity\", \"nginx.ingress.kubernetes.io/session-cookie-path\": \"${haproxypath}\", \"nginx.ingress.kubernetes.io/session-cookie-max-age\": \"86400\", \"nginx.ingress.kubernetes.io/session-cookie-expires\": \"86400\"}",
           "enabled": "true"
         },
         {
@@ -2138,7 +2235,7 @@
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
           "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
-          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-body-size\": \"0\", \"nginx.ingress.kubernetes.io/affinity\": \"cookie\", \"nginx.ingress.kubernetes.io/affinity-mode\": \"persistent\", \"nginx.ingress.kubernetes.io/session-cookie-name\": \"discovery-affinity\", \"nginx.ingress.kubernetes.io/session-cookie-path\": \"${haproxypath}\", \"nginx.ingress.kubernetes.io/session-cookie-max-age\": \"86400\", \"nginx.ingress.kubernetes.io/session-cookie-expires\": \"86400\"}",
           "enabled": "true"
         },
         {
@@ -2273,7 +2370,7 @@
           "plural": "Ingresses",
           "namespace": "${Application.domain}",
           "spec": "{\"ingressClassName\": \"default-ingress-class\", \"rules\": [{\"host\": \"${haproxyhost}\", \"http\": {\"paths\": [{\"path\": \"${haproxypath}/(favicon.ico|app|public|embed|api|discovery-cicd)($|/)(.*)\", \"pathType\": \"Exact\", \"backend\": {\"service\": {\"name\": \"${Application.name}\", \"port\": {\"name\": \"nginxport\"}}}}]}}]}",
-          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\"}",
+          "annotations": "{\"nginx.ingress.kubernetes.io/backend-protocol\": \"HTTPS\", \"nginx.ingress.kubernetes.io/rewrite-target\": \"/$1$2$3\", \"nginx.ingress.kubernetes.io/proxy-connect-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-read-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-send-timeout\": \"${proxyReadTimeout}\", \"nginx.ingress.kubernetes.io/proxy-body-size\": \"0\"}",
           "enabled": "true"
         },
         {

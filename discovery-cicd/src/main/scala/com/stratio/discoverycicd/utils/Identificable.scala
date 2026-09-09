@@ -28,14 +28,18 @@ object Identificable {
   }
 
 
+  // the schema is normalized because metabase spells 'no schema' as a null and as the empty string
+  // depending on the endpoint the table or the field came from (see 'Table.normalizeSchema')
   implicit val identificableTable = new Identificable[Table] {
     type Identifier = (String, String, Option[String])
-    def identifier(table: Table): Identifier = (table.name, table.db.name, table.schema)
+    def identifier(table: Table): Identifier =
+      (table.name, table.db.name, Table.normalizeSchema(table.schema))
   }
 
   implicit val identificableField = new Identificable[Field] {
     type Identifier = (String, String, String, Option[String])
-    def identifier(field: Field): Identifier = (field.name, field.table_name, field.dbName, field.schema)
+    def identifier(field: Field): Identifier =
+      (field.name, field.table_name, field.dbName, Table.normalizeSchema(field.schema))
   }
 
   implicit val identificableDatabase = new Identificable[Database] {

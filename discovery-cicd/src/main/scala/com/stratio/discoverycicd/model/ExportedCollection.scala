@@ -19,6 +19,11 @@ case class ExportedCollection(
   collection: Collection,
   children: List[Child],
   permissionsPerGroup: Map[GroupName, Permission]
-)
+) {
+
+  /** Everything but the three lists that grow with the collection, see [[ExportSource]]. */
+  def header: ExportHeader =
+    ExportHeader(fields, tables, databases, snippets, collection, children, permissionsPerGroup)
+}
 
 case class Child(collection: Collection, permissionsPerGroup: Map[GroupName, Permission])
