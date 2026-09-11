@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <virtualizer.jdbc.version>4.1.0-M3</virtualizer.jdbc.version>
+    <virtualizer.jdbc.version>4.1.0-M7</virtualizer.jdbc.version>
   </properties>
 
   <dependencies>
