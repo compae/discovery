@@ -134,21 +134,64 @@
   (assoc (select-keys table [:name :schema]) :fields #{}))
 
 ;; The describe-table flow is: describe-table -> describe-table-fields (opens the connection and
-;; runs the `DESCRIBE`) -> describe-results->fields (parses the rows) -> valid-describe-table-row?
-;; (keeps only real column rows). These parsing helpers are based on :sparksql's describe-table
-;; (sparksql.clj:125-152): valid-describe-table-row? is copied verbatim; describe-results->fields is
-;; pulled into its own fn (so it can be unit-tested without a live Virtualizer, see
-;; crossdata_test.clj) and additionally captures the column comment (:field-comment), which
-;; sparksql's parsing drops. The other STRATIO tweaks are in describe-table-fields.
+;; runs the `DESCRIBE`) -> describe-results->fields (parses the rows) -> section-delimiter? (where the
+;; columns end). These parsing helpers are based on :sparksql's describe-table (sparksql.clj:125-152),
+;; with describe-results->fields pulled into its own fn (so it can be unit-tested without a live
+;; Virtualizer) and additionally capturing the column comment (:field-comment), which sparksql's
+;; parsing drops. The other STRATIO tweaks are in describe-table-fields.
 
-;; Virtualizer's `DESCRIBE` appends extra rows besides the columns: partition-info markers
-;; (`# Partition Information`, `# col_name`) and blank rows. Keep only rows whose col_name and
-;; data_type are non-blank and don't start with `#`.
-(defn- valid-describe-table-row?
-  [{:keys [col_name data_type]}]
-  (every? (every-pred (complement str/blank?)
-                      (complement #(str/starts-with? % "#")))
-          [col_name data_type]))
+;; `DESCRIBE` prints the table's columns first and then marker sections, so parsing is only a matter
+;; of finding where the columns END: describe-results->fields keeps the rows before the first section
+;; delimiter and throws away the rest unread. The cut has to be positional because the rows inside a
+;; section are not rows a predicate could reject on their own — `Part 0` below looks exactly like a
+;; column.
+;;
+;; A delimiter is a row with no data_type. Spark emits every section header as `("# Something", "",
+;; "")` and every separator as `("", "", "")`, while a real column always has a type. A `#` prefix on
+;; col_name is deliberately NOT the signal: a column may be named `#odd` (backtick-quoted) and appear
+;; in the middle of the list, and cutting there would drop every real column after it. The one header
+;; that does carry a data_type, `# col_name |data_type|comment|`, always follows `# Partition
+;; Information`, so the cut has already happened.
+;;
+;; Two shapes exist: Spark's DescribeTableCommand (a v1 table) always prints the first one, and
+;; DescribeTableExec (a v2 table, Delta or Iceberg) prints the first when every partition transform is
+;; an identity and the second otherwise. A third section, `# Column Default Values`, follows either of
+;; them when a column has a DEFAULT — and it is printed by a plain `DESCRIBE`, not only an EXTENDED one.
+;;
+;;   `parquet PARTITIONED BY (dt, region)` — v1, and v2 partitioned by columns:
+;;
+;;     col_name               |data_type|comment|
+;;     -----------------------+---------+-------+
+;;     id                     |int      |       |   <- the columns, all we want
+;;     #odd                   |string   |       |   <- a column too, `#` and all
+;;     dt                     |date     |       |
+;;     region                 |string   |       |
+;;     # Partition Information|         |       |   <- delimiter, everything from here is dropped
+;;     # col_name             |data_type|comment|
+;;     dt                     |date     |       |   <- repeated
+;;     region                 |string   |       |   <- repeated
+;;
+;;   `iceberg PARTITIONED BY (region, days(ts))` — v2 with a non-identity transform:
+;;
+;;     col_name      |data_type|comment|
+;;     --------------+---------+-------+
+;;     id            |int      |       |   <- the columns, all we want
+;;     val           |string   |       |
+;;     region        |string   |       |
+;;     ts            |timestamp|       |
+;;                   |         |       |   <- delimiter, everything from here is dropped
+;;     # Partitioning|         |       |
+;;     Part 0        |region   |       |
+;;     Part 1        |days(ts) |       |
+;;
+;; Why the tail must go: the first shape REPEATS the partition columns, and duplicate names break
+;; Metabase's batch INSERT into metabase_field (unique idx_unique_field), which the sync swallows,
+;; leaving the table with NO fields at all (ROCK-15336); the second would sync the transforms as
+;; fields named `Part 0`, `Part 1`. sparksql instead filters the `#` rows out one by one, which keeps
+;; both.
+(defn- section-delimiter?
+  [{:keys [data_type]}]
+  (str/blank? data_type))
 
 ;; `DESCRIBE` returns Spark-native type names (lowercase `string`, `bigint`, `array<...>`,
 ;; `decimal(p,s)`), so base-type is resolved with the :hive-like matcher (not our own
@@ -158,8 +201,8 @@
 (defn- describe-results->fields
   [results]
   (set
-   (for [[idx {col-name :col_name, data-type :data_type, col-comment :comment, :as result}] (m/indexed results)
-         :when (valid-describe-table-row? result)]
+   (for [[idx {col-name :col_name, data-type :data_type, col-comment :comment}]
+         (m/indexed (take-while (complement section-delimiter?) results))]
      (cond-> {:name              col-name
               :database-type     data-type
               :base-type         (sql-jdbc.sync/database-type->base-type :hive-like (keyword data-type))
