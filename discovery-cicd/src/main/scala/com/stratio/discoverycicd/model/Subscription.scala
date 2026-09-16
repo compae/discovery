@@ -10,8 +10,8 @@ import com.stratio.discoverycicd.utils.ImplicitExtensions.MapExtension
 import com.stratio.discoverycicd.utils.MBJson
 import com.stratio.discoverycicd.utils.ReplacementUtils.replacementMayFail
 import com.stratio.discoverycicd.utils.TypeAliases._
-import org.json4s.JsonAST.JArray
-import org.json4s.{JNothing, JObject, JString, JValue}
+import org.json4s.JsonAST.{JArray, JInt}
+import org.json4s.{JBool, JNothing, JObject, JString, JValue}
 
 case class Subscription(
   id: SubscriptionId,
@@ -54,6 +54,26 @@ case class Subscription(
   def clearSubscribers: Subscription = replacementMayFail(this, "Channels") {
     _.copy(channels = channels.map(_.clearSubscribers))
   }
+
+  /**
+   * Metabase only uses the cards in the body when creating normal pulses. For dashboard subscriptions they are
+   * not used for anything when creating/updating the subscription. However, the API still performs some common
+   * validations (which would not be necessary for the subscription case, but the code is shared) like checking
+   * the body has a non-empty list of cards and making some extra validations on them. Ensuring we pass these
+   * validations would force us to make more id replacements, even for the dashboard_card_ids, for which we do
+   * not have an IdMap (and it is impossible to build one, there is no "extra" identifier across Metabase instances).
+   *
+   * So to overcome this, we just put a list with one card with the minimum fields required by the endpoint
+   * validations. We also have to provide a card ID, the but ID we put is irrelevant as long as it exists in
+   * the targe Metabase since this data is not really used.
+   */
+  def clearCards(irrelevantCardId: BigInt): Subscription = copy(
+    cards = JArray(List(JObject(
+      "include_csv" -> JBool(false),
+      "include_xls" -> JBool(false),
+      "id"          -> JInt(irrelevantCardId)
+    )))
+  )
 }
 
 

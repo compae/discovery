@@ -275,6 +275,11 @@ class Importer(api: ApiClient) extends Logging {
           .replaceDashboardIds(dashboardMap)
           .replaceCardIds(cardMap)
           .clearSubscribers
+          .clearCards(
+            irrelevantCardId = cardMap.values.headOption.getOrElse(throw ValidationDataException(
+              "There are no cards in the exported data. Cannot create a subscription without cards"
+            ))
+          )
 
       (existingSubscriptions(subscriptionToCreateOrUpdate.dashboard_id)
           .filter(_.name == subscriptionToCreateOrUpdate.name) match {
@@ -287,7 +292,9 @@ class Importer(api: ApiClient) extends Logging {
       }).map {
         subscription =>
           log.debug(s"Subscription with name ${subscription.name} already present in dashboard target. Updating the subscription.")
-          api.updateSubscription(subscriptionToCreateOrUpdate.useRecipientsOf(subscription))
+          api.updateSubscription(subscriptionToCreateOrUpdate
+            .copy(id = subscription.id)
+            .useRecipientsOf(subscription))
           subscription.id
       }
       .getOrElse {
