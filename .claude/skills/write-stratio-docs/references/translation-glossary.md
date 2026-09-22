@@ -228,7 +228,7 @@ These appear in italics in ES. Per R13, whether they stay italic in EN depends o
 
 ### Neither italics nor translation
 
-`discovery-cicd` is a component id → backticks. `gosec-sso`, `headers`, `jwt`, `metabase-native` are values of `AUTHENTICATOR` → backticks. `'Gosec SSO Authenticator Settings'`, `"Use virtualizer jdbc from Extra JARs"` and every other _Stratio Command Center_ label stay in English in both trees, quoted per R1.
+`discovery-cicd` is a component id → backticks. `gosec-sso`, `headers`, `jwt`, `metabase-native` are values of `AUTHENTICATOR` → backticks. `'Gosec SSO Authenticator Settings'`, `_Use virtualizer jdbc from Extra JARs_` and every other _Stratio Command Center_ label stay in English in both trees, marked per R1.
 
 ## Additional ES→EN translations
 

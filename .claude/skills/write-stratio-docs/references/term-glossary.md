@@ -583,7 +583,7 @@ Trademark symbol on **every** mention for those that carry one; never italicized
 
 Third-party proper nouns written **as-is, WITHOUT any trademark symbol and WITHOUT italics**, verified in the documentation tree: Metabase, Kubernetes, Vault, Docker, Java, Oracle, MySQL, MongoDB, BigQuery, Amazon Redshift, Google Analytics, PgBouncer, Prometheus, Jetty, Akka. None of these takes a symbol — do not add one. (Ubuntu, s6, curl and OpenSSL appear in the `Dockerfile` but not in the docs; if you introduce them, they follow the same rule.)
 
-**NGINX (commercial product) / nginx (open-source technology)** — the reverse proxy inside the container is the open-source technology, so it is **`nginx`**, lowercase. `Nginx` capitalized is correct only when quoting a descriptor label verbatim: the `'Nginx'` accordion of `'Settings'`, and the `"Nginx log level"` title of `NGINX_ERROR_LOG_LEVEL` (R28 — copy a `title` as it is). Measured in the ES tree at the baseline: **5 `Nginx`, 4 `NGINX`, 5 `nginx`**, and the mix is not all defect. Of the four `NGINX`, three are untouchable because they are inside variable names (`NGINX_ERROR_LOG_LEVEL` in `environment-variables.adoc:380`, and `EXTRA_NGINX_LOG_PROPERTIES` in `breaking-changes.adoc:26` and in the fact sheet at `:371`), and **exactly one is a genuine slip in prose — `architecture.adoc:15`, `un proxy HTTP NGINX`**. Of the five `Nginx`, two quote the descriptor label correctly (`deployment.adoc:61` and `:69`) and one is a slip — `environment-variables.adoc:381`, `Aplica a los _logs_ de Nginx`. Fix those two when you touch their pages, in both trees, and leave the rest alone.
+**NGINX (commercial product) / nginx (open-source technology)** — the reverse proxy inside the container is the open-source technology, so it is **`nginx`**, lowercase. `Nginx` capitalized is correct only when quoting a descriptor label verbatim: the `'Nginx'` accordion of `'Settings'`, and the `_Nginx log level_` title of `NGINX_ERROR_LOG_LEVEL` (R28 — copy a `title` as it is). Measured in the ES tree at the baseline: **5 `Nginx`, 4 `NGINX`, 5 `nginx`**, and the mix is not all defect. Of the four `NGINX`, three are untouchable because they are inside variable names (`NGINX_ERROR_LOG_LEVEL` in `environment-variables.adoc:380`, and `EXTRA_NGINX_LOG_PROPERTIES` in `breaking-changes.adoc:26` and in the fact sheet at `:371`), and **exactly one is a genuine slip in prose — `architecture.adoc:15`, `un proxy HTTP NGINX`**. Of the five `Nginx`, two quote the descriptor label correctly (`deployment.adoc:61` and `:69`) and one is a slip — `environment-variables.adoc:381`, `Aplica a los _logs_ de Nginx`. Fix those two when you touch their pages, in both trees, and leave the rest alone.
 
 **h2 / H2** — the sample database removed in 0.43.4-0.1.0 for a security vulnerability. Write the engine as `H2`; the tree spells it that way everywhere, and its single lowercase `h2` was corrected when the admonition moved from `upgrade.adoc` to `upgrade/special-upgrades.adoc`. Measured at the baseline: **0 lowercase `h2` in either tree**, so this one is closed too. Keep it uppercase.
 
@@ -612,26 +612,26 @@ Most environment variables are the back of a labelled field in _Stratio Command 
 
 | `title` (this is the name to write) | Environment variable | Section |
 |---|---|---|
-| "Authentication method" | `AUTHENTICATOR` | 'General' → 'User Authentication' |
-| "Allowed groups" | `ALLOWED_GROUPS` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
-| "Admin group" | `ADMIN_GROUP` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
-| "Use group whitelist" | `USE_GROUP_WHITELIST` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
-| "Create and sync user groups in Metabase" | `CREATE_AND_SYNC_GROUPS` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
-| "Extra JARs to add to metabase plugins folder" | `EXTRA_JARS` | 'Settings' → 'Metabase' |
-| "Use virtualizer jdbc from Extra JARs" | `VIRTUALIZER_JDBC_FROM_EXTRA_JARS` | 'Settings' → 'Metabase' |
-| "Hex-encode user-provided parameters in SQL queries" | `VIRTUALIZER_DRIVER_HEX_ENCODE_SQL_PARAMS` | 'Settings' → 'Metabase' |
-| "JDBC pool unreturned connection timeout (seconds)" | `MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS` | 'General' → 'PostgreSQL' |
-| "Postgres connection URL (filled via Service Discovery section)" | `MB_DB_URL` | 'General' → 'PostgreSQL' |
-| "Proxy read timeout (seconds)" | `PROXY_READ_TIMEOUT` | 'General' → 'Networking' |
-| "Crossdata log level" | `CROSSDATA_LOG_LEVEL` | 'General' → 'Log levels' |
-| "Middleware log level" | `MIDDLEWARE_LOG_LEVEL` | 'General' → 'Log levels' |
-| "Service log level" | `SERVICE_LOG_LEVEL` | 'General' → 'Log levels' |
-| "oauth2proxy cooke name" *(sic)* | `JWT_COOKIE_NAME` | 'Environment' |
-| "Startup probe periodSeconds" | not injected as of 0.56.4-0.2.x | 'General' → 'Probes' |
-| "Startup probe failureThreshold" | not injected as of 0.56.4-0.2.x | 'General' → 'Probes' |
-| "Instances", "CPUs Request", "Memory request (MB)" | not injected as of 0.56.4-0.2.x | 'General' → 'Resources' |
+| _Authentication method_ | `AUTHENTICATOR` | 'General' → 'User Authentication' |
+| _Allowed groups_ | `ALLOWED_GROUPS` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
+| _Admin group_ | `ADMIN_GROUP` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
+| _Use group whitelist_ | `USE_GROUP_WHITELIST` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
+| _Create and sync user groups in Metabase_ | `CREATE_AND_SYNC_GROUPS` | 'General' → 'User Authentication' → 'Gosec SSO Authenticator Settings' |
+| _Extra JARs to add to metabase plugins folder_ | `EXTRA_JARS` | 'Settings' → 'Metabase' |
+| _Use virtualizer jdbc from Extra JARs_ | `VIRTUALIZER_JDBC_FROM_EXTRA_JARS` | 'Settings' → 'Metabase' |
+| _Hex-encode user-provided parameters in SQL queries_ | `VIRTUALIZER_DRIVER_HEX_ENCODE_SQL_PARAMS` | 'Settings' → 'Metabase' |
+| _JDBC pool unreturned connection timeout (seconds)_ | `MB_JDBC_DATA_WAREHOUSE_UNRETURNED_CONNECTION_TIMEOUT_SECONDS` | 'General' → 'PostgreSQL' |
+| _Postgres connection URL (filled via Service Discovery section)_ | `MB_DB_URL` | 'General' → 'PostgreSQL' |
+| _Proxy read timeout (seconds)_ | `PROXY_READ_TIMEOUT` | 'General' → 'Networking' |
+| _Crossdata log level_ | `CROSSDATA_LOG_LEVEL` | 'General' → 'Log levels' |
+| _Middleware log level_ | `MIDDLEWARE_LOG_LEVEL` | 'General' → 'Log levels' |
+| _Service log level_ | `SERVICE_LOG_LEVEL` | 'General' → 'Log levels' |
+| _oauth2proxy cooke name_ *(sic)* | `JWT_COOKIE_NAME` | 'Environment' |
+| _Startup probe periodSeconds_ | not injected as of 0.56.4-0.2.x | 'General' → 'Probes' |
+| _Startup probe failureThreshold_ | not injected as of 0.56.4-0.2.x | 'General' → 'Probes' |
+| _Instances_, _CPUs Request_, _Memory request (MB)_ | not injected as of 0.56.4-0.2.x | 'General' → 'Resources' |
 
-Titles that only exist in the 14.10 descriptor, for when you document what disappeared: "Skip Metabase's Statement final cancellation in Virtualizer driver" (`VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`), "Dynamic authentication" (`USE_DYNAMIC_AUTHENTICATION`), "Enable OAUTH" (`OAUTH_ENABLED`), "SSO external URI" (`SSO_URI`), "SSO internal URI" (`SSO_URI_INTERNAL`), "OAuth2 cookie name" (`OAUTH2_COOKIE_NAME`).
+Titles that only exist in the 14.10 descriptor, for when you document what disappeared: _Skip Metabase's Statement final cancellation in Virtualizer driver_ (`VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`), _Dynamic authentication_ (`USE_DYNAMIC_AUTHENTICATION`), _Enable OAUTH_ (`OAUTH_ENABLED`), _SSO external URI_ (`SSO_URI`), _SSO internal URI_ (`SSO_URI_INTERNAL`), _OAuth2 cookie name_ (`OAUTH2_COOKIE_NAME`).
 
 **Transcribe the `title` with its typos.** The descriptor carries `oauth2proxy cooke name`, `CRT Vault tamplate` and `JWT puclic key Vault tamplate`; quoting a corrected version means quoting something the operator will not find on screen.
 

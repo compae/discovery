@@ -389,7 +389,7 @@ This sheet answers `Alto` for the overall risk and marks every duration `(estima
 | `\| *No está validada.* Cada Universo declara…` — an explanation where the vocabulary wants a value | `\| *No.* No está validada: cada Universo declara…`. The value comes first, in bold; the reason follows after a colon. Same in the `[#coexistence]` cell, `\| No está validada` → `\| No` |
 | Three `(estimado)` in the masculine | `(estimada)`. The mark agrees with *duración*, feminine, not with *tiempo* or with the number: `unos minutos (estimada)`, `Depende del tamaño de la copia (estimada)`. EN uses `(estimated)`, which hides the slip |
 | `\| Inmediato. No se pierden datos.` — a duration with no mark at all | `\| Inmediato (estimada). No se pierden datos.` **`Inmediato` is a duration.** So is `Unos minutos`, and so is `Días o semanas`. If a cell of a duration column says how long something takes in any words at all, it carries the mark |
-| `\| Lo primero es obligatorio; lo demás, opcional, en el mismo cambio de versión` — two requirement levels in one cell, over a row that bundled two unrelated decisions | Split into **two rows**, one `Obligatorio` (`"Instances"` to `1`) and one `Opcional` (`"Metabase log level"` to `"INFO"`). When a cell needs two levels, the row is really two rows |
+| `\| Lo primero es obligatorio; lo demás, opcional, en el mismo cambio de versión` — two requirement levels in one cell, over a row that bundled two unrelated decisions | Split into **two rows**, one `Obligatorio` (`_Instances_` to `1`) and one `Opcional` (`_Metabase log level_` to `"INFO"`). When a cell needs two levels, the row is really two rows |
 
 ### Four conventions a sheet breaks with ease
 
