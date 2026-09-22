@@ -8,6 +8,7 @@ Only listing significant user-visible, not internal code cleanups and minor bug 
 * [ROCK-15157] Add jvm flag (--add-opens=java.base/java.nio=ALL-UNNAMED) to run arrow serialization
 * [ROCK-15336] Fix: a partitioned table syncing with no columns, because `DESCRIBE` repeats its partition columns and the duplicate names break the insert
 * [ROCK-15332] Fix discovery CI/CD import of subscriptions
+* [ROCK-15282] Fix two typos in the labels an operator reads in _Stratio Command Center_ ("Extra JARs to add to Metabase plugins folder" and "oauth2proxy cookie name") and one in the message the Hive-based drivers log when they refuse a connection
 
 ## 0.56.4-0.2.0 (2026-07-22)
 

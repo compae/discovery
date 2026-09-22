@@ -1351,7 +1351,7 @@
                 "application": false,
                 "level": 1,
                 "internalName": "EXTRA_JARS",
-                "title": "Extra JARs to add to metabase plugins folder",
+                "title": "Extra JARs to add to Metabase plugins folder",
                 "default": ""
               },
               "virtualizerJdbcFromExtraJars": {
@@ -1449,7 +1449,7 @@
             "application": false,
             "level": 2,
             "internalName": "JWT_COOKIE_NAME",
-            "title": "oauth2proxy cooke name",
+            "title": "oauth2proxy cookie name",
             "default": "stratio-cookie"
           },
           "oauth2Proxy2LogoutUrl": {
