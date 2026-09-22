@@ -15,4 +15,4 @@ Consulta las siguientes guías detalladas para iniciar el proceso:
 ** xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[Recuperación ante un fallo de la migración]
 ** xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[_Rollback_ a la versión anterior]
 
-Para solucionar posibles problemas, puedes consultar la xref:operations-guide:installing-and-upgrading/environment-variables.adoc[lista de variables de entorno de la instancia]: ten en cuenta que la mayoría de ellas son independientes del entorno de despliegue utilizado.
+Para solucionar posibles problemas, puedes consultar la xref:operations-guide:installing-and-upgrading/environment-variables.adoc[lista de variables de entorno de la instancia]. Ten en cuenta que la mayoría de ellas son independientes del entorno de despliegue utilizado.

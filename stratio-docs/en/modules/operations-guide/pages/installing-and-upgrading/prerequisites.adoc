@@ -1,58 +1,58 @@
 = Prerequisites
 
-== External Services
+== External services
 
-First, you need to have all of the main modules deployed and running: the most important ones are _Stratio Gosec_ and _Stratio Command Center_.
+First, deploy and run all the main modules; the most important are _Stratio Gosec_ and _Stratio Command Center_.
 
-NOTE: If you are deploying using _Stratio Command Center_, these prerequisites are probably already fulfilled before you deploy _Stratio Discovery_.
+NOTE: If you deploy through _Stratio Command Center_, these prerequisites are likely already met before _Stratio Discovery_ is deployed.
 
-From this point on, your environment will have to meet the following prerequisites:
+From that point on, your environment must meet these prerequisites:
 
-* Have a _Stratio PostgreSQL_ service and its associated PgBouncer: although connection pool isn't required, it is strongly recommended to avoid saturating single-node connections.
-* Since _Stratio Discovery_ stores its metadata in _Stratio PostgreSQL_, *never store any other data in the `public` schema of the database assigned to the instance*. This database is configured during deployment using the `MB_DB_URL` or `MB_DB_DBNAME` environment variables in previous versions.
+* Have a _Stratio PostgreSQL Operator_ service and its associated PgBouncer: although the connection pool is not mandatory, it is strongly recommended to avoid saturating the connections on a single node.
+* Since _Stratio Discovery_ stores its metadata in _Stratio PostgreSQL Operator_, *do not store any other data in the `public` schema of the database assigned to the instance*. This database is configured during deployment through the `MB_DB_URL` environment variable or `MB_DB_DBNAME` in earlier versions.
 
 [NOTE]
 ====
-It doesn't matter what type of _Stratio PostgreSQL_ is used as long as the role/user in _Stratio PostgreSQL_ also has the `LOGIN` attribute, the database specified in `MB_DB_DBNAME` exists, and the role/user has the necessary permissions for it.
+It does not matter what type of _Stratio PostgreSQL Operator_ is used, as long as the _Stratio PostgreSQL Operator_ role/user also has the `LOGIN` attribute, the database specified in `MB_DB_DBNAME` exists, and the role/user has the necessary permissions on it.
 
-It is assumed that SSL/TLS connections to the _Stratio PostgreSQL_ instance will be used: this means that depending on how that specific version handles granting privileges, the system administrator will need to add a policy in _Stratio Gosec_ or create the role and grant the required privileges in the instance.
+It is assumed that SSL/TLS connections to the _Stratio PostgreSQL Operator_ instance will be used; therefore, depending on how that specific version manages the granting of privileges, the system administrator will need to add a policy in _Stratio Gosec_ or create the role and grant the required privileges on the instance.
 
-If you follow the recommended implementation, *all of these requirements will be automatically managed by _Stratio Command Center_*.
+If you follow the recommended implementation, *all these requirements will be managed automatically by _Stratio Command Center_*.
 ====
 
 == Secrets
 
-If you deploy using _Stratio Command Center_ and select 'Execute prerequisites', you can skip this section because these secrets are automatically created during the first deployment.
+If you deploy through _Stratio Command Center_ and select 'Execute prerequisites', you can skip this section, since these secrets are created automatically during the first deployment.
 
 This section is essentially a reference for troubleshooting.
 
 === Certificates
 
-The client-server certificate used to connect to _Stratio PostgreSQL_ and _Stratio {modulename}_ (as well as any other TLS/SSL connections) is stored in Vault on the path `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
+The client-server certificate used to connect to _Stratio PostgreSQL Operator_ and _Stratio {modulename}_ (as well as for any other TLS/SSL connection) is stored in Vault at the `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+` path.
 
-The value `DISCOVERY_INSTANCE_NAME` can be retrieved in the instance descriptor (it's an environment variable) and corresponds to the name provided during deployment using _Stratio Command Center_.
+You can retrieve the `DISCOVERY_INSTANCE_NAME` value from the instance descriptor (an environment variable), which corresponds to the name provided during deployment through _Stratio Command Center_.
 
-The `Common Name` (*CN*) of the certificate also corresponds to the value `DISCOVERY_INSTANCE_NAME`. The `Subject Alternative Name` (*SAN*) contains four entries:
+The `Common Name` (*CN*) of the certificate also corresponds to the `DISCOVERY_INSTANCE_NAME` value. The `Subject Alternative Name` (*SAN*) contains four entries:
 
 * `+${SERVICE_ID}-${KUBERNETES_NAMESPACE}+`
 * `+${SERVICE_ID}-${KUBERNETES_NAMESPACE}.${KUBERNETES_NAMESPACE}+`
-* the public host of the instance, the one of the "URI host…" option of the 'General' → 'Networking' section
+* the public host of the instance, the one in the _URI host…_ option of the 'General' → 'Networking' section
 * `+*.${KUBERNETES_NAMESPACE}+`
 
-where `+${SERVICE_ID}+` is the "Discovery service name" option and `+${KUBERNETES_NAMESPACE}+` the namespace in which the instance was deployed.
+where `+${SERVICE_ID}+` is the _Discovery service name_ option and `+${KUBERNETES_NAMESPACE}+` is the namespace in which the instance was deployed.
 
-NOTE: Remember that there's a prerequisite in the _Stratio Command Center_ deployment that will create this secret for you automatically.
+NOTE: The _Stratio Command Center_ deployment includes a prerequisite that automatically creates this secret for you.
 
 === Passwords
 
-There are passwords that are required depending on the authentication method (selected through the 'AUTHENTICATOR' environment variable) used for user login:
+There are mandatory passwords depending on the authentication method (selected through the `AUTHENTICATOR` environment variable) used for the user login:
 
 * `gosec-sso`
 * `headers`
 * `jwt`
 * `metabase-native`
 
-If you want to use _Stratio Gosec's_ SSO authentication system to access your instance, configure `AUTHENTICATOR` with the value `gosec-sso` (in previous versions, this was enabled by setting the variable `USE_GOSEC_SSO_AUTH` to `true`), which is the default value and the only one for which the image and the _Stratio KEOS_ ingress are wired end to end: the container only prepares the JWT validation key when `AUTHENTICATOR` is `gosec-sso`. The `headers`, `jwt` and `metabase-native` methods still exist in the product and the descriptor still offers them, but using them requires configuring the key or the headers by hand. The SSO needs no username-and-password secret in Vault: the `oauth2proxy` of _Stratio KEOS_ resolves the flow and the instance only validates the JWT token of the cookie against a public key. What changes in 0.56.4-0.1.0 is how it obtains that key: up to 0.50.21-0.2.x it downloaded it from Vault itself at start-up, and from 0.56.4-0.1.0 the Vault injector delivers it.
+If you want to use the _Stratio Gosec_ SSO authentication system to access your instance, you have to configure `AUTHENTICATOR` with the value `gosec-sso` (in earlier versions it was enabled by configuring the `USE_GOSEC_SSO_AUTH` variable to `true`), which is the default value and the only one for which the image and the _Stratio KEOS_ ingress are wired end-to-end: the container only prepares the JWT validation key when `AUTHENTICATOR` is `gosec-sso`. The `headers`, `jwt`, and `metabase-native` methods still exist in the product, and the descriptor still offers them, but using them requires manually configuring the key or the headers. The SSO does not need any user secret or password in Vault: the _Stratio KEOS_ `oauth2proxy` manages the flow, and the instance only validates the JWT token in the cookie with a public key. What changes in 0.56.4-0.1.0 is how it obtains that key: until 0.50.21-0.2.x it downloaded it itself from Vault at startup, and since 0.56.4-0.1.0, the Vault injector delivers it.
 
 The Vault secret will have the following format:
 
@@ -64,9 +64,9 @@ The Vault secret will have the following format:
 }
 ----
 
-If you deploy an instance of _Stratio Discovery_ with the `discovery-governance` model, the service is exposed through an administration interface, so you might need another password to sign or verify the instance's JWT tokens.
+If you deploy a _Stratio Discovery_ instance with the `discovery-governance` model, the service is exposed through an administration interface, so you may need another password to sign or verify the instance's JWT tokens.
 
-This password needs to be stored in Vault on the path `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/jwtsecret+` and must match the global _jwtsecret_ password.
+This password must be stored at the Vault path `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/jwtsecret+` and must match the global _jwtsecret_ password.
 
 [source,json]
 ----
@@ -75,4 +75,4 @@ This password needs to be stored in Vault on the path `+userland/passwords/${DIS
 }
 ----
 
-Remember that there's a _Stratio Command Center_ prerequisite that will automatically create these secrets based on the selected type you choose (`discovery-governance` or `discovery-default`).
+Remember that a _Stratio Command Center_ prerequisite will automatically create these secrets based on the type you choose (`discovery-governance` or `discovery-default`).

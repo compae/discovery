@@ -4,55 +4,55 @@
 
 En primer lugar, debes tener todos los módulos principales desplegados y en ejecución: los más importantes son _Stratio Gosec_ y _Stratio Command Center_.
 
-NOTE: Si despliegas a través de _Stratio Command Center_, es probable que estos requisitos previos ya se cumplan antes del despliegue de _Stratio Discovery_.
+NOTE: Si despliegas mediante _Stratio Command Center_, es probable que estos requisitos previos ya estén cumplidos antes del despliegue de _Stratio Discovery_.
 
 A partir de entonces, tu entorno deberá cumplir con estos prerrequisitos:
 
-* Tener un servicio _Stratio PostgreSQL_ y su PgBouncer asociado: aunque el _pool_ de conexiones no es obligatorio, se recomienda encarecidamente para no saturar las conexiones de un solo nodo.
-* Dado que _Stratio Discovery_ guarda sus metadatos en _Stratio PostgreSQL_, *no almacenes ningún otro dato en el esquema `public` de la base de datos asignada a la instancia*. Esta base de datos se configura durante el despliegue mediante la variable de entorno `MB_DB_URL` o `MB_DB_DBNAME` en versiones anteriores.
+* Tener un servicio _Stratio PostgreSQL Operator_ y su PgBouncer asociado: aunque el _pool_ de conexiones no es obligatorio, se recomienda encarecidamente para evitar saturar las conexiones en un solo nodo.
+* Dado que _Stratio Discovery_ guarda sus metadatos en _Stratio PostgreSQL Operator_, *no almacenes ningún otro dato en el esquema `public` de la base de datos asignada a la instancia*. Esta base de datos se configura durante el despliegue mediante la variable de entorno `MB_DB_URL` o `MB_DB_DBNAME` en versiones anteriores.
 
 [NOTE]
 ====
-No importa qué tipo de _Stratio PostgreSQL_ se utilice siempre que el rol/usuario en _Stratio PostgreSQL_ tenga también el atributo `LOGIN`, que la base de datos especificada en `MB_DB_DBNAME` exista y que el rol/usuario tenga los permisos necesarios en ella.
+No importa qué tipo de _Stratio PostgreSQL Operator_ se utilice, siempre que el rol/usuario de _Stratio PostgreSQL Operator_ tenga también el atributo `LOGIN`, que la base de datos especificada en `MB_DB_DBNAME` exista y que el rol/usuario tenga los permisos necesarios en ella.
 
-Se da por sentado que se van a utilizar conexiones SSL/TLS a la instancia de _Stratio PostgreSQL_: por lo tanto, según cómo esa versión específica maneje la concesión de privilegios, el administrador del sistema necesitará agregar una política en _Stratio Gosec_ o crear el rol y otorgar los privilegios requeridos dentro de la instancia.
+Se da por sentado que se utilizarán conexiones SSL/TLS a la instancia de _Stratio PostgreSQL Operator_; por lo tanto, según cómo esa versión específica gestione la concesión de privilegios, el administrador del sistema necesitará agregar una política en _Stratio Gosec_ o crear el rol y otorgar los privilegios requeridos en la instancia.
 
-Si sigues la implementación recomendada, *todos estos requisitos serán gestionados automáticamente por _Stratio Command Center_*.
+Si sigues la implementación recomendada, *todos estos requisitos se gestionarán automáticamente por _Stratio Command Center_*.
 ====
 
 == Secretos
 
-Si despliegas a través de _Stratio Command Center_ y seleccionas 'Execute prerequisites', puedes omitir esta sección porque estos secretos se crean automáticamente durante el primer despliegue.
+Si despliegas a través de _Stratio Command Center_ y seleccionas 'Execute prerequisites', puedes omitir esta sección, ya que estos secretos se crean automáticamente durante el primer despliegue.
 
 Esta sección es esencialmente una referencia para la resolución de problemas.
 
 === Certificados
 
-El certificado _client-server_ utilizado para conectarse a _Stratio PostgreSQL_ y _Stratio {modulename}_ (así como para cualquier otra conexión TLS/SSL) se almacena en Vault dentro de la ruta `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
+El certificado _client-server_ utilizado para conectarse a _Stratio PostgreSQL Operator_ y _Stratio {modulename}_ (así como para cualquier otra conexión TLS/SSL) se almacena en Vault en la ruta `+userland/certificates/${DISCOVERY_INSTANCE_NAME}+`.
 
-El valor `DISCOVERY_INSTANCE_NAME` se puede recuperar en el descriptor de la instancia (es una variable de entorno) y corresponde al nombre proporcionado durante el despliegue a través de _Stratio Command Center_.
+El valor `DISCOVERY_INSTANCE_NAME` puede recuperarse del descriptor de la instancia (es una variable de entorno) y corresponde al nombre proporcionado durante el despliegue a través de _Stratio Command Center_.
 
 El `Common Name` (*CN*) del certificado también corresponde al valor `DISCOVERY_INSTANCE_NAME`. El `Subject Alternative Name` (*SAN*) contiene cuatro entradas:
 
 * `+${SERVICE_ID}-${KUBERNETES_NAMESPACE}+`
 * `+${SERVICE_ID}-${KUBERNETES_NAMESPACE}.${KUBERNETES_NAMESPACE}+`
-* el _host_ público de la instancia, el de la opción "URI host…" de la sección 'General' → 'Networking'
+* el _host_ público de la instancia, el de la opción _URI host…_ de la sección 'General' → 'Networking'
 * `+*.${KUBERNETES_NAMESPACE}+`
 
-donde `+${SERVICE_ID}+` es la opción "Discovery service name" y `+${KUBERNETES_NAMESPACE}+`, el _namespace_ en el que se desplegó la instancia.
+donde `+${SERVICE_ID}+` es la opción _Discovery service name_ y `+${KUBERNETES_NAMESPACE}+` es el _namespace_ en el que se desplegó la instancia.
 
 NOTE: Recuerda que existe un prerrequisito en el despliegue de _Stratio Command Center_ que creará automáticamente este secreto para ti.
 
 === Contraseñas
 
-Hay contraseñas obligatorias según el método de autenticación (seleccionado a través de la variable de entorno 'AUTHENTICATOR') empleadas para el inicio de sesión del usuario:
+Hay contraseñas obligatorias según el método de autenticación (seleccionado a través de la variable de entorno `AUTHENTICATOR`) empleadas para el inicio de sesión del usuario:
 
 * `gosec-sso`
 * `headers`
 * `jwt`
 * `metabase-native`
 
-Si deseas utilizar el sistema de autenticación de SSO de _Stratio Gosec_ para acceder a tu instancia, tienes que configurar `AUTHENTICATOR` con el valor `gosec-sso` (en versiones anteriores se habilitaba configurando la variable `USE_GOSEC_SSO_AUTH` en `true`), que es el valor predeterminado y el único para el que la imagen y el _ingress_ de _Stratio KEOS_ están conectados de principio a fin: el contenedor solo prepara la clave de validación del JWT cuando `AUTHENTICATOR` vale `gosec-sso`. Los métodos `headers`, `jwt` y `metabase-native` siguen existiendo en el producto y el descriptor los sigue ofreciendo, pero usarlos exige configurar a mano la clave o las cabeceras. El SSO no necesita ningún secreto de usuario y contraseña en Vault: el `oauth2proxy` de _Stratio KEOS_ resuelve el flujo y la instancia solo valida el _token_ JWT de la _cookie_ con una clave pública. Lo que cambia en la 0.56.4-0.1.0 es cómo obtiene esa clave: hasta la 0.50.21-0.2.x la descargaba ella misma de Vault al arrancar, y desde la 0.56.4-0.1.0 se la entrega el inyector de Vault.
+Si deseas utilizar el sistema de autenticación de SSO de _Stratio Gosec_ para acceder a tu instancia, tienes que configurar `AUTHENTICATOR` con el valor `gosec-sso` (en versiones anteriores se habilitaba configurando la variable `USE_GOSEC_SSO_AUTH` en `true`), que es el valor predeterminado y el único para el que la imagen y el _ingress_ de _Stratio KEOS_ están conectados de principio a fin: el contenedor solo prepara la clave de validación del JWT cuando `AUTHENTICATOR` vale `gosec-sso`. Los métodos `headers`, `jwt` y `metabase-native` siguen existiendo en el producto y el descriptor los sigue ofreciendo, pero usarlos exige configurar manualmente la clave o las cabeceras. El SSO no necesita ningún secreto de usuario ni contraseña en Vault: el `oauth2proxy` de _Stratio KEOS_ gestiona el flujo y la instancia solo valida el _token_ JWT de la _cookie_ con una clave pública. Lo que cambia en la 0.56.4-0.1.0 es cómo obtiene esa clave: hasta la 0.50.21-0.2.x la descargaba ella misma de Vault al arrancar, y desde la 0.56.4-0.1.0 se la entrega el inyector de Vault.
 
 El secreto de Vault tendrá el siguiente formato:
 
@@ -64,9 +64,9 @@ El secreto de Vault tendrá el siguiente formato:
 }
 ----
 
-Si despliegas una instancia de _Stratio Discovery_ con el modelo `discovery-governance`, el servicio se expone a través de una interfaz de administración, así que es posible que necesites otra contraseña para firmar o verificar los _tokens_ JWT de la instancia.
+Si despliegas una instancia de _Stratio Discovery_ con el modelo `discovery-governance`, el servicio se expone a través de una interfaz de administración, por lo que es posible que necesites otra contraseña para firmar o verificar los _tokens_ JWT de la instancia.
 
-Esta contraseña debe almacenarse en la ruta de Vault `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/jwtsecret+` y debe coincidir con la contraseña _jwtsecret_ global.
+Esta contraseña debe almacenarse en la ruta de Vault `+userland/passwords/${DISCOVERY_INSTANCE_NAME}/jwtsecret+` y debe coincidir con la contraseña global _jwtsecret_.
 
 [source,json]
 ----
@@ -75,4 +75,4 @@ Esta contraseña debe almacenarse en la ruta de Vault `+userland/passwords/${DIS
 }
 ----
 
-Recuerda que existe un prerrequisito de _Stratio Command Center_ que creará automáticamente estos secretos según el tipo seleccionado que elijas (`discovery-governance` o `discovery-default`).
+Recuerda que existe un prerrequisito de _Stratio Command Center_ que creará automáticamente estos secretos según el tipo que elijas (`discovery-governance` o `discovery-default`).

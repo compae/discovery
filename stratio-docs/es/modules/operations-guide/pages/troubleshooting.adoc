@@ -173,13 +173,13 @@ Para solucionar este error, debes establecer la siguiente variable de entorno a 
 
 Si utilizas las últimas versiones de los descriptores del Universo de Stratio, esta variable de entorno ya estará presente en la configuración de tu despliegue con el valor 0, evitando así la aparición de este error.
 
-=== No se puede acceder a algunas tablas almacenadas en _Stratio {modulename}_ o _Stratio PostgreSQL_
+=== No se puede acceder a algunas tablas almacenadas en _Stratio {modulename}_ o _Stratio PostgreSQL Operator_
 
-Otros problemas en los que <<virtualizer-sync-issues,la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con problemas de autorización.
+Otros problemas en los que <<virtualizer-sync-issues, la capacidad recién adquirida para leer los _logs_>> puede ser útil son aquellos relacionados con problemas de autorización.
 
 Brevemente, además de los https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[permisos nativos de acceso a datos de Metabase] ^[English]^ y los https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[permisos de colección] ^[English]^, también puede haber otro nivel de seguridad según la base de datos a la que te conectes.
 
-Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL_ tienen sus propios sistemas de autorización* cuyas políticas pueden definirse en _Stratio Gosec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio Gosec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL® que utiliza el mecanismo TLS predeterminado].
+Por ejemplo, *tanto _Stratio {modulename}_ como _Stratio PostgreSQL Operator_ tienen sus propios sistemas de autorización* cuyas políticas pueden definirse en _Stratio Gosec_. Si *activaste la suplantación de identidad* en tu conjunto de datos de _Stratio {modulename}_, debes xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[crear una política de _Stratio Gosec_ asociada] y lo mismo se aplica a xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[una conexión de PostgreSQL® que utiliza el mecanismo TLS predeterminado].
 
 En las versiones de _Stratio Discovery_ anteriores a la 0.38.1-0.2, *el usuario con el que habías hecho _login_ se usaba también para realizar acciones relacionadas con la actualización interna de metadatos cuando seleccionabas manualmente una sincronización forzada* (`Sync database schema now`, `Re-scan field values now`) si la suplantación de identidad estaba habilitada.
 

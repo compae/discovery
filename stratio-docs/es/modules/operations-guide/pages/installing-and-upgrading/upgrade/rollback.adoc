@@ -1,47 +1,47 @@
 = _Rollback_ a la versión anterior
 
-_Stratio Discovery_ no cuenta con ningún mecanismo de reversión automática. Para volver a la versión anterior, revierte la versión del servicio en _Stratio Command Center_ y, según el caso, restaura la copia de seguridad de la base de datos de metadatos. Esta página describe cuándo basta lo primero, cuándo hace falta lo segundo y qué revisar al terminar.
+_Stratio Discovery_ no cuenta con ningún mecanismo de reversión automática. Para volver a la versión anterior, revierte la versión del servicio en _Stratio Command Center_ y, según corresponda, restaura la copia de seguridad de la base de datos de metadatos. Esta página describe cuándo basta con lo primero, cuándo hace falta lo segundo y qué revisar al terminar.
 
 == De qué depende el procedimiento
 
 Todo depende de si Metabase llegó a migrar el esquema de la base de datos de metadatos, porque esa migración se ejecuta durante el arranque de la versión nueva y marca el punto de no retorno:
 
 * *Si la migración no ha empezado*, la base de datos está intacta y basta con revertir la versión del servicio.
-* *Si la migración ha empezado*, se haya completado o no, hay que restaurar el volcado. Metabase confirma cada cambio de esquema por separado, así que una migración interrumpida deja la base de datos en un punto intermedio entre las dos versiones: ni completa para la nueva ni válida para la anterior.
+* *Si la migración ha empezado*, se haya completado o no, hay que restaurar el volcado. Metabase confirma cada cambio de esquema por separado, por lo que una migración interrumpida deja la base de datos en un punto intermedio entre ambas versiones: ni completa para la nueva ni válida para la anterior.
 
-En el segundo caso no hay atajo. Metabase comprueba la versión del esquema antes de migrar y se niega a arrancar sobre uno más nuevo que él, con el error "Downgrade detected". Su comando para bajar el esquema solo retrocede una versión mayor, y entre la 0.50.21 y la 0.56.4 hay seis, así que tampoco sirve.
+En el segundo caso no hay atajo. Metabase comprueba la versión del esquema antes de migrar y se niega a arrancar si hay una versión más reciente que la suya, mostrando el error "Downgrade detected". Su comando para bajar el esquema solo retrocede una versión mayor, y entre la 0.50.21 y la 0.56.4 hay seis, así que tampoco sirve.
 
 == Cómo saber si la migración ha empezado
 
 Dos señales lo responden:
 
-* *La tabla `databasechangelog` de la base de datos de metadatos.* Liquibase añade una fila por cada cambio que confirma, así que basta comparar su número de filas, o el valor máximo de su columna `dateexecuted`, con los de la copia de seguridad: si coinciden, no se aplicó ningún cambio de la versión nueva.
-* *Los _logs_ de la instancia*, si subiste la opción "Metabase log level" a "INFO" antes de la ventana. Con su valor por defecto, "ERROR", la migración no deja ninguna traza.
+* *La tabla `databasechangelog` de la base de datos de metadatos.* Liquibase añade una fila por cada cambio que confirma, así que basta con comparar el número de filas o el valor máximo de la columna `dateexecuted` con los de la copia de seguridad: si coinciden, no se aplicó ningún cambio de la versión nueva.
+* *Los _logs_ de la instancia*, si subiste la opción _Metabase log level_ a "INFO" antes de la ventana. Con su valor por defecto, "ERROR", la migración no deja ninguna traza.
 
 == La migración no ha empezado
 
-Es el caso de un arranque que falla antes, por ejemplo al preparar los certificados o la configuración. Para confirmarlo, comprueba que la tabla `databasechangelog` de la base de datos de metadatos tiene las mismas filas que la copia de seguridad: con los niveles de _log_ por defecto la migración no deja ninguna traza en los _logs_.
+Es el caso de un arranque que falla antes, por ejemplo, al preparar los certificados o la configuración. Para confirmarlo, comprueba que la tabla `databasechangelog` de la base de datos de metadatos tiene las mismas filas que la copia de seguridad. Con los niveles de _log_ por defecto, la migración no deja ninguna traza en los _logs_.
 
 . Revierte la versión del servicio a la anterior en _Stratio Command Center_.
-. Repón los valores de configuración que el descriptor de la versión nueva haya sustituido, a partir de la copia que hiciste antes de actualizar.
+. Repón los valores de configuración que el descriptor de la nueva versión haya sustituido, a partir de la copia que hiciste antes de actualizar.
 . Comprueba el resultado con la xref:operations-guide:installing-and-upgrading/verify-installation.adoc[comprobación de la instalación]: el inicio de sesión funciona y las preguntas devuelven resultados.
 
 La base de datos no se ha modificado, así que no hace falta restaurar el volcado y no se pierde ningún dato.
 
 == La migración ha empezado
 
-. Escala la instancia a 0 en _Stratio Command Center_ y espera a que no quede ningún _pod_ de la instancia.
-. Revierte la versión del servicio a la anterior y restaura la copia del descriptor del despliegue, de forma que informe de la versión anterior y de sus valores originales.
-. Restaura el volcado de la base de datos de metadatos, con lo que vuelve al esquema de la versión anterior.
+. Escala la instancia a 0 en _Stratio Command Center_ y espera a que no queden _pods_ de la instancia.
+. Revierte la versión del servicio a la anterior y restaura la copia del descriptor del despliegue, de modo que informe de la versión anterior y de sus valores originales.
+. Restaura el volcado de la base de datos de metadatos, lo que restablece el esquema de la versión anterior.
 . Escala la instancia a 1 réplica y comprueba que el _pod_ pasa a _Ready_ y que la interfaz responde con la versión anterior. Si en lugar de volver atrás quieres reintentar la actualización, este es el momento de corregir la causa: sube el plazo del _startup probe_ si fue lo que se agotó, o resuelve lo que indiquen los _logs_.
 . Comprueba el resultado con la xref:operations-guide:installing-and-upgrading/verify-installation.adoc[comprobación de la instalación].
 
-WARNING: Restaurar el volcado devuelve la base de datos al momento en que se hizo la copia. Todo lo que se haya creado o modificado después (colecciones, preguntas, _dashboards_, suscripciones y conexiones a bases de datos) se pierde, incluido lo que se hiciera durante la propia ventana de mantenimiento.
+WARNING: Restaurar el volcado devuelve la base de datos al estado en que se encontraba en el momento de la copia. Todo lo que se haya creado o modificado después (colecciones, preguntas, _dashboards_, suscripciones y conexiones a bases de datos) se pierde, incluido lo realizado durante la propia ventana de mantenimiento.
 
 == Qué revisar al terminar
 
 * *Acceso y grupos*: el `oauth2proxy` de _Stratio KEOS_ sigue autenticando igual, pero comprueba que un usuario de un grupo permitido accede y que uno del grupo de administración conserva sus permisos.
-* *Conexiones a bases de datos*: la versión anterior espera los certificados en las rutas antiguas, así que comprueba una consulta contra _Stratio {modulename}_ y otra contra _Stratio PostgreSQL_.
-* *Colecciones exportadas*: una exportación hecha con la versión nueva puede contener elementos que la anterior no sabe importar. Si promocionaste colecciones durante la ventana, vuelve a exportarlas desde la versión anterior.
+* *Conexiones a bases de datos*: la versión anterior espera los certificados en las rutas antiguas, así que comprueba una consulta contra _Stratio {modulename}_ y otra contra _Stratio PostgreSQL Operator_.
+* *Colecciones exportadas*: una exportación realizada con la versión nueva puede contener elementos que la anterior no puede importar. Si promocionaste colecciones durante la ventana, vuelve a exportarlas desde la versión anterior.
 
-Si lo que quieres es diagnosticar por qué ha fallado la actualización antes de decidir si vuelves atrás, consulta la xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recuperación ante un fallo de la migración].
+Si lo que quieres es diagnosticar por qué la actualización falló antes de decidir si revertir, consulta la xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recuperación ante un fallo de la migración].

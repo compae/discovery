@@ -1,19 +1,19 @@
 = What's new
 
-Discover the main improvements of _Stratio Discovery_ 0.56.4-0.2.X, the version of Universe 15.1, released on July 22, 2026. Since the upgrade is performed directly from Universe 14.10, this page also gathers the novelties introduced in the 0.56.4-0.1.X line. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes], as they may affect compatibility. To plan the intervention, see the xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[upgrade planning].
+Discover the main improvements in _Stratio Discovery_ 0.56.4-0.2.X, the Universe 15.1 version released on July 22, 2026. Since the upgrade is performed directly from Universe 14.10, this page also collects the new features incorporated in the 0.56.4-0.1.X line. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes], since they may affect compatibility. To plan the intervention, see the xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[upgrade planning].
 
-TIP: See the complete detail per version in the xref:ROOT:what-is-new/release-notes.adoc[release notes].
+TIP: See the full details by version in the xref:ROOT:what-is-new/release-notes.adoc[release notes].
 
-== Novelties of 0.56.4-0.2.X
+== What's new in 0.56.4-0.2.X
 
-* *Faster synchronization with _Stratio {modulename}_*: it improves the performance of the synchronization of databases with numerous schemas and tables. It is also available in 0.50.21-0.2.0, the version of Universes 14.8, 14.9 and 14.10.
+* *Faster synchronization with _Stratio {modulename}_*: improves the performance of the synchronization of databases with numerous schemas and tables. It is also available in 0.50.21-0.2.0, the version of Universes 14.8, 14.9, and 14.10.
 * *Update of the _Stratio {modulename}_ JDBC driver* to version 4.0.1.
-* *End of the synchronization errors in large _Stratio {modulename}_ collections*.
-* *The secrets are obtained from the Vault injector of _Stratio KEOS_*, instead of being downloaded during the start-up.
+* *End of synchronization errors on large _Stratio {modulename}_ collections*.
+* *The secrets are obtained from the _Stratio KEOS_ Vault injector*, instead of being downloaded during startup.
 
-== Novelties introduced since 0.56.4-0.1.X
+== New features incorporated since 0.56.4-0.1.X
 
-* *Update of Metabase to version 0.56.4*, from 0.50.21. See the https://www.metabase.com/releases[Metabase release notes] for the detail of the product novelties in those six versions.
-* *New "Use virtualizer jdbc from Extra JARs" deployment option*: it allows you not to use the _Stratio {modulename}_ JDBC driver included in the image and to obtain it from the "Extra JARs to add to metabase plugins folder" option.
-* *New "Crossdata log level" deployment option*: it controls the log level of the _Stratio {modulename}_ JDBC driver, with "INFO" as the default value.
-* *Renewed image*: the image moves to Java 21 and to a new base, process supervisor, and internal web server, which solves the vulnerabilities the previous one carried.
+* *Metabase update to version 0.56.4*, from 0.50.21. See https://www.metabase.com/releases[Metabase release notes] for details on the new features across those six versions.
+* *New _Use virtualizer jdbc from Extra JARs_ deployment option*: allows not using the _Stratio {modulename}_ JDBC driver included in the image and obtaining it from the _Extra JARs to add to Metabase plugins folder_ option.
+* *New _Crossdata log level_ deployment option*: controls the log level of the _Stratio {modulename}_ JDBC driver, with "INFO" as the default value.
+* *Renewed image*: the image moves to Java 21 and to a new base, process supervisor, and internal web server, which resolves the vulnerabilities that the previous one carried.

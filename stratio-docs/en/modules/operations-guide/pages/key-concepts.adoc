@@ -1,88 +1,88 @@
 = Important concepts
 
-TIP: Read this brief guide before deploying or using _Stratio Discovery_.
+TIP: Read this short guide before deploying or using _Stratio Discovery_.
 
-If you understand correctly the (at first glance only) complex interaction between Metabase, _Stratio Discovery_ and the other components of the Stratio ecosystem (_Stratio {modulename}_, _Stratio PostgreSQL_…), you can:
+If you correctly understand the (only at first sight) complex interaction between Metabase, _Stratio Discovery_, and the other components of the Stratio ecosystem (_Stratio {modulename}_, _Stratio PostgreSQL Operator_...), you will be able to:
 
 * fine-tune the deployment,
-* choose the Metabase database configuration that best suits your needs, and
-* understand exactly where errors are generated.
+* choose the database configuration in Metabase that best fits your needs, and
+* understand where an error is exactly generated.
 
-The last step is the most important because, even following the xref:operations-guide:troubleshooting.adoc[troubleshooting guide], many of the reported problems are not due to the incorrect functioning of _Stratio Discovery_ but to the databases that it's connected to.
+The last step is the most important because, even following the xref:operations-guide:troubleshooting.adoc[troubleshooting guide], many of the reported problems are not due to malfunctioning of _Stratio Discovery_, but to the databases to which it is connected.
 
-There is no need to reinvent the wheel: there is a detailed step-by-step guide in the https://www.metabase.com/learn/[official Metabase documentation] that will show you how to use and fine tune Metabase and its configuration.
+You don't need to reinvent the wheel: the detailed step-by-step guide at https://www.metabase.com/learn/[official Metabase documentation] teaches you how to use Metabase, configure it, and set it up.
 
-Since Metabase is an *open source BI tool*, its goal is to *display data and not carry out actions on it*. This is why you can't carry out insertions or other write operations, and why *you only have read access to their databases*.
+Since Metabase is an *open-source BI tool*, its purpose is to *visualize the data and not operate on it*. That's why you cannot perform insertions or other write operations, and why *you only have read access to its database*.
 
-It's also important to remember that Metabase *won't run any queries on its own, but will depend on the drivers to connect to the database (usually via JDBC) where the query will ultimately run*.
+What you also need to know is that Metabase *will not perform any query on its own, but will rely on drivers to connect (usually through JDBC) to the database where the query will finally be executed*.
 
-It should now be clear that if your query takes a long time to complete, you can't blame Metabase, because it's essentially waiting for the database results to arrive.
+So it should be clear that if your query takes a long time to complete, you cannot blame Metabase, since it is essentially waiting for the database to return the results.
 
-*The database is the one doing the hard and dirty work*; Metabase just shows the results and queries in an elegant and human-friendly way, because "looks matter".
+*It is the database that is doing the hard and dirty work*; Metabase's job is only to display the results and the queries in an elegant and human-friendly way, because "appearance matters".
 
-== So just what is _Stratio Discovery_?
+== So what is _Stratio Discovery_?
 
 _Stratio Discovery_ is Metabase integrated into the Stratio ecosystem:
 
-* it has added or modified security layers (for example, the _Stratio Gosec_ SSO, along with Metabase's simple default user/password authentication),
-* it has added new drivers (for example, _Stratio {modulename}_, _Stratio PostgreSQL_), and
-* the new CI/CD features now live independently together with Metabase in the same container (for example, the ability to export a `Y` collection from instance `A` and import it into another instance `B`, provided you've already configured the database referenced in collection `Y` in `B`).
+* it has added or modified security layers (for example, the _Stratio Gosec_ SSO alongside the default simple user/password authentication of Metabase),
+* it has added new drivers (for example, _Stratio {modulename}_, _Stratio PostgreSQL Operator_), and
+* the new features regarding CI/CD now live independently alongside Metabase in the same container (for example, the possibility of exporting a `Y` collection from an `A` instance and importing it into another instance, `B`, provided that in `B` you have already configured the database referenced in the `Y` collection).
 
-The latest versions of _Stratio Discovery_ have a new versioning mechanism that uses the following tag syntax: `${Metabase version}-${Stratio version}`. The first version with this new label was 0.38.1-0.1. This scheme improves on the previous one, which indicated only the Stratio version, because it lets you know immediately which version of Metabase is integrated in each version of _Stratio Discovery_.
+The latest versions of _Stratio Discovery_ use a new versioning mechanism with the following tag syntax: `${Metabase version}-${Stratio version}`. The first version with this new tag was 0.38.1-0.1. This scheme improves on the previous one, which only indicated the Stratio version, because it lets you immediately see which Metabase version is integrated in each _Stratio Discovery_ version.
 
-WARNING: The last version released with the old versioning mechanism (0.40.0) is *"higher"* in the lexicographic order than the latest version (0.38.1-0.2), even though the latter is actually newer. Take this peculiarity into account when comparing versions: the change breaks the backward compatibility of the ordering, but it adds value in the long run.
+WARNING: The last version released with the old versioning mechanism (0.40.0) is *"higher"* in lexicographic order than the latest one (0.38.1-0.2), even if the latter is actually more recent. Note this particularity when comparing versions: the change breaks backward compatibility of ordering, but provides long-term value.
 
-== What is a driver and what is its relationship with the JDBCs?
+== What is a _driver_ and what is its relationship with the JDBC?
 
-Metabase, the application, has to connect to one or more databases. In recent decades a plethora of disparate systems has been created that need to interconnect and interoperate to do anything useful.
+Metabase, the application, must connect to one or more databases. In recent decades, a plethora of disparate systems have been created that need to interconnect and interoperate with each other to achieve something useful.
 
-The resulting intercommunication mechanisms can be just as cumbersome and complex as communication between people who speak different languages.
+The resulting intercommunication mechanisms can be as cumbersome and complex as communication between people who speak different languages.
 
-If you think you know how a driver and a JDBC interact, you can skip the next section and head straight to the section explaining xref:operations-guide:key-concepts.adoc#_jdbc_and_drivers_in_metabase[JDBCs and drivers in Metabase].
+If you think you know how a driver and JDBC interact, you can skip the following section and go directly to where the xref:operations-guide:key-concepts.adoc#_jdbc_and_drivers_in_metabase[JDBC and drivers in Metabase] are explained.
 
 === A history of intercommunication difficulties
 
-To explain the role of drivers and JDBCs, a comparison helps: at an international summit, Metabase speaks Spanish and the database speaks English.
+To explain the role of drivers and JDBC, consider this: at an international summit, Metabase speaks Spanish, and the database speaks English.
 
 [cols=",^,"]
 |===
-| Spanish-speaking | No Man's Land | English-speaking
+| Spanish-speaking | No man's land | English-speaking
 
 | Metabase ↔ Driver
 | ↔
 | JDBC ↔ Database
 |===
 
-Suppose you want to run the _sobremesa_ (after-dinner conversation) action from Metabase on the database. Metabase speaks Spanish and knows what a _sobremesa_ is, but the database would be baffled by a literal translation (_on the table_). Even so, the English-speaking database has all the actions that make up a _sobremesa_, only separately: 'make coffee after lunch', 'all sit together at the table', 'talk while drinking the coffee' and, finally, 'finish the coffee and leave the table'.
+Suppose you want to run the _sobremesa_ action from Metabase on the database. Metabase speaks Spanish and knows what a _sobremesa_ is, but the database would be perplexed by a literal translation (_on the table_). Still, the English database has all the actions that make up a _sobremesa_, only separately: 'prepare coffee after lunch', 'sit down together at the table', 'talk while having coffee', and, ultimately, 'finish the coffee and leave the table'.
 
-This means that the `Driver` (which is the Metabase translator), instead of sending the _sobremesa_ action to the `JDBC` (which is the database translator), it will group all of the individual actions and send them all together as an action because it knows that the `JDBC` can understand them.
+Therefore, the `Driver` (which is Metabase's translator), instead of sending the `JDBC` (which is the database's translator) the _sobremesa_ action, will group all the individual actions and send them all together as one action because it knows that the `JDBC` can understand them.
 
-If the database had no action to 'make coffee after lunch', there would be no way to continue: the function to be translated has to be available at the other end of the communication. So even if Metabase has a "filter data by user" action, if the database it is talking to does not have it, that action cannot be run, because the database does not support it.
+If the database has no action for 'prepare coffee after lunch', there's no way to continue: the function you want to translate must be available at the other end of the communication. Thus, even if Metabase has a "filter data by user" action, if the database it talks to does not have it, that action cannot be executed, because it is not supported in the database.
 
-Now to the `JDBC` and the enduring problem of correctly understanding the time and date data of different systems that have different representations for them. Metabase wants to know all the records in the database that were modified in the last twenty-four hours. But when was it 24 hours ago? _When_ does it mean "one day ago"?
+Now look at `JDBC` and the enduring problem of correctly understanding time- and date-related data from different systems that represent them differently. Metabase wants to know all the records in the database that have been modified in the last twenty-four hours. But when is twenty-four hours ago? _When_ does "a day ago" mean?
 
-The world is a big place and Metabase and the database can be configured in different time zones, and they can also represent time in different formats. Suppose Metabase uses the US format and the database uses a format with the month translated according to its local configuration. So, if we have "30-01-2021 1:00 PM" in Metabase, somehow it needs to be translated to "30-JAN-2021 13:00:00", which is the date that can be understood by the database and used for comparisons.
+The world is large, and Metabase and the database can be configured in different time zones, and, furthermore, they can represent time in different formats. Suppose Metabase uses the US format and the database uses a format with the month translated according to its local setting. Thus, if you have in Metabase "01-30-2021 1:00 PM", it must somehow be translated to "30-JAN-2021 13:00:00", which is the date that the database can understand and use for comparisons.
 
-This exchange of information can only occur if a standard exchange format is established between the two worlds. Generally, the UTC format with ISO 8601 is used… so now both the 'JDBC' and the 'Driver' have to translate their dates to 2021-01-30T13:00:00Z.
+This exchange can only happen if a standard exchange format is established between the two worlds, and generally the UTC format according to ISO 8601 is used for this... so now both the 'JDBC' and the 'Driver' must convert their dates to 2021-01-30T13:00:00Z.
 
-It follows that the driver and the JDBC *have to agree* on the format of the data they exchange. Why is it worth dwelling on this?
+This means the driver and the JDBC *must agree* on the format of the exchanged data. Why is it worth dwelling on this so much?
 
-=== JDBC and drivers in Metabase
+=== JDBC and _drivers_ in Metabase
 
-While the *drivers are part of Metabase* and are community-based or developed at Stratio (for example, the _Stratio {modulename}_ driver), *JDBCs are usually added to the container as black boxes* and are developed by neither Stratio nor Metabase.
+Although *the drivers are part of Metabase* and are community-based or developed at Stratio (for example, the _Stratio {modulename}_ driver), *the JDBCs are usually added as a black box to the container* and are not developed by Stratio or Metabase.
 
-Although in some native database integrations in Metabase, the driver and JDBC functionalities can be merged into a single part, many layers are usually required for interconnection: for example, *connecting _Stratio Discovery_ to a _Stratio {modulename}_ server requires a _Stratio {modulename}_ JDBC and a _Stratio {modulename}_ driver for Metabase*.
+Although in some native database integration in Metabase the functionalities of the driver and the JDBC may merge into a single piece, several layers are usually required for the interconnection: for example, *to connect _Stratio Discovery_ to a _Stratio {modulename}_ server, a _Stratio {modulename}_ JDBC and a _Stratio {modulename}_ driver for Metabase are needed*.
 
-If there's a problem executing a query because of an error generated in the database, it's clear that the culprit is the database or your query (for example, a query that refers to non-existent tables or columns).
+If, when running a query, an error occurs in the database, the culprit is the database or your query (for example, one that references nonexistent tables or columns).
 
-If a query fails because an error arose in the JDBC, *the JDBC is usually developed by the database vendor, so the fix is not Stratio's to make*, but rather the integration of the JDBC version that already includes it.
+If a query fails due to a JDBC error, *the JDBC driver is usually developed by the database manufacturer, so the fix isn't up to Stratio*, but rather to integrate the JDBC version that already includes it.
 
-If the error is in one of the drivers developed at Stratio, a "translations absent" error between Metabase and a particular JDBC, the fix is Stratio's. If it belongs to other community-developed drivers, determining whose it is is not so simple, but report it anyway along with the related Metabase issue, if there is one.
+If the error is in one of the drivers developed at Stratio, and it is a "missing translations" error between Metabase and a specific JDBC, the fix is indeed up to Stratio. If it belongs to other drivers developed by the community, it is not easy to determine which one, but report it anyway, along with the related Metabase issue, if there is one.
 
-To understand which of these cases applies to your situation, don't just skim over the traces: study them carefully and they'll clarify it for you (or us, if you attach the traces to the ticket).
+To understand which of these cases your situation falls into, don't ignore the traces: study them carefully, and they will clarify it for you (or for the _Stratio Discovery_ team if you attach them to the incident).
 
-== Where does the import/export function reside?
+== Where does the import/export feature reside?
 
-The import/export function is essentially another program with its own Java process that runs independently of Metabase and whose endpoints are exposed outside the container so you can send HTTP requests to them.
+The import/export feature is essentially another program with its own Java process that runs independently of Metabase, and its endpoints are exposed outside the container so you can send HTTP requests to them.
 
-You can report any errors or unexpected behavior (that isn't included in the xref:operations-guide:troubleshooting.adoc[troubleshooting section]) and we'll try to fix it as soon as possible.
+You can report to the _Stratio Discovery_ team any error or unexpected behavior that has arisen here (that is not present in the xref:operations-guide:troubleshooting.adoc[troubleshooting section]) and it will be resolved as soon as possible.

@@ -1,20 +1,20 @@
 = Importar y exportar colecciones
 
-_Stratio Discovery_ te permite exportar colecciones junto con todos sus tableros, preguntas y subcolecciones en formato JSON, que luego se pueden importar en otra instancia de _Stratio Discovery_ siempre que ambas tengan la misma versión. Esta función será útil para mover colecciones entre entornos y puede integrarse de forma sencilla dentro de una herramienta de CI/CD.
+_Stratio Discovery_ te permite exportar colecciones junto con todos sus tableros, preguntas y subcolecciones en formato JSON, que luego se pueden importar en otra instancia de _Stratio Discovery_ siempre que ambas tengan la misma versión. Esta función será útil para mover colecciones entre entornos y puede integrarse fácilmente en una herramienta de CI/CD.
 
-WARNING: A partir de la xref:operations-guide:installing-and-upgrading/upgrade.adoc[versión 0.43.4-x.x], en los datos exportados de una colección, junto con los _dashboards_, están también sus relativas https://www.metabase.com/docs/latest/dashboards/subscriptions[suscripciones] ^[English]^. Dado que la importación/exportación de datos se ha desarrollado para permitir el intercambio entre instancias de _Stratio Discovery_ de la misma versión en distintos entornos, se supone que cada instancia tendrá distintos usuarios. Por lo tanto, al exportar una colección, no se guardan los usuarios dentro de los metadatos de las suscripciones, a fin de evitar discrepancias en la instancia donde se importarán sucesivamente los datos.
+WARNING: Desde la xref:operations-guide:installing-and-upgrading/upgrade.adoc[versión 0.43.4-x.x], en los datos exportados de una colección, junto con los _dashboards_, también están sus respectivas https://www.metabase.com/docs/latest/dashboards/subscriptions[suscripciones] ^[English]^. Dado que la importación/exportación de datos se ha desarrollado para permitir el intercambio entre instancias de _Stratio Discovery_ de la misma versión en distintos entornos, se supone que cada instancia contará con usuarios distintos. Por lo tanto, al exportar una colección, no se guardan los usuarios dentro de los metadatos de las suscripciones, a fin de evitar discrepancias en la instancia donde se importarán sucesivamente los datos.
 
 [TIP]
 .Diferencia entre pulsos y suscripciones
 ====
-Mientras que los pulsos podían establecerse sobre preguntas o colecciones, las suscripciones están enlazadas solo a un _dashboard_. Las suscripciones representan una evolución de los pulsos, por ello *se recomienda utilizar suscripciones y no pulsos*, dado que https://www.metabase.com/docs/v0.40/users-guide/10-pulses#dashboard-subscriptions-will-replace-pulses-in-a-future-release[estos se eliminarán pronto como herramienta en Metabase] ^[English]^, marcándose como obsoletos a partir de la versión 0.40.
+Mientras que los pulsos podían establecerse sobre preguntas o colecciones, las suscripciones están vinculadas únicamente a un _dashboard_. Las suscripciones representan una evolución de los pulsos, por ello *se recomienda utilizar suscripciones y no pulsos*, dado que https://www.metabase.com/docs/v0.40/users-guide/10-pulses#dashboard-subscriptions-will-replace-pulses-in-a-future-release[estos se eliminarán pronto como herramienta en Metabase] ^[English]^, marcándose como obsoletos desde la versión 0.40.
 ====
 
 En las promociones, los _SQL snippets_ se tratan como objetos de alto nivel que no dependen de colecciones. Por tanto, https://www.metabase.com/learn/sql-questions/sql-snippets[deben tener un nombre único a nivel global] ^[English]^.
 
-En la exportación, se ha optado por incluir los _SQL snippets_ que se están usando en la colección a exportar. Por tanto, en el momento de importar esa colección, únicamente se creará ese subconjunto de _SQL snippets_.
+En la exportación, se ha optado por incluir los _SQL snippets_ que se están usando en la colección a exportar. Por tanto, al importar esa colección, únicamente se creará ese subconjunto de _SQL snippets_.
 
-NOTE: En caso de que ya exista un _SQL snippet_ con el mismo nombre, en lugar de crear uno nuevo se modificará el actual.
+NOTE: En caso de que ya exista un _SQL snippet_ con el mismo nombre, en lugar de crear uno nuevo, se modificará el existente.
 
 _Stratio Discovery_ expone una API REST HTTP de Akka basada en _endpoints_ de exportación e importación:
 
@@ -24,7 +24,7 @@ Si deseas exportar una colección de _Stratio Discovery_, solo necesitas encontr
 
 image::identify_colection_id.png[]
 
-Luego, simplemente llama al _endpoint_ de exportación indicando el identificador de la colección. Esta solicitud debe autenticarse utilizando el identificador de sesión de _Stratio Discovery_ a través de la cabecera denominada `x-metabase-session`.
+Luego, simplemente llama al _endpoint_ de exportación y especifica el identificador de la colección. Esta solicitud debe autenticarse utilizando el identificador de sesión de _Stratio Discovery_ a través de la cabecera denominada `x-metabase-session`.
 
 TIP: Para obtener más información sobre esta autorización, consulta la https://github.com/metabase/metabase/wiki/Using-the-REST-API[wiki de Metabase] ^[English]^.
 
@@ -38,7 +38,7 @@ TIP: Para obtener más información sobre esta autorización, consulta la https:
 
 == Importar colección
 
-Una vez que hayas exportado la colección, solo tienes que llamar al _endpoint_ de importación en el _Stratio Discovery_ de destino indicando, como datos sin procesar, el archivo en formato JSON que contiene la colección exportada. Para la autenticación, debes añadir a esta solicitud el identificador de sesión de _Stratio Discovery_ a través de la cabecera denominada `x-metabase-session`.
+Una vez que hayas exportado la colección, solo tienes que llamar al _endpoint_ de importación en el _Stratio Discovery_ de destino indicando, como datos sin procesar, el fichero en formato JSON que contiene la colección exportada. Para la autenticación, debes añadir a esta solicitud el identificador de sesión de _Stratio Discovery_ a través de la cabecera denominada `x-metabase-session`.
 
 TIP: Para obtener más información sobre esta autorización, consulta la https://github.com/metabase/metabase/wiki/Using-the-REST-API[wiki de Metabase] ^[English]^.
 
@@ -50,7 +50,7 @@ TIP: Para obtener más información sobre esta autorización, consulta la https:
 | `x-metabase-session: 'sessionId'`, `Content-Type: application/json`
 |===
 
-Como puedes ver, en este _endpoint_ puedes indicar opcionalmente la colección principal que deseas que herede la colección importada. Esto se puede hacer a través del parámetro de consulta `parentId` que debe ser siempre un numero entero positivo que se refiere al identificador de la colección. En caso de no informar `parentId` la colección se importará como "hija" de la colección `root`.
+Como puedes ver, en este _endpoint_ puedes indicar, opcionalmente, la colección principal que deseas que herede de la colección importada. Esto se puede hacer a través del parámetro de consulta `parentId`, que debe ser siempre un número entero positivo y se refiere al identificador de la colección. En caso de no informar `parentId`, la colección se importará como "hija" de `root`.
 
 [IMPORTANT]
 ====
@@ -58,18 +58,18 @@ No puedes exportar:
 
 * Cualquier colección personal.
 * Una colección no creada previamente.
-* Colecciones que contienen _dashboards_ que usan preguntas que no pertenecen a la colección exportada o una de sus subcolecciones.
-* Colecciones que contienen dos o más preguntas/tableros/subcolecciones con el mismo nombre.
+* Colecciones que contienen _dashboards_ que usan preguntas que no pertenecen a la colección exportada ni a ninguna de sus subcolecciones.
+* Colecciones que contienen dos o más preguntas, tableros o subcolecciones con el mismo nombre.
 
 No puedes importar:
 
-* Una colección en un _Stratio Discovery_ de destino que no tiene los mismos nombres de base de datos, campos y tablas que contienen las preguntas exportadas.
+* Una colección en un _Stratio Discovery_ de destino que no tiene los mismos nombres de bases de datos, campos y tablas que las que contienen las preguntas exportadas.
 
-En estos casos, cada _endpoint_ responderá con su correspondiente error.
+En estos casos, cada _endpoint_ devolverá el error correspondiente.
 ====
 
-La opción de configuración "FRIENDLY TABLE AND FIELD NAMES", en la sección 'General' de la configuración de administración de Metabase, viene deshabilitada en _Stratio Discovery_ y no hace falta que la toques: la imagen la fija así en cada arranque, precisamente porque acelera la exportación e importación.
+La opción de configuración "FRIENDLY TABLE AND FIELD NAMES", en la sección 'General' de la configuración de administración de Metabase, viene deshabilitada en _Stratio Discovery_ y no hace falta que la toques: la imagen la deja así en cada arranque, precisamente porque acelera la exportación e importación.
 
 image::humanize_fields.png[]
 
-La opción está deshabilitada tanto en la instancia de origen como en la de destino, así que la ventaja se aplica en las dos.
+La opción está deshabilitada tanto en la instancia de origen como en la de destino, por lo que la ventaja se aplica en ambas.

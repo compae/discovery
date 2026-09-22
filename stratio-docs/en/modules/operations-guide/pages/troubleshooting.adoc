@@ -173,13 +173,13 @@ To resolve this error, you must set the following environment variable to `0` (n
 
 If you are using the latest versions of the Stratio Universe descriptors, this environment variable will already be present in your deployment configuration with a value of `0`, preventing this error.
 
-=== Unable to access some tables stored in _Stratio {modulename}_ or _Stratio PostgreSQL_
+=== Unable to access some tables stored in _Stratio {modulename}_ or _Stratio PostgreSQL Operator_
 
-<<virtualizer-sync-issues,The newly acquired ability to read logs>> can also be useful in solving authorization-related problems.
+<<virtualizer-sync-issues, The newly acquired ability to read logs>> can also be useful in solving authorization-related problems.
 
 Briefly, in addition to the https://www.metabase.com/docs/latest/administration-guide/05-setting-permissions.html[native Metabase data access permissions] and https://www.metabase.com/docs/latest/administration-guide/06-collections.html#setting-permissions-for-collections[collection permissions], there may also be another level of security depending on the database that you connect to.
 
-For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL_ have their own authorization systems* whose policies can be defined in _Stratio Gosec_. If *you enabled impersonation* in your _Stratio {modulename}_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio Gosec_ policy], and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL® connection that uses the default TLS mechanism].
+For example, *both _Stratio {modulename}_ and _Stratio PostgreSQL Operator_ have their own authorization systems* whose policies can be defined in _Stratio Gosec_. If *you enabled impersonation* in your _Stratio {modulename}_ data set, you have to xref:operations-guide:connect-with-other-modules/create-a-new-stratio-virtualizer-connection.adoc[create an associated _Stratio Gosec_ policy], and the same applies to xref:operations-guide:connect-with-other-modules/connect-to-postgresql-with-tls.adoc[a PostgreSQL® connection that uses the default TLS mechanism].
 
 In _Stratio Discovery_ versions prior to 0.38.1-0.2, *the user that you logged in with was also used to perform actions related to updating internal metadata when you manually selected forced synchronization* (`Sync database schema now`, `Re-scan field values now`) if impersonation was enabled.
 

@@ -1,49 +1,49 @@
-= Recovery from a failed migration
+= Recovery from a migration failure
 
-The schema migration is part of the start-up of the new version, so a failure shows up as an instance that never becomes available. This page explains how the migration runs, how to tell where it stopped, and what to do for each failure. To go back to the previous version, see the xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version].
+The schema migration runs during startup of the new version, so a failure results in an instance that does not become available. This page explains how the migration runs, how to determine where it left off, and what to do if it fails. To go back to the previous version, see the xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version].
 
-== How the migration runs
+== How the migration is executed
 
-Metabase applies the pending schema changes during its start-up, before accepting requests. While it does, the `/api/health` endpoint responds "503" with a body whose `status` field is `initializing`.
+Metabase applies the pending schema changes during its startup, before accepting requests. While it does so, the `/api/health` endpoint responds with code 503 and a body whose `status` field has the value `initializing`.
 
-IMPORTANT: *The migration is not atomic.* Liquibase commits each schema change separately, so an interrupted migration leaves the database at an intermediate point between the two versions. There is no transaction that rolls it back as a whole, which is why the previous backup is mandatory.
+IMPORTANT: *The migration is not atomic.* Liquibase commits each schema change separately, so an interrupted migration leaves the database at an intermediate point between the two versions. No transaction rolls it back completely, so the prior backup is mandatory.
 
-It is run by a single instance: each one tries to take the Liquibase migration lock on the metadata database, and the ones that do not get it abort the start-up. On a PostgreSQL® database that lock is a session-scoped advisory lock, so it disappears with the connection and there is nothing to release by hand.
+A single instance runs it: each one tries to acquire the Liquibase migration lock on the metadata database, and those that don't get it abort startup. In a PostgreSQL® database, that lock is an advisory lock tied to the session, so it disappears with the connection, and you don't need to release it manually.
 
-== How to tell where it stopped
+== How to know at what point it was left
 
-Two signals answer it:
+Two signals answer this:
 
-* *The `databasechangelog` table of the metadata database.* Liquibase adds a row for every change it commits, so it is enough to compare its row count, or the highest value of its `dateexecuted` column, with those of the backup.
-* *The instance logs*, if you raised the "Metabase log level" option to "INFO" before the window. With its default value, "ERROR", the migration leaves no trace.
+* *The `databasechangelog` table of the metadata database.* Liquibase adds one row for each change it commits, so it is enough to compare its row count, or the maximum value of its `dateexecuted` column, with those of the backup.
+* *The instance logs*, if you raised the _Metabase log level_ option to "INFO" before the window. With its default value, "ERROR", the migration leaves no trace.
 
-== How to tell the failures apart
+== How to distinguish the type of failure
 
 [cols="2,2,3", options="header"]
 |===
 | Symptom | Cause | What to do
 
-| The pod restarts again and again and `/api/health` never gets past "503"
-| The startup probe deadline runs out before the migration finishes. The risk grows with the size of the synchronized catalog.
-| Restore the backup and try again with a longer deadline, raised in the 'General' → 'Probes' section during the upgrade itself.
+| The pod restarts over and over and `/api/health` never gets past "503"
+| The startup probe deadline expires before the migration finishes. The risk increases with the size of the synchronized catalog.
+| Restore the backup and try again with a longer deadline, which is configured in the 'General' → 'Probes' section during the upgrade.
 
-| The logs record "Database has migration lock; cannot run migrations." and the start-up ends with "Metabase Initialization FAILED"
-| The deployment has more than one replica and another instance took the migration lock.
-| Lower the "Instances" option to `1` and let the migrating instance finish. There is nothing to repair in the database.
+| The logs record "Database has migration lock; cannot run migrations." and the startup ends with "Metabase Initialization FAILED"
+| The deployment has more than one replica, and another instance has taken the migration lock.
+| Lower the _Instances_ option to `1` and let the instance finish the migration. Nothing needs to be repaired in the database.
 
 | The logs record "Downgrade detected"
-| A previous version was started on a schema that has already migrated.
-| Restore the backup, or go back to the new version if you did not mean to step back.
+| A previous version has been started on a schema that has already been migrated.
+| Restore the backup or go back to the new version if you did not want to roll back.
 
-| The pod fails and the `databasechangelog` table has not changed
-| The start-up fails before reaching the migration: the certificates, the configuration, or the connection to the metadata database.
-| Fix the cause the logs point at. The database is untouched, so there is no need to restore the dump.
+| The pod fails, and the `databasechangelog` table has not changed
+| The startup fails before reaching the migration: the certificates, the configuration, or the connection with the metadata database.
+| Fix the cause indicated in the logs. The database is intact, so you don't need to restore the dump.
 
-| A schema change fails and the log records the Liquibase error that causes it
-| Some pre-existing data does not satisfy what that change requires.
-| Restore the backup and check the error with the _Stratio Discovery_ team before retrying.
+| A schema change fails, and the log records the Liquibase error that causes it
+| Preexisting data does not meet what that change requires.
+| Restore the backup and consult the error with the _Stratio Discovery_ team before retrying.
 |===
 
 == After recovering
 
-When the instance starts up again, follow the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[installation check] and set back to their production values the options you changed for the window, "Metabase log level" and the startup probe deadline.
+When the instance starts up again, follow the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[installation verification] and return the options you changed for the window _Metabase log level_ and the startup probe deadline to their production values.

@@ -36,7 +36,7 @@ TIP: Para obtener más información, visita la documentación de xref:stratio-go
 
 == Suplantación de identidad en _Stratio {modulename}_
 
-Si deseas una auditoría más detallada de quién realizó qué consulta, debes habilitar la suplantación de identidad. Para hacerlo, solo necesitas activar la opción "Connect with Discovery login user?".
+Si deseas una auditoría más detallada de quién realizó qué consulta, debes habilitar la suplantación de identidad. Para hacerlo, solo necesitas activar la opción _Connect with Discovery login user?_.
 
 image::impersonation_enabled.png[]
 

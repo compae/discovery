@@ -22,13 +22,13 @@ image::cct_predeploy_discovery_deployment_0004.png[]
 
 === Namespace where the service will be deployed
 
-Depending on your login, you may need to select the namespace where you want to deploy your service. In the following example, it is set to `s000001`, and the namespace name is set from the tenant to `s000001-discovery`:
+Depending on your login, you may need to select the namespace where you want to deploy your service. In the following example, it is set to `s000001`, and the namespace name is set by the tenant to `s000001-discovery`:
 
 image::cct_select_tenant_namespace_discovery_deployment_0005.png[]
 
 === Application metadata store
 
-_Stratio Command Center_ allows you to choose the _Stratio PostgreSQL_ available in the cluster to connect to. There are two service discovery selectors: the first is used to build the URL and can be PostgreSQL® or PgBouncer, and the second is used to create the policies and the database. Note that both fields must be consistent.
+_Stratio Command Center_ allows you to choose the _Stratio PostgreSQL Operator_ available in the cluster to connect to. There are two service discovery selectors: the first is used to build the URL and can be PostgreSQL® or PgBouncer, and the second is used to create the policies and the database. Note that both fields must be consistent.
 
 === Defining placements for _Stratio Discovery_
 
@@ -66,7 +66,7 @@ Since there are many variables to configure, the operator should look up the mea
 
 image::cct_help_discovery_deployment_0007.png[]
 
-For example, if you want to know what the `Nginx` property is and what it does, just go to 'Help' → 'Administration Panel' → 'Settings', scroll down, and go to *Nginx* or use the search box to find the information about 'Nginx'.
+For example, if you want to know what the `Nginx` property is and what it does, just go to 'Help' → 'Administration Panel' → 'Settings', scroll down, and go to *Nginx*, or use the search box to find information about 'Nginx'.
 
 image::cct_help_tooltip_discovery_deployment_0008.png[]
 

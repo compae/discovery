@@ -1,47 +1,47 @@
 = Rollback to the previous version
 
-_Stratio Discovery_ has no automatic rollback mechanism. To go back to the previous version, revert the service version in _Stratio Command Center_ and, depending on the case, restore the backup of the metadata database. This page describes when the former is enough, when the latter is needed, and what to review afterwards.
+_Stratio Discovery_ has no automatic revert mechanism. To go back to the previous version, revert the service version in _Stratio Command Center_ and, if applicable, restore the metadata database backup. This page describes when the first is enough, when the second is required, and what to review at the end.
 
 == What the procedure depends on
 
-Everything depends on whether Metabase got to migrate the schema of the metadata database, because that migration runs during the start-up of the new version and marks the point of no return:
+Everything depends on whether Metabase got to migrate the metadata database schema, because that migration is run during the startup of the new version and marks the point of no return:
 
-* *If the migration has not started*, the database is intact and reverting the service version is enough.
-* *If the migration has started*, whether it completed or not, the dump has to be restored. Metabase commits each schema change separately, so an interrupted migration leaves the database at an intermediate point between the two versions: neither complete for the new one nor valid for the previous one.
+* *If the migration has not started*, the database is intact, and it is enough to revert the service version.
+* *If the migration has started*, whether it has been completed or not, the dump has to be restored. Metabase commits each schema change separately, so an interrupted migration leaves the database at an intermediate point between the two versions: neither complete for the new one nor valid for the previous one.
 
-In the second case there is no shortcut. Metabase checks the schema version before migrating and refuses to start up on one newer than itself, with the "Downgrade detected" error. Its command to bring the schema down only goes back one major version, and there are six between 0.50.21 and 0.56.4, so it is of no use either.
+In the second case, there is no shortcut. Metabase checks the schema version before migrating and refuses to start if there is a more recent version than its own, showing the error "Downgrade detected". Its command to downgrade the schema only rolls back one major version, and between 0.50.21 and 0.56.4 there are six, so it does not work either.
 
-== How to know whether the migration has started
+== How to know if the migration has started
 
-Two signals answer it:
+Two signals answer this:
 
-* *The `databasechangelog` table of the metadata database.* Liquibase adds a row for every change it commits, so it is enough to compare its row count, or the highest value of its `dateexecuted` column, with those of the backup: if they match, no change of the new version was applied.
-* *The instance logs*, if you raised the "Metabase log level" option to "INFO" before the window. With its default value, "ERROR", the migration leaves no trace.
+* *The `databasechangelog` table of the metadata database.* Liquibase adds one row for each change it commits, so it is enough to compare the row count or the maximum value of the `dateexecuted` column with those of the backup: if they match, no change from the new version was applied.
+* *The instance logs*, if you raised the _Metabase log level_ option to "INFO" before the window. With its default value, "ERROR", the migration leaves no trace.
 
 == The migration has not started
 
-This is the case of a start-up that fails earlier, for example while preparing the certificates or the configuration. To confirm it, check that the `databasechangelog` table of the metadata database holds the same rows as the backup: with the default log levels the migration leaves no trace in the logs.
+This happens when a startup fails earlier, for example, while preparing certificates or configuration. To confirm, check that the `databasechangelog` table in the metadata database has the same rows as the backup. With the default log levels, the migration leaves no trace in the logs.
 
 . Revert the service version to the previous one in _Stratio Command Center_.
-. Restore the configuration values that the descriptor of the new version has replaced, from the copy you made before upgrading.
-. Check the result with the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[checking the installation]: the login works and the questions return results.
+. Restore the configuration values that the new version's descriptor has replaced, from the copy you made before upgrading.
+. Verify the result with the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[installation verification]: login works, and questions return results.
 
-The database has not been modified, so there is no need to restore the dump and no data is lost.
+The database has not been modified, so no restore is needed, and no data is lost.
 
 == The migration has started
 
-. Scale the instance to 0 in _Stratio Command Center_ and wait until no pod of the instance is left.
-. Revert the service version to the previous one and restore the backup of the deployment descriptor, so that it reports the previous version and its original values.
-. Restore the dump of the metadata database, which brings it back to the schema of the previous version.
-. Scale the instance to 1 replica and check that the pod becomes _Ready_ and that the interface responds with the previous version. If instead of going back you want to retry the upgrade, this is the moment to fix the cause: raise the startup probe deadline if that is what ran out, or solve whatever the logs point at.
-. Check the result with the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[checking the installation].
+. Scale the instance to 0 in _Stratio Command Center_ and wait until no pods remain.
+. Revert the service version to the previous one and restore the deployment descriptor copy, so that it reports the previous version and its original values.
+. Restore the metadata database dump to restore the previous version's schema.
+. Scale the instance to 1 replica and check that the pod becomes _Ready_ and that the interface responds with the previous version. If instead of going back you want to retry the upgrade, this is the moment to fix the cause: extend the startup probe deadline if that is what expired, or resolve what the logs indicate.
+. Verify the result with the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[installation verification].
 
-WARNING: Restoring the dump returns the database to the moment the backup was made. Everything created or modified afterwards (collections, questions, dashboards, subscriptions, and database connections) is lost, including whatever was done during the maintenance window itself.
+WARNING: Restoring the dump returns the database to the state in which it was at the time of the backup. Everything that was created or modified afterward (collections, questions, dashboards, subscriptions, and database connections) is lost, including what was done during the maintenance window itself.
 
-== What to review afterwards
+== What to review at the end
 
-* *Access and groups*: the `oauth2proxy` of _Stratio KEOS_ keeps authenticating the same way, but check that a user of an allowed group accesses and that one of the administration group keeps their permissions.
-* *Database connections*: the previous version expects the certificates in the old paths, so check one query against _Stratio {modulename}_ and another against _Stratio PostgreSQL_.
+* *Access and groups*: the _Stratio KEOS_ `oauth2proxy` continues to authenticate the same way, but check that a user from an allowed group accesses and that one from the administration group keeps their permissions.
+* *Database connections*: the previous version expects the certificates on the old paths, so check a query against _Stratio {modulename}_ and another against _Stratio PostgreSQL Operator_.
 * *Exported collections*: an export made with the new version may contain elements that the previous one cannot import. If you promoted collections during the window, export them again from the previous version.
 
-If what you want is to diagnose why the upgrade failed before deciding whether to go back, see the xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recovery from a failed migration].
+If what you want is to diagnose why the upgrade failed before deciding whether to revert, see the xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recovery from a migration failure].

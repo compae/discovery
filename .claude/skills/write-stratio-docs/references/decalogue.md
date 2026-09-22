@@ -74,13 +74,15 @@ Include known customer problems in the FAQ, Known issues or Troubleshooting sect
 |---------|--------|---------|
 | Navigation paths, tabs, UI sections | Single quotes | 'Services' → 'Deployments' |
 | Calls to action (buttons, links, clickable options) | Double quotes | "Save", "Add user" |
-| Clickable buttons and _Stratio Command Center_ option labels | Double quotes | "Deploy", "Use virtualizer jdbc from Extra JARs" |
+| _Stratio Command Center_ option and field labels | Italics | _Use virtualizer jdbc from Extra JARs_, _Metabase log level_ |
+| Values the operator picks for an option | Double quotes | "INFO", "gosec-sso", "Guaranteed" |
 | Commands, attributes, parameters, inline code | Backticks | `ALLOWED_GROUPS`, `AUTHENTICATOR`, `MB_DB_URL` |
 | Form fields or data structures | Italics | _Admin group_, _Analytic image_ |
+| Clickable buttons | Double quotes | "Deploy", "Save", "Customize deployment" |
 | File names and filesystem paths | Italics | _/etc/hosts_, _log4j2.xml_, _docker-entrypoint.sh_ |
 | Example names of resources or instances | Backticks | `` `s000001-discovery` ``, `` `user01` `` |
 
-**Form field vs. listed option.** A form field named in running prose goes in italics (`el campo _Admin group_`). But when listing a deployment option together with its technical key, the repo puts **both in backticks**: `` * `Use group whitelist` (variable de entorno `USE_GROUP_WHITELIST`): … ``. That is the pattern of `end-user-authentication.adoc` — which contains **no bold at all** — and it is the one to use for every option/settings list. Do not introduce a bold label; `**text**` (double asterisk) does not appear anywhere in the tree either.
+**Form field, option label and value.** The rule is the same one rocket-core, `genai` and `intelligence` carry, so do not invent a local variant: the **name** of a _Stratio Command Center_ option or field goes in **italics** (`el campo _Admin group_`, `la opción _Metabase log level_`), never in bold nor bold+italic; the **values** the operator picks for it go in **double quotes** (`"INFO"`, `"gosec-sso"`); and the environment variable stays in backticks, in parentheses, only when the reader needs it outside the form. Buttons keep their double quotes, because they are clicked, not filled in: `"Deploy"`, `"Customize deployment"`. Do not introduce a bold label; `**text**` (double asterisk) does not appear anywhere in the tree either.
 
 **Deployment option labels are quoted, not translated.** The release notes and `what-is-new.adoc` cite a _Stratio Command Center_ option by its exact English label in double quotes, followed by its variable in backticks: `la opcion de despliegue "Use virtualizer jdbc from Extra JARs" (variable de entorno VIRTUALIZER_JDBC_FROM_EXTRA_JARS)`. Keep the label in English in BOTH language trees, because it is what the operator reads on screen; only the surrounding prose is translated.
 
@@ -330,19 +332,19 @@ When you document the value of a UI-selectable option (a dropdown or a checkbox 
 
 ## R28. Config set in _Stratio Command Center_: name the descriptor tab, and give the full path
 
-**Name the option by its descriptor `title`, not by its environment variable.** The operator does not see variable names in _Stratio Command Center_: they see a labelled field. So the option is cited by its exact `title`, in double quotes, and the variable comes second — in backticks, in parentheses — and only when it adds something: when the reader has to set it outside CCT, read it from inside the container, or find it in a script.
+**Name the option by its descriptor `title`, not by its environment variable.** The operator does not see variable names in _Stratio Command Center_: they see a labelled field. So the option is cited by its exact `title`, in italics (R1: it is a form field, and this is what rocket-core, `genai` and `intelligence` all do), and the variable comes second — in backticks, in parentheses — and only when it adds something: when the reader has to set it outside CCT, read it from inside the container, or find it in a script.
 
-⚠️ **Citing only the leaf is a defect, not a shortcut.** The reader has to *find* the field before setting it, and in this descriptor a field can be three levels deep. So every citation carries the **full navigation path** — tab → accordion → property — in single quotes chained with `→`, and the property name in double quotes:
+⚠️ **Citing only the leaf is a defect, not a shortcut.** The reader has to *find* the field before setting it, and in this descriptor a field can be three levels deep. So every citation carries the **full navigation path** — tab → accordion → property — in single quotes chained with `→`, and the property name in italics:
 
-- ✅ `la opción "Use group whitelist" ('General' → 'User Authentication' → 'Gosec SSO Authenticator Settings')`
-- ✅ `la opción "Use virtualizer jdbc from Extra JARs" ('Settings' → 'Metabase')`
-- ✅ `la opción "Authentication method" ('General' → 'User Authentication')`
-- ❌ `la opción "Use group whitelist" ('User Authentication')` — the tab is missing, so the reader does not know where to start
-- ❌ `la opción "Use group whitelist" ('General' → 'User Authentication')` — one accordion short: this field lives inside `'Gosec SSO Authenticator Settings'`, nested in `'User Authentication'`. This exact truncation is what `rocket-core` had to repair after merge, across 10 files (`'Probes'` → `'General' → 'Probes'`), and it is the reason this rule exists
+- ✅ `la opción _Use group whitelist_ ('General' → 'User Authentication' → 'Gosec SSO Authenticator Settings')`
+- ✅ `la opción _Use virtualizer jdbc from Extra JARs_ ('Settings' → 'Metabase')`
+- ✅ `la opción _Authentication method_ ('General' → 'User Authentication')`
+- ❌ `la opción _Use group whitelist_ ('User Authentication')` — the tab is missing, so the reader does not know where to start
+- ❌ `la opción _Use group whitelist_ ('General' → 'User Authentication')` — one accordion short: this field lives inside `'Gosec SSO Authenticator Settings'`, nested in `'User Authentication'`. This exact truncation is what `rocket-core` had to repair after merge, across 10 files (`'Probes'` → `'General' → 'Probes'`), and it is the reason this rule exists
 - ❌ naming the variable when the reader is working in the CCT form
 - ❌ citing the option's `description` as if it were its `title`: the `title` of `AUTHENTICATOR` is `Authentication method`, while `Authenticator method to use (gosec-sso, headers, jwt, metabase-native)` is its `description`. The docs carried that mistake for a while
 
-**Copy the `title` literally, with its own capitalization and its own typos.** Take it from the descriptor, not from your sense of English: it is `'User Authentication'` (both capitals) but `'Log levels'` and `'Import/Export service'` (lowercase second word); `"Nginx log level"`, not `"NGINX log level"`. The 15.1 descriptor also carries real typos in some titles — `'oauth2proxy cooke name'`, `'JWT puclic key Vault tamplate'`, `'CRT Vault tamplate'`, and a `'SERVICE URL '` with a trailing space. If you have to cite one of those, quote it as it is and say the label is misspelled in the descriptor; never silently fix it in the docs, or the reader will search the form for a string that is not there.
+**Copy the `title` literally, with its own capitalization and its own typos.** Take it from the descriptor, not from your sense of English: it is `'User Authentication'` (both capitals) but `'Log levels'` and `'Import/Export service'` (lowercase second word); `_Nginx log level_`, not `_NGINX log level_`. The 15.1 descriptor also carries real typos in some titles — `'oauth2proxy cooke name'`, `'JWT puclic key Vault tamplate'`, `'CRT Vault tamplate'`, and a `'SERVICE URL '` with a trailing space. If you have to cite one of those, quote it as it is and say the label is misspelled in the descriptor; never silently fix it in the docs, or the reader will search the form for a string that is not there.
 
 **One exception, and only one: a first-level tab cited alone.** `'Environment'`, `'General'` and `'Settings'` **are** the top of the path, so citing one of them on its own is complete and correct — there is nothing to chain it to. `'Environment'` in particular has no accordions at all: all of its fields sit directly under the tab, so `('Environment')` is the full path for every one of them. Do not invent an intermediate group to make such a citation look longer.
 
@@ -393,7 +395,7 @@ Consequences you must respect:
 3. **New sections that another page links to must declare an explicit `[#slug]`**, identical in both trees, with a blank line after it. That is what the upgrade fact sheets do, and it is the direction to move in: an explicit anchor survives a heading rewrite and a translation. Do not retrofit anchors onto old pages as a standalone change, though — it would touch pages in one tree only and fail `LanguageCheck`.
 4. **Accents survive in the generated id** (`#_configuraciones_específicas`), and `™`/`®` are dropped. If unsure, render the page and read the generated `id=`.
 
-Internal references carry **no** space after the comma: `<<summary,resumen>>`. Every one of the internal references in the tree follows it. Before the upgrade-documentation change there were only two, both in `troubleshooting.adoc` and both spaced, and they were corrected. rocket-core mostly does the same, while `intelligence` and `genai` lean on the spaced form, so do not copy an internal reference across repos.
+Internal references carry a space after the comma: `<<summary, resumen>>`. It is the form the documentation team asked for in the review of PR #409, and the one `intelligence` and `genai` already used; all 26 per tree carry it. rocket-core still mixes the two, so do not copy an internal reference across repos.
 
 ## R31. Spanish grammar the review corrects most often
 
@@ -431,3 +433,16 @@ Internal references carry **no** space after the comma: `<<summary,resumen>>`. E
 Editorial review corrects sentence by sentence, and two passes can legitimately reach opposite conclusions on the same kind of element. A path in prose was moved from italics to backticks in one review and from backticks to italics in the next.
 
 Before turning a correction into a rule: `grep` the term or the marker across the rest of the tree (decalogue principle 9) and follow the majority usage. If the correction contradicts what the tree already does, it is a candidate for a question, not for a new rule.
+
+## R34. What the documentation review of PR #409 settled
+
+Four conventions the documentation team applied over this repository, on top of the rules above:
+
+- **`_Stratio PostgreSQL Operator_`**, not `_Stratio PostgreSQL_`, is the name of the service. `intelligence` uses it 88 times and `genai` 8; the short form survives in older pages and `virtualizer` still says `_Stratio PostgreSQL Framework_`, which does not exist.
+- **`startup`, not `start-up`**, in the English tree: rocket-core 87/2, `intelligence` 86/3, `genai` 52/1.
+- **HTTP codes are named, not quoted**: `responde con código 503` / `responds with code 503`, not `responde "503"`. Double quotes stay for the strings the system emits, such as `"Downgrade detected"`.
+- **`Mandatory`, not `Required`**, in English table headers, and the legend of a column has to describe what the column actually holds: the `Obligatorio` one reads Sí/No, so its legend says `Sí o No`, not `_true_ o _false_`.
+
+⚠️ **Never fix the spelling of a quoted string in the pages; fix it at the source.** Three strings were misspelled where they are defined, and the documentation quoted them as they were, because a reader who searches _Stratio Command Center_ or the logs for a corrected version does not find it: `Extra JARs to add to metabase plugins folder` (lowercase `metabase`), `oauth2proxy cooke name` (the `title` of `JWT_COOKIE_NAME`) and `Cannot use Hive JDBC in Stratio Metabase since it has been remove due to vulnerabilities.`. The documentation review of PR #409 was right that carrying the error forward perpetuates it, so PR #411 corrected all three at the source — the descriptor and `fixed_hive_connection.clj` — and the pages now quote the corrected form. The order is what matters: **fix the source first, then the pages**, and while the two disagree, the pages follow what the operator actually reads.
+
+One consequence to keep in mind: the corrected labels ship with 0.56.4-0.2.1, and an operator still on 0.2.0 sees the old ones until the descriptor is synced into `Stratio/kubernetes-universe`. The same typo also lives in the descriptors of Universes 14.8, 14.9 and 14.10, so the fix has to be ported to `branch-0.50.21-0.2`.

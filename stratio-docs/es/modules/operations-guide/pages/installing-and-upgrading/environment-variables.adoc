@@ -3,9 +3,9 @@
 Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ para desplegar una instancia:
 
 * *Propiedad*: nombre del campo.
-* *Descripción*: descripción del valor y su uso.
+* *Descripción*: descripción del valor y de su uso.
 * *Posible/por defecto*: valores posibles y valores predeterminados.
-* *Obligatorio*: _true_ o _false_.
+* *Obligatorio*: Sí o No.
 * *Tipo*: tipo de valor.
 
 |===
@@ -18,7 +18,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | KUBERNETES_NAMESPACE
-| El nombre del _namespace_ donde está ubicada la instancia.
+| El nombre del _namespace_ en el que se encuentra la instancia.
 | s000001-apps
 | Sí
 | String
@@ -45,7 +45,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | CPUs
-| Número de CPU solicitados a cada instancia de _Stratio Discovery_.
+| Número de CPU solicitados por cada instancia de _Stratio Discovery_.
 | 2
 | Sí
 | Number
@@ -57,7 +57,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Number
 
 | INSTANCES
-| Número de instancias de _Stratio Discovery_ para ejecutar.
+| Número de instancias de _Stratio Discovery_ a ejecutar.
 | 1
 | Sí
 | Number
@@ -72,7 +72,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | MEM
-| Memoria (MB) para asignar a cada instancia de _Stratio Discovery_.
+| Memoria (MB) asignada a cada instancia de _Stratio Discovery_.
 | 4096
 | Sí
 | Number
@@ -90,7 +90,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | JAVA_MAX_RAM_PERCENTAGE
-| Porcentaje de memoria máxima de Java en relación con la memoria total asignada a la instancia.
+| Porcentaje de la memoria máxima de Java respecto de la memoria total asignada a la instancia.
 | `-XX:MaxRAMPercentage=70.0`
 | No
 | String
@@ -126,7 +126,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Number
 
 | VAULT_ROLE
-| Rol utilizado para recuperar un _token_ de Vault con una política predefinida. NOTA: solo se usa con la autenticación dinámica habilitada.
+| Rol utilizado para recuperar un _token_ de Vault mediante una política predefinida. NOTA: solo se usa con la autenticación dinámica habilitada.
 | `${Application.domain}-${Application.name}`
 | No
 | String
@@ -138,7 +138,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | MB_USER_HEADER
-| Cabecera HTTP con el usuario para el inicio de sesión utilizado para realizar una autenticación automática.
+| Cabecera HTTP con el nombre de usuario utilizado para la autenticación automática.
 | vnd.bbva.user-id
 | No
 | String
@@ -156,43 +156,43 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | JWT_INSECURE_REQUEST_PKEY
-| Indicador para establecer si verificar la conexión TLS mientras se obtiene la clave pública en `JWT_PUBLIC_KEY_ENDPOINT`.
+| Indicador para determinar si se debe verificar la conexión TLS al obtener la clave pública en `JWT_PUBLIC_KEY_ENDPOINT`.
 | _false_
 | No
 | String
 
 | JWT_HEADER_NAME
-| Cabecera HTTP donde encontrar el _token_ JWT si está seleccionada la autenticación a través de JWT.
+| Cabecera HTTP donde encontrar el _token_ JWT si la autenticación es mediante JWT.
 | X-USER-TOKEN
 | No
 | String
 
 | JWT_USERNAME_CLAIM
-| Nombre del _claim_ en el _token_ JWT donde se proporciona el nombre de usuario.
+| Nombre del _claim_ en el _token_ JWT que contiene el nombre de usuario.
 | sub
 | No
 | String
 
 | JWT_GROUPS_CLAIM
-| Nombre del _claim_ en el _token_ JWT donde se proporcionan los grupos de usuarios.
+| Nombre del _claim_ en el _token_ JWT que contiene los grupos de usuarios.
 | `groups`
 | No
 | String
 
 | DISCOVERY_INSTANCE_NAME
-| El nombre utilizado en Vault para almacenar los secretos de esta instancia. En _clusters_ _multi-tenant_ estará compuesto por el ID del _tenant_ y el nombre del servicio, por ejemplo, _tenant1-discovery_.
+| El nombre que se utiliza en Vault para almacenar los secretos de esta instancia. En _clusters_ _multi-tenant_ estará compuesto por el ID del _tenant_ y el nombre del servicio, por ejemplo, _tenant1-discovery_.
 | discovery
 | Sí
 | String
 
 | AUTHENTICATOR
-| Elige un xref:operations-guide:end-user-authentication.adoc[método de autenticación]. Reemplaza `USE_JWT_AUTHENTICATION` y `USE_GOSEC_SSO_AUTH`, que ya no existen. El único valor para el que el despliegue está conectado de principio a fin es `gosec-sso`, que es también el predeterminado.
+| Elige un xref:operations-guide:end-user-authentication.adoc[método de autenticación]. Reemplaza `USE_JWT_AUTHENTICATION` y `USE_GOSEC_SSO_AUTH`, ya que no existen. El único valor para el que el despliegue está conectado de principio a fin es `gosec-sso`, que también es el valor predeterminado.
 | gosec-sso
 | Sí
 | String
 
 | SSO_URI
-| URI para instaurar una sesión a través del SSO de _Stratio Gosec_. La autenticación la resuelve el `oauth2proxy` de _Stratio KEOS_, así que la instancia ya no necesita esta dirección. En desuso desde la versión 0.56.4-0.2.x.
+| URI para iniciar sesión mediante el SSO de _Stratio Gosec_. La autenticación la gestiona el `oauth2proxy` de _Stratio KEOS_, así que la instancia ya no necesita esta dirección. En desuso desde la versión 0.56.4-0.2.x.
 | Por ejemplo: `+https://bootstrap.labs.stratio.com:9005/sso+`.
 | No
 | String
@@ -210,7 +210,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Boolean
 
 | SERVICE_URL
-| La URL de acceso de tu instancia de _Stratio Discovery_. Se compone automáticamente como `+https://${haproxyhost}${haproxypath}+` a partir de las opciones "URI host…" y "URL path to access your Discovery service" de la sección 'General' → 'Networking'.
+| La URL de acceso a tu instancia de _Stratio Discovery_. Se compone automáticamente como `+https://${haproxyhost}${haproxypath}+` a partir de las opciones _URI host…_ y _URL path to access your Discovery service_ de la sección 'General' → 'Networking'.
 | Por ejemplo: `+https://public01.labs.stratio.com/discovery+`.
 | Sí
 | String
@@ -252,7 +252,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | Boolean
 
 | MB_DB_PASS
-| Contraseña para conectarse a la base de datos si se utiliza usuario y contraseña como mecanismo de autenticación. Solo en caso de que no se haya habilitado `MB_DB_SSL`.
+| Contraseña para conectarse a la base de datos si se utiliza el usuario y la contraseña como mecanismo de autenticación. Solo si no se ha habilitado `MB_DB_SSL`.
 | _password_
 | No
 | String
@@ -264,19 +264,19 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | PROXY_READ_TIMEOUT
-| Tiempo de espera de lectura de proxy en segundos aplicado tanto al proxy interno como al externo.
+| Tiempo de espera de lectura del proxy, en segundos, aplicable tanto al proxy interno como al externo.
 | 300
 | Sí
-| Número
+| Number
 
 | DISCOVERY_CICD_API_IMPORT_TIMEOUT
-| Tiempo de espera de Akka en segundos para solicitudes al servicio de importación.
+| Tiempo de espera de Akka, en segundos, para las solicitudes al servicio de importación.
 | 300s
 | No
 | String
 
 | DISCOVERY_CICD_API_EXPORT_TIMEOUT
-| Tiempo de espera de Akka en segundos para solicitudes al servicio de exportación.
+| Tiempo de espera de Akka, en segundos, para las solicitudes al servicio de exportación.
 | 60s
 | No
 | String
@@ -288,9 +288,9 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | DISCOVERY_CICD_JAVA_OPTIONS
-| Te permite configurar opciones Java personalizadas cuando ejecuta el servicio de CICD.
+| Te permite configurar opciones de Java personalizadas cuando ejecutas el servicio de CI/CD.
 | Ejemplo: `-Dakka.http.server.request-timeout=120s`.
-| _false_
+| No
 | String
 
 | DISCOVERY_CICD_JAVA_INITIAL_RAM_PERCENTAGE
@@ -306,7 +306,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 | String
 
 | EXTRA_JARS
-| Lista de ficheros JAR externos que se descargan en el directorio de _plugins_ de Metabase durante el arranque. Corresponde a la opción "Extra JARs to add to metabase plugins folder".
+| Lista de ficheros JAR externos que se descargan en el directorio de _plugins_ de Metabase al arranque. Corresponde a la opción _Extra JARs to add to Metabase plugins folder_.
 | Vacío
 | No
 | String
@@ -391,7 +391,7 @@ Aquí puedes consultar todas las posibles propiedades de _Stratio Discovery_ par
 
 | CROSSDATA_LOG_LEVEL
 | Nivel de _log_ del _driver_ JDBC de _Stratio {modulename}_.
-| INFO
+| `INFO`
 | No
 | String
 |===

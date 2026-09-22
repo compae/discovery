@@ -28,7 +28,7 @@ failed because of java.net.ConnectException: Connection refused
 == Configuring _Stratio Gosec_ permission settings for _Stratio Discovery_ on _Stratio {modulename}_
 
 . Go to _Stratio Gosec_.
-. In policies, look for an existing policy of the _Stratio {modulename}_ instance you want to connect to or create a new one.
+. In 'Policies', look for an existing policy for the _Stratio {modulename}_ instance you want to connect to, or create a new one.
 . Add the discovery user (username of the discovery instance) to this policy.
 . Save the policy.
 
@@ -36,7 +36,7 @@ TIP: For more information, see the xref:stratio-gosec:ROOT:introduction.adoc[_St
 
 == Impersonation in _Stratio {modulename}_
 
-If you want a more detailed audit of who made which query, you need to enable impersonation. To do this, activate the "Connect with Discovery login user?" option.
+If you want a more detailed audit of who made which query, you need to enable impersonation. To do this, activate the _Connect with Discovery login user?_ option.
 
 image::impersonation_enabled.png[]
 

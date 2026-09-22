@@ -1,14 +1,14 @@
 = Upgrade from 0.50.21-0.2.x to 0.56.4-0.2.x
 
-This sheet summarizes the impact of upgrading _Stratio Discovery_ from 0.50.21-0.2.x to 0.56.4-0.2.x, the upgrade that accompanies the move to Universe 15.1 from 14.8.x, 14.9.x, or 14.10.x. Use it to plan the maintenance window, to know what to prepare beforehand and what to check afterwards.
+This sheet summarizes the impact of upgrading _Stratio Discovery_ from 0.50.21-0.2.x to 0.56.4-0.2.x, which accompanies the move to Universe 15.1 from 14.8.x, 14.9.x, or 14.10.x. Use it to plan the maintenance window, to know what to prepare beforehand, and what to check afterward.
 
-Each section answers a question and links to the page that develops it. When you reach the maintenance window, follow the xref:operations-guide:installing-and-upgrading/upgrade.adoc[upgrade procedure] and the adjustments of the xref:operations-guide:installing-and-upgrading/upgrade/details-upgrade.adoc#v0564-02x[detailed guide of the target version].
+Each section answers a question and links to the page that develops it. When you reach the maintenance window, follow the xref:operations-guide:installing-and-upgrading/upgrade.adoc[upgrade procedure] and the adjustments in the xref:operations-guide:installing-and-upgrading/upgrade/details-upgrade.adoc#v0564-02x[target version detailed guide].
 
 [#summary]
 
 == Summary
 
-IMPORTANT: *This upgrade raises six major Metabase versions at once, and with them everything underneath.* The Java version, the base image, the process supervisor, the web server, and the mechanism that obtains the certificates all change. None of that is configurable from _Stratio Command Center_: it arrives with the image. What you do have to prepare is the environment around it, and that is measured in days: the platform upgraded, the backup verified, the descriptor reviewed, and the data source connections checked. Plan that work with <<before,Before the window>> and set the date once it is finished.
+IMPORTANT: *This upgrade raises six major versions of Metabase at once, and everything underneath.* The Java version, the base image, the process supervisor, the web server, and the mechanism by which certificates are obtained all change. None of that is configurable from _Stratio Command Center_: it comes with the image. What you do have to prepare is the surrounding environment, measured in days: the platform upgraded, the backup verified, the descriptor reviewed, and the connections to data sources checked. Plan that work with <<before, Before the window>> and set the finish date.
 
 The table answers, with one row per decision, what you need to size the window:
 
@@ -17,115 +17,115 @@ The table answers, with one row per decision, what you need to size the window:
 | Question | Answer | Detail
 
 | How much downtime is there in the worst case?
-| The whole upgrade. _Stratio Discovery_ does not support high availability, so the service is unavailable from the moment the version is changed until the new pod responds. It usually takes *a few minutes* (estimated). The startup probe deadline, 300 seconds with the default values, does not bound it: when it is exceeded, Kubernetes restarts the pod and the migration is left halfway, so the backup has to be restored and the upgrade tried again.
-| <<outage,Downtime>>
+| The entire upgrade. _Stratio Discovery_ does not support high availability, so the service becomes unavailable from the moment the version is changed until the new pod responds. Usually, this takes *a few minutes* (estimated). The startup probe deadline (300 seconds by default) doesn't cap it: when it expires, Kubernetes restarts the pod and the migration is left halfway, so the backup has to be restored and the migration retried.
+| <<outage, Downtime>>
 
 | What does that duration depend on?
-| On the number of rows of the tables that the migration rewrites, which are the ones with the metadata of fields, questions, and dashboards, not on the total size of the database: the history of executions and views, which is the one that grows with use, only receives structure changes. There is no published measurement.
-| <<data,Data>>
+| On the number of rows of the tables that the migration rewrites, which are those of metadata for fields, questions, and dashboards, not on the total size of the database: the execution and view history, which is the one that grows with use, only receives structural changes. There is no published measurement.
+| <<data, Data>>
 
 | How long does the maintenance window last in total?
-| The restart of the service, with the migration inside, plus the closing checks. Half an hour leaves ample margin for both (estimated).
-| <<phases,Steps>>
+| The service restart, with the internal migration, plus the closing checks. With a half-hour margin, there is room for both (estimated).
+| <<phases, Steps>>
 
-| Can the work be split into several windows?
-| *Partially.* The platform upgrade, the backup, and the descriptor review are prepared in previous windows. The version change itself is a single continuous window.
-| <<before,Before the window>>
+| Can the work be divided into several windows?
+| *Partially.* The platform upgrade, the backup, and the descriptor review are performed in previously established time windows. The version change itself is a single continuous window.
+| <<before, Before the window>>
 
-| Does anything stop working until another module is upgraded?
-| *No, but there is a mandatory order.* _Stratio KEOS_ has to be on the target Universe already, because its Vault injector is what delivers the certificates. No other module blocks: the _Stratio {modulename}_ servers only have to be 0.11.0 or higher, and the source Universe already meets that minimum.
-| <<modules,Modules>>
+| Does something stop working until another module is upgraded?
+| *No, but there is a mandatory order.* _Stratio KEOS_ must already be on the target Universe, because its Vault injector is what delivers the certificates. No other module blocks: the _Stratio {modulename}_ servers only need to be 0.11.0 or higher, and the source Universe already meets that minimum.
+| <<modules, Modules>>
 
 | Does the data model change and is a backup needed?
-| *Yes* to both. Metabase applies its schema migrations during the first start-up of the new version, and the backup of the metadata database is mandatory because it is the only way to go back.
-| <<data,Data>>
+| *Yes* to both. Metabase applies schema migrations on first startup of the new version, and backing up the metadata database is mandatory because it is the only way to revert.
+| <<data, Data>>
 
 | Can you go back at any time?
-| *Only until the first schema change is committed.* If the start-up fails before the migration, reverting the version is enough; afterwards, going back means restoring the backup and losing whatever was created after the upgrade.
-| <<rollback,Rollback>>
+| *Only until the first schema change is committed.* If the startup fails before the migration, it is enough to revert to the previous version; afterward, going back involves restoring the backup and losing what was created after the upgrade.
+| <<rollback, Rollback>>
 
 | Does the previous version work on Universe 15.1?
-| *No.* It is not validated: each Universe declares the version of _Stratio Discovery_ that has been tested with it, and 0.50.21-0.2.x is not part of Universe 15.1.
-| <<coexistence,Coexistence>>
+| *No.* It is not validated: each Universe declares the _Stratio Discovery_ version that has been tested with it, and 0.50.21-0.2.x is not part of Universe 15.1.
+| <<coexistence, Coexistence>>
 
-| What is the overall risk?
-| *High.* There is no high availability and no automatic rollback, the migration runs with a per-attempt deadline set by the startup probe and does not resume if it is interrupted, and the jump changes the Java version, the base image, and the secret retrieval mechanism at the same time.
-| <<known-issues,Known issues>>
+| What is the global risk?
+| *High.* There is no high availability or automatic rollback; the migration runs with a per-attempt deadline set by the startup probe and does not resume if it is interrupted. In addition, the jump changes the Java version, the base image, and the secrets retrieval mechanism at the same time.
+| <<known-issues, Known warnings and incidents>>
 |===
 
-.Message to convey
+.Message to communicate
 [caption=]
 ====
-_Stratio Discovery_ raises six Metabase versions in a single operation. During the upgrade, the service is unavailable. The duration of that outage has not been measured and depends on the volume of stored questions and dashboards; what is fixed is its ceiling, because the platform restarts the instance if the start-up takes longer than five minutes. Running queries and open sessions are lost, and the subscriptions scheduled during the downtime are not sent. Plan the window with margin and warn the users not to launch long queries right before.
+_Stratio Discovery_ raises six versions of Metabase in a single operation. During the upgrade, the service is not available. The outage duration has not been measured and depends on the volume of stored questions and dashboards; what is set is the ceiling, because the platform restarts the instance if startup exceeds five minutes. In-progress queries and open sessions are lost, and the subscriptions scheduled during the downtime are not sent. Plan the window with margin and warn users so they don't launch long queries just before it opens.
 ====
 
 [#scope]
 
 == Scope of the upgrade
 
-The three source Universes carry the same version of _Stratio Discovery_, 0.50.21-0.2.0, so this sheet applies unchanged to 14.8.x, 14.9.x, and 14.10.x, and the procedure is the same in all three.
+The three source Universes carry the same version of _Stratio Discovery_, 0.50.21-0.2.0, so this sheet applies unchanged to 14.8.x, 14.9.x, and 14.10.x, and the procedure is the same on all three.
 
-If your instance is on a version prior to 0.50.21-0.2.x, first review the xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[special upgrades], because the considerations of the intermediate versions apply in full to the direct path.
+If your instance is on a version earlier than 0.50.21-0.2.x, first review the xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[special upgrades], because the considerations of the intermediate versions apply in full to the direct route.
 
-NOTE: The jump from Universe 15.0, which carries version 0.56.4-0.1.3, is outside the scope of this sheet because it changes neither the Metabase version nor the image stack, so there is no schema migration. It does share with this path the change of the secret mechanism to the Vault injector, which the Universe 15.1 descriptor introduces: review <<before,Before the window>> and the <<regressions,regressions>> in that case too.
+NOTE: The jump from Universe 15.0, which carries version 0.56.4-0.1.3, falls outside the scope of this sheet because it does not change the Metabase version or the image stack, so no schema migration occurs. This route also changes the secrets mechanism to the Vault injector, which the Universe 15.1 descriptor introduces: review <<before, Before the window>> and the <<regressions, regressions>> in that case too.
 
 [#components]
 
 === Components and upgrade order
 
-_Stratio Discovery_ is deployed as *a single container* and is upgraded in a single operation: there is no internal order to respect. Inside it, three supervised processes coexist, which start up at the same time and with no declared dependencies between them:
+_Stratio Discovery_ is deployed as *a single container* and is upgraded in a single operation: there is no internal order to respect. Inside, three supervised processes coexist, which start at the same time and without declared dependencies between them:
 
 [cols="1,2,2,3", options="header"]
 |===
-| # | Process | Where it stores the state | Why it does not need its own window
+| # | Process | Where it stores state | Why it does not need its own window
 
 | 1
 | nginx
-| It stores no state. It terminates TLS and exposes the health endpoint.
-| It starts up with the container and its configuration is regenerated at each start-up from the environment variables.
+| It does not store state. Terminates TLS and exposes the health endpoint.
+| It starts with the container, and its configuration is regenerated on each startup from environment variables.
 
 | 2
 | Metabase
-| In the metadata database of _Stratio PostgreSQL_. It is the only persistent state of the service.
-| It runs the schema migration during its start-up, before responding to the health endpoint.
+| In the metadata database of _Stratio PostgreSQL Operator_. It is the only persistent state of the service.
+| It runs the schema migration on startup, before responding on the health endpoint.
 
 | 3
 | Export and import service (`discovery-cicd`)
-| It stores no state. It delegates authentication and data to Metabase.
+| It does not store state. It delegates authentication and data to Metabase.
 | It shares the container and the lifecycle with the previous ones.
 |===
 
-NOTE: The instance stores no files: the descriptor declares no volume and everything the container writes at each start-up (certificates, generated configuration, and the JAR files downloaded with the "Extra JARs to add to metabase plugins folder" option) is regenerated on its own. The only relevant backup is the one of the metadata database.
+NOTE: The instance does not store files: the descriptor declares no volumes, and everything the container writes on each startup (certificates, generated configuration, and the JAR files downloaded through the _Extra JARs to add to Metabase plugins folder_ option) is regenerated automatically. The only relevant backup is that of the metadata database.
 
 [#modules]
 
 === Relationship with other modules
 
-_Stratio Discovery_ shares the upgrade calendar with the following modules. Both directions matter, because the second one determines the order in which the platform is upgraded:
+_Stratio Discovery_ shares the upgrade calendar with the following modules. Both directions matter, because the second is what determines the order in which the platform is upgraded:
 
 [cols="2,2,4,4", options="header"]
 |===
-| Related module | What the relationship is | When upgrading _Stratio Discovery_ | When upgrading the related module
+| Related module | What relationship there is | When _Stratio Discovery_ is upgraded | When the related module is upgraded
 
 | _Stratio KEOS_
-| The platform on which the service runs. Its `oauth2proxy` authenticates every request, and its Vault injector delivers the certificates and the public key with which the JWT tokens are validated.
+| The platform on which the service runs. Its `oauth2proxy` authenticates all requests, and its Vault injector delivers the certificates and the public key used to validate JWT tokens.
 | No impact on the platform. The new version obtains its certificates and the public key from the Vault injector, whose annotations the Universe 15.1 descriptor adds, so the platform must be on that Universe before changing the version.
-| Upgrade the platform first, in its own window. It is the only module whose order is mandatory.
+| Upgrade the platform first in its own window. It is the only module with a mandatory order.
 
 | _Stratio {modulename}_
-| It provides the catalog and the data that the questions query, through a Metabase driver of its own and through its JDBC driver.
-| The JDBC driver included in the image is updated from version 2.32.x to 4.x. The servers must be 0.11.0 or higher, a requirement that the source Universe already meets.
-| None on the upgrade process, but there is one on the questions that already exist: if _Stratio {modulename}_ also moves from the 0.11.x line to 1.1.x with the Universe, its SQL syntax changes. Review the native questions that use `mask` (now `xdmask`), `TIMESTAMPADD` or `TIMESTAMPDIFF`, following the _Stratio {modulename}_ documentation for the target Universe.
+| It provides the catalog and data that the questions query through a Metabase-specific driver and its JDBC driver.
+| The JDBC driver included in the image goes up from version 2.32.x to 4.x. The servers must be 0.11.0 or higher, which the source Universe already meets.
+| None on the upgrade process, but yes on the existing questions: if _Stratio {modulename}_ also goes up from the 0.11.x line to 1.1.x with the Universe, its SQL syntax changes. Review the native questions that use `mask` (now `xdmask`), `TIMESTAMPADD`, or `TIMESTAMPDIFF`, according to the _Stratio {modulename}_ documentation for the target Universe.
 
 | _Stratio Gosec_
-| It provides the identities, the groups that feed the allowed group list, and the access policies to the metadata database.
-| No impact: the creation of the user and of the policies runs the same way in both versions.
-| No impact, as long as the groups that appear in "Allowed groups" and in "Admin group" keep their name.
+| It provides identities, the groups that feed the allowed groups list, and access policies for the metadata database.
+| No impact: creating the user and policies works the same on both versions.
+| No impact, provided the groups in _Allowed groups_ and _Admin group_ keep their names.
 
-| _Stratio PostgreSQL_
-| It stores the metadata database, to which the service connects with mutual TLS, usually through PgBouncer.
-| No impact on the database beyond the schema migration, which Metabase runs.
-| _Stratio Discovery_ is unavailable while the database does not respond. Chain the two windows or separate them completely.
+| _Stratio PostgreSQL Operator_
+| It stores the metadata database, which the service connects to through mutual TLS, normally through PgBouncer.
+| No impact on the database beyond the schema migration that Metabase runs.
+| _Stratio Discovery_ becomes unavailable while the database is not responding. Chain the two windows or separate them completely.
 
 | _Stratio Command Center_
 | It deploys, configures, and upgrades the instance, and it is where the version is changed.
@@ -133,7 +133,7 @@ _Stratio Discovery_ shares the upgrade calendar with the following modules. Both
 | No impact on _Stratio Discovery_.
 |===
 
-Upgrade the modules in this order: _Stratio KEOS_ first, in its own window, and then _Stratio Discovery_. The other modules impose no order: you only have to avoid their windows overlapping with the _Stratio Discovery_ one, because a database or a catalog that does not respond during the verification is mistaken for an upgrade failure.
+Upgrade the modules in this order: _Stratio KEOS_ first, in its own window, and then _Stratio Discovery_. The rest of the modules do not impose any order: you just have to avoid their windows overlapping with that of _Stratio Discovery_, because a database or a catalog that does not respond during verification is confused with an upgrade failure.
 
 [#coexistence]
 
@@ -143,21 +143,21 @@ Upgrade the modules in this order: _Stratio KEOS_ first, in its own window, and 
 |===
 | Scenario | Supported? | Limitations
 
-| The previous version of _Stratio Discovery_ on Universe 15.1
+| The previous _Stratio Discovery_ version on Universe 15.1
 | No
-| Each Universe declares the version of _Stratio Discovery_ tested with it, and 0.50.21-0.2.x is not part of Universe 15.1. The new version does depend on the new platform, because it obtains its certificates from the Universe 15.1 Vault injector.
+| Each Universe declares the _Stratio Discovery_ version tested with it, and 0.50.21-0.2.x is not part of Universe 15.1. The new version depends on the new platform because it gets its certificates from the Universe 15.1 Vault injector.
 
 | The upgraded module with its consumers still not upgraded
 | Partially
-| The integrations that call the Metabase API keep working with the "metabase.SESSION" cookie. Review the ones that export and import collections: there are Metabase features that the service does not support, both before and after the upgrade.
+| The integrations that call the Metabase API continue to work with the "metabase.SESSION" cookie. Review the ones that export and import collections: the service does not support some Metabase functionality, both before and after the upgrade.
 
-| Two instances of _Stratio Discovery_ on different versions
+| Two _Stratio Discovery_ instances on different versions
 | Yes, if they do not share a database
-| Each instance uses its own metadata database, so two instances on different versions coexist without interfering. What is not supported is pointing two different versions at the same database: the first one to start up migrates the schema and the other stops recognizing it.
+| Each instance uses its own metadata database, so two instances on different versions coexist without interfering with each other. What is not supported is pointing two different versions to the same database: the first one to start migrates the schema, and the other stops recognizing it.
 
 | Several replicas of the same instance
 | No
-| The descriptor declares the service without high availability and with a single replica. There is no leader election and no shared session state, so the downtime during the upgrade is unavoidable.
+| The descriptor declares the service without high availability and with a single replica. No leader election or shared session state exists, so the pause during the upgrade is inevitable.
 |===
 
 [#execution]
@@ -170,62 +170,62 @@ Upgrade the modules in this order: _Stratio KEOS_ first, in its own window, and 
 
 [cols="3,1,3", options="header"]
 |===
-| What has to be ready | When | How to check that it is done
+| What must be ready | When | How it is verified that it is done
 
-| Backup of the metadata database and of the deployment descriptor. It is the only way to go back once the migration has been applied.
+| Backup of the metadata database and the deployment descriptor. It is the only way to revert once the migration has been applied.
 | Mandatory, days before
-| A test restore has worked on a different database. See the <<rollback,rollback>> to know what is restored in each case.
+| A test restoration has worked on a different database. See the <<rollback, rollback>> to know what is restored in each case.
 
-| _Stratio KEOS_ upgraded to Universe 15.1, with the Vault injector operational and the public key with which the JWT tokens are validated published by the ingress.
+| _Stratio KEOS_ upgraded to Universe 15.1, with the Vault injector operational and the public key used to validate JWT tokens published by the ingress.
 | Mandatory, own window
-| The platform reports the Universe 15.1 version and other services already obtain their certificates that way.
+| The platform reports the Universe 15.1 version, and other services are already obtaining their certificates through that route.
 
-| Descriptor reviewed against the one of the target Universe: the options that disappear, the one that changes its name, and the fields that the 'Environment' section adds for the Vault injector: only two are basic level and _Stratio Command Center_ requests them during the upgrade, "KEOS CA secret name" (default `keos-ca`) and "KEOS CA name (key inside secret)" (default `ca.crt`); the other twelve are advanced and arrive with a working default.
+| Descriptor reviewed against that of the target Universe: the options that disappear, the one that is renamed, and the fields that the 'Environment' section adds for the Vault injector: only two are at the basic level and _Stratio Command Center_ requests them during the upgrade, _KEOS CA secret name_ (default `keos-ca`) and _KEOS CA name (key inside secret)_ (default `ca.crt`); the other twelve are advanced and arrive with a default value that works.
 | Mandatory, before
-| The _Stratio Command Center_ review screen reports no pending fields. See the <<regressions,regressions>> to know which options disappear.
+| The _Stratio Command Center_ review screen does not report any pending fields. See the <<regressions, regressions>> to know which options disappear.
 
-| Data source connections reviewed. The Amazon Athena driver is no longer available and the Spark SQL one can no longer open connections; any JAR file you add with "Extra JARs to add to metabase plugins folder" has to be recompiled against the Metabase 0.56 driver API and work with Java 21; and the connections that point at the _/etc/pki/proxy.pem_ or _/etc/pki/proxy.key_ certificates stop finding them, because those files stop being created once the secrets come from the Vault injector.
+| Data source connections reviewed. The Amazon Athena driver stops being available, and the Spark SQL one stops being able to open connections; any JAR file that you add through _Extra JARs to add to Metabase plugins folder_ has to be recompiled against the Metabase 0.56 driver API and work with Java 21; and the connections that point to the _/etc/pki/proxy.pem_ or _/etc/pki/proxy.key_ certificates stop finding them, because those files stop being created when the secrets are moved to the Vault injector.
 | Mandatory if you use any of those sources or external JAR files, before
-| The sources that are neither _Stratio {modulename}_ nor _Stratio PostgreSQL_ are inventoried and have a decided alternative.
+| The sources that are not _Stratio {modulename}_ or _Stratio PostgreSQL Operator_ are inventoried and have a decided alternative.
 
-| Legacy deployments reviewed: if the instance was still configured with `USE_GOSEC_SSO_AUTH`, that variable no longer has any effect and `AUTHENTICATOR` must be set to `gosec-sso` explicitly.
-| Mandatory if applicable, before
-| The deployment descriptor reports `gosec-sso` in the authentication method option.
+| Legacy deployments reviewed: if the instance was still configured with `USE_GOSEC_SSO_AUTH`, that variable no longer has any effect and `AUTHENTICATOR` must be explicitly set to `gosec-sso`.
+| Mandatory if it applies, before
+| The deployment descriptor indicates `gosec-sso` in the authentication method option.
 
-| Java virtual machine options reviewed. The image goes from Java 11 to Java 21, so any option added by hand may no longer exist.
+| Java virtual machine options reviewed. The image moves from Java 11 to Java 21, so any manually added option may no longer exist.
 | Mandatory if you have customized those options, before
 | The options have been tested with Java 21 in a preproduction environment.
 
-| Startup probe deadline checked: with the default values of the 'General' → 'Probes' section, the instance has 300 seconds to start up and migrate. They are enough except with a very large synchronized catalog, so measure it in preproduction if yours is.
+| Startup probe deadline checked: with the default values of the 'General' → 'Probes' section, the instance has 300 seconds to start up and migrate. That is enough except with a very large synchronized catalog, so measure it in preproduction if yours is.
 | Recommended, before
-| The deadline comfortably exceeds the estimated duration of the migration for the volume of your database.
+| The deadline exceeds the estimated migration duration by a margin for your database volume.
 
-| Critical collections exported as an additional safety net, through the xref:operations-guide:export-and-import-collections.adoc[collection export and import] service.
+| Critical collections exported as an additional safety net through the xref:operations-guide:export-and-import-collections.adoc[export and import of collections] service.
 | Recommended, before
-| The exported files have been downloaded and stored outside the instance.
+| The exported files have been downloaded and saved outside the instance.
 
-| The upgrade rehearsed in a preproduction environment with representative data. As a general recommendation, the order of the environments is development, testing, preproduction, and lastly production.
+| The upgrade rehearsed in a preproduction environment with representative data. As a general recommendation, the environment order is development, testing, preproduction, and, finally, production.
 | Recommended, weeks before
 | The closing checks pass in that environment before scheduling production.
 
-| Users warned about the window and about the fact that running queries and open sessions are lost.
+| Users are warned about the window and that in-progress queries and open sessions will be lost.
 | Recommended, with the notice set by your change policy
-| The notice has been sent and gathers the estimated range of the downtime.
+| The notice has been sent and includes the estimated downtime range.
 
-| The "Instances" option set to `1` in the descriptor, if you have more than one replica, decided before the upgrade itself. The startup probe deadline does not need to be touched.
+| The _Instances_ option to `1` in the descriptor, if you have more than one replica, is decided before the upgrade itself. The startup probe deadline does not need to be touched.
 | Mandatory, in the same version change
-| The upgrade screen shows that value before you confirm.
+| The upgrade screen shows that value before confirming.
 
-| The "Metabase log level" option set to "INFO", if you want to follow the migration.
+| The _Metabase log level_ option to "INFO" if you want to follow the migration.
 | Optional, in the same version change
-| The upgrade screen shows that value before you confirm. It has to be set back to its production value afterwards, with another service update, so count that additional restart in the window.
+| The upgrade screen shows that value before confirming. It has to be returned to its production value at the end, with another service update, so count that additional restart in the window.
 |===
 
 [#phases]
 
-=== Steps from start to finish
+=== Steps from beginning to end
 
-_Stratio Discovery_ has no controlled upgrade process: there is nothing to initialize or finalize through an API, and there is no upgrade status to query. The sequence comes down to changing the version in _Stratio Command Center_, with the xref:operations-guide:installing-and-upgrading/upgrade.adoc#cct-steps[steps of the upgrade procedure], and waiting for the instance to be available again.
+_Stratio Discovery_ has no controlled upgrade process: there is nothing to start or finish from an API, nor is there an upgrade state to check. The sequence consists of changing the version in _Stratio Command Center_, following the xref:operations-guide:installing-and-upgrading/upgrade.adoc#cct-steps[steps of the upgrade procedure], and waiting for the instance to become available again.
 
 [cols="4%,17%,49%,30%", options="header"]
 |===
@@ -233,107 +233,107 @@ _Stratio Discovery_ has no controlled upgrade process: there is nothing to initi
 
 | 1
 | Preparation
-| Everything indicated in <<before,Before the window>>. Nothing stops working.
+| Everything indicated in <<before, Before the window>>. Nothing stops working.
 | Days or weeks (estimated). No downtime.
 
 | 2
 | Notice and drain
-| Notice to the users so that they do not launch long queries or catalog synchronizations. There is no mechanism that drains the work in progress, so this step is organizational. Nothing stops working.
+| Notify users not to launch long queries or catalog synchronizations. No mechanism drains in-progress work, so this step is organizational. Nothing stops working.
 | A few minutes (estimated). No downtime.
 
 | 3
 | Version change
-| Upgrade of the service version in _Stratio Command Center_, which recreates the deployment with the new image. Everything stops working.
+| Update of the service version in _Stratio Command Center_, which recreates the deployment with the new image. Everything stops working.
 | A few minutes (estimated). Total.
 
 | 4
-| Start-up and migration
-| The container prepares the configuration, obtains the certificates from the Vault injector, and starts up the three processes. Metabase applies the 175 schema changes that separate Metabase 0.50.21 from 0.56.4 and responds to the health endpoint with "503" until it finishes. Everything stops working.
-| A few minutes (estimated), with a 300-second deadline per attempt of the startup probe. Total, during the whole step.
+| Startup and migration
+| The container prepares the configuration, obtains the certificates from the Vault injector, and starts the three processes. Metabase applies the 175 schema changes that separate Metabase 0.50.21 from 0.56.4 and responds on the health endpoint with "503" until it finishes. Everything stops working.
+| A few minutes (estimated), with a 300-second deadline per startup probe attempt. Total, throughout the entire step.
 
 | 5
 | Verification
-| The checks of <<checks,Post-upgrade checks>>. Nothing stops working.
+| The <<checks, Post-upgrade checks>>. Nothing stops working.
 | The time the six checks take you (estimated). No downtime.
 |===
 
-How to check that each step has finished correctly:
+How to verify that each step has finished correctly:
 
-. *Preparation:* all the rows of <<before,Before the window>> are covered.
-. *Notice and drain:* no long query and no catalog synchronization is running.
-. *Version change:* _Stratio Command Center_ reports the new version and the previous pod has disappeared.
-. *Start-up and migration:* the pod becomes _Ready_, that is, the `/api/health` endpoint responds. In the meantime, the instance logs only report the progress if you have raised the "Metabase log level" option to "INFO".
+. *Preparation:* all the rows of <<before, Before the window>> are covered.
+. *Notice and drain:* no long query or catalog synchronization is left in progress.
+. *Version change:* _Stratio Command Center_ reports the new version, and the previous pod has disappeared.
+. *Startup and migration:* the pod becomes _Ready_, that is, the `/api/health` endpoint responds. Meanwhile, the instance logs only report progress if you have configured the _Metabase log level_ option to "INFO".
 . *Verification:* all the closing checks pass.
 
-IMPORTANT: *The startup probe deadline bounds each attempt, not the outage.* It comes from multiplying the "Startup probe periodSeconds" and "Startup probe failureThreshold" options of the 'General' → 'Probes' section, which default to 5 and 60, that is 300 seconds. The duration grows with the size of the synchronized catalog, not with the volume of data queried, because several changes rewrite `metabase_field` and `metabase_table` row by row. If the deadline runs out, Kubernetes restarts the pod and the migration is cut short at the last change it committed. The next start-up would pick up the pending changes, but an interrupted migration is not a state Metabase caters for: restore the backup and try again with a longer deadline.
+IMPORTANT: *The startup probe deadline caps each attempt, not the downtime.* It is obtained by multiplying the _Startup probe periodSeconds_ and _Startup probe failureThreshold_ options of the 'General' → 'Probes' section, which by default are 5 and 60, respectively; that is, 300 seconds. The duration grows with the size of the synchronized catalog, not the volume of data queried, because several changes rewrite `metabase_field` and `metabase_table` row by row. If the deadline expires, Kubernetes restarts the pod, and the migration stops at the last committed change. The next startup would resume the pending changes, but Metabase doesn't consider an interrupted migration a state: restore the backup and try again with a longer deadline.
 
 [#data]
 
 === Data and consistency
 
-* *What changes in the data model.* The schema of the metadata database goes from Metabase 0.50.21 to Metabase 0.56.4: 175 cumulative changes that Metabase applies with Liquibase during the first start-up of the new version. Most of them are structure changes, but some rewrite existing content, which is why the backup is mandatory. The two triggers that _Stratio Discovery_ adds on the dashboard subscriptions do not change.
-* *Is a mandatory backup needed beforehand?* Yes, of the metadata database and of the deployment descriptor. There is no other way to go back once the migration is applied. The instance stores no files, so there is nothing else to copy.
-* *What to do if the migration fails halfway through.* The database is left half migrated, so the path is always the same: scale the instance to 0, restore the dump of the metadata database, fix the cause the logs point at (or raise the startup probe deadline if that is what ran out) and scale back to 1 replica. Do not try again without restoring.
-* *Can the data be left in an intermediate state?* Yes, and it is the reason why the backup is mandatory. Liquibase commits each schema change separately, so an interrupted migration leaves the database at an intermediate point between the two versions: neither complete for the new one nor valid for the previous one.
-* *How to check that the data is correct after migrating.* The instance responds on `/api/health`, the interface reports the new version, and the existing collections, questions, and dashboards open and run. While it migrates, that same endpoint responds "503" with a body whose `status` field is `initializing`, which is how to tell a migration in progress from a failed start-up.
+* *What changes in the data model.* The metadata database schema moves from Metabase 0.50.21 to Metabase 0.56.4: 175 cumulative changes that Metabase applies through Liquibase during the first startup of the new version. Most are structural changes, but some rewrite existing content, and that is why the backup is mandatory. The two triggers that _Stratio Discovery_ adds to the dashboard subscriptions do not change.
+* *Is a mandatory backup needed beforehand?* Yes, of the metadata database and the deployment descriptor. There is no other way to revert once the migration has been applied. The instance does not store files, so there is nothing else to copy.
+* *What to do if the migration fails halfway through the process.* The database is left half-migrated, so the path is always the same: scale the instance to 0, restore the metadata database dump, fix the cause indicated by the logs (or extend the startup probe deadline if that is what expired), and scale back to 1 replica. Do not try again without restoring.
+* *Can the data be left in an intermediate state?* Yes, and that is why the backup is mandatory. Liquibase commits each schema change separately, so an interrupted migration leaves the database at an intermediate point between the two versions: neither complete for the new one nor valid for the previous one.
+* *How to verify that the data is correct after the migration.* The instance responds on `/api/health`; the interface reports the new version and the existing collections, questions, and dashboards open and execute. During migration, that same endpoint responds with code "503" and a body whose `status` field is `initializing`, allowing you to distinguish an in-progress migration from a failed startup.
 
 [#no-return]
 
 === Point of no return
 
-* *What it is.* The first schema change that Metabase commits during the start-up of the new version. There is no previous state that confirms or cancels the operation: the migration runs on its own, as part of the start-up, and each change is committed as soon as it finishes.
-* *How to know it has been passed.* The pod becomes _Ready_ and the interface reports the new version. But it is enough for the start-up to have reached the migration: if it fails afterwards, the point of no return has also been passed, even though the instance does not become available.
-* *What stops being possible from then on.* Going back to the previous version without restoring the backup. Metabase checks the schema version before migrating and refuses to start up on one newer than itself, with the "Downgrade detected" error.
+* *What it is.* The first schema change that Metabase commits when starting the new version. No prior state confirms or cancels the operation: the migration runs on its own as part of startup, and each change is committed as soon as it finishes.
+* *How to know that it has been passed.* The pod becomes _Ready_, and the interface reports the new version. But it is enough for the startup to have reached the migration: if it fails afterward, the point of no return has already been passed, even if the instance does not become available.
+* *What stops being possible from that point on.* Going back to the previous version without restoring the backup. Metabase checks the schema version before migrating and refuses to start if there is a more recent version than its own, showing the error "Downgrade detected".
 
 [#outage]
 
 === Downtime and availability
 
-* *What has been done to reduce it.* The xref:operations-guide:installing-and-upgrading/upgrade.adoc#downtime[downtime and availability] are detailed in the upgrade procedure. The preparation, the platform upgrade, and the descriptor review happen outside the window. Inside the window there is nothing that can be brought forward: the migration is part of the start-up.
-* *What part cannot be avoided and why.* The complete downtime. Metabase does not support a rolling upgrade between major versions: the migration takes a lock on the metadata database from a single instance, and the schema changes it applies break any instance still running the previous version. That is why the descriptor declares the service without high availability and with a single replica, and why there is no way to keep the previous version serving while the new one migrates.
-* *Stop and start-up order.* There is no order to decide: _Stratio Command Center_ recreates the deployment and the container starts up its three processes at the same time. nginx can accept connections before Metabase is ready, so a gateway error during the start-up is expected and does not indicate a failure.
-* *Who is warned and how far in advance.* Announce the estimated range and what becomes unavailable, following the change management policy of each environment. _Stratio Discovery_ imposes no notice period.
-* *Recommendation to plan the window.* Size it with the startup probe deadline plus the time of the closing checks, and communicate a range, not an exact figure. Rehearse beforehand in preproduction with a representative data volume: it is the only way to estimate the real duration of the migration.
+* *What has been done to reduce it.* The xref:operations-guide:installing-and-upgrading/upgrade.adoc#downtime[downtime and availability] is detailed in the upgrade procedure. The preparation, the platform upgrade, and the descriptor review are performed outside the window. Within the window, nothing can be brought forward: the migration is part of startup.
+* *What cannot be avoided and why.* Complete downtime. Metabase does not support progressive upgrades between major versions: the migration acquires a lock on the metadata database from a single instance, and the schema changes it applies break any instance that is still running the previous version. That is why the descriptor declares the service without high availability and with a single replica, and why there is no way to keep the previous version in service while the new one migrates.
+* *Stop and startup order.* There is no order to decide: _Stratio Command Center_ recreates the deployment, and the container starts up its three processes at the same time. nginx can accept connections before Metabase is ready, so a gateway error during startup is expected and does not indicate a failure.
+* *Who is warned and with how much notice.* Announce the estimated range and what stops being available, following the change management policy of each environment. _Stratio Discovery_ does not impose any notice deadline.
+* *Recommendation to plan the window.* Size it with the startup probe deadline plus the time of the closing checks, and communicate a range, not an exact figure. Rehearse beforehand, in preproduction, with a representative volume of data; it is the only way to estimate the actual migration duration.
 
 [#work-in-flight]
 
-=== Work in flight during the window
+=== Work in progress during the window
 
-_Stratio Discovery_ does not drain the work in progress before stopping: the instance is replaced and whatever was running is lost. This table summarizes what happens to each thing and how it is recovered:
+_Stratio Discovery_ does not drain the in-progress work before stopping: the instance is replaced and whatever was running is lost. This table summarizes what happens to each thing and how it recovers:
 
 [cols="2,4,2,4", options="header"]
 |===
-| What may be running | What happens to it | What to do beforehand | How it is recovered afterwards
+| What may be running | What happens to it | What to do beforehand | How it recovers afterwards
 
-| Running queries
-| They fail as soon as the instance stops responding. The query is lost and it is enough to launch it again: a question does not modify the source data.
-| Warn the users not to launch long queries.
+| Queries in execution
+| They fail as soon as the instance stops responding. The query is lost, and you can simply launch it again: a query does not modify the source data.
+| Warn users not to launch long queries.
 | Launch them again from the interface.
 
 | Open user sessions
-| They end. The users have to authenticate again through the `oauth2proxy` of _Stratio KEOS_.
+| They end. Users must re-authenticate through the _Stratio KEOS_ `oauth2proxy`.
 | Nothing
-| The users log in again. The previous session is not recovered.
+| Users log in again. The previous session is not recovered.
 
-| Running catalog synchronizations
-| They are interrupted. A partial synchronization leaves tables or fields unregistered, but it does not corrupt the metadata database.
-| Avoid launching a full synchronization right before the window.
+| Catalog synchronizations in progress
+| They are interrupted. A partial synchronization leaves tables or fields unregistered, but does not corrupt the metadata database.
+| Avoid launching a full synchronization just before the window.
 | Launch the synchronization again from the database configuration.
 
 | Scheduled dashboard subscriptions
-| Those scheduled during the downtime are not sent and are not recovered afterwards.
-| Check which subscriptions fall inside the window and warn their recipients.
-| Manually send the ones that cannot wait for the next cycle.
+| Subscriptions scheduled during the downtime are not sent and are not recovered afterward.
+| Check which subscriptions fall within the window and warn their recipients.
+| Manually send those that cannot wait for the next cycle.
 
 | Metabase API calls and external integrations
-| They fail while the service is unavailable.
-| Pause the external orchestration during the window so that it does not accumulate failed attempts.
+| They fail while the service is not available.
+| Pause the external orchestration during the window to prevent failed attempts from accumulating.
 | Relaunch the affected flows from the orchestrator.
 
 | Collection exports and imports in progress
-| They fail. An interrupted import can leave the collection half-created in the target.
+| They fail. An interrupted import can leave the collection half-created at the destination.
 | Do not launch imports during the window.
-| Review the target collection and import it again if it was left incomplete.
+| Review the destination collection and import it again if it was left incomplete.
 |===
 
 [#post-upgrade]
@@ -344,56 +344,56 @@ _Stratio Discovery_ does not drain the work in progress before stopping: the ins
 
 === Regressions to expect
 
-Coming from 0.50.21-0.2.x, the changes of versions 0.56.4-0.1.x and 0.56.4-0.2.x arrive at the same time. None of these regressions prevents the instance from starting up, but they do affect specific features. They are grouped by priority, according to when you have to act:
+Coming from 0.50.21-0.2.x, the changes of versions 0.56.4-0.1.x and 0.56.4-0.2.x arrive at the same time. None of these regressions prevents the instance from starting up, but they do affect specific functionalities. They are grouped by priority, according to when action is required:
 
-* *Blocking, or requiring action before the window*: the authentication if the deployment does not use `gosec-sso`, deployment options removed or renamed, and data sources whose driver is no longer included.
+* *Blocking or requiring mandatory action before the window*: authentication if the deployment does not use `gosec-sso`, the removed or renamed deployment options, and the data sources whose driver is no longer included.
 * *Requiring action after the upgrade*: variables that stop being injected and default values that change.
-* *Behavior changes to take into account*: what keeps working but in a different way.
+* *Behavior changes to keep in mind*: what continues to work but in a different way.
 
-==== Blocking, or requiring action before the window
+==== Blocking or requiring mandatory action before the window
 
 [cols="1,1,2,1", options="header"]
 |===
-| What stops working or changes | Cause | How to solve it | In the meantime
+| What stops working or changes | Cause | How to resolve it | In the meantime
 
-| The connections to Amazon Athena
-| Its driver was removed from the image because it carried dependencies with vulnerabilities.
-| Inventory those connections before upgrading and decide on an alternative: publish that data through _Stratio {modulename}_ or provide the driver with the "Extra JARs to add to metabase plugins folder" deployment option.
-| The questions and the dashboards that use them are preserved, but they cannot be run.
+| The Amazon Athena connections
+| Its driver was removed from the image because it dragged along dependencies with vulnerabilities.
+| Inventory those connections before upgrading and decide on an alternative: publishing that data through _Stratio {modulename}_ or providing the driver through the _Extra JARs to add to Metabase plugins folder_ deployment option.
+| The questions and dashboards that use them are preserved, but cannot be executed.
 
-| The "Skip Metabase's Statement final cancellation in Virtualizer driver" deployment option (environment variable `VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION`)
-| The option was removed from the descriptor. It prevented the blocking of the JDBC connections with _Stratio {modulename}_ servers prior to version 0.11.0.
-| No action is needed if you come from Universe 14.8, 14.9, or 14.10: the _Stratio {modulename}_ version of those Universes is already above that minimum. Check the version before the window.
+| The _Skip Metabase's Statement final cancellation in Virtualizer driver_ deployment option (`VIRTUALIZER_DRIVER_SKIP_STMT_CANCELLATION` environment variable)
+| The option was removed from the descriptor. It avoided blocking JDBC connections to _Stratio {modulename}_ servers before version 0.11.0.
+| No action is needed if you come from Universe 14.8, 14.9, or 14.10: the _Stratio {modulename}_ version of those Universes is already above the minimum. Check the version before the window.
 | If any server were below 0.11.0, its JDBC connections would be blocked.
 
 | The "Enable OAUTH", "SSO external URI", "SSO internal URI", and "Dynamic authentication" deployment options
-| The authentication moved entirely to the `oauth2proxy` of _Stratio KEOS_, which issues the cookie carrying the JWT token; the instance validates it with the public key published by the ingress and delivered by the Vault injector. The instance no longer needs to know the SSO address.
-| No action is needed on the instance: the Universe 15.1 descriptor no longer requests those fields. Review any automation of your own that set them.
+| Authentication moved completely to the _Stratio KEOS_ `oauth2proxy`, which issues the cookie with the JWT token; the instance validates it with the public key that the ingress publishes and that the Vault injector delivers to it. The instance no longer needs to know the SSO address.
+| No action is needed on the instance: the Universe 15.1 descriptor no longer requests those fields. Review any of your own automation that sets them.
 | The values you had configured are ignored.
 
-| The audit of the content of the API responses
-| The internal web server moved from OpenResty to nginx, and with it went the module that logged the response body encrypted with AES. The `LOG_ACCESS_DATA`, `DATA_AUDIT_ENCRYPTION_KEY_PASS`, `DATA_AUDIT_ENCRYPTION_IV_PASS`, `EXTRA_NGINX_LOG_PROPERTIES` and `EMBED_TOKEN_USER_CLAIM` variables go with it. None of them was in the descriptor, so it only affects deployments that set them by hand.
-| There is no replacement in the product. If your environment depended on that audit, raise the requirement before upgrading. The normal nginx access log, with the user resolved, is kept as it was.
-| The data audit lines stop being generated, with no warning.
+| The auditing of the content of the API responses
+| The internal web server moved from OpenResty to nginx, and with it the module that recorded the AES-encrypted response body disappeared. The `LOG_ACCESS_DATA`, `DATA_AUDIT_ENCRYPTION_KEY_PASS`, `DATA_AUDIT_ENCRYPTION_IV_PASS`, `EXTRA_NGINX_LOG_PROPERTIES`, and `EMBED_TOKEN_USER_CLAIM` variables go with it. None of them were in the descriptor, so it only affects deployments that set them manually.
+| There is no replacement in the product. If your environment depends on that auditing, raise the requirement before upgrading. The normal nginx access log, with the user resolved, remains the same.
+| The data audit lines stop being generated, without warning.
 
-| The passwords of the key store and of the trust store
-| They used to be stored in Vault and were stable; now the container generates them at random on each start-up, because the certificates are delivered by the Vault injector. The SecretsBundle stops creating the key store password.
-| Review any integration that opens _/etc/pki/discovery.jks_ or _/etc/pki/ca-bundle.jks_ with a fixed password. Inside the container they are still available as environment variables.
-| The integration that uses the previous password can no longer open the store.
+| The keystore and truststore passwords
+| Previously, they were stored in Vault and were stable; now the container generates them randomly on each startup because the Vault injector delivers the certificates. The `SecretsBundle` no longer creates the keystore password.
+| Review any integration that opens _/etc/pki/discovery.jks_ or _/etc/pki/ca-bundle.jks_ with a fixed password. Inside the container, they are still available as environment variables.
+| The integration that used the previous password can no longer open the store.
 
-| The JAR files of your own or third-party drivers
-| Metabase reworked its internal driver API between 0.51 and 0.56: features were retired, namespaces were moved, and the signatures of the synchronization methods changed.
-| Recompile each driver against the Metabase 0.56 API and test it with Java 21 before the window. The ones provided with "Extra JARs to add to metabase plugins folder" are not validated at deployment time.
-| The driver does not load and the databases that depend on it become unreachable.
+| JAR files of own or third-party drivers
+| Metabase redid its internal driver API between 0.51 and 0.56: functionalities were removed, namespaces were moved, and the signatures of the synchronization methods changed.
+| Recompile each driver against the Metabase 0.56 API and test it with Java 21 before the window. Those provided through _Extra JARs to add to Metabase plugins folder_ are not validated on deployment.
+| The driver does not load, and the databases that depend on it become inaccessible.
 
 | The `USE_GOSEC_SSO_AUTH` environment variable in legacy deployments
-| It no longer exists, along with the start-up file that interpreted it. In the previous version it forced the authentication method to `gosec-sso` and warned that it was deprecated. The "Authentication method" option still offers the same four values, but it moves to the advanced configuration.
+| It no longer exists, along with the startup file that interpreted it. In the previous version, it forced the authentication method to `gosec-sso` and warned that this was deprecated. The _Authentication method_ option still offers the same four values, but now redirects to the advanced configuration.
 | Check the authentication method in the current descriptor and set it explicitly before upgrading, instead of relying on the forcing that no longer exists.
-| The variable produces no effect and no warning.
+| The variable produces no effect or warning.
 
-| The integrations that read the name of the cookie from the descriptor
-| The "OAuth2 cookie name" option is renamed to "oauth2proxy cooke name", because the cookie is issued by the `oauth2proxy` and not by the SSO, and the environment variable it exposes changes with it.
-| Rename the variable in any automation that reads it inside the container: it goes from `OAUTH2_COOKIE_NAME` to `JWT_COOKIE_NAME`. The default value does not change: it is still `stratio-cookie`.
+| The integrations that read the cookie name from the descriptor
+| The "OAuth2 cookie name" option is renamed to _oauth2proxy cookie name_ because the cookie is issued by `oauth2proxy`, not the SSO, and the environment variable it exposes changes.
+| Rename the variable in any automation that reads it inside the container: it changes from `OAUTH2_COOKIE_NAME` to `JWT_COOKIE_NAME`. The default value does not change: it is still `stratio-cookie`.
 | The automation that reads the old name does not find the variable.
 |===
 
@@ -401,102 +401,102 @@ Coming from 0.50.21-0.2.x, the changes of versions 0.56.4-0.1.x and 0.56.4-0.2.x
 
 [cols="1,1,2,1", options="header"]
 |===
-| What stops working or changes | Cause | How to solve it | In the meantime
+| What stops working or changes | Cause | How to resolve it | In the meantime
 
-| The environment variables of the probes, of the resources ("Instances", "CPUs Request", "Memory request (MB)", their types and their limits) and of the database creation and discovery stop being injected into the container
-| Their options remain in the descriptor and are still applied to the deployment, but they have stopped being propagated as environment variables inside the container. The database connection ones (`MB_DB_URL`, `MB_DB_USER`, `MB_DB_SSL`…) and `MEMORY` are not affected.
-| Review any process of your own that read them from inside the container and obtain that data from the descriptor or from the Kubernetes API.
+| The environment variables of the probes, the resource ones (_Instances_, _CPUs Request_, _Memory request (MB)_, their types, and their limits), and the database creation and discovery ones stop being injected into the container
+| Their options remain in the descriptor and are applied to the deployment, but they no longer propagate as environment variables inside the container. The database connection ones (`MB_DB_URL`, `MB_DB_USER`, `MB_DB_SSL`…) and `MEMORY` are not affected.
+| Review any of your own processes that read them from inside the container and get that data from the descriptor or from the Kubernetes API.
 | The process that reads them receives an empty value.
 
-| The log level of the middleware layer becomes less detailed
-| The default value of the "Middleware log level" option goes from "DEBUG" to "INFO".
+| The middleware log level decreases in detail
+| The default value of the _Middleware log level_ option changes from "DEBUG" to "INFO".
 | If you depended on those traces, set the value back to "DEBUG" in the 'General' → 'Log levels' section of _Stratio Command Center_.
-| The "DEBUG" level messages of that layer stop appearing in the logs.
+| The "DEBUG"-level messages of that layer stop appearing in the logs.
 
-| The format of the logs sent to the centralized logging platform
-| The selector that let through, verbatim, the messages that were already JSON relied on the Java 8 script engine, which Java 21 does not include. Now every message is emitted with the same pattern, with the text escaped inside the `@message` field.
-| Review the parsing rules of your logging platform or your SIEM if they relied on receiving the original JSON unwrapped.
-| The lines still arrive, but with a structure different from the previous one.
+| The format of the logs sent to the centralized log platform
+| The selector that let through raw the messages that were already JSON depended on the Java 8 scripting engine, which Java 21 does not include. Now all messages are emitted with the same pattern: the escaped text inside the `@message` field.
+| Review the parsing rules of your log platform or your SIEM if they depend on receiving the original JSON unwrapped.
+| The lines continue to arrive, but with a different structure than before.
 
 | The download options for external JAR files
-| The download moved from `wget` to `curl`, so the `WGET_CUSTOM_SECURITY_OPTS` variable is now called `CURL_CUSTOM_SECURITY_OPTS` and its default value is no longer empty: it uses the certificates of the instance.
-| Rewrite in `curl` syntax the options you passed by hand. `EXTRA_JARS` does not change.
-| The old options are ignored and the download may fail for lack of credentials.
+| The download moved from `wget` to `curl`, so the `WGET_CUSTOM_SECURITY_OPTS` variable is now called `CURL_CUSTOM_SECURITY_OPTS` and its default value stops being empty: it uses the instance's certificates.
+| Rewrite in `curl` syntax the options that you will pass manually. `EXTRA_JARS` does not change.
+| The old options are ignored, and the download may fail because it lacks credentials.
 
 | The legacy compatibility environment variables
-| They disappear along with the start-up file that interpreted them: `TENANT_NAME` (an alias of `DISCOVERY_INSTANCE_NAME`), `SECRET_NAME`, `OAUTH_COOKIE_PREFIX` and `JWT_VALIDATION_DISABLED`.
-| Replace `TENANT_NAME` with `DISCOVERY_INSTANCE_NAME`. The other three have no replacement because the functionality they configured no longer exists.
-| The variables are ignored with no warning.
+| They disappear along with the startup file that interpreted them: `TENANT_NAME` (alias of `DISCOVERY_INSTANCE_NAME`), `SECRET_NAME`, `OAUTH_COOKIE_PREFIX`, and `JWT_VALIDATION_DISABLED`.
+| Replace `TENANT_NAME` with `DISCOVERY_INSTANCE_NAME`. The other three have no replacement because that functionality no longer exists.
+| The variables are ignored without any warning.
 
-| The Java virtual machine options added by hand
-| The image goes from Java 11 to Java 21.
-| Review and test the customized options again. The options that Java 21 does not recognize are silently ignored.
+| The Java Virtual Machine options added manually
+| The image moves from Java 11 to Java 21.
+| Review and retest the customized options. Java 21 silently ignores options it doesn't recognize.
 | The customized configuration may not be applied without any warning.
 |===
 
-==== Behavior changes to take into account
+==== Behavior changes to keep in mind
 
 [cols="1,1,2,1", options="header"]
 |===
-| What stops working or changes | Cause | How to solve it | In the meantime
+| What stops working or changes | Cause | How to resolve it | In the meantime
 
 | The export and import of collections that use actions, models created from CSV files, timelines, or alerts
-| The export and import service does not support those features. It is not a regression of this upgrade: it already happened in the source version, and it remains.
-| Avoid those features in the collections that are promoted between environments, or promote them manually.
+| The export and import service does not support those functionalities. This is not a regression from this upgrade: it already occurred in the source version and remains.
+| Avoid those functionalities in the collections promoted between environments, or promote them manually.
 | The collection is exported and imported without those elements.
 
-| Everything that depends on the behavior of Metabase: its interface, its API, and the content the migration rewrites
-| The jump from Metabase 0.50.21 to 0.56.4 crosses six major versions, each with its own interface, behavior, and API changes. _Stratio Discovery_ packages Metabase, so it inherits all of them.
-| Review the https://www.metabase.com/releases[Metabase release notes] of the intermediate versions and the https://www.metabase.com/docs/latest/developers-guide/api-changelog[changelog of its API] before the window. Rehearse the upgrade in preproduction and test your integrations and your most used dashboards there.
-| The differences only show up once upgraded, so the preproduction rehearsal is the only way to anticipate them.
+| Everything that depends on Metabase's behavior: its interface, its API, and the content that the migration rewrites
+| The jump from Metabase 0.50.21 to 0.56.4 traverses six major versions, each with its own interface, behavior, and API changes. _Stratio Discovery_ packages Metabase, so it inherits all of them.
+| Review the https://www.metabase.com/releases[Metabase release notes] of the intermediate versions and its https://www.metabase.com/docs/latest/developers-guide/api-changelog[API changelog] before the window. Rehearse the upgrade in preproduction and test there your most used integrations and dashboards.
+| The differences only appear after the upgrade, so rehearsing in preproduction is the only way to anticipate them.
 
 | The connection with _Stratio {modulename}_
-| The JDBC driver included in the image is updated from version 2.32.x to 4.x.
-| Check a query against the catalog in the <<checks,post-upgrade checks>>. If you need a specific version of the driver, enable it with the "Use virtualizer jdbc from Extra JARs" deployment option and provide it in "Extra JARs to add to metabase plugins folder".
-| The catalog queries may behave differently with old servers.
+| The JDBC driver included in the image goes up from version 2.32.x to 4.x.
+| Check a query against the catalog in the <<checks, post-upgrade checks>>. If you need a specific driver version, activate it through the _Use virtualizer jdbc from Extra JARs_ deployment option and provide it in _Extra JARs to add to Metabase plugins folder_.
+| Catalog queries may behave differently with older servers.
 
-| The new "Crossdata log level" option
-| It arrives with the 0.56.4-0.1.x line, the one of Universe 15.0, so it reaches you with this upgrade. It controls the log level of the _Stratio {modulename}_ JDBC driver, whose version goes up from the 2.32.x series to 4.x.
+| The new _Crossdata log level_ option
+| It arrives with the 0.56.4-0.1.x line, that of Universe 15.0, so it comes with this upgrade. It controls the log level of the _Stratio {modulename}_ JDBC driver, whose version goes up from the 2.32.x series to 4.x.
 | No action is mandatory: the default value is "INFO". Change it to "DEBUG" in the 'General' → 'Log levels' section if you need to diagnose a catalog query after the upgrade.
 | Nothing stops working: it is a new diagnostic lever, not a behavior change.
 |===
 
-IMPORTANT: These tables gather the changes with the greatest operational impact. Review the complete list in the xref:ROOT:what-is-new/breaking-changes.adoc[breaking changes], which group the impact and the action of each one by version, and the current configuration in the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables].
+IMPORTANT: These tables gather the changes with the greatest operational impact. Review the complete list in the xref:ROOT:what-is-new/breaking-changes.adoc[breaking changes], which group by version the impact and the action of each one, and the current configuration in the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables].
 
 [#checks]
 
 === Post-upgrade checks
 
-Close the window when the instance responds on `/api/health`, _Stratio Command Center_ reports the new version, and the following checks pass, as the xref:operations-guide:installing-and-upgrading/upgrade.adoc#post-check[subsequent check] of the procedure indicates. The xref:operations-guide:installing-and-upgrading/verify-installation.adoc[guide to checking the installation] covers the access to the interface and the launching of a question:
+Close the window when the instance responds on `/api/health`, _Stratio Command Center_ reports the new version, and the following checks pass, as indicated by the xref:operations-guide:installing-and-upgrading/upgrade.adoc#post-check[post-check] of the procedure. The xref:operations-guide:installing-and-upgrading/verify-installation.adoc[installation verification guide] covers the interface access and the launch of a question:
 
-. The login works and a user of an allowed group accesses the application.
-. A user of the administration group has administration permissions, which confirms that the group synchronization with _Stratio Gosec_ keeps working.
+. Login works, and a user from an allowed group accesses the application.
+. A user from the administration group has administration permissions, which confirms that group synchronization with _Stratio Gosec_ continues to work.
 . A question against a _Stratio {modulename}_ database returns results.
-. A question against a _Stratio PostgreSQL_ database returns results.
+. A question against a _Stratio PostgreSQL Operator_ database returns results.
 . The catalog synchronization of a database finishes without errors.
-. A test collection is exported and imported correctly.
+. A test collection exports and imports correctly.
 
-These tasks remain pending after the window. There is no fixed deadline for them: what matters is what does not work until each one is done.
+These tasks remain pending after the window. There is no fixed deadline: what matters is what does not work until each one is done.
 
 [cols="2,3,2", options="header"]
 |===
-| Task | What has to be done | What does not work until it is done
+| Task | What must be done | What does not work until it is done
 
-| Set the startup probe deadline and the "Metabase log level" option back to their production values, if you changed them for the migration
-| Return the values of the 'General' → 'Probes' section to the ones you had before the window.
-| Nothing in normal operation: the deadline only affects the time Kubernetes waits in the subsequent start-ups.
+| Return to their production value the startup probe deadline and the _Metabase log level_ option, if you changed them for the migration
+| Return the values of the 'General' → 'Probes' section to those you had before opening the window.
+| Nothing in normal operation: the deadline only affects the time Kubernetes waits on subsequent startups.
 
-| Solve the <<regressions,regressions>> that apply to you
+| Resolve the <<regressions, regressions>> that apply to you
 | Rename the variables in your automations, review the Java virtual machine options, and decide what to do with the data sources whose driver is no longer included.
 | Those automations and those data sources.
 
 | Review the dashboard subscriptions that were not sent
-| Check which ones fell inside the window and send them manually if they cannot wait for the next cycle.
-| Their recipients do not receive the delivery corresponding to the window.
+| Check which ones fall within the window and send them manually if they cannot wait for the next cycle.
+| Their recipients do not receive the send corresponding to the window.
 
-| Launch the interrupted catalog synchronizations again
+| Relaunch the interrupted catalog synchronizations
 | Launch the synchronization from the configuration of each affected database.
-| The tables or the fields created during the window do not appear when creating questions.
+| The tables or fields created during the window do not appear when creating questions.
 |===
 
 [#problems]
@@ -507,67 +507,67 @@ These tasks remain pending after the window. There is no fixed deadline for them
 
 === Rollback
 
-The upgrade procedure summarizes what to do if the xref:operations-guide:installing-and-upgrading/upgrade.adoc#upgrade-failure[upgrade does not go well] and this section sizes it. There is no automatic rollback beyond the <<no-return,point of no return>>, and *reverting the version in _Stratio Command Center_ is not enough once the migration has started*: Metabase refuses to start up on a schema newer than itself. Metabase does offer a command to bring the schema down, but it only goes back one major version and there are six between 0.50.21 and 0.56.4, so it is of no use on this path. What has to be done therefore depends on whether the migration actually started, and both cases are detailed in the xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version].
+The upgrade procedure summarizes what to do if the xref:operations-guide:installing-and-upgrading/upgrade.adoc#upgrade-failure[upgrade does not go well], and this section details it. There is no automatic rollback beyond the <<no-return, point of no return>>, and *reverting the version in _Stratio Command Center_ is not enough once the migration has started*: Metabase refuses to start on a schema newer than its own. Metabase offers a command to downgrade the schema, but it only rolls back one major version, and there are six between 0.50.21 and 0.56.4, so this route doesn't work. What to do depends on whether the migration has started, and both cases are detailed in the xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version].
 
 [cols="2,1,4,2", options="header"]
 |===
-| Moment of the process | Is it possible? | What is done | How long it takes and whether data is lost
+| Moment of the process | Possible? | What is done | How long it takes and if data is lost
 
 | The upgrade is aborted before changing the version, in steps 1 or 2
 | Yes
 | Nothing: the deployment has not been modified. Resume the preparation when you decide on a new date.
 | Immediate (estimated). No data is lost.
 
-| The version has been changed, but the start-up fails before reaching the migration
+| The version has been changed, but the startup fails before reaching the migration
 | Yes
-| Revert the service version in _Stratio Command Center_. The database has not been touched, so there is no need to restore the dump. This is the case of a failure while preparing the certificates or the configuration.
+| Revert the service version in _Stratio Command Center_. The database has not been touched, so there is no need to restore the dump. This applies if the failure occurs while preparing certificates or during configuration.
 | A few minutes (estimated). No data is lost.
 
-| The migration has started, whether it completed or not
+| The migration has started, whether it has been completed or not
 | Yes, only by restoring
-| Revert the service version, restore the dump of the metadata database and, if you changed the descriptor, restore its backup too. There is no shortcut: even if the migration was left halfway, the schema is no longer valid for the previous version.
-| It depends on the size of the backup (estimated). Yes: everything created after the upgrade is lost.
+| Revert the service version, restore the metadata database dump, and, if you changed the descriptor, also restore its copy. There is no shortcut: even if the migration was left halfway, the schema is no longer valid for the previous version.
+| Depends on the backup size (estimated). Yes: everything created after the upgrade is lost.
 |===
 
-WARNING: Restoring the dump returns the database to the moment the backup was made. Everything created or modified afterwards (questions, dashboards, collections, subscriptions, and database connections) is lost, including the edits made during the window itself.
+WARNING: Restoring the dump returns the database to the state in which it was at the time of the backup. Everything created or modified afterward (questions, dashboards, collections, subscriptions, and database connections) is lost, including edits made during the window itself.
 
 [#known-issues]
 
-=== Known issues
+=== Known warnings and incidents
 
 [cols="2,2,3,2", options="header"]
 |===
-| Warning or issue | When it appears | What to do | Reference
+| Warning or incident | When it manifests | What to do | Reference
 
 | An insufficient startup probe deadline restarts the pod and leaves the migration halfway
-| During step 4, if the start-up and the migration take longer than the deadline allows. The risk grows with the size of the synchronized catalog
-| Restore the backup and try again with a longer deadline, raised in the 'General' → 'Probes' section of _Stratio Command Center_ during the upgrade itself.
-| <<phases,Steps from start to finish>>
+| During step 4, if the startup and migration take longer than the deadline allows. The risk grows with the size of the synchronized catalog
+| Restore the backup and try again with a longer deadline, which is configured in the 'General' → 'Probes' section of _Stratio Command Center_ during the upgrade.
+| <<phases, Steps from beginning to end>>
 
-| A gateway error right after the start-up
+| A gateway error just after startup
 | During step 4, while Metabase is still migrating
-| Wait. nginx accepts connections before Metabase is ready, so the error is expected until the pod becomes _Ready_. Check `/api/health`: while it migrates it responds "503" with a body whose `status` field is `initializing`.
-| <<outage,Downtime and availability>>
+| Wait. nginx accepts connections before Metabase is ready, so the error is expected until the pod becomes _Ready_. Check `/api/health`: while it migrates, it responds with code 503 and a body whose `status` field is `initializing`.
+| <<outage, Downtime and availability>>
 
-| The start-up fails while preparing the certificates
-| During step 4, before Metabase even starts up
-| Check that the Vault injector of _Stratio KEOS_ is operational and that the certificate secret of the instance exists.
+| The startup fails when preparing the certificates
+| During step 4, before Metabase gets to start up
+| Check that the _Stratio KEOS_ Vault injector is operational and that the instance's certificate secret exists.
 | xref:operations-guide:installing-and-upgrading/prerequisites.adoc[Prerequisites]
 
-| The unauthorized access page appears momentarily on the first access
-| After step 4, on the first login of each user
-| Nothing: the access completes anyway. It is a known issue of the first access.
+| The access-not-allowed page appears momentarily on the first access
+| After step 4, on each user's first login
+| Nothing: the access completes anyway. This is a known issue on first access.
 | xref:ROOT:known-issues.adoc[Known issues]
 
-| The logs do not show the progress of the migration
+| The logs do not show migration progress
 | During step 4, with the default log levels
-| It is the normal behavior: with the default values the migration leaves no trace at all, because the start and end messages are emitted at the "INFO" level while the "Metabase log level" option is set to "ERROR". Raise it to "INFO" before the window to see them, and raise "Service log level" to "INFO" as well if you want the Liquibase traces change by change.
+| It is the normal behavior: with the default values, the migration does not leave any trace, because the start and end messages are emitted at "INFO" level and the _Metabase log level_ option is "ERROR". Raise them to "INFO" before the window to see them, and also raise _Service log level_ to "INFO" if you want the Liquibase traces, change by change.
 | xref:operations-guide:installing-and-upgrading/environment-variables.adoc[Environment variables]
 
-| The questions against Amazon Athena fail
+| Questions against Amazon Athena fail
 | After step 4, when opening an existing question
 | Publish that data through _Stratio {modulename}_ or provide the driver through external JAR files, recompiled against Metabase 0.56.
-| <<regressions,Regressions to expect>>
+| <<regressions, Regressions to expect>>
 |===
 
-While step 4 is running, the `/api/health` endpoint tells a migration in progress from a failed start-up, and the instance logs record the start and the end of the migration as long as you have raised the "Metabase log level" option to "INFO". If the pod restarts, check in those logs, or by comparing the `databasechangelog` table of the metadata database against the backup, whether any change was applied, and apply the <<rollback,rollback>>: do not try again on a half-migrated database. There is no lock to release by hand: the one the migration takes is released on its own when the process finishes or dies. To tell the type of failure apart, see the xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recovery from a failed migration]; for the rest of the issues, the xref:operations-guide:troubleshooting.adoc[troubleshooting guide].
+While step 4 runs, the `/api/health` endpoint distinguishes between an in-progress migration and a failed startup, and the instance logs record the start and end of the migration, provided you have configured the _Metabase log level_ option to "INFO". If the pod restarts, check those logs or, by comparing the `databasechangelog` table of the metadata database with the backup, whether any change was applied, and apply the <<rollback, rollback>>: do not try again on a database in the middle of the migration. You don't need to release any lock manually: the lock is released automatically when the process ends or dies. To identify the type of failure, see the xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recovery from a migration failure]; for the rest of the incidents, see the xref:operations-guide:troubleshooting.adoc[troubleshooting guide].

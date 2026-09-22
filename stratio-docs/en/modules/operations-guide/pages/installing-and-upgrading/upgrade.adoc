@@ -1,31 +1,31 @@
 = Version upgrade
 
-_Stratio Discovery_ does not need any updating mechanism of its own: to upgrade, change the _Stratio Discovery_ version in _Stratio Command Center_. The instance restarts and, during the start-up, Metabase migrates the database where it stores its metadata on its own.
+_Stratio Discovery_ does not require its own upgrade mechanism: to upgrade, change the _Stratio Discovery_ version in _Stratio Command Center_. The instance restarts and, during the startup, Metabase migrates on its own the database in which it stores its metadata.
 
 [IMPORTANT]
 ====
-*Back up the metadata database before changing the version.* It is the only way to go back once the migration has started, and also the only way to retry the upgrade if the migration is interrupted: Metabase refuses to start up on a schema newer than itself, so reverting the version in _Stratio Command Center_ is not enough once the migration has applied any change. Without that backup, an interrupted migration has no clean way out.
+*Make a backup of the metadata database before changing the version.* It is the only way to go back once the migration has started, and also the only way to try the upgrade again if the migration is interrupted: Metabase refuses to start on a schema newer than its own, so reverting the version in _Stratio Command Center_ is not enough once the migration has applied any change. Without that backup, an interrupted migration has no clean way out.
 
-To size the maintenance window of a jump between Universes, see the xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[upgrade planning].
+To size the maintenance window for a jump between Universes, see the xref:operations-guide:installing-and-upgrading/upgrade-overview.adoc[upgrade planning].
 ====
 
 == Before upgrading
 
 Prepare these five points, in this order:
 
-. *Backup.* Take a dump of the metadata database and keep a copy of the deployment descriptor. The instance stores no files, so there is nothing else to copy.
-. *Descriptor reviewed.* Compare the descriptor of the target version with the one you have: between Universes, options can disappear, change their name, or new fields can appear that _Stratio Command Center_ requests during the upgrade. See the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] and the xref:ROOT:what-is-new.adoc[what's new] of the version.
+. *Backup.* Make a dump of the metadata database and save a copy of the deployment descriptor. The instance does not store files, so there is nothing else to copy.
+. *Descriptor reviewed.* Compare the target version's descriptor with the one you have: between Universes, options may disappear, be renamed, or new fields may appear that _Stratio Command Center_ requests during the upgrade. See the xref:operations-guide:installing-and-upgrading/environment-variables.adoc[environment variables] and the xref:ROOT:what-is-new.adoc[what's new] of the version.
 . *Adjustments specific to the target version.* Review the xref:operations-guide:installing-and-upgrading/upgrade/details-upgrade.adoc[detailed upgrade guide] of the version you are going to.
-. *Adjustments made in the upgrade itself.* The upgrade screen of _Stratio Command Center_ lets you modify the descriptor, and the instance starts up with whatever you changed, so these three adjustments are applied in the same version change, with no previous restart:
+. *Adjustments made in the upgrade itself.* The _Stratio Command Center_ upgrade screen allows modifying the descriptor, and the instance starts up with what you have changed, so these three adjustments are applied in the same version change, without a prior restart:
 +
 --
-* *A single replica, mandatory.* If the deployment has more than one, lower the "Instances" option to `1`.
-* *Log level, optional.* Raise the "Metabase log level" option to "INFO" in the 'General' → 'Log levels' section if you want to follow the migration: with its default value, "ERROR", it leaves no trace.
-* *Startup probe deadline, optional.* The 300 seconds the default values give are enough except with a very large synchronized catalog. Raise it in the 'General' → 'Probes' section if you measured it in preproduction and it falls short, or if a previous attempt ran out of time.
+* *A single replica, mandatory.* If the deployment has more than one, lower the _Instances_ option to `1`.
+* *Log level, optional.* Raise the _Metabase log level_ option to "INFO" in the 'General' → 'Log levels' section if you want to follow the migration: with its default value, "ERROR", it does not leave any trace.
+* *Startup probe deadline, optional.* The 300 seconds given by the default values are enough except with a very large synchronized catalog. Raise it in the 'General' → 'Probes' section if you have measured it in preproduction and it is short, or if a previous attempt exhausted it.
 
-The two optional adjustments have to be set back to their production values once the upgrade has finished, with another service update, checking that the instance starts up correctly again on the new version.
+Return the two optional adjustments to their production values after the upgrade finishes, via another service update, and verify that the instance starts up correctly with the new version.
 --
-. *Notice to the users.* The instance does not support high availability, so the service is unavailable during the whole restart. Give notice with the lead time set by the change management policy of your environment.
+. *Notice to users.* The instance does not support high availability, so the service remains inactive during the entire restart. Warn with the notice set by your environment's change management policy.
 
 [#cct-steps]
 
@@ -33,42 +33,42 @@ The two optional adjustments have to be set back to their production values once
 
 . Enter _Stratio Command Center_ and go to 'Services'.
 . Select the _Stratio Discovery_ instance you want to upgrade.
-. Change the service version to the target one. _Stratio Command Center_ shows the configuration review screen and requests the new fields that the descriptor of the target version has added.
+. Change the service version to the target one. _Stratio Command Center_ shows the configuration review screen and requests the new fields that the target version's descriptor has added.
 . Confirm the upgrade. The deployment is recreated with the new image.
 
 [#downtime]
 
 == Downtime and availability
 
-The service is unavailable from the moment the version is changed until the instance responds again, because the deployment is recreated with a single replica and without high availability.
+The service becomes unavailable from the moment the version is changed until the instance responds again, because the deployment is recreated with a single replica and without high availability.
 
-There is no way to upgrade without an outage, and the single replica is not a limitation of the deployment but a requirement of the migration. The migration is run by *a single instance*: each one tries to take the Liquibase migration lock on the metadata database and only the one that wins it survives, because the rest retry for about ten seconds, abort the start-up with the error "Database has migration lock; cannot run migrations." and end with "Metabase Initialization FAILED", so Kubernetes leaves them crash-looping until the winner finishes. The database is not left inconsistent by the concurrency, but only one replica can come up. On top of that, the schema changes break any instance still running the previous version, so leaving one serving while another migrates does not work either. That is why the descriptor declares the service without high availability and why the "Instances" option has to be lowered to `1` before changing the version.
+There is no way to upgrade without an outage, and the single replica is not a deployment limitation but a migration requirement. The migration is run by *a single instance*: each one tries to take the Liquibase migration lock on the metadata database, and only the one that wins it survives, because the others retry for about ten seconds, abort the startup with the error "Database has migration lock; cannot run migrations.", and end with "Metabase Initialization FAILED", so Kubernetes leaves them in a restart loop until the winner finishes. The database isn't left inconsistent due to concurrency; only one replica can start up. On top of that, schema changes break any instance running the previous version, so leaving one running while another migrates doesn't work either. That is why the descriptor declares the service without high availability, and the _Instances_ option has to be lowered to `1` before changing the version.
 
-During the start-up, Metabase applies the schema migrations that separate your version from the target one. While it does so, the `/api/health` endpoint responds "503" with the body `{"status":"initializing"}`, and the internal web server already accepts connections, so a gateway error at that moment is expected.
+During startup, Metabase applies the schema migrations that separate your version from the target one. While it does so, the `/api/health` endpoint responds with code "503" and the body `{"status":"initializing"}`, and the internal web server already accepts connections, so a gateway error at that moment is expected.
 
-The startup probe deadline bounds each start-up attempt: it comes from multiplying the "Startup probe periodSeconds" and "Startup probe failureThreshold" options of the 'General' → 'Probes' section, which default to 5 and 60, that is 300 seconds. *The duration of the migration does not depend on the volume of data queried, but on the size of the synchronized catalog*: several changes rewrite `metabase_field` and `metabase_table` row by row, the largest tables of the metadata database, and others recompute the permissions. The 300 seconds are enough on an instance with a small or medium catalog; with a very large one, measure it beforehand in preproduction, with a representative copy of the metadata database.
+The startup probe deadline is obtained by multiplying the _Startup probe periodSeconds_ and _Startup probe failureThreshold_ options of the 'General' → 'Probes' section, which by default are 5 and 60, respectively; that is, 300 seconds. *The duration of the migration does not depend on the volume of data queried, but on the size of the synchronized catalog*: several changes rewrite `metabase_field` and `metabase_table` row by row, which are the largest tables of the metadata database, and others recalculate the permissions. 300 seconds is enough on an instance with a small or medium catalog; for a very large catalog, it is best to measure it beforehand in preproduction with a representative copy of the metadata database.
 
-WARNING: If the deadline runs out, Kubernetes restarts the pod and the migration is cut short at the last change it committed. The next start-up would pick up the pending changes, but an interrupted migration is not a state Metabase caters for: *restore the backup and try again with a longer deadline* instead of letting it retry.
+WARNING: If the deadline expires, Kubernetes restarts the pod and the migration is cut at the last committed change. The next startup would resume the pending changes, but an interrupted migration is not a state that Metabase contemplates: *restore the backup and try again with a longer deadline* instead of letting it retry.
 
 [#upgrade-failure]
 
 == If the upgrade does not go well
 
-What you can do depends on whether the schema migration actually started: if the start-up fails earlier, reverting the service version is enough; if the migration has already started, whether it completed or not, the dump of the metadata database has to be restored. The xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recovery from a failed migration] tells the failures apart, and the xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version] details both cases, step by step.
+What you can do depends on whether the schema migration started: if startup fails early, you can revert the service version; if the migration has already started, whether it has completed or not, you must restore the metadata database dump. The xref:operations-guide:installing-and-upgrading/upgrade/migration-recovery.adoc[recovery from a migration failure] distinguishes failure types, and the xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version] details the two cases step by step.
 
-If the migration is interrupted halfway, the path is always the same: scale the instance to 0 in _Stratio Command Center_, restore the dump of the metadata database, fix the cause (raise the startup probe deadline if it ran out, or solve whatever the logs point at) and scale back to 1 replica. Do not try again without restoring: the database has been left half migrated.
+If the migration is interrupted halfway, the path is always the same: scale the instance to 0 in _Stratio Command Center_, restore the metadata database dump, fix the cause (extend the startup probe deadline if it expired, or resolve what the logs indicate), and scale back to 1 replica. Do not try again without restoring: the database was left half-migrated.
 
-The instance logs record the start and the end of the migration only if you raised the "Metabase log level" option to "INFO"; with its default value, "ERROR", they leave no trace, and the `databasechangelog` table of the metadata database is then the only way to know whether any change was applied: compare its row count, or the highest value of its `dateexecuted` column, with those of the backup. There is no lock to release by hand: on a PostgreSQL® database the migration lock is a session-scoped advisory lock, so it disappears with the connection. Metabase's `migrate release-locks` command fails on PostgreSQL® precisely because there is nothing to release.
+The instance logs record the start and the end of the migration only if you raised the _Metabase log level_ option to "INFO"; with its default value, "ERROR", they do not leave any trace, and the `databasechangelog` table of the metadata database is then the only way to know if any change was applied: compare its row count, or the maximum value of its `dateexecuted` column, with those of the backup. You don't need to release any lock manually: on a PostgreSQL® database, the migration lock is an advisory lock tied to the session, so it disappears when the connection closes. Metabase's `migrate release-locks` command fails on PostgreSQL® because there is nothing to release.
 
 [#post-check]
 
-== Subsequent check
+== Post-upgrade check
 
-Close the window when the instance responds on `/api/health` and _Stratio Command Center_ reports the new version. Afterwards, follow the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[guide to checking the installation].
+Close the window when the instance responds on `/api/health` and _Stratio Command Center_ reports the new version. Afterward, follow the xref:operations-guide:installing-and-upgrading/verify-installation.adoc[installation verification guide].
 
 == Detailed upgrade guides
 
 * xref:operations-guide:installing-and-upgrading/upgrade/details-upgrade.adoc#v0564-02x[Upgrade to _Stratio Discovery_ 0.56.4-0.2.x], with the adjustments specific to the target version.
-* xref:ROOT:what-is-new/breaking-changes.adoc[Breaking changes], grouped by version and with the action each one requires.
-* xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[Special upgrades], for the paths that start from versions that are no longer in any supported Universe.
-* xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[Rollback to the previous version], with the procedure to go back in each case.
+* xref:ROOT:what-is-new/breaking-changes.adoc[Breaking changes], grouped by version and indicating the action that each one requires.
+* xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[Special upgrades], for the routes that start from versions that are no longer in any maintained Universe.
+* xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[Rollback to the previous version], with the corresponding revert procedure in each case.

@@ -10,24 +10,24 @@ Es la versión del Universo 15.1 y la que reciben todas las instalaciones que vi
 
 ==== Rutas de actualización y salto directo desde el Universo 14.10
 
-Los Universos 14.8, 14.9 y 14.10 llevan la misma versión de _Stratio Discovery_, 0.50.21-0.2.0, así que la actualización es la misma desde los tres. El salto es directo: la línea 0.56.4-0.1.x corresponde al Universo 15.0, que no llegó a los entornos de producción, así que sus cambios llegan junto con los de la 0.56.4-0.2.x.
+Los Universos 14.8, 14.9 y 14.10 llevan la misma versión de _Stratio Discovery_, 0.50.21-0.2.0, por lo que la actualización es la misma en los tres. El salto es directo: la línea 0.56.4-0.1.x corresponde al Universo 15.0, que no llegó a los entornos de producción, así que sus cambios llegan junto con los de la 0.56.4-0.2.x.
 
-La migración del esquema es acumulativa: Metabase aplica en un único arranque todos los cambios que separan tu versión de la de destino.
+La migración del esquema es acumulativa: Metabase aplica todos los cambios que separan tu versión de la de destino en un único arranque.
 
 ==== Compatibilidad con la plataforma y orden de actualización
 
 _Stratio KEOS_ tiene que estar ya en el Universo 15.1 antes de cambiar la versión, porque la instancia obtiene sus certificados y la clave pública con la que valida los _tokens_ JWT del inyector de Vault de la plataforma. Es el único módulo cuyo orden es obligatorio.
 
-Los servidores de _Stratio {modulename}_ deben ser 0.11.0 o superiores. Los tres Universos de origen ya traen una versión por encima de ese mínimo, así que solo hay que comprobarlo si la conexión apunta a un servidor de otro despliegue.
+Los servidores de _Stratio {modulename}_ deben estar en la versión 0.11.0 o superior. Los tres Universos de origen ya traen una versión por encima de ese mínimo, así que solo hay que comprobarlo si la conexión apunta a un servidor de otro despliegue.
 
 ==== Copia de seguridad y vuelta atrás
 
-La copia de seguridad de la base de datos de metadatos es obligatoria. Metabase se niega a arrancar sobre un esquema más nuevo que él, y su comando para bajar el esquema solo retrocede una versión mayor, así que revertir la versión en _Stratio Command Center_ no basta en cuanto la migración ha empezado. El xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[_rollback_ a la versión anterior] detalla qué hacer en cada caso.
+La copia de seguridad de la base de datos de metadatos es obligatoria. Metabase se niega a arrancar sobre un esquema más nuevo que él, y su comando para bajar el esquema solo retrocede una versión mayor, así que revertir la versión en _Stratio Command Center_ no basta una vez que la migración ha empezado. El xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[_rollback_ a la versión anterior] detalla qué hacer en cada caso.
 
 ==== Tiempo de inactividad
 
-La instancia no admite alta disponibilidad, así que el servicio deja de estar disponible durante todo el reinicio. Si el despliegue tiene más de una réplica, hay que bajar la opción "Instances" a `1` antes de actualizar: la migración la ejecuta una sola instancia, la que gana el bloqueo de Liquibase sobre la base de datos de metadatos, y las demás no consiguen arrancar hasta que esa termina. La migración del esquema forma parte del arranque y tiene como techo el plazo del _startup probe_, 300 segundos con los valores por defecto. La xref:operations-guide:installing-and-upgrading/upgrade-overview/from-0-50-21-to-0-56-4.adoc[ficha de la ruta] dimensiona la ventana con el detalle de cada paso.
+La instancia no admite alta disponibilidad, por lo que el servicio permanece inactivo durante todo el reinicio. Si el despliegue tiene más de una réplica, hay que bajar la opción _Instances_ a `1` antes de actualizar: la migración la ejecuta una sola instancia, la que gana el bloqueo de Liquibase sobre la base de datos de metadatos, y las demás no consiguen arrancar hasta que esa termina. La migración del esquema forma parte del arranque y tiene como límite el plazo del _startup probe_, de 300 segundos con los valores por defecto. La xref:operations-guide:installing-and-upgrading/upgrade-overview/from-0-50-21-to-0-56-4.adoc[ficha de la ruta] dimensiona la ventana con el detalle de cada paso.
 
 ==== Ficheros JAR declarados en el despliegue
 
-Cualquier fichero JAR que aportes con la opción "Extra JARs to add to metabase plugins folder" hay que recompilarlo contra la API de _drivers_ de Metabase 0.56 y probarlo con Java 21. No se validan al desplegar: un _driver_ que no cargue deja inaccesibles las bases de datos que dependan de él.
+Cualquier fichero JAR que aportes con la opción _Extra JARs to add to Metabase plugins folder_ hay que recompilarlo contra la API de _drivers_ de Metabase 0.56 y probarlo con Java 21. No se validan al desplegar: un _driver_ que no cargue deja inaccesibles las bases de datos que dependan de él.

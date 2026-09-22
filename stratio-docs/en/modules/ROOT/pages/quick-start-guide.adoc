@@ -1,38 +1,38 @@
 = Quick start guide
 
-_Stratio Discovery_ is a simple and powerful analysis tool that allows anyone to learn and make decisions from the data of their company. To access it, build the address in the browser with the two values you configured in _Stratio Command Center_, in the 'General' → 'Networking' section: the one of the "URI host…" option and the one of the "URL path to access your Discovery service" option.
+_Stratio Discovery_ is a simple, powerful analytics tool that lets anyone learn from and make decisions based on their company's data. To access, compose in the browser the address with the two values you configured in _Stratio Command Center_, in the 'General' → 'Networking' section: the one from the _URI host…_ option and the one from the _URL path to access your Discovery service_ option.
 
 For example:
 
-* "URI host…" = `discovery.labs.stratio.com`
-* "URL path to access your Discovery service" = `/discovery`
+* _URI host…_ = `discovery.labs.stratio.com`
+* _URL path to access your Discovery service_ = `/discovery`
 
 The final URL would be `\https://discovery.labs.stratio.com/discovery`.
 
 == Logging in
 
-How you sign into _Stratio Discovery_ depends on how it has been configured. After that, you see the home page:
+How you log in to _Stratio Discovery_ depends on its configuration. After that, you see the home page:
 
 image::home_page.png[]
 
-== Asking new questions
+== Querying new questions
 
-Click "Ask a question" at the top of the screen. You'll now be in the question selection menu. Select "Custom" for a custom question.
+Click on "Ask a question" at the top of the screen. You are now in the question selection menu. Please select "Custom" for a custom query.
 
-Use the bar across the page to ask your questions. Now, you can select the desired table, *Test*:
+The bar you see on the page is the one you will use to ask your questions. Now, you can select the desired table, *Test*:
 
 image::select_a_table.png[]
 
-Click on "Run" to display the table:
+If you click on the "Run" button, the table will be shown:
 
 image::table_example.png[]
 
-Let's start with a simple question: how many people have registered since 2010? To find out, you need to filter the data by the *field you are interested in*, in this case *start_date*.
+Start with a simple question: how many people have registered since 2010? To find out, filter the data by *the field that interests you*, in this case *_fecha++_++comienzo_* (_start++_++date_).
 
-After selecting the *start_date* from the filter drop-down, a list of options for the filter will be displayed. Choose "Previous" and type the number 10 in the text box. Then click "Add filter".
+After selecting "_fecha++_++comienzo_" in the filters dropdown, a list of filter options will be shown. Choose "Previous" and type the number 10 in the text box. Then, click on "Add filter".
 
 image::filtering.png[]
 
-You'll then need to tell _Stratio Discovery_ what you want to view. Under the *View* drop-down menu, select "Count of rows".
+Next, you need to tell _Stratio Discovery_ what you want to visualize. Under the *View* dropdown, select "Count of rows":
 
 image::view_options.png[]

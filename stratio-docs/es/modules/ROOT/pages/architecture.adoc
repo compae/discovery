@@ -6,14 +6,14 @@ image::arquitectura.png[]
 
 Encapsula todas las funcionalidades del producto Metabase (consulta la https://www.metabase.com/docs/v0.42/[documentación de Metabase] ^[English]^), un producto de analítica que permite conectarse a diversos servicios de datos a través de sus conectores y, de forma modular, incluir nuevos conectores.
 
-En el caso de _Stratio Discovery_, se incluyen dos nuevos conectores para utilizar con cualquier repositorio de datos accesible a través de _Stratio PostgreSQL_ y _Stratio {modulename}_, además de poder conectarse con otros servicios externos siempre que sean soportados por Metabase:
+En el caso de _Stratio Discovery_, se incluyen dos nuevos conectores para utilizar con cualquier repositorio de datos accesible a través de _Stratio PostgreSQL Operator_ y _Stratio {modulename}_, además de poder conectarse con otros servicios externos siempre que sean soportados por Metabase:
 
 image::arquitectura2.png[]
 
 Su arquitectura, por tanto, está basada en la propia arquitectura de Metabase, pero además aporta dos características fundamentales:
 
 . Acceso securizado de usuarios, homogeneizado en la plataforma (a través de un proxy HTTP NGINX).
-. Acceso a todos los datos internos a la plataforma: _Stratio {modulename}_ (vía _{modulename} driver_) y _Stratio PostgreSQL_ (vía _JDBC driver_).
+. Acceso a todos los datos internos a la plataforma: _Stratio {modulename}_ (vía _{modulename} driver_) y _Stratio PostgreSQL Operator_ (vía _JDBC driver_).
 
 image::arquitectura3.png[]
 

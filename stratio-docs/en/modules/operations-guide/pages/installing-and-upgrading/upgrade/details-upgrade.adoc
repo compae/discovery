@@ -1,33 +1,33 @@
-= Detailed upgrade guides per version
+= Detailed upgrade guides by version
 
 [#v0564-02x]
 
 == Upgrade to _Stratio Discovery_ 0.56.4-0.2.x
 
-This is the version of Universe 15.1 and the one that every installation coming from Universe 14.10 or earlier receives. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes of 0.56.4-0.2.0] and those of xref:ROOT:what-is-new/breaking-changes.adoc#v0564-01x[0.56.4-0.1.0], which apply to this path as well.
+This is the version of Universe 15.1 and the one that all installations coming from Universe 14.10 or earlier receive. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes of 0.56.4-0.2.0] and those of the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-01x[0.56.4-0.1.0], which also apply to this route.
 
 === Important changes and prior considerations
 
-==== Upgrade paths and direct jump from Universe 14.10
+==== Upgrade routes and direct jump from Universe 14.10
 
-Universes 14.8, 14.9, and 14.10 carry the same version of _Stratio Discovery_, 0.50.21-0.2.0, so the upgrade is the same from all three. The jump is direct: the 0.56.4-0.1.x line corresponds to Universe 15.0, which did not reach production environments, so its changes arrive together with those of 0.56.4-0.2.x.
+Universes 14.8, 14.9, and 14.10 carry the same version of _Stratio Discovery_, 0.50.21-0.2.0, so the upgrade is the same on all three. The jump is direct: the 0.56.4-0.1.x line corresponds to Universe 15.0, which did not reach production environments, so its changes arrive together with those of 0.56.4-0.2.x.
 
-The schema migration is cumulative: Metabase applies in a single start-up every change that separates your version from the target one.
+The schema migration is cumulative: Metabase applies all the changes that separate your version from the target version in a single startup.
 
 ==== Platform compatibility and upgrade order
 
-_Stratio KEOS_ has to be on Universe 15.1 already before changing the version, because the instance obtains its certificates and the public key with which it validates the JWT tokens from the Vault injector of the platform. It is the only module whose order is mandatory.
+_Stratio KEOS_ must already be on Universe 15.1 before changing the version, because the instance obtains its certificates and the public key it uses to validate JWT tokens from the platform's Vault injector. It is the only module whose order is mandatory.
 
-The _Stratio {modulename}_ servers must be 0.11.0 or higher. The three source Universes already bring a version above that minimum, so you only have to check it if the connection points at a server of another deployment.
+The _Stratio {modulename}_ servers must be on version 0.11.0 or higher. The three source Universes already run a version above that minimum, so you only need to check if the connection points to a server from another deployment.
 
-==== Backup and going back
+==== Backup and rollback
 
-The backup of the metadata database is mandatory. Metabase refuses to start up on a schema newer than itself, and its command to bring the schema down only goes back one major version, so reverting the version in _Stratio Command Center_ is not enough once the migration has started. The xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version] details what to do in each case.
+Backing up the metadata database is mandatory. Metabase refuses to start on a schema newer than its own, and its command to downgrade the schema only rolls back one major version, so reverting the version in _Stratio Command Center_ is not enough once the migration has started. The xref:operations-guide:installing-and-upgrading/upgrade/rollback.adoc[rollback to the previous version] details what to do in each case.
 
 ==== Downtime
 
-The instance does not support high availability, so the service is unavailable during the whole restart. If the deployment has more than one replica, the "Instances" option has to be lowered to `1` before upgrading: the migration is run by a single instance, the one that wins the Liquibase lock on the metadata database, and the rest do not manage to start up until it finishes. The schema migration is part of the start-up and its ceiling is the startup probe deadline, 300 seconds with the default values. The xref:operations-guide:installing-and-upgrading/upgrade-overview/from-0-50-21-to-0-56-4.adoc[sheet for the path] sizes the window with the detail of each step.
+The instance does not support high availability, so the service remains inactive during the entire restart. If the deployment has more than one replica, lower the _Instances_ option to `1` before upgrading: a single instance runs the migration by winning the Liquibase lock on the metadata database, and the others cannot start until it finishes. The schema migration is part of startup and is capped by the startup probe deadline, 300 seconds by default. The xref:operations-guide:installing-and-upgrading/upgrade-overview/from-0-50-21-to-0-56-4.adoc[route sheet] sizes the window and details each step.
 
 ==== JAR files declared in the deployment
 
-Any JAR file you provide with the "Extra JARs to add to metabase plugins folder" option has to be recompiled against the Metabase 0.56 driver API and tested with Java 21. They are not validated at deployment time: a driver that does not load leaves the databases that depend on it unreachable.
+Any JAR file that you provide through the _Extra JARs to add to Metabase plugins folder_ option has to be recompiled against the Metabase 0.56 driver API and tested with Java 21. They are not validated on deployment: a driver that does not load leaves inaccessible the databases that depend on it.
