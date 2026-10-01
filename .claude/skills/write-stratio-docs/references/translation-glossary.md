@@ -268,6 +268,17 @@ The docs team unifies vocabulary; it even corrects terms that were already in En
 | `Starting from` | `As of` | EN |
 | `panel` (for a Metabase dashboard) | `_dashboard_` / `dashboard` | ES + EN |
 | `consulta guardada` (for a Metabase question) | `pregunta` / `question` | ES + EN |
+| `múltiples` | `varios` / `diversos` | ES only |
+| `librería` (software) | `biblioteca` | ES only |
+| `arrancar` (a service or a project, as a verb) | `iniciar` / `iniciarse` (the noun `arranque` and the infinitive `al arrancar` stay; the EN equivalent does not change) | ES only |
+| `tiene que` (obligation) | `debe` | ES only |
+| `en local` / `de forma local` | `localmente` | ES only |
+| `a la vez` | `simultáneamente` | ES only |
+| `de forma opcional` | `opcionalmente` | ES only |
+
+> **Where the ES rows from `múltiples` down come from.** The documentation team applied them across its review of `genai-core` (PR #854, 86 files): it removed `arranc-` 17 times, `soportado` 11, `múltiples` 10, `librería` 7 and `en local` 3. They are Spanish word choices, not concept renames, so they hold in every module. Apply them in prose, never inside a quoted label or a literal.
+
+> **Mirroring is not back-translating.** When the ES is revised, update the EN sentence by sentence against its own sources; do not re-translate the EN from the new ES. A back-translated EN inherits every ES slip (in `genai-core`, an ES "muy baja frecuencia" turned a correct EN "very high-frequency" into "very low-frequency"), brings false friends ("a medida" → "for measurement", "fijar" → "fix", "puntual" → "punctual") and translates UI labels that must be copied from the UI strings of the target language.
 
 > **`deprecated` vs `obsoleto` (per language):** EN uses `deprecated` (not `obsolete`); ES uses `obsoleto` / `en desuso`, **never** `deprecado` / `deprecar`. The two languages diverge here on purpose.
 
@@ -291,6 +302,9 @@ The EN page mirrors the ES one (decalogue R29), so these pairs are fixed even wh
 | actualización (de versión del producto) | upgrade | update |
 | actualización (de una imagen, un _driver_ o una dependencia) | update | upgrade |
 | sincronizar (el catálogo, los grupos) | synchronize | sync (in prose; `sync` is fine in a log excerpt) |
+| a medida | custom | for measurement |
+| trazas, nivel de trazas (de un servicio) | logs, log level | traces, trace level |
+| confirmar (una migración o una transacción de base de datos) | commit | confirm |
 
 **`support` as a capability**: the ES noun is `compatibilidad con`; in EN the noun is `compatibility with` but the verb `does not support` is accepted and preferred. This overrides the blanket entry in the canonical-preferences table above.
 

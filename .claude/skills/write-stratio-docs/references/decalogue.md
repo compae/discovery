@@ -15,7 +15,7 @@ Use clear, concise, easy-to-understand language. Use bold for emphasis and itali
 
 ## 3. Simplify the grammar
 
-Use the active voice and the present tense. Do not use the first person plural ("recomendamos", "te acompañamos"); replace it with impersonal constructions ("se recomienda", "es recomendable").
+Use the active voice and the present tense. Do not use the first person plural ("recomendamos", "te acompañamos"); replace it with impersonal constructions ("se recomienda", "es recomendable"). The same holds in EN: "we recommend" → "… is recommended" or an imperative, "we have removed" → "… has been removed".
 
 **Instructions to the reader go in the present + imperative — never the future, never a nominalized or passive obligation.** This is the single most frequent correction the docs team applies to drafts, so pre-empt it:
 
@@ -329,6 +329,7 @@ When you document the value of a UI-selectable option (a dropdown or a checkbox 
 
 - Put the option label in **italics** (R1 — it is a form field); put the **value** it takes in double quotes; put the section or tab name in **single quotes**; use backticks for the environment variable and for the raw value when you must name it as such: `` la opción _Use group whitelist_ ('User Authentication'), variable de entorno `USE_GROUP_WHITELIST` ``.
 - **The labels are English in both trees.** _Stratio Command Center_ is not translated, so `'User Authentication' → 'Admin group'` reads the same in the ES and the EN page; only the prose around it changes.
+- **Where a label *is* translated** (a product interface with ES and EN strings), each tree quotes its own language's string verbatim; never translate a label from the other tree. A documentation pass in `genai-core` (PR #854) re-derived the EN from the ES and turned "Run" into "Execute" and 'Lite' into 'Light'; all of it was reverted.
 - A descriptor value may never have been exposed in the UI, or may have moved to the advanced view — do not tell the reader to look for it in the interface unless you have confirmed it in the descriptor of the target Universe. Two live examples: the `authenticator` option did not disappear in 15.1, it moved from `level: 1` to `level: 2` (the advanced view); and the option _Skip Metabase's Statement final cancellation in Virtualizer driver_ (`level: 1` in 14.10) really is gone from the 15.1 descriptor, while the 'Probes' and most of the 'Resources' fields kept their titles and levels but lost their `internalName`, which is now `NOT_USED` — they stopped being injected into the container without being removed from the interface. Documenting any of these as "removed" or "added" would be wrong.
 
 ## R28. Config set in _Stratio Command Center_: name the descriptor tab, and give the full path
@@ -396,7 +397,7 @@ Consequences you must respect:
 3. **New sections that another page links to must declare an explicit `[#slug]`**, identical in both trees, with a blank line after it. That is what the upgrade fact sheets do, and it is the direction to move in: an explicit anchor survives a heading rewrite and a translation. Do not retrofit anchors onto old pages as a standalone change, though — it would touch pages in one tree only and fail `LanguageCheck`.
 4. **Accents survive in the generated id** (`#_configuraciones_específicas`), and `™`/`®` are dropped. If unsure, render the page and read the generated `id=`.
 
-Internal references carry a space after the comma: `<<summary, resumen>>`. It is the form the documentation team asked for in the review of PR #409, and the one `intelligence` and `genai` already used; all 26 per tree carry it. rocket-core still mixes the two, so do not copy an internal reference across repos.
+Internal references carry a space after the comma: `<<summary, resumen>>`. It is the form the documentation team asked for in the review of PR #409, and the one `intelligence` and `genai` already used; all 26 per tree carry it, and it is now the rule in every copy of this skill. An implicit slug drops punctuation (`SSO access to the proxy's web interfaces` → `_sso_access_to_the_proxys_web_interfaces`), so after rewording a heading, re-render the page and check every `<<_…>>` that points at it.
 
 ## R31. Spanish grammar the review corrects most often
 

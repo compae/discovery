@@ -376,7 +376,7 @@ An answer cell is not prose. It opens with a value from a closed list, and only 
 |---|---|
 | Respuestas de sí o no | `Sí`, `No` o `Parcialmente` — y siempre con la parte que sí aplica detrás |
 | Nivel de exigencia | `Obligatorio`, `Recomendado` u `Opcional`, **uno solo por celda** |
-| Duraciones | Seguidas de `(medida)` o `(estimada)`, nunca una cifra a secas; si es medida, en qué entorno |
+| Duraciones | Seguidas de `(medida)` o `(estimada)`, nunca una cifra a secas; si es medida, en qué entorno. El marcador **concuerda con el sustantivo al que sigue**: `Unos minutos (estimados)`, `Semanas (estimadas)`, `La más larga de la intervención (estimada)`. Es el criterio del equipo de documentación en sus dos revisiones de fichas (Stratio/discovery#409 y Stratio/genai-core#854); la ficha de este repositorio ya lo sigue |
 | Riesgo global | `Bajo` (reversible sin coste y sin cambios en el modelo de datos), `Medio` (reversible mediante acción manual o de configuración) o `Alto` (irreversible tras un punto de no retorno o con riesgo de pérdida de datos), con una justificación de una línea |
 | Pérdida de datos | `Ninguna` o la cosa concreta que se pierde |
 
@@ -394,7 +394,7 @@ This sheet answers `Alto` for the overall risk and marks every duration `(estima
 ### Four conventions a sheet breaks with ease
 
 - **Ninguna celda queda vacía.** Un `No aplica` con su motivo se lee como una respuesta; una celda vacía, como un descuido. This is one of the hub's own three bullets, so a blank cell contradicts the page that sent the reader here.
-- **La columna `Detalle` del resumen enlaza a una sección de la propia ficha** con `<<ancla,texto>>`, nunca a una página externa: all nine rows of `[#summary]` do, pointing at eight distinct sections of the sheet — `<<outage>>`, `<<data>>` (twice), `<<phases>>`, `<<before>>`, `<<modules>>`, `<<rollback>>`, `<<coexistence>>` and `<<known-issues>>`. The rest of the sheet uses `xref:…[texto descriptivo]`. **No space after the comma** (R30): measured 26 internal references in the ES tree, 0 of them spaced. `rocket-core` agrees; `intelligence` and `genai` lean on the spaced form, so do not copy an internal reference across repos.
+- **La columna `Detalle` del resumen enlaza a una sección de la propia ficha** con `<<ancla, texto>>`, nunca a una página externa: all nine rows of `[#summary]` do, pointing at eight distinct sections of the sheet — `<<outage>>`, `<<data>>` (twice), `<<phases>>`, `<<before>>`, `<<modules>>`, `<<rollback>>`, `<<coexistence>>` and `<<known-issues>>`. The rest of the sheet uses `xref:…[texto descriptivo]`. **With a space after the comma**, as decalogue R30 states: it is the form the documentation team asked for in the review of PR #409.
 - **El detalle se queda en las páginas de procedimiento.** When a cell needs more than three lines, link instead of explaining; if the target page has no anchor for it, add one **in both trees**. The sheet summarizes and links, it never becomes the only home: `[#rollback]` keeps the table of what can be done at each moment and sends the case-by-case detail to `upgrade/rollback.adoc`, which links back to `#known-issues` for the diagnosis.
 - **Toda duración indica si es medida o estimada**, and in which environment when it is measured. A figure measured on a local disk with no load does not transfer to network storage. Grep the sheet for a bare number in a duration column before you push.
 
