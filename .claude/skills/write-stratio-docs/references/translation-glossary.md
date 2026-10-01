@@ -157,6 +157,18 @@ When the term appears in Spanish, use the indicated English equivalent.
 | Reglas de negocio | Business rules |
 | Rendimiento | Performance |
 | Ruta | Path |
+| Ruta de actualización | Upgrade route (the documentation team's choice in `genai-core#854` and `crossdata-spark2#4141`; the generic `Ruta` stays `Path`) |
+| Informar (un campo, una URL, un valor) | Enter / provide (never "inform") |
+| Dimensionar (una ventana, la memoria) | Size (never "dimension") |
+| Origen (de datos) | Source (never "origin") |
+| Copia de seguridad; copiar (una base de datos antes de actualizar) | Backup; back up (not "copy") |
+| ¿Admitido? (cabecera de una tabla de escenarios) | Supported? (never "Admitted?") |
+| Consultable (una versión, una tabla) | Queryable (never "consultable") |
+| Pasar a _Ready_ (un _pod_) | Become _Ready_ (not "pass to") |
+| Emparejar (valores por la clave del descriptor) | Match on (not "pair by") |
+| Sostener (el _cluster_ de sesiones) | Support (not "sustain") |
+| Arranque (de un servicio o de una versión) | Startup (never "launch", which is `Lanzamiento` → release) |
+| Relanzar (una consulta o una descarga abortada) | Relaunch / rerun (never "resume", in ES never `reanudar`: an aborted query starts again from scratch) |
 | Sistema autónomo | Autonomous System (AS) |
 | Sistema de archivos | File system |
 | Sumidero de datos | Data sink |
@@ -271,14 +283,20 @@ The docs team unifies vocabulary; it even corrects terms that were already in En
 | `múltiples` | `varios` / `diversos` | ES only |
 | `librería` (software) | `biblioteca` | ES only |
 | `arrancar` (a service or a project, as a verb) | `iniciar` / `iniciarse` (the noun `arranque` and the infinitive `al arrancar` stay; the EN equivalent does not change) | ES only |
-| `tiene que` (obligation) | `debe` | ES only |
+| `tiene que` (obligation) | `debe` | ES only *(a negated one is not an obligation: `no tienes que cambiar nada` → `no necesitas cambiar nada`, never `no debes`, which forbids it)* |
+| `resetear` | `restablecer` | ES only |
+| `discontinuar el soporte de/para` | `retirar` / `retirar la compatibilidad con` | ES only |
+| `aportar` (un fichero, un JAR) | `proporcionar` | ES only |
+| `exigir` (a requirement) | `requerir` | ES only *(the documentation lead applies it in every review: `intelligence-multiuser-environment#1489`, `crossdata-spark2#4141`)* |
+| `interfaz administrativa` | `interfaz de administración` | ES only |
+| `feature` as the mirror of ES `funcionalidad` | `functionality` (`feature` is also accepted) | EN only |
 | `en local` / `de forma local` | `localmente` | ES only |
 | `a la vez` | `simultáneamente` | ES only |
 | `de forma opcional` | `opcionalmente` | ES only |
 
 > **Where the ES rows from `múltiples` down come from.** The documentation team applied them across its review of `genai-core` (PR #854, 86 files): it removed `arranc-` 17 times, `soportado` 11, `múltiples` 10, `librería` 7 and `en local` 3. They are Spanish word choices, not concept renames, so they hold in every module. Apply them in prose, never inside a quoted label or a literal.
 
-> **Mirroring is not back-translating.** When the ES is revised, update the EN sentence by sentence against its own sources; do not re-translate the EN from the new ES. A back-translated EN inherits every ES slip (in `genai-core`, an ES "muy baja frecuencia" turned a correct EN "very high-frequency" into "very low-frequency"), brings false friends ("a medida" → "for measurement", "fijar" → "fix", "puntual" → "punctual") and translates UI labels that must be copied from the UI strings of the target language.
+> **Mirroring is not back-translating.** When the ES is revised, update the EN sentence by sentence against its own sources; do not re-translate the EN from the new ES. A back-translated EN inherits every ES slip (in `genai-core`, an ES "muy baja frecuencia" turned a correct EN "very high-frequency" into "very low-frequency"), brings false friends ("a medida" → "for measurement", "fijar" → "fix", "puntual" → "punctual") and translates UI labels that must be copied from the UI strings of the target language. The `crossdata-spark2#4141` pass produced the same failure: calques ("inform its URL", "dimension the window", "origins", "Admitted?", "consultable", "passes to Ready"; see the ES→EN table), meaning flips ("if the schema advances" for *si el servidor se adelanta*; "what matters is that nothing works" for *lo que importa es lo que no funciona*), "remain disabled" / "remains active" for defaults that are new in that version, the second person turned into the passive, and a "we recommend" brought back.
 
 > **`deprecated` vs `obsoleto` (per language):** EN uses `deprecated` (not `obsolete`); ES uses `obsoleto` / `en desuso`, **never** `deprecado` / `deprecar`. The two languages diverge here on purpose.
 
@@ -296,7 +314,8 @@ The EN page mirrors the ES one (decalogue R29), so these pairs are fixed even wh
 | cerrar la sesión | close the session | log out |
 | retirada (de una funcionalidad) | retirement | removal |
 | eliminación | removal | |
-| ventana de intervención | maintenance window | intervention window |
+| ventana de intervención | intervention window | maintenance window (that is `ventana de mantenimiento`) |
+| ventana de mantenimiento | maintenance window | |
 | parada, tiempo de parada | downtime | outage |
 | interfaz de administración | administration interface | admin interface |
 | actualización (de versión del producto) | upgrade | update |
