@@ -6,7 +6,7 @@ Each upgrade route has its own sheet, which indicates how long the service is un
 
 TIP: Start with the xref:operations-guide:installing-and-upgrading/upgrade-overview/from-0-50-21-to-0-56-4.adoc#summary[sheet summary]. It answers, at a glance, everything you need to decide the maintenance window.
 
-== Available upgrade paths
+== Available upgrade routes
 
 [cols="1,1,1,2", options="header"]
 |===
