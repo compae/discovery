@@ -63,11 +63,9 @@ _Stratio Discovery_ sube seis versiones de Metabase en una sola operación. Dura
 
 == Alcance de la actualización
 
-Los tres Universos de origen llevan la misma versión de _Stratio Discovery_, 0.50.21-0.2.0, así que esta ficha se aplica sin cambios a 14.8.x, 14.9.x y 14.10.x, y el procedimiento es el mismo en los tres.
+Los tres Universos de origen tienen la misma versión de _Stratio Discovery_, 0.50.21-0.2.0, por lo que esta ficha se aplica sin cambios a 14.8.x, 14.9.x y 14.10.x, y el procedimiento es el mismo en los tres.
 
 Si tu instancia está en una versión anterior a 0.50.21-0.2.x, revisa primero las xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[actualizaciones especiales], porque las consideraciones de las versiones intermedias se aplican íntegramente a la ruta directa.
-
-NOTE: El salto desde el Universo 15.0, que lleva la versión 0.56.4-0.1.3, queda fuera del alcance de esta ficha porque no cambia la versión de Metabase ni el _stack_ de la imagen, por lo que no hay migración de esquema. Sí que se comparte con esta ruta el cambio del mecanismo de secretos al inyector de Vault, que el descriptor del Universo 15.1 introduce: revisa <<before, Antes de la ventana>> y las <<regressions, regresiones>> también en ese caso.
 
 [#components]
 
@@ -456,7 +454,7 @@ Viniendo de 0.50.21-0.2.x, los cambios de las versiones 0.56.4-0.1.x y 0.56.4-0.
 | Las consultas al catálogo pueden comportarse de forma distinta con servidores antiguos.
 
 | La nueva opción _Crossdata log level_
-| Llega con la línea 0.56.4-0.1.x, la del Universo 15.0, así que te alcanza con esta actualización. Controla el nivel de _log_ del _driver_ JDBC de _Stratio {modulename}_, cuya versión sube de la serie 2.32.x a la 4.x.
+| Llega con la línea 0.56.4-0.1.x, así que te alcanza con esta actualización. Controla el nivel de _log_ del _driver_ JDBC de _Stratio {modulename}_, cuya versión sube de la serie 2.32.x a la 4.x.
 | Ninguna acción es obligatoria: el valor por defecto es "INFO". Cámbialo a "DEBUG" en la sección 'General' → 'Log levels' si necesitas diagnosticar una consulta al catálogo tras la actualización.
 | Nada deja de funcionar: es una palanca de diagnóstico nueva, no un cambio de comportamiento.
 |===

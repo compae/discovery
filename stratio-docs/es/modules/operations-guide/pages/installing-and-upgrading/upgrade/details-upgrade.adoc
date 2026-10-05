@@ -4,13 +4,13 @@
 
 == Actualización a _Stratio Discovery_ 0.56.4-0.2.x
 
-Es la versión del Universo 15.1 y la que reciben todas las instalaciones que vienen del Universo 14.10 o anterior. Antes de actualizar, revisa los xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[_breaking changes_ de la 0.56.4-0.2.0] y los de la xref:ROOT:what-is-new/breaking-changes.adoc#v0564-01x[0.56.4-0.1.0], que se aplican también a esta ruta.
+Es la versión del Universo 15.1 y la que reciben todas las instalaciones que vienen del Universo 14.10 o anterior. Antes de actualizar, revisa los xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[_breaking changes_ de la 0.56.4-0.2.0].
 
 === Cambios importantes y consideraciones previas
 
 ==== Rutas de actualización y salto directo desde el Universo 14.10
 
-Los Universos 14.8, 14.9 y 14.10 llevan la misma versión de _Stratio Discovery_, 0.50.21-0.2.0, por lo que la actualización es la misma en los tres. El salto es directo: la línea 0.56.4-0.1.x corresponde al Universo 15.0, que no llegó a los entornos de producción, así que sus cambios llegan junto con los de la 0.56.4-0.2.x.
+Los Universos 14.8, 14.9 y 14.10 tienen la misma versión de _Stratio Discovery_, 0.50.21-0.2.0, por lo que la actualización es la misma en los tres. El salto es directo a la 0.56.4-0.2.x e incluye todos los cambios acumulados desde la 0.50.21-0.2.0.
 
 La migración del esquema es acumulativa: Metabase aplica todos los cambios que separan tu versión de la de destino en un único arranque.
 

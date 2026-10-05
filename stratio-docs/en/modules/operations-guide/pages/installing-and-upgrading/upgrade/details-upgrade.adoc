@@ -4,15 +4,15 @@
 
 == Upgrade to _Stratio Discovery_ 0.56.4-0.2.x
 
-This is the version of Universe 15.1 and the one that all installations coming from Universe 14.10 or earlier receive. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes of 0.56.4-0.2.0] and those of the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-01x[0.56.4-0.1.0], which also apply to this route.
+This is the version of Universe 15.1 and the one that all installations coming from Universe 14.10 or earlier receive. Before upgrading, review the xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[breaking changes of 0.56.4-0.2.0].
 
 === Important changes and prior considerations
 
 ==== Upgrade routes and direct jump from Universe 14.10
 
-Universes 14.8, 14.9, and 14.10 carry the same version of _Stratio Discovery_, 0.50.21-0.2.0, so the upgrade is the same on all three. The jump is direct: the 0.56.4-0.1.x line corresponds to Universe 15.0, which did not reach production environments, so its changes arrive together with those of 0.56.4-0.2.x.
+Universes 14.8, 14.9, and 14.10 have the same version of _Stratio Discovery_, 0.50.21-0.2.0, so the upgrade is the same in all three. The jump goes directly to 0.56.4-0.2.x and includes all changes accumulated since 0.50.21-0.2.0.
 
-The schema migration is cumulative: Metabase applies all the changes that separate your version from the target version in a single startup.
+The schema migration is cumulative: Metabase applies all the changes that separate the current version from the target one in a single startup.
 
 ==== Platform compatibility and upgrade order
 

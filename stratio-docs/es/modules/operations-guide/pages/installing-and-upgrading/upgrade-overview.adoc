@@ -1,6 +1,6 @@
 = Planificación de la actualización
 
-Esta página es un índice de decisión, no un procedimiento. Utilízala para elegir la ficha aplicable a tu ruta de actualización y planificar la ventana de mantenimiento. Cuando llegues al día de la intervención, consulta el xref:operations-guide:installing-and-upgrading/upgrade.adoc[procedimiento de actualización] para ejecutarlo paso a paso.
+Esta página es un índice de decisión, no un procedimiento. Utilízala para seleccionar la ficha correspondiente a tu ruta de actualización y planificar la ventana de mantenimiento. Cuando llegue el día de la intervención, consulta el xref:operations-guide:installing-and-upgrading/upgrade.adoc[procedimiento de actualización] para ejecutarlo paso a paso.
 
 Cada ruta de actualización tiene su propia ficha, que indica cuánto tiempo el servicio deja de estar disponible, qué deja de funcionar, en qué orden se actualiza respecto a los demás módulos y si puedes volver atrás. Las fichas están escritas para quienes planifican y ejecutan la actualización en cada entorno: recogen las decisiones, las duraciones y los impactos, y remiten al procedimiento que describe cada paso.
 
@@ -22,8 +22,6 @@ TIP: Empieza por el xref:operations-guide:installing-and-upgrading/upgrade-overv
 | 0.56.4-0.2.x, tras confirmar la ruta con el equipo de _Stratio Discovery_
 | xref:operations-guide:installing-and-upgrading/upgrade/special-upgrades.adoc[Actualizaciones especiales]
 |===
-
-NOTE: El salto desde el Universo 15.0, que lleva la versión 0.56.4-0.1.3, queda fuera del alcance de la ficha porque no cambia la versión de Metabase y no hay migración de esquema. Se resuelve con el xref:operations-guide:installing-and-upgrading/upgrade.adoc[procedimiento de actualización], atendiendo a los xref:ROOT:what-is-new/breaking-changes.adoc#v0564-02x[_breaking changes_ de la 0.56.4-0.2.0]: el paso de los secretos al inyector de Vault y la desaparición de los certificados _/etc/pki/proxy.pem_ y _/etc/pki/proxy.key_.
 
 == Cómo se lee una ficha
 
