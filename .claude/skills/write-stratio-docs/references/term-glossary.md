@@ -655,6 +655,7 @@ Cite the version of _Stratio Discovery_ with **both halves** and add the Univers
 
 - ✅ `_Stratio Discovery_ 0.56.4-0.2.0 (Universo 15.1)`
 - ❌ `_Stratio Discovery_ 15.1`, `_Stratio Discovery_ 0.2.0`, `Discovery 0.56.4`
+- ❌ Any mention of Universe 15.0 in the published docs: it never reached production (DOC-3394). The `0.56.4-0.1.3` row above is background for you, not something to cite.
 
 ## Capability: compatibility, not support
 

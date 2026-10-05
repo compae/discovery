@@ -70,7 +70,7 @@ The mirror is **not a literal copy**: person, terminology and especially italics
 The version of _Stratio Discovery_ is `${Metabase version}-${Stratio version}`: in `0.56.4-0.2.0`, `0.56.4` is the bundled **Metabase** version and `0.2.0` is Stratio's own. **Always write both halves** — a bare `0.56.4` reads as the Metabase version.
 
 - Series (all patches): `0.56.4-0.2.X`. Exact version: `0.56.4-0.2.0`.
-- **There is no one-to-one correlation with the Universe**, unlike other Stratio modules: `0.50.21-0.2.0` ships in Universes 14.8, 14.9 and 14.10; `0.56.4-0.1.3` in 15.0; `0.56.4-0.2.0` in 15.1. Cite the Universe wherever it matters.
+- **There is no one-to-one correlation with the Universe**, unlike other Stratio modules: `0.50.21-0.2.0` ships in Universes 14.8, 14.9 and 14.10; `0.56.4-0.1.3` in 15.0; `0.56.4-0.2.0` in 15.1. Cite the Universe wherever it matters, **except Universe 15.0**: it never reached production, so the published docs never cite it (DOC-3394, #436). `0.56.4-0.1.3` is listed here only so you know where the 0.56.4-0.1.x line came from.
 - **Lexicographic order is misleading**: `0.40.0` (old scheme) sorts above `0.38.1-0.2` though it is older, and two release lines are maintained in parallel from different branches.
 - The `version: '0.56.4-0.2'` of `antora.yml` is the **docs-portal** segment. Do not change it when documenting a feature.
 

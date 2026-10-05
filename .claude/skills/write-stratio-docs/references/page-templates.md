@@ -213,7 +213,7 @@ TIP: Consulta el detalle completo por versión en las xref:ROOT:what-is-new/rele
 
 ## Breaking-changes page — `ROOT/pages/what-is-new/breaking-changes.adoc`
 
-The canonical list, grouped by version, newest first. One `==` per version with its release date and an explicit anchor above it. Each entry is a single bullet with a bold title, then the impact and the action, and what happens to what already exists:
+The canonical list, grouped by version, newest first. One `==` per version with its release date and an explicit anchor above it. **A line that only shipped in a Universe that never reached production gets no section of its own:** 0.56.4-0.1.x (Universe 15.0) is folded into the 0.56.4-0.2.0 section, and its anchor stays inline (`[[v0564-01x]]`) on its first entry so the inbound links from the release notes keep resolving (#436). A sentence that relies on the fold says which origin it applies to ("Si vienes de la 0.50.21-0.2.x, …"). Each entry is a single bullet with a bold title, then the impact and the action, and what happens to what already exists:
 
 ```
 = _Breaking changes_
@@ -290,7 +290,7 @@ TIP: Empieza por el <resumen de la ficha>. Responde, de un vistazo, a todo lo
 …una fila por ruta; la última columna enlaza la ficha o la guía que la cubre…
 |===
 
-NOTE: <lo que queda fuera de alcance y por qué>
+NOTE: <lo que queda fuera de alcance y por qué; si no queda nada fuera, se omite. Nunca nombra el Universo 15.0>
 
 == Cómo se lee una ficha
 
